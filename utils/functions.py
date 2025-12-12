@@ -5,7 +5,7 @@ import re
 import hashlib
 import tempfile
 import shutil
-from PyQt5.QtWidgets import QFileDialog  # Updated to PyQt5 for consistency
+from PySide6.QtWidgets import QFileDialog  # Dùng PySide6 chuẩn
 from xml.etree import ElementTree
 from xml.dom import minidom
 
@@ -29,7 +29,7 @@ def opendir(f=None):
     dialog.setFileMode(QFileDialog.FileMode.Directory)
     if dialog.exec():
         directory = dialog.selectedFiles()[0]
-        opendir.directory = directory  # Fixed typo: openfile -> opendir
+        opendir.directory = directory
         return directory
     return None
 
@@ -129,7 +129,6 @@ def md5(string):
 
 
 def _hash(value, init, prime, mask):
-    # Keep helper for fnv32
     if isinstance(value, str):
         value = value.lower().encode()
     h = init
@@ -146,18 +145,14 @@ def fnv32(value):
 def fnv64(string: str) -> int:
     """
     Implementation of FNV-1 64-bit hash algorithm used by Sims 4.
-    Refactored for clarity, accuracy and testability.
-    Replaces the old wrapper to ensure correct 64-bit masking.
+    Fixed/Refactored version.
     """
     if not string:
         return 0
     
-    # FNV-1 64-bit constants
     hash_val = 0xcbf29ce484222325
     prime = 0x100000001b3
     
-    # Sims 4 uses lower case strings for hashing usually, 
-    # and we ensure it is utf-8 encoded bytes.
     if isinstance(string, str):
         data = string.lower().encode('utf-8')
     else:
@@ -165,7 +160,7 @@ def fnv64(string: str) -> int:
     
     for byte in data:
         hash_val = hash_val * prime
-        hash_val = hash_val & 0xffffffffffffffff # Simulate 64-bit overflow
+        hash_val = hash_val & 0xffffffffffffffff
         hash_val = hash_val ^ byte
         
     return hash_val
