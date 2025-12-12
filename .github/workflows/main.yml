@@ -22,10 +22,11 @@ jobs:
         python -m pip install --upgrade pip
         if (Test-Path requirements.txt) { pip install -r requirements.txt }
         pip install pyinstaller
+    
+    # Đã xóa bước Auto-Fix vì không cần thiết nữa
         
     - name: Build EXE
       run: |
-        # Kiểm tra icon và build
         if (Test-Path "resources/logo.ico") {
           pyinstaller --noconfirm --onefile --windowed --name "Sims4Translator" --icon "resources/logo.ico" --add-data "resources;resources" main.py
         } else {
