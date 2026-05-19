@@ -5,8 +5,10 @@ import unittest
 
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
-from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtWidgets import QApplication, QStyleOptionViewItem
+from PySide6.QtCore import QModelIndex, Qt, QEvent
+from PySide6.QtGui import QKeyEvent
+from PySide6.QtWidgets import QApplication, QMessageBox, QStyleOptionViewItem
+from unittest.mock import patch
 
 import themes.balanced as balanced
 from packer.resource import ResourceID
@@ -689,13 +691,18 @@ class WorkspaceProShellTests(unittest.TestCase):
         dialog = EditDialog()
         try:
             self.assertEqual(dialog.edit_header.objectName(), 'sheetHeader')
+            self.assertEqual(dialog.suggestions_dock.objectName(), 'suggestionsDock')
             self.assertEqual(dialog.dictionary_panel.objectName(), 'sheetPanel')
             self.assertEqual(dialog.original_panel.objectName(), 'sheetPanel')
             self.assertEqual(dialog.translation_panel.objectName(), 'sheetPanel')
             self.assertEqual(dialog.edit_footer.objectName(), 'sheetFooter')
             self.assertEqual(dialog.edit_detail.objectName(), 'sheetHint')
+            self.assertEqual(dialog.record_status.objectName(), 'editorMetaBadge')
+            self.assertEqual(dialog.token_status.objectName(), 'tokenStatusBadge')
+            self.assertEqual(dialog.token_detail.objectName(), 'tokenDetail')
             self.assertEqual(dialog.btn_ok.text(), 'Approve (Ctrl+Enter)')
             self.assertEqual(dialog.btn_review.text(), 'Needs Review')
+            self.assertTrue(dialog.btn_suggestions.isCheckable())
             self.assertTrue(dialog.btn_ok.isDefault())
             self.assertFalse(dialog.btn_review.autoDefault())
             self.assertFalse(dialog.btn_translate.autoDefault())
@@ -711,9 +718,30 @@ class WorkspaceProShellTests(unittest.TestCase):
             app().processEvents()
 
             self.assertFalse(dialog.suggestions_splitter.isVisibleTo(dialog))
+            self.assertFalse(dialog.suggestions_dock.isVisibleTo(dialog))
             self.assertTrue(dialog.translation_splitter.isVisibleTo(dialog))
+            self.assertFalse(dialog.btn_suggestions.isEnabled())
             self.assertTrue(dialog.btn_ok.isDefault())
             self.assertFalse(dialog.btn_translate.autoDefault())
+        finally:
+            close_widget(dialog)
+
+    def test_edit_dialog_suggestions_dock_can_expand_when_dictionary_data_exists(self):
+        app_state.dictionaries_storage.model.append([['sample', 'Hello source', 'Bonjour dictionary', 12]])
+        app_state.dictionaries_storage.proxy.filter('Hello')
+        dialog = EditDialog()
+        try:
+            dialog.prepare(record())
+
+            self.assertTrue(dialog.btn_suggestions.isEnabled())
+            self.assertTrue(dialog.suggestions_dock.isHidden())
+
+            dialog.btn_suggestions.setChecked(True)
+            app().processEvents()
+
+            self.assertFalse(dialog.suggestions_dock.isHidden())
+            self.assertFalse(dialog.dictionary_panel.isHidden())
+            self.assertFalse(dialog.search_panel.isHidden())
         finally:
             close_widget(dialog)
 
@@ -760,6 +788,84 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(approved_item.flag, FLAG_VALIDATED)
         finally:
             close_widget(approve_dialog)
+
+    def test_edit_dialog_blocks_approve_until_token_warning_is_confirmed(self):
+        storage = app_state.packages_storage
+        storage.packages.append(PackageStub())
+        item = record(FLAG_PROGRESS)
+        item[RECORD_MAIN_SOURCE] = 'Hello\\n{0.SimFirstName}'
+        item[RECORD_MAIN_TRANSLATE] = 'Bonjour'
+        dialog = EditDialog()
+        try:
+            dialog.prepare(item)
+
+            with patch.object(QMessageBox, 'question', return_value=QMessageBox.StandardButton.No) as question:
+                dialog.ok_click()
+
+            question.assert_called_once()
+            self.assertEqual(item.flag, FLAG_PROGRESS)
+            self.assertIn('Missing', dialog.token_status.text())
+
+            with patch.object(QMessageBox, 'question', return_value=QMessageBox.StandardButton.Yes):
+                dialog.ok_click()
+
+            self.assertEqual(item.flag, FLAG_VALIDATED)
+            self.assertEqual(item.translate, 'Bonjour')
+        finally:
+            close_widget(dialog)
+
+    def test_edit_dialog_needs_review_saves_even_with_token_warnings(self):
+        storage = app_state.packages_storage
+        storage.packages.append(PackageStub())
+        item = record(FLAG_UNVALIDATED)
+        item[RECORD_MAIN_SOURCE] = 'Hello {0.SimFirstName}'
+        item[RECORD_MAIN_TRANSLATE] = 'Bonjour'
+        dialog = EditDialog()
+        try:
+            dialog.prepare(item)
+
+            with patch.object(QMessageBox, 'question') as question:
+                dialog.needs_review_click()
+
+            question.assert_not_called()
+            self.assertEqual(item.flag, FLAG_PROGRESS)
+            self.assertIn('Missing', dialog.token_status.text())
+        finally:
+            close_widget(dialog)
+
+    def test_edit_dialog_shortcuts_approve_and_needs_review(self):
+        storage = app_state.packages_storage
+        storage.packages.append(PackageStub())
+
+        approve_item = record(FLAG_PROGRESS)
+        approve_item[RECORD_MAIN_SOURCE] = 'Hello {0.SimFirstName}'
+        approve_item[RECORD_MAIN_TRANSLATE] = 'Bonjour {0.SimFirstName}'
+        approve_dialog = EditDialog()
+        try:
+            approve_dialog.prepare(approve_item)
+            approve_dialog.keyPressEvent(QKeyEvent(
+                QEvent.Type.KeyPress,
+                Qt.Key.Key_Return,
+                Qt.KeyboardModifier.ControlModifier,
+            ))
+
+            self.assertEqual(approve_item.flag, FLAG_VALIDATED)
+        finally:
+            close_widget(approve_dialog)
+
+        review_item = record(FLAG_UNVALIDATED)
+        review_dialog = EditDialog()
+        try:
+            review_dialog.prepare(review_item)
+            review_dialog.keyPressEvent(QKeyEvent(
+                QEvent.Type.KeyPress,
+                Qt.Key.Key_Return,
+                Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.ShiftModifier,
+            ))
+
+            self.assertEqual(review_item.flag, FLAG_PROGRESS)
+        finally:
+            close_widget(review_dialog)
 
     def test_guided_sheet_dialogs_share_the_same_shell_contract(self):
         window = MainWindow()

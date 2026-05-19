@@ -11,7 +11,7 @@ from widgets.editor import QTextEditor
 class Ui_EditDialog(object):
 
     def setupUi(self, EditDialog):
-        EditDialog.resize(1060, 720)
+        EditDialog.resize(1280, 820)
         EditDialog.setMinimumSize(900, 620)
 
         self.lbl_original = QLabel(EditDialog)
@@ -46,16 +46,41 @@ class Ui_EditDialog(object):
         self.edit_header = QFrame(EditDialog)
         self.edit_header.setObjectName('sheetHeader')
         header_layout = QVBoxLayout(self.edit_header)
-        header_layout.setContentsMargins(14, 12, 14, 12)
-        header_layout.setSpacing(6)
+        header_layout.setContentsMargins(14, 10, 14, 10)
+        header_layout.setSpacing(7)
+
+        header_title_layout = QHBoxLayout()
+        header_title_layout.setContentsMargins(0, 0, 0, 0)
+        header_title_layout.setSpacing(8)
         self.edit_title = QLabel('Search and Edit', self.edit_header)
         self.edit_title.setObjectName('sheetTitle')
+        self.record_status = QLabel('Status: -', self.edit_header)
+        self.record_status.setObjectName('editorMetaBadge')
+        self.token_status = QLabel('Token check: -', self.edit_header)
+        self.token_status.setObjectName('tokenStatusBadge')
+        self.btn_suggestions = QPushButton('Suggestions', self.edit_header)
+        self.btn_suggestions.setObjectName('secondaryButton')
+        self.btn_suggestions.setCheckable(True)
+        self.btn_suggestions.setAutoDefault(False)
+        header_title_layout.addWidget(self.edit_title, 1)
+        header_title_layout.addWidget(self.record_status)
+        header_title_layout.addWidget(self.token_status)
+        header_title_layout.addWidget(self.btn_suggestions)
+
         self.edit_detail = QLabel('Review suggestions, refine the draft, then approve it or mark it for review.', self.edit_header)
         self.edit_detail.setObjectName('sheetHint')
         self.edit_detail.setWordWrap(True)
-        header_layout.addWidget(self.edit_title)
+        self.token_detail = QLabel('Token details will appear after a string is selected.', self.edit_header)
+        self.token_detail.setObjectName('tokenDetail')
+        self.token_detail.setWordWrap(True)
+        self.text_metrics = QLabel('', self.edit_header)
+        self.text_metrics.setObjectName('sheetHint')
+        self.text_metrics.setWordWrap(True)
+        header_layout.addLayout(header_title_layout)
         header_layout.addWidget(self.edit_detail)
         header_layout.addWidget(self.txt_resource)
+        header_layout.addWidget(self.text_metrics)
+        header_layout.addWidget(self.token_detail)
 
         layout.addWidget(self.edit_header)
 
@@ -116,6 +141,13 @@ class Ui_EditDialog(object):
         self.suggestions_splitter.setSizes([500, 300])
         self.suggestions_splitter.setHandleWidth(8)
 
+        self.suggestions_dock = QFrame(EditDialog)
+        self.suggestions_dock.setObjectName('suggestionsDock')
+        suggestions_layout = QVBoxLayout(self.suggestions_dock)
+        suggestions_layout.setContentsMargins(0, 0, 0, 0)
+        suggestions_layout.setSpacing(0)
+        suggestions_layout.addWidget(self.suggestions_splitter)
+
         self.translation_splitter = QSplitter(Qt.Orientation.Horizontal)
         self.translation_splitter.addWidget(self.original_panel)
         self.translation_splitter.addWidget(self.translation_panel)
@@ -123,9 +155,9 @@ class Ui_EditDialog(object):
         self.translation_splitter.setHandleWidth(8)
 
         self.edit_splitter = QSplitter(Qt.Orientation.Vertical)
-        self.edit_splitter.addWidget(self.suggestions_splitter)
         self.edit_splitter.addWidget(self.translation_splitter)
-        self.edit_splitter.setSizes([200, 350])
+        self.edit_splitter.addWidget(self.suggestions_dock)
+        self.edit_splitter.setSizes([560, 180])
         self.edit_splitter.setHandleWidth(8)
 
         layout.addWidget(self.edit_splitter)

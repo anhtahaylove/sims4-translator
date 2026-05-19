@@ -517,6 +517,41 @@ QToolBar::separator {
     background: __PANEL_RAISED__;
 }
 
+#editorMetaBadge,
+#tokenStatusBadge {
+    background: __SURFACE__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 999px;
+    color: __TEXT_MUTED__;
+    padding: 4px 10px;
+    font-weight: 600;
+}
+
+#tokenStatusBadge[state="ok"] {
+    background: __ACCENT__;
+    border-color: __ACCENT__;
+    color: __SURFACE__;
+}
+
+#tokenStatusBadge[state="warning"] {
+    background: __PANEL_ALT__;
+    border-color: __WARNING__;
+    color: __WARNING__;
+}
+
+#tokenDetail {
+    color: __TEXT_MUTED__;
+    background: __SURFACE__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 8px;
+    padding: 6px 8px;
+}
+
+#suggestionsDock {
+    background: transparent;
+    border: none;
+}
+
 #editResource {
     font-family: __FONT_MONOSPACE__;
     color: __TEXT_MUTED__;

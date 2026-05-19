@@ -3,8 +3,8 @@
 from dataclasses import dataclass
 
 from PySide6.QtCore import Qt, QObject, Slot
-from PySide6.QtWidgets import QDialog, QMenu
-from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QDialog, QMenu, QMessageBox
+from PySide6.QtGui import QGuiApplication, QIcon
 
 from .ui.edit_dialog import Ui_EditDialog
 
@@ -20,6 +20,8 @@ from singletons.undo import undo
 from utils.functions import text_to_table, text_to_stbl
 from utils.task_runner import CancellationToken, TaskReporter, TaskRunner
 from utils.constants import *
+from widgets.token_highlight import TokenValidationResult, validate_translation_tokens
+from widgets.delegate import STATUS_META
 
 
 @dataclass(frozen=True)
@@ -60,6 +62,8 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.item = None
         self.__runner = TaskRunner(max_threads=1, parent=self)
         self.__translate_handle = None
+        self.__token_result = TokenValidationResult()
+        self.__focus_sized = False
 
         self.tableview.clicked.connect(self.tableview_click)
         self.tableview.customContextMenuRequested.connect(self.generate_item_context_menu)
@@ -71,6 +75,8 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.cb_api.currentTextChanged.connect(self.change_api)
 
         self.btn_translate.clicked.connect(self.translate_click)
+        self.btn_suggestions.toggled.connect(self.toggle_suggestions)
+        self.txt_translate.textChanged.connect(self.__refresh_token_state)
 
         self.txt_original.selected.connect(self.selection_change)
         self.txt_original_diff.selected.connect(self.selection_change)
@@ -83,9 +89,9 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.retranslate()
 
     def retranslate(self):
-        self.setWindowTitle(interface.text('EditWindow', 'Search and Edit'))
-        self.edit_title.setText(interface.text('EditWindow', 'Search and Edit'))
-        self.edit_detail.setText('Review suggestions, refine the draft, then approve it or mark it for review.')
+        self.setWindowTitle('Translation Studio')
+        self.edit_title.setText('Translation Studio')
+        self.edit_detail.setText('Review token safety, refine the draft, then approve it or mark it for review.')
         self.dictionary_title.setText('Dictionary suggestions')
         self.search_title.setText('Selected suggestion')
         self.btn_translate.setText(interface.text('EditWindow', 'Translate'))
@@ -99,14 +105,24 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.txt_comment.setPlaceholderText(interface.text('EditWindow', 'Comment...'))
 
     def showEvent(self, event):
+        if not self.__focus_sized:
+            self.__resize_for_focus_mode()
+            self.__focus_sized = True
         self.txt_translate.setFocus()
+        super().showEvent(event)
 
     def keyPressEvent(self, event):
         if event.key() in [Qt.Key.Key_Enter, Qt.Key.Key_Return]:
-            if event.modifiers() and Qt.KeyboardModifier.ControlModifier:
+            modifiers = event.modifiers()
+            if modifiers & Qt.KeyboardModifier.ControlModifier and modifiers & Qt.KeyboardModifier.ShiftModifier:
+                self.needs_review_click()
+                return
+            if modifiers & Qt.KeyboardModifier.ControlModifier:
                 self.ok_click()
+                return
         elif event.key() == Qt.Key.Key_Escape:
             self.close()
+            return
         else:
             super().keyPressEvent(event)
 
@@ -150,6 +166,7 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.txt_translate.setPlainText(text_to_table(item.translate))
 
         self.txt_comment.setText(item.comment)
+        self.__refresh_record_meta()
 
         engine = config.value('api', 'engine')
         self.cb_api.clear()
@@ -175,23 +192,46 @@ class EditDialog(QDialog, Ui_EditDialog):
 
         self.txt_resource.setText('Record: STBL - 0x{instance:016x}[0x{id:08x}]'.format(instance=item.resource.instance,
                                                                                         id=item.id))
+        self.__refresh_token_state()
         self.__sync_suggestions_visibility()
 
     def __sync_suggestions_visibility(self):
         model = self.tableview.model()
         has_suggestions = bool(model and model.rowCount() > 0)
-        self.suggestions_splitter.setVisible(has_suggestions)
-        self.dictionary_panel.setVisible(has_suggestions)
-        self.search_panel.setVisible(has_suggestions)
-        if has_suggestions:
-            self.edit_splitter.setSizes([180, 420])
+        self.btn_suggestions.setEnabled(has_suggestions)
+        self.btn_suggestions.setText(f'Suggestions {model.rowCount()}' if has_suggestions else 'Suggestions 0')
+
+        if not has_suggestions:
+            self.btn_suggestions.setChecked(False)
+
+        show_suggestions = has_suggestions and self.btn_suggestions.isChecked()
+        self.suggestions_dock.setVisible(show_suggestions)
+        self.suggestions_splitter.setVisible(show_suggestions)
+        self.dictionary_panel.setVisible(show_suggestions)
+        self.search_panel.setVisible(show_suggestions)
+        self.edit_splitter.setSizes([620, 190] if show_suggestions else [1, 0])
+
+    def toggle_suggestions(self, checked: bool):
+        model = self.tableview.model()
+        has_suggestions = bool(model and model.rowCount() > 0)
+        show_suggestions = checked and has_suggestions
+        self.suggestions_dock.setVisible(show_suggestions)
+        self.suggestions_splitter.setVisible(show_suggestions)
+        self.dictionary_panel.setVisible(show_suggestions)
+        self.search_panel.setVisible(show_suggestions)
+        if show_suggestions:
+            self.edit_splitter.setSizes([620, 190])
         else:
-            self.edit_splitter.setSizes([0, 1])
+            self.edit_splitter.setSizes([1, 0])
 
     def ok_click(self):
+        self.__refresh_token_state()
+        if not self.__token_result.ok and not self.__confirm_token_override():
+            return
         self.__save(FLAG_VALIDATED)
 
     def needs_review_click(self):
+        self.__refresh_token_state()
         self.__save(FLAG_PROGRESS)
 
     def __save(self, flag):
@@ -213,7 +253,7 @@ class EditDialog(QDialog, Ui_EditDialog):
     def translate_click(self):
         self.lbl_status.setStyleSheet('')
         self.lbl_status.setText(interface.text('EditWindow', 'Loading...'))
-        self.btn_translate.setEnabled(False)
+        self.__set_translate_busy(True)
 
         if self.__translate_handle:
             self.__translate_handle.cancel()
@@ -237,6 +277,7 @@ class EditDialog(QDialog, Ui_EditDialog):
         else:
             self.txt_translate.setPlainText(text_to_table(result.text))
             self.lbl_status.setText('')
+            self.__refresh_token_state()
 
     @Slot(object)
     def __translation_error(self, error):
@@ -244,7 +285,7 @@ class EditDialog(QDialog, Ui_EditDialog):
 
     def __translation_finished(self, _cancelled: bool, handle):
         if self.__translate_handle is handle:
-            self.btn_translate.setEnabled(True)
+            self.__set_translate_busy(False)
             self.__translate_handle = None
 
     def __show_translation_error(self, message: str):
@@ -256,6 +297,68 @@ class EditDialog(QDialog, Ui_EditDialog):
         if self.__translate_handle:
             self.__translate_handle.cancel()
         self.close()
+
+    def __resize_for_focus_mode(self):
+        screen = QGuiApplication.screenAt(self.mapToGlobal(self.rect().center())) or QGuiApplication.primaryScreen()
+        if not screen:
+            return
+
+        available = screen.availableGeometry()
+        width = min(max(int(available.width() * 0.86), 1120), available.width())
+        height = min(max(int(available.height() * 0.86), 740), available.height())
+        self.resize(width, height)
+        self.move(
+            available.x() + (available.width() - self.width()) // 2,
+            available.y() + (available.height() - self.height()) // 2,
+        )
+
+    def __refresh_record_meta(self):
+        if not self.item:
+            self.record_status.setText('Status: -')
+            self.record_status.setProperty('state', '')
+            self.text_metrics.setText('')
+            return
+
+        label, _color = STATUS_META.get(self.item.flag, ('Unknown', None))
+        self.record_status.setText(f'Status: {label}')
+        self.record_status.setProperty('state', str(self.item.flag))
+        self.record_status.style().unpolish(self.record_status)
+        self.record_status.style().polish(self.record_status)
+
+    def __refresh_token_state(self):
+        source = text_to_stbl(self.txt_original.toPlainText())
+        translation = text_to_stbl(self.txt_translate.toPlainText())
+        self.__token_result = validate_translation_tokens(source, translation)
+
+        state = 'ok' if self.__token_result.ok else 'warning'
+        self.token_status.setText(self.__token_result.summary())
+        self.token_status.setProperty('state', state)
+        self.token_status.style().unpolish(self.token_status)
+        self.token_status.style().polish(self.token_status)
+
+        detail = self.__token_result.details()
+        if self.__token_result.ok:
+            detail += ' Suggested outcome: Approved.'
+        else:
+            detail += ' Suggested outcome: Needs Review until the token differences are intentional.'
+        self.token_detail.setText(detail)
+        self.text_metrics.setText(f'Original {len(source):,} chars | Draft {len(translation):,} chars')
+
+    def __confirm_token_override(self) -> bool:
+        self.token_detail.setText(self.__token_result.details() + ' Approving now may break in-game placeholders or formatting.')
+        answer = QMessageBox.question(
+            self,
+            'Approve with token warnings?',
+            self.__token_result.details() + '\n\nApprove anyway?',
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        return answer == QMessageBox.StandardButton.Yes
+
+    def __set_translate_busy(self, busy: bool):
+        self.btn_translate.setEnabled(not busy)
+        self.cb_api.setEnabled(not busy)
+        self.btn_translate.setText(interface.text('EditWindow', 'Loading...') if busy else interface.text('EditWindow', 'Translate'))
 
     def generate_item_context_menu(self, position):
         index = self.sender().indexAt(position)

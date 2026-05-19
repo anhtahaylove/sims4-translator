@@ -19,6 +19,7 @@ from widgets.token_highlight import (
     TOKEN_TAG,
     classify_token,
     iter_highlight_tokens,
+    validate_translation_tokens,
 )
 
 
@@ -50,6 +51,28 @@ class TokenHighlightTests(unittest.TestCase):
 
     def test_table_text_keeps_linebreak_tokens_visible_for_highlighting(self):
         self.assertEqual(text_to_table('Hello\\n\\nWorld\nAgain'), 'Hello\\n\\nWorld\\nAgain')
+
+    def test_translation_token_validator_reports_missing_extra_order_and_linebreaks(self):
+        missing = validate_translation_tokens(
+            'Hello\\n{0.SimFirstName}<b></b>',
+            'Bonjour{0.SimFirstName}<i></i>',
+        )
+
+        self.assertFalse(missing.ok)
+        self.assertIn('\\n', missing.missing)
+        self.assertIn('<b>', missing.missing)
+        self.assertIn('</b>', missing.missing)
+        self.assertIn('<i>', missing.extra)
+        self.assertIn('</i>', missing.extra)
+        self.assertTrue(missing.linebreak_mismatch)
+        self.assertIn('Missing', missing.summary())
+
+        reordered = validate_translation_tokens('{0.SimFirstName} {1.Money}', '{1.Money} {0.SimFirstName}')
+        self.assertFalse(reordered.ok)
+        self.assertTrue(reordered.order_mismatch)
+
+        ok = validate_translation_tokens('{0.SimFirstName}\\n{1.Money}', '{0.SimFirstName}\\n{1.Money}')
+        self.assertTrue(ok.ok)
 
     def test_table_delegate_renders_different_highlight_spans_for_token_groups(self):
         delegate = MainDelegatePaint()
