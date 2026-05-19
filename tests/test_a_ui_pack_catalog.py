@@ -28,7 +28,7 @@ class PackCatalogTests(unittest.TestCase):
     def setUp(self):
         app()
         expansions.reset_cache()
-        config.set_value('interface', 'language', 'english')
+        config.set_value('interface', 'language', 'en_US')
         config.set_value('translation', 'source', 'ENG_US')
         config.set_value('translation', 'destination', 'FRE_FR')
         config.set_value('dictionaries', 'gamepath', '')

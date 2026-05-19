@@ -11,6 +11,7 @@ from PySide6.QtWidgets import QApplication
 
 from packer.resource import ResourceID
 from singletons.config import config
+from singletons.interface import interface
 from singletons.state import app_state
 from storages.dictionaries import DictionariesStorage
 from storages.packages import PackagesStorage
@@ -80,6 +81,8 @@ class WorkspaceProShellTests(unittest.TestCase):
 
     def setUp(self):
         app()
+        config.set_value('interface', 'language', 'en_US')
+        interface.reload()
         config.set_value('translation', 'source', 'ENG_US')
         config.set_value('translation', 'destination', 'FRE_FR')
         app_state.set_packages_storage(PackagesStorage())
@@ -406,6 +409,19 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertTrue(hasattr(dialog, 'cb_language'))
             self.assertTrue(hasattr(dialog, 'cb_source'))
             self.assertTrue(hasattr(dialog, 'cb_dest'))
+        finally:
+            close_widget(dialog)
+            close_widget(window)
+
+    def test_options_dialog_defaults_legacy_english_config_to_english_locale(self):
+        config.set_value('interface', 'language', 'english')
+        interface.reload()
+        window = MainWindow()
+        dialog = OptionsDialog(window)
+        try:
+            self.assertEqual(config.value('interface', 'language'), 'en_US')
+            self.assertEqual(dialog.cb_language.currentData(), 'en_US')
+            self.assertEqual(dialog.cb_language.currentText(), 'English')
         finally:
             close_widget(dialog)
             close_widget(window)

@@ -20,6 +20,10 @@ class Lang(namedtuple('Lang', 'code name items authors version')):
 
 class Interface:
 
+    LEGACY_LANGUAGE_ALIASES = {
+        'english': 'en_US',
+    }
+
     def __init__(self) -> None:
         self.__languages = {}
         self.__current = None
@@ -66,7 +70,11 @@ class Interface:
         self.reload()
 
     def reload(self) -> None:
-        self.__current = self.__languages.get(config.value('interface', 'language'), None)
+        language = config.value('interface', 'language')
+        normalized = self.LEGACY_LANGUAGE_ALIASES.get(language, language)
+        if normalized != language:
+            config.set_value('interface', 'language', normalized)
+        self.__current = self.__languages.get(normalized, None)
 
     def text(self, k: str, v: str) -> str:
         return self.__current.get(k, v) if isinstance(self.__current, Lang) else v
