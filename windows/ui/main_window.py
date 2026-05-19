@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QSplitter,
     QToolButton,
     QVBoxLayout,
+    QGridLayout,
     QHBoxLayout,
     QWidget,
     QLineEdit,
@@ -299,13 +300,16 @@ class Ui_MainWindow(object):
         self.toolbar.setVisible(False)
 
         self.filter_search = FixedLineEdit(MainWindow)
-        self.filter_search.adjusted_size = 174
+        self.filter_search.adjusted_size = 220
+        self.filter_search.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.filter_search.setObjectName('filterSearch')
         self.filter_file = FilesComboBox(MainWindow)
-        self.filter_file.adjusted_size = 174
+        self.filter_file.adjusted_size = 260
+        self.filter_file.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.filter_file.setObjectName('filterFile')
         self.filter_instance = InstancesComboBox(MainWindow)
-        self.filter_instance.adjusted_size = 174
+        self.filter_instance.adjusted_size = 190
+        self.filter_instance.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.filter_instance.setObjectName('filterInstance')
         self.toolbar.edt_search = self.filter_search
         self.toolbar.cb_files = self.filter_file
@@ -399,70 +403,10 @@ class Ui_MainWindow(object):
         self.project_hint = QLabel('Open a package or synthetic smoke file to begin translating.', content)
         self.project_hint.setObjectName('panelHint')
         self.project_hint.setWordWrap(True)
-        self.project_hint.setMaximumHeight(52)
-
-        self.filter_title = QLabel('Filters', content)
-        self.filter_title.setObjectName('panelTitle')
-
-        self.filter_panel = QFrame(content)
-        self.filter_panel.setObjectName('filterPanel')
-        filter_layout = QVBoxLayout(self.filter_panel)
-        filter_layout.setContentsMargins(9, 9, 9, 9)
-        filter_layout.setSpacing(7)
-
-        self.filter_search_label = QLabel('Search', self.filter_panel)
-        self.filter_search_label.setObjectName('sectionLabel')
-        self.filter_search_mode = QPushButton('Original', self.filter_panel)
-        self.filter_search_mode.setObjectName('filterModeButton')
-        self.filter_search_mode.setAutoDefault(False)
-
-        self.filter_status_label = QLabel('Status', self.filter_panel)
-        self.filter_status_label.setObjectName('sectionLabel')
-        status_layout = QVBoxLayout()
-        status_layout.setContentsMargins(0, 0, 0, 0)
-        status_layout.setSpacing(5)
-        self.filter_all = self.__filter_chip('All')
-        self.filter_original = self.__filter_chip('Original')
-        self.filter_translated = self.__filter_chip('Translated')
-        self.filter_validated = self.__filter_chip('Validated')
-        self.filter_progress = self.__filter_chip('In progress')
-        self.filter_different = self.__filter_chip('Changed')
-        self.filter_different.setChecked(False)
-        status_layout.addWidget(self.filter_all)
-        status_layout.addWidget(self.filter_original)
-        status_layout.addWidget(self.filter_translated)
-        status_layout.addWidget(self.filter_validated)
-        status_layout.addWidget(self.filter_progress)
-        status_layout.addWidget(self.filter_different)
-
-        self.filter_scope_label = QLabel('Scope', self.filter_panel)
-        self.filter_scope_label.setObjectName('sectionLabel')
-        self.filter_file_label = QLabel('Package', self.filter_panel)
-        self.filter_file_label.setObjectName('fieldLabel')
-        self.filter_instance_label = QLabel('Instance', self.filter_panel)
-        self.filter_instance_label.setObjectName('fieldLabel')
-
-        self.filter_clear = QPushButton('Clear filters', self.filter_panel)
-        self.filter_clear.setObjectName('secondaryButton')
-        self.filter_clear.setAutoDefault(False)
-
-        filter_layout.addWidget(self.filter_search_label)
-        filter_layout.addWidget(self.filter_search)
-        filter_layout.addWidget(self.filter_search_mode)
-        filter_layout.addWidget(self.filter_status_label)
-        filter_layout.addLayout(status_layout)
-        filter_layout.addWidget(self.filter_scope_label)
-        filter_layout.addWidget(self.filter_file_label)
-        filter_layout.addWidget(self.filter_file)
-        filter_layout.addWidget(self.filter_instance_label)
-        filter_layout.addWidget(self.filter_instance)
-        filter_layout.addWidget(self.filter_clear)
+        self.project_hint.setMinimumHeight(56)
 
         content_layout.addWidget(self.project_title)
         content_layout.addWidget(self.project_summary)
-        content_layout.addSpacing(2)
-        content_layout.addWidget(self.filter_title)
-        content_layout.addWidget(self.filter_panel)
         content_layout.addWidget(self.project_hint)
         content_layout.addStretch()
 
@@ -484,7 +428,24 @@ class Ui_MainWindow(object):
         panel.setObjectName('tablePanel')
         layout = QVBoxLayout(panel)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(8)
+        layout.setSpacing(7)
+
+        self.workspace_overview = QFrame(panel)
+        self.workspace_overview.setObjectName('workspaceOverview')
+        overview_layout = QHBoxLayout(self.workspace_overview)
+        overview_layout.setContentsMargins(12, 9, 12, 9)
+        overview_layout.setSpacing(10)
+
+        self.workspace_summary = QLabel('No package loaded', self.workspace_overview)
+        self.workspace_summary.setObjectName('workspaceSummary')
+        self.workspace_summary.setWordWrap(True)
+        self.workspace_summary.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+
+        self.workspace_hint = QLabel('Table-first workspace', self.workspace_overview)
+        self.workspace_hint.setObjectName('workspaceHint')
+
+        overview_layout.addWidget(self.workspace_summary, 1)
+        overview_layout.addWidget(self.workspace_hint)
 
         self.empty_state = QFrame(panel)
         self.empty_state.setObjectName('emptyState')
@@ -501,10 +462,80 @@ class Ui_MainWindow(object):
         empty_layout.addWidget(self.empty_title)
         empty_layout.addWidget(self.empty_detail)
 
+        self.filter_panel = self.__filter_board(panel)
+
+        layout.addWidget(self.workspace_overview)
+        layout.addWidget(self.filter_panel)
         layout.addWidget(self.empty_state)
         layout.addWidget(self.colorbar)
         layout.addWidget(self.tableview, 1)
         return panel
+
+    def __filter_board(self, parent):
+        board = QFrame(parent)
+        board.setObjectName('filterPanel')
+        layout = QGridLayout(board)
+        layout.setContentsMargins(10, 8, 10, 8)
+        layout.setHorizontalSpacing(8)
+        layout.setVerticalSpacing(6)
+        layout.setColumnStretch(2, 2)
+        layout.setColumnStretch(3, 2)
+        layout.setColumnStretch(5, 1)
+        layout.setColumnStretch(6, 1)
+
+        self.filter_title = QLabel('Filters', board)
+        self.filter_title.setObjectName('panelTitle')
+        self.filter_hint = QLabel('Search, status and scope stay close to the table.', board)
+        self.filter_hint.setObjectName('panelHint')
+        self.filter_hint.setWordWrap(True)
+        self.filter_hint.setVisible(False)
+
+        self.filter_search_label = QLabel('Search', board)
+        self.filter_search_label.setObjectName('sectionLabel')
+        self.filter_search_mode = QPushButton('Original', board)
+        self.filter_search_mode.setObjectName('filterModeButton')
+        self.filter_search_mode.setAutoDefault(False)
+
+        self.filter_status_label = QLabel('Status', board)
+        self.filter_status_label.setObjectName('sectionLabel')
+        self.filter_all = self.__filter_chip('All')
+        self.filter_original = self.__filter_chip('Original')
+        self.filter_translated = self.__filter_chip('Translated')
+        self.filter_validated = self.__filter_chip('Validated')
+        self.filter_progress = self.__filter_chip('In progress')
+        self.filter_different = self.__filter_chip('Changed')
+        self.filter_different.setChecked(False)
+
+        self.filter_scope_label = QLabel('Scope', board)
+        self.filter_scope_label.setObjectName('sectionLabel')
+        self.filter_file_label = QLabel('Package', board)
+        self.filter_file_label.setObjectName('fieldLabel')
+        self.filter_instance_label = QLabel('Instance', board)
+        self.filter_instance_label.setObjectName('fieldLabel')
+
+        self.filter_clear = QPushButton('Clear filters', board)
+        self.filter_clear.setObjectName('secondaryButton')
+        self.filter_clear.setAutoDefault(False)
+
+        layout.addWidget(self.filter_title, 0, 0)
+        layout.addWidget(self.filter_search_label, 0, 1)
+        layout.addWidget(self.filter_search, 0, 2, 1, 2)
+        layout.addWidget(self.filter_search_mode, 0, 4)
+        layout.addWidget(self.filter_clear, 0, 6)
+        layout.addWidget(self.filter_status_label, 1, 0)
+        layout.addWidget(self.filter_all, 1, 1, 1, 2)
+        layout.addWidget(self.filter_original, 1, 3, 1, 2)
+        layout.addWidget(self.filter_translated, 1, 5, 1, 2)
+        layout.addWidget(self.filter_validated, 2, 1, 1, 2)
+        layout.addWidget(self.filter_progress, 2, 3, 1, 2)
+        layout.addWidget(self.filter_different, 2, 5, 1, 2)
+        layout.addWidget(self.filter_scope_label, 3, 0)
+        layout.addWidget(self.filter_file_label, 3, 1)
+        layout.addWidget(self.filter_file, 3, 2, 1, 2)
+        layout.addWidget(self.filter_instance_label, 3, 4)
+        layout.addWidget(self.filter_instance, 3, 5, 1, 2)
+
+        return board
 
     def __inspector_panel(self, parent):
         panel = QFrame(parent)

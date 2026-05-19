@@ -94,6 +94,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.project_sidebar.objectName(), 'projectSidebar')
             self.assertEqual(window.project_scroll.objectName(), 'projectSidebarScroll')
             self.assertEqual(window.filter_panel.objectName(), 'filterPanel')
+            self.assertIs(window.filter_panel.parent(), window.table_panel)
+            self.assertEqual(window.workspace_overview.objectName(), 'workspaceOverview')
             self.assertEqual(window.filter_search.objectName(), 'filterSearch')
             self.assertEqual(window.inspector_panel.objectName(), 'inspectorPanel')
             self.assertEqual(window.inspector_scroll.objectName(), 'inspectorScroll')
@@ -137,15 +139,16 @@ class WorkspaceProShellTests(unittest.TestCase):
             window.show()
             app().processEvents()
 
-            self.assertTrue(window.project_sidebar.isVisibleTo(window))
-            self.assertTrue(window.inspector_panel.isVisibleTo(window))
+            self.assertFalse(window.project_sidebar.isVisibleTo(window))
+            self.assertFalse(window.inspector_panel.isVisibleTo(window))
             self.assertTrue(window.activity_drawer.isVisibleTo(window))
+            self.assertTrue(window.table_panel.isVisibleTo(window))
 
-            window.resize(1120, 720)
+            window.resize(1640, 820)
             app().processEvents()
 
-            self.assertTrue(window.project_sidebar.isVisibleTo(window))
-            self.assertFalse(window.inspector_panel.isVisibleTo(window))
+            self.assertFalse(window.project_sidebar.isVisibleTo(window))
+            self.assertTrue(window.inspector_panel.isVisibleTo(window))
             self.assertTrue(window.activity_drawer.isVisibleTo(window))
 
             window.resize(window.minimumSize())
@@ -217,7 +220,7 @@ class WorkspaceProShellTests(unittest.TestCase):
         finally:
             close_widget(window)
 
-    def test_large_filter_counts_are_readable_in_sidebar(self):
+    def test_large_filter_counts_are_readable_in_table_filter_board(self):
         window = MainWindow()
         items = [record(FLAG_UNVALIDATED) for _ in range(1234)]
         try:
@@ -232,6 +235,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.filter_all.text(), 'All 1,234')
             self.assertEqual(window.filter_original.text(), 'Original 1,234')
             self.assertEqual(window.filter_translated.text(), 'Translated 0')
+            self.assertEqual(window._MainWindow__format_filter_count(162527), '162.5k')
             self.assertLessEqual(
                 window.filter_all.fontMetrics().horizontalAdvance(window.filter_all.text()) + 24,
                 window.filter_all.width()

@@ -284,12 +284,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.brand_subtitle.setText('Mod localization workspace')
         self.project_title.setText('Project')
         self.filter_title.setText('Filters')
+        self.filter_hint.setText('Search, status and scope stay close to the table.')
         self.filter_search_label.setText('Search')
         self.filter_status_label.setText('Status')
         self.filter_scope_label.setText('Scope')
         self.filter_file_label.setText('Package')
         self.filter_instance_label.setText('Instance')
         self.filter_clear.setText('Clear filters')
+        self.workspace_hint.setText('Table-first workspace')
         self.empty_title.setText('Ready for a package')
         self.empty_detail.setText('Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.')
         self.inspector_title.setText('Inspector')
@@ -369,18 +371,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @staticmethod
     def __workspace_density_for_width(width):
-        if width >= 1280:
+        if width >= 1560:
             return 'wide'
-        if width >= 1060:
+        if width >= 1180:
             return 'medium'
         return 'small'
 
     @staticmethod
     def __workspace_density_defaults(density):
         if density == 'wide':
-            return True, True, True
+            return False, True, True
         if density == 'medium':
-            return True, False, True
+            return False, False, True
         return False, False, False
 
     def __set_workspace_toggle(self, button, checked):
@@ -416,11 +418,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.activity_drawer.setVisible(activity_visible)
 
         if self.__workspace_density == 'wide':
-            sizes = [260 if project_visible else 0, 760, 320 if inspector_visible else 0]
+            sizes = [270 if project_visible else 0, 1120, 360 if inspector_visible else 0]
         elif self.__workspace_density == 'medium':
-            sizes = [260 if project_visible else 0, 860, 300 if inspector_visible else 0]
+            sizes = [250 if project_visible else 0, 1080, 330 if inspector_visible else 0]
         else:
-            sizes = [248 if project_visible else 0, 900, 300 if inspector_visible else 0]
+            sizes = [238 if project_visible else 0, 900, 310 if inspector_visible else 0]
 
         self.workspace_splitter.setSizes(sizes)
         self.command_bar.setProperty('density', self.__workspace_density)
@@ -926,9 +928,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         storage = app_state.packages_storage
         if not storage or not storage.enabled:
             self.project_summary.setText('No package loaded')
+            self.workspace_summary.setText('No package loaded')
             self.project_hint.setText(
-                'Open a package, STBL, XML, JSON, Binary, or synthetic smoke package.'
+                'Project details appear here after loading a file. Filters stay above the table.'
             )
+            self.workspace_hint.setText('Open or drop a package to begin')
             self.__update_filter_counts(())
             return
 
@@ -941,12 +945,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         original = sum(1 for item in items if item.flag == FLAG_UNVALIDATED)
         package_count = len(getattr(storage, 'packages', []))
 
-        self.project_summary.setText(
+        summary_text = (
             f'{visible}/{total} shown | {package_count} package(s)\n'
             f'{validated} valid | {translated} translated\n'
             f'{progress} progress | {original} original'
         )
+        self.project_summary.setText(summary_text)
+        self.workspace_summary.setText(
+            f'{visible}/{total} shown    {package_count} package(s)    '
+            f'{validated} valid    {translated} translated    {progress} progress    {original} original'
+        )
         self.project_hint.setText('Select a row to edit it in the Inspector.')
+        self.workspace_hint.setText('Use filters above, edit selected rows in Inspector')
         self.__update_filter_counts(items)
 
     def __update_filter_counts(self, items):
@@ -959,15 +969,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             'progress': sum(1 for item in items if item.flag in (FLAG_PROGRESS, FLAG_REPLACED)),
             'different': sum(1 for item in items if item.source_old or item.translate_old),
         }
-        self.filter_all.setText(f'All {self.__format_filter_count(counts["all"])}')
-        self.filter_original.setText(f'Original {self.__format_filter_count(counts["original"])}')
-        self.filter_translated.setText(f'Translated {self.__format_filter_count(counts["translated"])}')
-        self.filter_validated.setText(f'Validated {self.__format_filter_count(counts["validated"])}')
-        self.filter_progress.setText(f'In progress {self.__format_filter_count(counts["progress"])}')
-        self.filter_different.setText(f'Changed {self.__format_filter_count(counts["different"])}')
+        labels = (
+            (self.filter_all, 'All', counts['all']),
+            (self.filter_original, 'Original', counts['original']),
+            (self.filter_translated, 'Translated', counts['translated']),
+            (self.filter_validated, 'Validated', counts['validated']),
+            (self.filter_progress, 'In progress', counts['progress']),
+            (self.filter_different, 'Changed', counts['different']),
+        )
+        for button, label, value in labels:
+            button.setText(f'{label} {self.__format_filter_count(value)}')
+            button.setToolTip(f'{label}: {value:,}')
 
     @staticmethod
     def __format_filter_count(value):
+        if value >= 100000:
+            return f'{value / 1000:.1f}k'
+        if value >= 10000:
+            return f'{value // 1000}k'
         return f'{value:,}'
 
     def update_inspector_item(self, item):
