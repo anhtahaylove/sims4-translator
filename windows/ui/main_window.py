@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
     QMenuBar,
     QPlainTextEdit,
     QPushButton,
+    QScrollArea,
     QSplitter,
     QToolButton,
     QVBoxLayout,
@@ -16,12 +17,12 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QSizePolicy,
 )
-from PySide6.QtGui import QAction, QIcon
+from PySide6.QtGui import QAction, QIcon, QTextOption
 
 from widgets.colorbar import QColorBar
 from widgets.job_drawer import QJobStatusDrawer
 from widgets.tableview import QMainTableView
-from widgets.toolbar import QToolBar
+from widgets.toolbar import QToolBar, FixedLineEdit, FilesComboBox, InstancesComboBox
 
 from utils.constants import APP_NAME, APP_VERSION, APP_RELEASE_CANDITATE
 
@@ -288,9 +289,20 @@ class Ui_MainWindow(object):
         self.toolbar = QToolBar(MainWindow)
         self.toolbar.setObjectName('filterBar')
         self.toolbar.setOrientation(Qt.Orientation.Vertical)
-        self.toolbar.edt_search.adjusted_size = 220
-        self.toolbar.cb_files.adjusted_size = 220
-        self.toolbar.cb_instances.adjusted_size = 220
+        self.toolbar.setVisible(False)
+
+        self.filter_search = FixedLineEdit(MainWindow)
+        self.filter_search.adjusted_size = 174
+        self.filter_search.setObjectName('filterSearch')
+        self.filter_file = FilesComboBox(MainWindow)
+        self.filter_file.adjusted_size = 174
+        self.filter_file.setObjectName('filterFile')
+        self.filter_instance = InstancesComboBox(MainWindow)
+        self.filter_instance.adjusted_size = 174
+        self.filter_instance.setObjectName('filterInstance')
+        self.toolbar.edt_search = self.filter_search
+        self.toolbar.cb_files = self.filter_file
+        self.toolbar.cb_instances = self.filter_instance
 
         self.tableview = QMainTableView(MainWindow)
         self.colorbar = QColorBar(MainWindow)
@@ -346,31 +358,110 @@ class Ui_MainWindow(object):
         sidebar.setMinimumWidth(238)
         sidebar.setMaximumWidth(310)
         layout = QVBoxLayout(sidebar)
-        layout.setContentsMargins(12, 12, 12, 12)
-        layout.setSpacing(10)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
-        self.project_title = QLabel('Project', sidebar)
+        self.project_scroll = QScrollArea(sidebar)
+        self.project_scroll.setObjectName('projectSidebarScroll')
+        self.project_scroll.setWidgetResizable(True)
+        self.project_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.project_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        content = QFrame(self.project_scroll)
+        content.setObjectName('projectSidebarContent')
+        content_layout = QVBoxLayout(content)
+        content_layout.setContentsMargins(12, 12, 12, 12)
+        content_layout.setSpacing(10)
+
+        self.project_title = QLabel('Project', content)
         self.project_title.setObjectName('panelTitle')
 
-        self.project_summary = QLabel('No package loaded', sidebar)
+        self.project_summary = QLabel('No package loaded', content)
         self.project_summary.setObjectName('projectSummary')
         self.project_summary.setWordWrap(True)
 
-        self.project_hint = QLabel('Open a package or synthetic smoke file to begin translating.', sidebar)
+        self.project_hint = QLabel('Open a package or synthetic smoke file to begin translating.', content)
         self.project_hint.setObjectName('panelHint')
         self.project_hint.setWordWrap(True)
+        self.project_hint.setMaximumHeight(52)
 
-        self.filter_title = QLabel('Filters', sidebar)
+        self.filter_title = QLabel('Filters', content)
         self.filter_title.setObjectName('panelTitle')
 
-        layout.addWidget(self.project_title)
-        layout.addWidget(self.project_summary)
-        layout.addWidget(self.project_hint)
-        layout.addSpacing(8)
-        layout.addWidget(self.filter_title)
-        layout.addWidget(self.toolbar)
-        layout.addStretch()
+        self.filter_panel = QFrame(content)
+        self.filter_panel.setObjectName('filterPanel')
+        filter_layout = QVBoxLayout(self.filter_panel)
+        filter_layout.setContentsMargins(9, 9, 9, 9)
+        filter_layout.setSpacing(7)
+
+        self.filter_search_label = QLabel('Search', self.filter_panel)
+        self.filter_search_label.setObjectName('sectionLabel')
+        self.filter_search_mode = QPushButton('Original', self.filter_panel)
+        self.filter_search_mode.setObjectName('filterModeButton')
+        self.filter_search_mode.setAutoDefault(False)
+
+        self.filter_status_label = QLabel('Status', self.filter_panel)
+        self.filter_status_label.setObjectName('sectionLabel')
+        status_layout = QVBoxLayout()
+        status_layout.setContentsMargins(0, 0, 0, 0)
+        status_layout.setSpacing(5)
+        self.filter_all = self.__filter_chip('All')
+        self.filter_original = self.__filter_chip('Original')
+        self.filter_translated = self.__filter_chip('Translated')
+        self.filter_validated = self.__filter_chip('Validated')
+        self.filter_progress = self.__filter_chip('In progress')
+        self.filter_different = self.__filter_chip('Changed')
+        self.filter_different.setChecked(False)
+        status_layout.addWidget(self.filter_all)
+        status_layout.addWidget(self.filter_original)
+        status_layout.addWidget(self.filter_translated)
+        status_layout.addWidget(self.filter_validated)
+        status_layout.addWidget(self.filter_progress)
+        status_layout.addWidget(self.filter_different)
+
+        self.filter_scope_label = QLabel('Scope', self.filter_panel)
+        self.filter_scope_label.setObjectName('sectionLabel')
+        self.filter_file_label = QLabel('Package', self.filter_panel)
+        self.filter_file_label.setObjectName('fieldLabel')
+        self.filter_instance_label = QLabel('Instance', self.filter_panel)
+        self.filter_instance_label.setObjectName('fieldLabel')
+
+        self.filter_clear = QPushButton('Clear filters', self.filter_panel)
+        self.filter_clear.setObjectName('secondaryButton')
+        self.filter_clear.setAutoDefault(False)
+
+        filter_layout.addWidget(self.filter_search_label)
+        filter_layout.addWidget(self.filter_search)
+        filter_layout.addWidget(self.filter_search_mode)
+        filter_layout.addWidget(self.filter_status_label)
+        filter_layout.addLayout(status_layout)
+        filter_layout.addWidget(self.filter_scope_label)
+        filter_layout.addWidget(self.filter_file_label)
+        filter_layout.addWidget(self.filter_file)
+        filter_layout.addWidget(self.filter_instance_label)
+        filter_layout.addWidget(self.filter_instance)
+        filter_layout.addWidget(self.filter_clear)
+
+        content_layout.addWidget(self.project_title)
+        content_layout.addWidget(self.project_summary)
+        content_layout.addSpacing(2)
+        content_layout.addWidget(self.filter_title)
+        content_layout.addWidget(self.filter_panel)
+        content_layout.addWidget(self.project_hint)
+        content_layout.addStretch()
+
+        self.project_scroll.setWidget(content)
+        layout.addWidget(self.project_scroll)
         return sidebar
+
+    def __filter_chip(self, text):
+        button = QPushButton(text)
+        button.setObjectName('filterChip')
+        button.setCheckable(True)
+        button.setChecked(True)
+        button.setAutoDefault(False)
+        button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        return button
 
     def __table_panel(self, parent):
         panel = QFrame(parent)
@@ -405,39 +496,56 @@ class Ui_MainWindow(object):
         panel.setMinimumWidth(286)
         panel.setMaximumWidth(380)
         layout = QVBoxLayout(panel)
-        layout.setContentsMargins(12, 12, 12, 12)
-        layout.setSpacing(8)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
-        self.inspector_title = QLabel('Inspector', panel)
+        self.inspector_scroll = QScrollArea(panel)
+        self.inspector_scroll.setObjectName('inspectorScroll')
+        self.inspector_scroll.setWidgetResizable(True)
+        self.inspector_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.inspector_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        content = QFrame(self.inspector_scroll)
+        content.setObjectName('inspectorContent')
+        content_layout = QVBoxLayout(content)
+        content_layout.setContentsMargins(12, 12, 12, 12)
+        content_layout.setSpacing(8)
+
+        self.inspector_title = QLabel('Inspector', content)
         self.inspector_title.setObjectName('panelTitle')
 
-        self.inspector_meta = QLabel('No string selected', panel)
+        self.inspector_meta = QLabel('No string selected', content)
         self.inspector_meta.setObjectName('panelHint')
         self.inspector_meta.setWordWrap(True)
 
-        self.inspector_status = QLabel('Idle', panel)
+        self.inspector_status = QLabel('Idle', content)
         self.inspector_status.setObjectName('inspectorStatus')
 
-        self.inspector_original_label = QLabel('Original', panel)
+        self.inspector_original_label = QLabel('Original', content)
         self.inspector_original_label.setObjectName('sectionLabel')
-        self.inspector_original = QPlainTextEdit(panel)
+        self.inspector_original = QPlainTextEdit(content)
         self.inspector_original.setObjectName('inspectorText')
         self.inspector_original.setReadOnly(True)
 
-        self.inspector_translation_label = QLabel('Translation draft', panel)
+        self.inspector_translation_label = QLabel('Translation draft', content)
         self.inspector_translation_label.setObjectName('sectionLabel')
-        self.inspector_translation = QPlainTextEdit(panel)
+        self.inspector_translation = QPlainTextEdit(content)
         self.inspector_translation.setObjectName('inspectorText')
 
-        self.inspector_comment_label = QLabel('Comment', panel)
+        for editor in (self.inspector_original, self.inspector_translation):
+            editor.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
+            editor.setWordWrapMode(QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere)
+            editor.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        self.inspector_comment_label = QLabel('Comment', content)
         self.inspector_comment_label.setObjectName('sectionLabel')
-        self.inspector_comment = QLineEdit(panel)
+        self.inspector_comment = QLineEdit(content)
         self.inspector_comment.setObjectName('inspectorComment')
 
-        self.inspector_apply = QPushButton('Apply + Validate', panel)
+        self.inspector_apply = QPushButton('Apply + Validate', content)
         self.inspector_apply.setObjectName('primaryButton')
-        self.inspector_reset = QPushButton('Reset', panel)
-        self.inspector_edit = QPushButton('Open Editor', panel)
+        self.inspector_reset = QPushButton('Reset', content)
+        self.inspector_edit = QPushButton('Open Editor', content)
 
         button_row = QHBoxLayout()
         button_row.setContentsMargins(0, 0, 0, 0)
@@ -445,16 +553,19 @@ class Ui_MainWindow(object):
         button_row.addWidget(self.inspector_reset)
         button_row.addWidget(self.inspector_edit)
 
-        layout.addWidget(self.inspector_title)
-        layout.addWidget(self.inspector_meta)
-        layout.addWidget(self.inspector_status)
-        layout.addWidget(self.inspector_original_label)
-        layout.addWidget(self.inspector_original, 1)
-        layout.addWidget(self.inspector_translation_label)
-        layout.addWidget(self.inspector_translation, 1)
-        layout.addWidget(self.inspector_comment_label)
-        layout.addWidget(self.inspector_comment)
-        layout.addWidget(self.inspector_apply)
-        layout.addLayout(button_row)
-        layout.addStretch()
+        content_layout.addWidget(self.inspector_title)
+        content_layout.addWidget(self.inspector_meta)
+        content_layout.addWidget(self.inspector_status)
+        content_layout.addWidget(self.inspector_original_label)
+        content_layout.addWidget(self.inspector_original)
+        content_layout.addWidget(self.inspector_translation_label)
+        content_layout.addWidget(self.inspector_translation)
+        content_layout.addWidget(self.inspector_comment_label)
+        content_layout.addWidget(self.inspector_comment)
+        content_layout.addWidget(self.inspector_apply)
+        content_layout.addLayout(button_row)
+        content_layout.addStretch()
+
+        self.inspector_scroll.setWidget(content)
+        layout.addWidget(self.inspector_scroll)
         return panel

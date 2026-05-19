@@ -18,6 +18,7 @@
   <language locale="POR_BR" code="0x11" google-code="pt" deepl-code="PT-BR"/>
   <language locale="RUS_RU" code="0x12" google-code="ru" deepl-code="RU"/>
   <language locale="SPA_ES" code="0x13" google-code="es" deepl-code="ES"/>
+  <language locale="VI_VN" code="0x14" google-code="vi" deepl-code=""/>
   <language locale="SWE_SE" code="0x15" google-code="sv" deepl-code="SV"/>
   <language locale="THA_TH" code="0x16" google-code="th" deepl-code="TH"/>
   <language locale="UKR_UA" code="0x17" google-code="uk" deepl-code="UA"/>

@@ -36,7 +36,7 @@ Manual GUI smoke:
 - Export STBL, XML, XML-DP, JSON, Binary, and Translation Hub CSV.
 - Test Save As and Finalize As.
 - Cancel a long-running translation/export where possible.
-- Check light and dark themes.
+- Check the TS4 Plus Balanced theme in the main workspace, dialogs, and dictionaries view.
 - Check focus rings, disabled buttons, table readability, and Job Drawer logs.
 
 ## Release Artifact Hygiene

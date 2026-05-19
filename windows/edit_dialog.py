@@ -83,6 +83,9 @@ class EditDialog(QDialog, Ui_EditDialog):
 
     def retranslate(self):
         self.setWindowTitle(interface.text('EditWindow', 'Search and Edit'))
+        self.edit_title.setText(interface.text('EditWindow', 'Search and Edit'))
+        self.dictionary_title.setText('Dictionary suggestions')
+        self.search_title.setText('Selected suggestion')
         self.btn_translate.setText(interface.text('EditWindow', 'Translate'))
         self.btn_ok.setText(interface.text('EditWindow', 'OK (Ctrl+Enter)'))
         self.lbl_original.setText(interface.text('EditWindow', 'Original text'))
@@ -221,7 +224,7 @@ class EditDialog(QDialog, Ui_EditDialog):
             self.__translate_handle = None
 
     def __show_translation_error(self, message: str):
-        color = dark.TEXT_ERROR if config.value('interface', 'theme') == 'dark' else light.TEXT_ERROR
+        color = dark.TEXT_ERROR if config.is_dark_theme() else light.TEXT_ERROR
         self.lbl_status.setStyleSheet(f'color: {color};')
         self.lbl_status.setText(message)
 

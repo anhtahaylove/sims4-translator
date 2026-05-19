@@ -234,6 +234,18 @@ QToolBar::separator {
     border-color: __BORDER_LIGHT__;
 }
 
+#projectSidebarScroll,
+#projectSidebarContent,
+#inspectorScroll,
+#inspectorContent {
+    background: transparent;
+    border: none;
+}
+
+#inspectorPanel[active="true"] {
+    border-color: __ACCENT__;
+}
+
 #panelTitle,
 #emptyTitle,
 #dialogTitle {
@@ -255,6 +267,73 @@ QToolBar::separator {
     padding: 8px;
 }
 
+#filterPanel {
+    background: __SURFACE__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 10px;
+}
+
+#fieldLabel {
+    color: __TEXT_MUTED__;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+#filterSearch,
+#filterFile,
+#filterInstance {
+    min-width: 0;
+}
+
+#filterModeButton {
+    min-width: 0;
+    min-height: 26px;
+    border-color: __BORDER_LIGHT__;
+    background: __PANEL_ALT__;
+    color: __TEXT__;
+}
+
+#filterModeButton:hover,
+#filterModeButton:focus {
+    border-color: __BORDER_FOCUS__;
+    background: __PANEL_RAISED__;
+}
+
+#filterChip {
+    text-align: left;
+    border-radius: 8px;
+    border: 1px solid __BORDER_LIGHT__;
+    background: __PANEL__;
+    color: __TEXT_MUTED__;
+    padding: 0 8px;
+    min-width: 0;
+    min-height: 28px;
+}
+
+#filterChip:hover {
+    border-color: __BORDER__;
+    background: __PANEL_ALT__;
+    color: __TEXT__;
+}
+
+#filterChip:checked {
+    border-color: __ACCENT__;
+    background: __PANEL_RAISED__;
+    color: __TEXT__;
+}
+
+#secondaryButton {
+    border-color: __BORDER_LIGHT__;
+    background: __PANEL_ALT__;
+    color: __TEXT__;
+}
+
+#secondaryButton:hover,
+#secondaryButton:focus {
+    border-color: __BORDER_FOCUS__;
+    background: __PANEL_RAISED__;
+}
+
 #emptyState,
 #dialogHeader {
     background: __PANEL_ALT__;
@@ -268,8 +347,14 @@ QToolBar::separator {
 }
 
 #inspectorText {
-    min-height: 84px;
+    min-height: 92px;
     border-radius: 8px;
+}
+
+QPlainTextEdit#inspectorText:disabled {
+    background: __SURFACE__;
+    border-color: __BORDER_LIGHT__;
+    color: __TEXT_DISABLED__;
 }
 
 #inspectorStatus {
@@ -308,6 +393,29 @@ QToolBar::separator {
     border-color: __BORDER_LIGHT__;
     background: __BUTTON_DISABLED__;
     color: __TEXT_DISABLED__;
+}
+
+#editHeader,
+#editPanel,
+#editFooter {
+    background: __PANEL__;
+    border: 1px solid __BORDER__;
+    border-radius: 10px;
+}
+
+#editHeader {
+    background: __PANEL_ALT__;
+}
+
+#editResource {
+    font-family: __FONT_MONOSPACE__;
+    color: __TEXT_MUTED__;
+    background: __SURFACE__;
+    border-color: __BORDER_LIGHT__;
+}
+
+#editPanel QLabel#sectionLabel {
+    color: __ACCENT__;
 }
 
 QToolButton,

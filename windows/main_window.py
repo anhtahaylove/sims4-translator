@@ -147,8 +147,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.toolbar.edt_search.textChanged.connect(self.search_timer_trigger)
         self.toolbar.cb_files.currentIndexChanged.connect(self.change_file)
         self.toolbar.cb_instances.currentIndexChanged.connect(self.change_instance)
+        self.filter_search_mode.clicked.connect(lambda _checked=False: self.search_toggle())
+        self.filter_all.clicked.connect(lambda _checked=False: self.clear_status_filters())
+        self.filter_original.toggled.connect(
+            lambda checked: self.__filter_chip_toggled(self.toolbar.filter_validate_0, checked)
+        )
+        self.filter_progress.toggled.connect(
+            lambda checked: self.__filter_chip_toggled(self.toolbar.filter_validate_1, checked)
+        )
+        self.filter_validated.toggled.connect(
+            lambda checked: self.__filter_chip_toggled(self.toolbar.filter_validate_2, checked)
+        )
+        self.filter_translated.toggled.connect(
+            lambda checked: self.__filter_chip_toggled(self.toolbar.filter_validate_3, checked)
+        )
+        self.filter_different.toggled.connect(
+            lambda checked: self.__filter_chip_toggled(self.toolbar.filter_validate_4, checked)
+        )
+        self.filter_clear.clicked.connect(lambda _checked=False: self.clear_filters())
 
         self.__search_flag = SEARCH_IN_SOURCE
+        self.__sync_search_mode_label()
+        self.__sync_filter_chips()
 
         self.edit_dialog = EditDialog()
         self.replace_dialog = ReplaceDialog()
@@ -252,6 +272,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.brand_subtitle.setText('Mod localization workspace')
         self.project_title.setText('Project')
         self.filter_title.setText('Filters')
+        self.filter_search_label.setText('Search')
+        self.filter_status_label.setText('Status')
+        self.filter_scope_label.setText('Scope')
+        self.filter_file_label.setText('Package')
+        self.filter_instance_label.setText('Instance')
+        self.filter_clear.setText('Clear filters')
         self.empty_title.setText('Ready for a package')
         self.empty_detail.setText('Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.')
         self.inspector_title.setText('Inspector')
@@ -266,6 +292,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             col.retranslate()
 
         self.update_workspace_summary()
+        self.__sync_search_mode_label()
+        self.__update_command_bar_density()
 
     def __set_window_title(self):
         title = f'{APP_NAME} {APP_VERSION}'
@@ -276,6 +304,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def showEvent(self, event):
         app_state.set_tableview(self.tableview)
         app_state.set_monospace(self.monospace)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.__update_command_bar_density()
+
+    def __update_command_bar_density(self):
+        if not hasattr(self, 'command_open'):
+            return
+
+        compact = self.width() < 1060
+        style = (
+            Qt.ToolButtonStyle.ToolButtonIconOnly
+            if compact else Qt.ToolButtonStyle.ToolButtonTextBesideIcon
+        )
+        for button in (
+                self.command_open,
+                self.command_save,
+                self.command_import,
+                self.command_export,
+                self.command_translate,
+                self.command_dictionary,
+                self.command_options,
+        ):
+            button.setToolButtonStyle(style)
+
+        self.brand_subtitle.setVisible(not compact)
+        self.brand_divider.setVisible(not compact)
 
     def dragEnterEvent(self, event):
         event.setAccepted(False)
@@ -355,6 +410,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.toolbar.edt_search.text():
             self.filter_timer_trigger()
+        self.__sync_search_mode_label()
+
+    def __sync_search_mode_label(self):
+        if self.__search_flag == SEARCH_IN_SOURCE:
+            text = 'Original'
+            tooltip = interface.text('ToolBar', 'Search in original')
+        elif self.__search_flag == SEARCH_IN_DESTINATION:
+            text = 'Translation'
+            tooltip = interface.text('ToolBar', 'Search in translation')
+        else:
+            text = 'ID'
+            tooltip = interface.text('ToolBar', 'Search in ID')
+
+        self.filter_search_mode.setText(text)
+        self.filter_search_mode.setToolTip(tooltip)
 
     def update_current_file(self):
         key = None
@@ -378,7 +448,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.toolbar.cb_instances.addItem(interface.text('ToolBar', '-- All instances --'))
         if app_state.current_package:
             package = app_state.packages_storage.find(app_state.current_package)
-            self.toolbar.cb_instances.addItems(package.instances)
+            if package:
+                self.toolbar.cb_instances.addItems(package.instances)
         self.toolbar.cb_instances.blockSignals(False)
 
     def change_file(self):
@@ -398,6 +469,48 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def filter_timer_trigger(self):
         self.filter_timer.start(90)
+
+    def clear_status_filters(self):
+        for action in (
+                self.toolbar.filter_validate_0,
+                self.toolbar.filter_validate_1,
+                self.toolbar.filter_validate_2,
+                self.toolbar.filter_validate_3,
+        ):
+            action.setChecked(True)
+        self.toolbar.filter_validate_4.setChecked(False)
+        self.__sync_filter_chips()
+        self.filter_timer_trigger()
+
+    def clear_filters(self):
+        self.toolbar.edt_search.clear()
+        self.toolbar.cb_files.setCurrentIndex(0)
+        self.toolbar.cb_instances.setCurrentIndex(0)
+        self.clear_status_filters()
+
+    def __filter_chip_toggled(self, action, checked):
+        if action.isChecked() != checked:
+            action.setChecked(checked)
+        self.__sync_filter_chips()
+        self.filter_timer_trigger()
+
+    def __sync_filter_chips(self):
+        pairs = (
+            (self.filter_original, self.toolbar.filter_validate_0),
+            (self.filter_progress, self.toolbar.filter_validate_1),
+            (self.filter_validated, self.toolbar.filter_validate_2),
+            (self.filter_translated, self.toolbar.filter_validate_3),
+            (self.filter_different, self.toolbar.filter_validate_4),
+        )
+        for button, action in pairs:
+            button.blockSignals(True)
+            button.setChecked(action.isChecked())
+            button.blockSignals(False)
+
+        all_statuses = all(action.isChecked() for _, action in pairs[:4]) and not self.toolbar.filter_validate_4.isChecked()
+        self.filter_all.blockSignals(True)
+        self.filter_all.setChecked(all_statuses)
+        self.filter_all.blockSignals(False)
 
     def update_proxy(self):
         flags = []
@@ -716,12 +829,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not storage or not storage.enabled:
             self.project_summary.setText('No package loaded')
             self.project_hint.setText(
-                'Use Load file to open a mod package, STBL, XML, JSON, Binary, or the synthetic smoke package.'
+                'Open a package, STBL, XML, JSON, Binary, or synthetic smoke package.'
             )
+            self.__update_filter_counts(())
             return
 
         items = list(storage.items())
         total = len(items)
+        visible = len(storage.model.filtered)
         validated = sum(1 for item in items if item.flag == FLAG_VALIDATED)
         translated = sum(1 for item in items if item.flag == FLAG_TRANSLATED)
         progress = sum(1 for item in items if item.flag in (FLAG_PROGRESS, FLAG_REPLACED))
@@ -729,16 +844,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         package_count = len(getattr(storage, 'packages', []))
 
         self.project_summary.setText(
-            f'{total} strings | {package_count} package(s)\n'
-            f'{validated} validated | {translated} translated\n'
-            f'{progress} in progress | {original} original'
+            f'{visible}/{total} shown | {package_count} package(s)\n'
+            f'{validated} valid | {translated} translated\n'
+            f'{progress} progress | {original} original'
         )
-        self.project_hint.setText('Use filters below to narrow the workspace. Select a row to edit it in the Inspector.')
+        self.project_hint.setText('Select a row to edit it in the Inspector.')
+        self.__update_filter_counts(items)
+
+    def __update_filter_counts(self, items):
+        items = tuple(items)
+        counts = {
+            'all': len(items),
+            'original': sum(1 for item in items if item.flag == FLAG_UNVALIDATED),
+            'translated': sum(1 for item in items if item.flag == FLAG_TRANSLATED),
+            'validated': sum(1 for item in items if item.flag == FLAG_VALIDATED),
+            'progress': sum(1 for item in items if item.flag in (FLAG_PROGRESS, FLAG_REPLACED)),
+            'different': sum(1 for item in items if item.source_old or item.translate_old),
+        }
+        self.filter_all.setText(f'All {self.__format_filter_count(counts["all"])}')
+        self.filter_original.setText(f'Original {self.__format_filter_count(counts["original"])}')
+        self.filter_translated.setText(f'Translated {self.__format_filter_count(counts["translated"])}')
+        self.filter_validated.setText(f'Validated {self.__format_filter_count(counts["validated"])}')
+        self.filter_progress.setText(f'In progress {self.__format_filter_count(counts["progress"])}')
+        self.filter_different.setText(f'Changed {self.__format_filter_count(counts["different"])}')
+
+    @staticmethod
+    def __format_filter_count(value):
+        return f'{value:,}'
 
     def update_inspector_item(self, item):
         self.__inspector_item = item
         enabled = item is not None
 
+        self.inspector_panel.setProperty('active', enabled)
         self.inspector_apply.setEnabled(enabled)
         self.inspector_reset.setEnabled(enabled)
         self.inspector_edit.setEnabled(enabled)
@@ -755,7 +893,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.__refresh_inspector_status_style()
             return
 
-        self.inspector_meta.setText(f'{item.id_hex} | {item.instance_hex}')
+        self.inspector_meta.setText(f'Selected string\n{item.id_hex} | {item.instance_hex}')
         self.inspector_status.setText(INSPECTOR_STATUS.get(item.flag, 'Unknown'))
         self.inspector_status.setProperty('state', str(item.flag))
         self.inspector_original.setPlainText(text_to_edit(item.source))
@@ -811,6 +949,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.inspector_status.style().unpolish(self.inspector_status)
         self.inspector_status.style().polish(self.inspector_status)
         self.inspector_status.update()
+        self.inspector_panel.style().unpolish(self.inspector_panel)
+        self.inspector_panel.style().polish(self.inspector_panel)
+        self.inspector_panel.update()
 
     def group_change(self):
         self.action_group_original.setChecked(config.value('group', 'original'))

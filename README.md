@@ -35,6 +35,8 @@ stabilization and rebrand hygiene before wider distribution.
 - Export/save/finalize paths preserve existing output formats while avoiding duplicate output rows.
 - Non-modal job drawer logs for load/import/export/save summaries.
 - Synthetic package generator and verifier for GUI smoke testing without real mod files.
+- Community Vietnamese destination locale `VI_VN` for Vietnamese fan localization workflows.
+- One balanced TS4 Plus desktop theme instead of a split light/dark visual system.
 - Regression tests for dedupe, import, translation cancellation, export, save, finalize, and smoke artifacts.
 
 ## Install And Run From Source
@@ -58,7 +60,7 @@ python main.py
 
 ## Basic Workflow
 
-1. Select source and destination languages in Options.
+1. Select source and destination languages in Options. For Vietnamese fan localization, choose `VI_VN` as the destination.
 2. Open a mod package or supported translation file.
 3. Edit or generate translations.
 4. Validate translated rows.

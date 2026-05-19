@@ -86,7 +86,7 @@ class Model(QAbstractTableModel):
         self.summary = expansions.summary(self.items)
         self.summary_text = self._summary_text()
 
-        self.is_dark_theme = config.value('interface', 'theme') == 'dark'
+        self.is_dark_theme = config.is_dark_theme()
 
         self.color_found = QColor(dark.EDITOR_SIMNAME)
         self.color_not_found = QColor(dark.TEXT_ERROR)
@@ -229,7 +229,6 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.txt_deepl_key.setText(config.value('api', 'deepl_key'))
 
         self.cb_language.currentIndexChanged.connect(self.interface_change)
-        self.cb_theme.currentIndexChanged.connect(self.theme_change)
         self.cb_source.currentIndexChanged.connect(self.language_change)
         self.cb_dest.currentIndexChanged.connect(self.language_change)
 
@@ -298,7 +297,6 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.gb_deepl.setTitle(interface.text('OptionsDialog', 'DeepL API key'))
 
         self.lbl_language.setText(interface.text('OptionsDialog', 'Language'))
-        self.lbl_theme.setText(interface.text('OptionsDialog', 'Theme'))
 
         version = interface.version
         if version and version != APP_VERSION:
@@ -313,14 +311,6 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             self.lbl_language_authors.setVisible(True)
         else:
             self.lbl_language_authors.setVisible(False)
-
-        self.cb_theme.blockSignals(True)
-        self.cb_theme.clear()
-        self.cb_theme.addItem(interface.text('OptionsDialog', 'Light'), 'light')
-        self.cb_theme.addItem(interface.text('OptionsDialog', 'Dark'), 'dark')
-        if config.value('interface', 'theme') == 'dark':
-            self.cb_theme.setCurrentIndex(1)
-        self.cb_theme.blockSignals(False)
 
     def __retranslate_pack_categories(self):
         current = self.cb_pack_category.currentData() or 'all'
@@ -376,11 +366,6 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         config.set_value('translation', 'source', self.cb_source.currentText())
         config.set_value('translation', 'destination', self.cb_dest.currentText())
         self.start_culling_timer()
-
-    def theme_change(self):
-        config.set_value('interface', 'theme', self.cb_theme.currentData())
-        self.lbl_theme_hint.setText(interface.text('OptionsDialog', 'The application needs to be restarted'))
-        self.lbl_theme_hint.setVisible(True)
 
     def interface_change(self):
         config.set_value('interface', 'language', self.cb_language.currentData())

@@ -3,15 +3,14 @@
 import re
 from PySide6.QtCore import QFile, QIODevice, QTextStream
 
-import themes.light as light
-import themes.dark as dark
+import themes.balanced as balanced
 
 from singletons.config import config
 
 
 def stylesheet():
     theme_name = config.theme_name
-    colors = dark if theme_name == 'dark' else light
+    colors = balanced
 
     colors_dict = {
         '__THEME__': theme_name,
@@ -31,6 +30,7 @@ def stylesheet():
         '__TEXT__': colors.TEXT,
         '__TEXT_DISABLED__': colors.TEXT_DISABLED,
         '__TEXT_MUTED__': colors.TEXT_MUTED,
+        '__TEXT_ERROR__': colors.TEXT_ERROR,
 
         '__BORDER_LIGHT__': colors.BORDER_LIGHT,
         '__BORDER_DARK__': colors.BORDER_DARK,

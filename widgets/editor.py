@@ -47,7 +47,7 @@ class QTextEditor(QPlainTextEdit):
 
         self.highlighter = BracketHighlighter(self.document())
 
-        is_dark_theme = config.value('interface', 'theme') == 'dark'
+        is_dark_theme = config.is_dark_theme()
 
         self.lines_color = QColor(dark.EDITOR_LINES) if is_dark_theme else QColor(light.EDITOR_LINES)
         self.lines_text = QColor(dark.EDITOR_LINES_TEXT) if is_dark_theme else QColor(light.EDITOR_LINES_TEXT)
@@ -233,7 +233,7 @@ class BracketHighlighter(QSyntaxHighlighter):
     def __init__(self, document):
         super().__init__(document)
 
-        is_dark_theme = config.value('interface', 'theme') == 'dark'
+        is_dark_theme = config.is_dark_theme()
 
         patterns_light = [
             (re.compile(r'{\w+\.[^}]+}'), None, True),

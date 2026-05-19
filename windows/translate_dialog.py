@@ -329,7 +329,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
     def __error_translate_chunk(self, text: str):
         if not self.__error:
             self.__error = True
-            color = dark.TEXT_ERROR if config.value('interface', 'theme') == 'dark' else light.TEXT_ERROR
+            color = dark.TEXT_ERROR if config.is_dark_theme() else light.TEXT_ERROR
             self.__log.append(f'<span style="color: {color};">{text}</span>')
             self.print_log()
             self.stop_translate()

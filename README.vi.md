@@ -34,6 +34,8 @@ rebrand rõ ràng, và kiểm tra release trước khi phân phối rộng rãi.
 - Chuỗi duplicate exact trong package được bỏ qua, không import vào workspace.
 - Export/save/finalize giữ nguyên format hiện tại nhưng tránh ghi duplicate rows.
 - Job Drawer log non-modal cho các summary load/import/export/save.
+- Hỗ trợ destination cộng đồng `VI_VN` cho workflow Việt hóa fan localization.
+- Giao diện TS4 Plus Balanced thống nhất, không còn cảm giác tách rời giữa light/dark theme.
 - Synthetic package generator và verifier để smoke test GUI khi không có package thật.
 - Regression tests cho dedupe, import, cancel translate, export, save, finalize, và smoke artifacts.
 
@@ -58,7 +60,7 @@ python main.py
 
 ## Workflow Cơ Bản
 
-1. Chọn ngôn ngữ nguồn và ngôn ngữ đích trong Options.
+1. Chọn ngôn ngữ nguồn và ngôn ngữ đích trong Options. Nếu Việt hóa, chọn destination `VI_VN`.
 2. Mở package mod hoặc file dịch được hỗ trợ.
 3. Chỉnh sửa hoặc tạo bản dịch.
 4. Validate các dòng đã dịch.

@@ -35,33 +35,19 @@ class Ui_OptionsDialog(object):
         layout_group = QVBoxLayout(self.gb_interface)
 
         layout_lang = QHBoxLayout()
-        layout_theme = QHBoxLayout()
-
         self.lbl_language = QLabel(self.gb_interface)
         self.lbl_language_authors = QLabel(self.gb_interface)
         self.lbl_language_hint = QLabel(self.gb_interface)
         self.cb_language = QComboBox(self.gb_interface)
 
-        self.lbl_theme = QLabel(self.gb_interface)
-        self.lbl_theme_hint = QLabel(self.gb_interface)
-        self.cb_theme = QComboBox(self.gb_interface)
-
         self.lbl_language_hint.setWordWrap(True)
         self.lbl_language_hint.setObjectName('muted')
 
         self.lbl_language.setMinimumHeight(26)
-        self.lbl_theme.setMinimumHeight(26)
-
-        self.lbl_theme_hint.setVisible(False)
-        self.lbl_theme_hint.setWordWrap(True)
 
         layout_lang_lbl = QVBoxLayout()
         layout_lang_authors = QHBoxLayout()
         layout_lang_hint = QVBoxLayout()
-
-        layout_theme_lbl = QVBoxLayout()
-        layout_theme_plug = QHBoxLayout()
-        layout_theme_hint = QVBoxLayout()
 
         layout_lang_authors.addWidget(self.cb_language)
         layout_lang_authors.addWidget(self.lbl_language_authors)
@@ -76,26 +62,11 @@ class Ui_OptionsDialog(object):
         layout_lang.addLayout(layout_lang_lbl)
         layout_lang.addLayout(layout_lang_hint)
 
-        layout_theme_lbl.addWidget(self.lbl_theme)
-        layout_theme_lbl.addStretch()
-
-        layout_theme_plug.addWidget(self.cb_theme)
-        layout_theme_plug.addStretch()
-
-        layout_theme_hint.addLayout(layout_theme_plug)
-        layout_theme_hint.addWidget(self.lbl_theme_hint)
-
-        layout_theme.addLayout(layout_theme_lbl)
-        layout_theme.addLayout(layout_theme_hint)
-
         self.lbl_language.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        self.lbl_theme.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
 
         self.lbl_language.setMinimumWidth(75)
-        self.lbl_theme.setMinimumWidth(75)
 
         layout_group.addLayout(layout_lang)
-        layout_group.addLayout(layout_theme)
 
         vlayout.addWidget(self.gb_interface)
 

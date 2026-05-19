@@ -10,7 +10,7 @@ class CustomProxyStyle(QProxyStyle):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.theme_name = config.value('interface', 'theme')
+        self.theme_name = config.theme_name
 
     def standardIcon(self, standardIcon, option=None, widget=None):
         if standardIcon == QStyle.StandardPixmap.SP_LineEditClearButton:

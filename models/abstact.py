@@ -18,7 +18,7 @@ class AbstractTableModel(QAbstractTableModel):
 
         self.addition_sort = -1
 
-        is_dark_theme = config.value('interface', 'theme') == 'dark'
+        is_dark_theme = config.is_dark_theme()
 
         self.color_null = QColor(dark.TEXT_DISABLED) if is_dark_theme else QColor(114, 114, 213)
 

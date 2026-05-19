@@ -30,7 +30,7 @@ STATUS_META = {
 class GridPalette:
 
     def __init__(self) -> None:
-        colors = dark if config.value('interface', 'theme') == 'dark' else light
+        colors = dark if config.is_dark_theme() else light
         self.surface = QColor(colors.SURFACE)
         self.panel = QColor(colors.PANEL)
         self.panel_alt = QColor(colors.PANEL_ALT)
@@ -123,14 +123,14 @@ class MainDelegatePaint(QStyledItemDelegate):
             pill_rect = option.rect.adjusted(4, 12, -4, -12)
 
         fill = QColor(color)
-        fill.setAlpha(62 if config.value('interface', 'theme') == 'dark' else 42)
+        fill.setAlpha(62 if config.is_dark_theme() else 42)
         border = QColor(color)
 
         painter.setPen(border)
         painter.setBrush(fill)
         painter.drawRoundedRect(pill_rect, pill_rect.height() / 2, pill_rect.height() / 2)
 
-        painter.setPen(border if config.value('interface', 'theme') == 'dark' else self.palette.text)
+        painter.setPen(border if config.is_dark_theme() else self.palette.text)
         painter.drawText(pill_rect, Qt.AlignmentFlag.AlignCenter, label)
 
     def __paint_rich_text(self, painter, option, index, selected: bool) -> None:
@@ -229,7 +229,7 @@ class HeaderProxy(QProxyStyle):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.theme_name = config.value('interface', 'theme')
+        self.theme_name = config.theme_name
 
         self.text_color = QColor(dark.TEXT) if self.theme_name == 'dark' else QColor(light.TEXT)
 

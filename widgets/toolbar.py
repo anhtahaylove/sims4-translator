@@ -109,17 +109,42 @@ class FixedLineEdit(QCleaningLineEdit):
             self.clear()
 
 
-class InstancesComboBox(QComboBox):
+class ExpandingComboBox(QComboBox):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-
         self.adjusted_size = 200
+        self.popup_min_width = 220
+        self.popup_max_width = 720
 
-        self.setSizePolicy(QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed))
-        self.setContentsMargins(0, 0, 0, 0)
+    def update_popup_width(self):
+        width = max(self.width(), self.adjusted_size, self.popup_min_width)
+        metrics = self.fontMetrics()
+        for index in range(self.count()):
+            text = self.itemText(index)
+            if text:
+                self.setItemData(index, text, Qt.ItemDataRole.ToolTipRole)
+                width = max(width, metrics.horizontalAdvance(text) + 44)
+        self.view().setMinimumWidth(min(width, self.popup_max_width))
 
-        self.addItem('')
+    def showPopup(self):
+        self.update_popup_width()
+        super().showPopup()
+
+    def wheelEvent(self, event):
+        event.ignore()
+
+    def addItem(self, *args, **kwargs):
+        super().addItem(*args, **kwargs)
+        self.update_popup_width()
+
+    def addItems(self, texts):
+        super().addItems(texts)
+        self.update_popup_width()
+
+    def setItemText(self, index, text):
+        super().setItemText(index, text)
+        self.update_popup_width()
 
     def sizeHint(self):
         return self.minimumSizeHint()
@@ -128,12 +153,27 @@ class InstancesComboBox(QComboBox):
         return QSize(self.adjusted_size, 26)
 
 
-class FilesComboBox(QComboBox):
+class InstancesComboBox(ExpandingComboBox):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.adjusted_size = 200
+        self.popup_min_width = 260
+
+        self.setSizePolicy(QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed))
+        self.setContentsMargins(0, 0, 0, 0)
+
+        self.addItem('')
+
+
+class FilesComboBox(ExpandingComboBox):
 
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.adjusted_size = 470
+        self.popup_min_width = 420
 
         size_policy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
@@ -141,9 +181,3 @@ class FilesComboBox(QComboBox):
         self.setContentsMargins(0, 0, 0, 0)
 
         self.addItem('')
-
-    def sizeHint(self):
-        return self.minimumSizeHint()
-
-    def minimumSizeHint(self):
-        return QSize(self.adjusted_size, 26)

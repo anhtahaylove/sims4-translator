@@ -38,7 +38,7 @@ class ConfigManager:
     DEFAULTS = {
         'interface': {
             'language': 'en_US',
-            'theme': ''
+            'theme': 'balanced'
         },
         'dictionaries': {
             'gamepath': '',
@@ -72,7 +72,7 @@ class ConfigManager:
             'group': False,
             'source': True,
             'comment': False,
-            'colorbar': True,
+            'colorbar': False,
             'numeration': NUMERATION_STANDART
         },
         'temporary': {
@@ -146,14 +146,12 @@ class ConfigManager:
     @property
     def theme_name(self):
         name = self.value('interface', 'theme')
-        if name:
-            return name
-        name = 'dark' if is_dark_theme() else 'light'
-        self.set_value('interface', 'theme', name)
-        return name
+        if name != 'balanced':
+            self.set_value('interface', 'theme', 'balanced')
+        return 'dark'
 
     def is_dark_theme(self):
-        return self.theme_name == 'dark'
+        return True
 
 
 config = ConfigManager()
