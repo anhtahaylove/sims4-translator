@@ -74,6 +74,7 @@ class ConfigManager:
             'comment': False,
             'colorbar': False,
             'activity_visible': True,
+            'activity_expanded': True,
             'numeration': NUMERATION_STANDART
         },
         'temporary': {

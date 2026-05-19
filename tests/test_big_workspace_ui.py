@@ -115,6 +115,7 @@ class WorkspaceProShellTests(unittest.TestCase):
         config.set_value('translation', 'source', 'ENG_US')
         config.set_value('translation', 'destination', 'FRE_FR')
         config.set_value('view', 'activity_visible', True)
+        config.set_value('view', 'activity_expanded', True)
         app_state.set_packages_storage(PackagesStorage())
         app_state.set_dictionaries_storage(DictionariesStorage())
 
@@ -129,17 +130,21 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.workspace_overview.objectName(), 'workspaceOverview')
             self.assertEqual(window.filter_search.objectName(), 'filterSearch')
             self.assertIs(window.activity_drawer, window.job_drawer)
-            self.assertEqual(window.workspace_activity_toggle.objectName(), 'studioWorkspaceToggle')
+            self.assertTrue(window.action_activity_dock.isCheckable())
+            self.assertIn(window.action_activity_dock, window.menu_view.actions())
             self.assertEqual(window.command_file_group.objectName(), 'studioActionGroup')
             self.assertEqual(window.command_export_group.objectName(), 'studioActionGroup')
             self.assertEqual(window.command_translation_group.objectName(), 'studioActionGroup')
-            self.assertEqual(window.command_activity_group.objectName(), 'studioActionGroup')
-            self.assertEqual(window.command_tools_group.objectName(), 'studioActionGroup')
+            self.assertEqual(window.selection_preview.objectName(), 'selectionPreview')
             self.assertFalse(hasattr(window, 'project_sidebar'))
             self.assertFalse(hasattr(window, 'inspector_panel'))
             self.assertFalse(hasattr(window, 'workspace_splitter'))
             self.assertFalse(hasattr(window, 'workspace_project_toggle'))
             self.assertFalse(hasattr(window, 'workspace_inspector_toggle'))
+            self.assertFalse(hasattr(window, 'workspace_activity_toggle'))
+            self.assertFalse(hasattr(window, 'command_options'))
+            self.assertFalse(hasattr(window, 'command_activity_group'))
+            self.assertFalse(hasattr(window, 'command_tools_group'))
             self.assertIs(window.filter_search, window.toolbar.edt_search)
             self.assertIs(window.filter_file, window.toolbar.cb_files)
             self.assertIs(window.filter_instance, window.toolbar.cb_instances)
@@ -160,7 +165,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertTrue(window.activity_drawer.isVisibleTo(window))
             self.assertTrue(window.table_panel.isVisibleTo(window))
             self.assertTrue(window.tableview.isVisibleTo(window))
-            self.assertTrue(window.workspace_activity_toggle.isVisibleTo(window))
+            self.assertTrue(window.action_activity_dock.isChecked())
         finally:
             close_widget(window)
 
@@ -171,7 +176,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             app().processEvents()
 
             self.assertTrue(window.activity_drawer.isVisibleTo(window))
-            window.workspace_activity_toggle.setChecked(False)
+            window.action_activity_dock.trigger()
             app().processEvents()
 
             self.assertFalse(window.activity_drawer.isVisibleTo(window))
@@ -189,6 +194,31 @@ class WorkspaceProShellTests(unittest.TestCase):
             config.set_value('view', 'activity_visible', True)
             close_widget(restored)
 
+    def test_activity_expanded_state_persists_through_config(self):
+        window = MainWindow()
+        try:
+            window.show()
+            app().processEvents()
+
+            self.assertTrue(window.activity_drawer.body.isVisibleTo(window))
+            window.activity_drawer.toggle_button.click()
+            app().processEvents()
+
+            self.assertFalse(window.activity_drawer.body.isVisibleTo(window))
+            self.assertFalse(config.value('view', 'activity_expanded'))
+        finally:
+            close_widget(window)
+
+        restored = MainWindow()
+        try:
+            restored.show()
+            app().processEvents()
+
+            self.assertFalse(restored.activity_drawer.body.isVisibleTo(restored))
+        finally:
+            config.set_value('view', 'activity_expanded', True)
+            close_widget(restored)
+
     def test_activity_toggle_does_not_mutate_selected_record(self):
         window = MainWindow()
         item = record()
@@ -198,9 +228,9 @@ class WorkspaceProShellTests(unittest.TestCase):
             window.show()
             app().processEvents()
 
-            window.workspace_activity_toggle.setChecked(False)
+            window.action_activity_dock.trigger()
             app().processEvents()
-            window.workspace_activity_toggle.setChecked(True)
+            window.action_activity_dock.trigger()
             app().processEvents()
 
             self.assertTrue(window.activity_drawer.isVisibleTo(window))
@@ -219,20 +249,16 @@ class WorkspaceProShellTests(unittest.TestCase):
                 window.command_open.toolButtonStyle(),
                 Qt.ToolButtonStyle.ToolButtonTextBesideIcon
             )
-            self.assertEqual(
-                window.command_options.toolButtonStyle(),
-                Qt.ToolButtonStyle.ToolButtonTextBesideIcon
-            )
             self.assertEqual(window.command_open.text(), 'Open')
             self.assertEqual(window.command_import.text(), 'Import')
             self.assertEqual(window.command_translate.text(), 'Translate')
             self.assertEqual(window.command_dictionary.text(), 'Save Dict')
             self.assertIn('reuse', window.command_dictionary.toolTip())
+            self.assertFalse(hasattr(window, 'command_options'))
 
             self.assertEqual(window.brand_title.text(), 'TS4+')
             self.assertFalse(window.brand_block.isVisibleTo(window))
             self.assertFalse(window.command_file_label.isVisibleTo(window))
-            self.assertFalse(window.command_activity_label.isVisibleTo(window))
             self.assertFalse(window.brand_badge.isVisibleTo(window))
 
             window.resize(1500, 930)
@@ -246,7 +272,6 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertTrue(window.brand_block.isVisibleTo(window))
             self.assertEqual(window.command_dictionary.text(), 'Save Dictionary')
             self.assertTrue(window.command_file_label.isVisibleTo(window))
-            self.assertTrue(window.command_activity_label.isVisibleTo(window))
         finally:
             close_widget(window)
 
@@ -310,13 +335,13 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.filter_file_label.text(), 'Pkg')
             self.assertEqual(window.filter_instance_label.text(), 'Inst')
             self.assertTrue(window.activity_drawer.isVisibleTo(window))
-            self.assertFalse(window.activity_drawer.body.isVisibleTo(window))
+            self.assertTrue(window.activity_drawer.body.isVisibleTo(window))
             self.assertFalse(window.selection_validate.isVisibleTo(window))
 
             window.activity_drawer.toggle_button.click()
             app().processEvents()
 
-            self.assertTrue(window.activity_drawer.body.isVisibleTo(window))
+            self.assertFalse(window.activity_drawer.body.isVisibleTo(window))
         finally:
             close_widget(window)
 
@@ -330,7 +355,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.command_bar.property('density'), 'short')
             self.assertFalse(window.brand_block.isVisibleTo(window))
             self.assertFalse(window.command_file_label.isVisibleTo(window))
-            self.assertFalse(window.activity_drawer.body.isVisibleTo(window))
+            self.assertTrue(window.activity_drawer.body.isVisibleTo(window))
 
             window.resize(1580, 930)
             app().processEvents()
@@ -445,7 +470,10 @@ class WorkspaceProShellTests(unittest.TestCase):
 
             self.assertTrue(window.selection_bar.isVisibleTo(window))
             self.assertLess(window.selection_meta.geometry().right(), window.selection_status.geometry().left())
-            self.assertLess(window.selection_status.geometry().right(), window.selection_validate.geometry().left())
+            self.assertLess(window.selection_status.geometry().right(), window.selection_preview_toggle.geometry().left())
+            self.assertEqual(window.selection_original_text.toPlainText(), long_text)
+            self.assertEqual(window.selection_translation_text.toPlainText(), long_text)
+            self.assertTrue(window.selection_preview.isVisibleTo(window))
         finally:
             close_widget(window)
 
@@ -458,12 +486,14 @@ class WorkspaceProShellTests(unittest.TestCase):
             app().processEvents()
 
             self.assertFalse(window.selection_validate.isVisibleTo(window))
+            self.assertFalse(window.selection_preview.isVisibleTo(window))
             window.update_inspector_item(item)
             app().processEvents()
 
             self.assertTrue(window.selection_validate.isVisibleTo(window))
             self.assertTrue(window.selection_reset.isVisibleTo(window))
             self.assertTrue(window.selection_edit.isVisibleTo(window))
+            self.assertTrue(window.selection_preview.isVisibleTo(window))
         finally:
             close_widget(window)
 
@@ -479,6 +509,13 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.inspector_status.text(), 'In progress')
             self.assertTrue(window.inspector_apply.isEnabled())
             self.assertEqual(window.selection_bar.property('active'), True)
+            self.assertEqual(window.selection_original_text.toPlainText(), item.source)
+            self.assertEqual(window.selection_translation_text.toPlainText(), item.translate)
+
+            window.toggle_selection_preview()
+            self.assertTrue(window.selection_preview.isHidden())
+            window.toggle_selection_preview()
+            self.assertFalse(window.selection_preview.isHidden())
         finally:
             close_widget(window)
 

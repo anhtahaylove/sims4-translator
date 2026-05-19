@@ -89,6 +89,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__workspace_panels_updating = False
         self.__workspace_density_current = None
         self.__filter_density_current = None
+        self.__selection_preview_expanded = True
 
         self.tableview.doubleClicked.connect(self.edit_string)
         self.tableview.customContextMenuRequested.connect(self.generate_item_context_menu)
@@ -121,6 +122,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.action_colorbar.triggered.connect(self.colorbar_toggle)
         self.action_colorbar.setChecked(config.value('view', 'colorbar'))
+        self.action_activity_dock.triggered.connect(self.__activity_toggled)
+        self.action_activity_dock.setChecked(config.value('view', 'activity_visible') is not False)
 
         self.action_options.triggered.connect(self.options)
         self.action_group_original.triggered.connect(self.group_original)
@@ -168,9 +171,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             lambda checked: self.__filter_chip_toggled(self.toolbar.filter_validate_4, checked)
         )
         self.filter_clear.clicked.connect(lambda _checked=False: self.clear_filters())
-        self.workspace_activity_toggle.toggled.connect(
-            self.__activity_toggled
-        )
+        self.selection_preview_toggle.clicked.connect(lambda _checked=False: self.toggle_selection_preview())
+        self.activity_drawer.expanded_changed.connect(self.__activity_expanded_changed)
+        self.activity_drawer.set_expanded(config.value('view', 'activity_expanded') is not False)
 
         self.__search_flag = SEARCH_IN_SOURCE
         self.__sync_search_mode_label()
@@ -265,6 +268,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_num_xml.setText(interface.text('MainWindow', 'XML format'))
         self.action_num_xml_dp.setText(interface.text('MainWindow', 'XML format (Deaderpool\'s STBL editor)'))
         self.action_colorbar.setText(interface.text('MainWindow', 'Color visualization'))
+        self.action_activity_dock.setText('Activity Dock')
         self.menu_file.setTitle(interface.text('MainWindow', 'File'))
         self.menu_export_translation.setTitle(interface.text('MainWindow', 'Export translation'))
         self.command_export.setText(interface.text('MainWindow', 'Export'))
@@ -291,13 +295,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.inspector_apply.setText('Validate')
         self.inspector_reset.setText('Reset')
         self.inspector_edit.setText('Open Editor')
-        self.workspace_activity_toggle.setText('Activity')
-        self.workspace_activity_toggle.setToolTip('Show or hide Activity')
+        self.selection_preview_toggle.setText('Collapse preview' if self.__selection_preview_expanded else 'Expand preview')
         self.command_file_label.setText('File')
         self.command_export_label.setText('Export')
         self.command_translation_label.setText('Translation')
-        self.command_activity_label.setText('Activity')
-        self.command_tools_label.setText('Tools')
         self.__set_command_button_texts()
 
         for col in self.action_column:
@@ -346,7 +347,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.command_export,
                 self.command_translate,
                 self.command_dictionary,
-                self.command_options,
         ):
             button.setToolButtonStyle(style)
 
@@ -358,8 +358,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.command_file_label,
                 self.command_export_label,
                 self.command_translation_label,
-                self.command_activity_label,
-                self.command_tools_label,
         ):
             label.setVisible(density == 'spacious')
 
@@ -372,7 +370,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             (self.command_import, 'Import', self.action_import_translation.text()),
             (self.command_translate, 'Translate', self.action_translate.text()),
             (self.command_dictionary, dictionary_label, dictionary_tooltip),
-            (self.command_options, 'Options', self.action_options.text()),
         )
         for button, label, tooltip in labels:
             button.setProperty('commandLabel', label)
@@ -384,7 +381,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.command_export.setMinimumWidth(max(94, self.command_export.fontMetrics().horizontalAdvance('Export') + 44))
 
     def __apply_workspace_density(self, force=False):
-        if not hasattr(self, 'workspace_activity_toggle'):
+        if not hasattr(self, 'action_activity_dock'):
             return
 
         density = self.__workspace_density()
@@ -397,7 +394,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if force:
             self.__set_workspace_toggle(
-                self.workspace_activity_toggle,
+                self.action_activity_dock,
                 config.value('view', 'activity_visible') is not False
             )
 
@@ -416,15 +413,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.workspace_overview_layout.setSpacing(7 if short else 10)
         self.empty_layout.setContentsMargins(*(12, 10, 12, 10) if short else (16, 14, 16, 14))
         self.selection_layout.setContentsMargins(*(10, 5, 10, 5) if short else (12, 8, 12, 8))
-        self.selection_layout.setSpacing(7 if short else 10)
+        self.selection_layout.setSpacing(5 if short else 7)
+        self.selection_header_layout.setSpacing(7 if short else 10)
+        preview_height = 76 if short else 112
+        self.selection_original_text.setMaximumHeight(preview_height)
+        self.selection_translation_text.setMaximumHeight(preview_height)
         self.workspace_hint.setVisible(not short)
 
         for group in (
                 self.command_file_group,
                 self.command_translation_group,
                 self.command_export_group,
-                self.command_activity_group,
-                self.command_tools_group,
         ):
             group.layout().setContentsMargins(*(6, 3, 6, 3) if short else (8, 5, 8, 5))
 
@@ -499,15 +498,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.filter_layout.addWidget(self.filter_instance_label, 2, 4)
             self.filter_layout.addWidget(self.filter_instance, 2, 5, 1, 2)
         else:
-            self.filter_layout.setContentsMargins(12, 9, 12, 9)
-            self.filter_layout.setHorizontalSpacing(9)
-            self.filter_layout.setVerticalSpacing(7)
-            for column in range(7):
+            self.filter_layout.setContentsMargins(12, 7, 12, 7)
+            self.filter_layout.setHorizontalSpacing(8)
+            self.filter_layout.setVerticalSpacing(5)
+            for column in range(8):
                 self.filter_layout.setColumnStretch(column, 0)
             self.filter_layout.setColumnStretch(2, 2)
             self.filter_layout.setColumnStretch(3, 2)
-            self.filter_layout.setColumnStretch(5, 1)
+            self.filter_layout.setColumnStretch(4, 2)
             self.filter_layout.setColumnStretch(6, 1)
+            self.filter_layout.setColumnStretch(7, 1)
 
             for widget in (
                     self.filter_title,
@@ -521,21 +521,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             self.filter_layout.addWidget(self.filter_title, 0, 0)
             self.filter_layout.addWidget(self.filter_search_label, 0, 1)
-            self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 2)
-            self.filter_layout.addWidget(self.filter_search_mode, 0, 4)
-            self.filter_layout.addWidget(self.filter_clear, 0, 6)
+            self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 3)
+            self.filter_layout.addWidget(self.filter_search_mode, 0, 5)
+            self.filter_layout.addWidget(self.filter_clear, 0, 6, 1, 2)
             self.filter_layout.addWidget(self.filter_status_label, 1, 0)
-            self.filter_layout.addWidget(self.filter_all, 1, 1, 1, 2)
-            self.filter_layout.addWidget(self.filter_original, 1, 3, 1, 2)
-            self.filter_layout.addWidget(self.filter_translated, 1, 5, 1, 2)
-            self.filter_layout.addWidget(self.filter_validated, 2, 1, 1, 2)
-            self.filter_layout.addWidget(self.filter_progress, 2, 3, 1, 2)
-            self.filter_layout.addWidget(self.filter_different, 2, 5, 1, 2)
-            self.filter_layout.addWidget(self.filter_scope_label, 3, 0)
-            self.filter_layout.addWidget(self.filter_file_label, 3, 1)
-            self.filter_layout.addWidget(self.filter_file, 3, 2, 1, 2)
-            self.filter_layout.addWidget(self.filter_instance_label, 3, 4)
-            self.filter_layout.addWidget(self.filter_instance, 3, 5, 1, 2)
+            self.filter_layout.addWidget(self.filter_all, 1, 1)
+            self.filter_layout.addWidget(self.filter_original, 1, 2)
+            self.filter_layout.addWidget(self.filter_translated, 1, 3)
+            self.filter_layout.addWidget(self.filter_validated, 1, 4)
+            self.filter_layout.addWidget(self.filter_progress, 1, 5)
+            self.filter_layout.addWidget(self.filter_different, 1, 6, 1, 2)
+            self.filter_layout.addWidget(self.filter_scope_label, 2, 0)
+            self.filter_layout.addWidget(self.filter_file_label, 2, 1)
+            self.filter_layout.addWidget(self.filter_file, 2, 2, 1, 3)
+            self.filter_layout.addWidget(self.filter_instance_label, 2, 5)
+            self.filter_layout.addWidget(self.filter_instance, 2, 6, 1, 2)
 
         for widget in (
                 self.filter_file_label,
@@ -559,14 +559,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __apply_selection_density(self, density):
         has_selection = getattr(self, '_MainWindow__inspector_item', None) is not None
-        show_actions = density != 'short' or has_selection
         for widget in (
                 self.selection_status,
+                self.selection_preview_toggle,
                 self.selection_validate,
                 self.selection_reset,
                 self.selection_edit,
         ):
-            widget.setVisible(show_actions)
+            widget.setVisible(has_selection)
+        self.selection_preview.setVisible(has_selection and self.__selection_preview_expanded)
+        self.selection_preview_toggle.setText(
+            'Collapse preview' if self.__selection_preview_expanded else 'Expand preview'
+        )
+
+    def toggle_selection_preview(self):
+        self.__selection_preview_expanded = not self.__selection_preview_expanded
+        self.__apply_selection_density(self.__workspace_density_current or self.__workspace_density())
 
     def __set_workspace_toggle(self, button, checked):
         button.blockSignals(True)
@@ -580,9 +588,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         config.save()
         self.__sync_workspace_panels()
 
+    def __activity_expanded_changed(self, expanded):
+        config.set_value('view', 'activity_expanded', expanded)
+        config.save()
+
     def __sync_workspace_panels(self):
         self.__workspace_panels_updating = True
-        activity_visible = self.workspace_activity_toggle.isChecked()
+        activity_visible = self.action_activity_dock.isChecked()
         self.activity_drawer.setVisible(activity_visible)
         self.command_bar.style().unpolish(self.command_bar)
         self.command_bar.style().polish(self.command_bar)
@@ -1164,6 +1176,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.inspector_meta.setText('No string selected')
             self.inspector_status.setText('Idle')
             self.inspector_status.setProperty('state', 'idle')
+            self.selection_original_text.clear()
+            self.selection_translation_text.clear()
             self.__apply_selection_density(self.__workspace_density_current or self.__workspace_density())
             self.__refresh_inspector_status_style()
             return
@@ -1171,6 +1185,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.inspector_meta.setText(f'Selected string: {item.id_hex} | {item.instance_hex}')
         self.inspector_status.setText(INSPECTOR_STATUS.get(item.flag, 'Unknown'))
         self.inspector_status.setProperty('state', str(item.flag))
+        self.selection_original_text.setPlainText(item.source)
+        self.selection_translation_text.setPlainText(item.translate)
         self.__apply_selection_density(self.__workspace_density_current or self.__workspace_density())
         self.__refresh_inspector_status_style()
 

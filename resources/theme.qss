@@ -238,33 +238,6 @@ QToolBar::separator {
     border-color: transparent;
 }
 
-#studioWorkspaceToggle,
-#workspaceToggle {
-    background: __SURFACE__;
-    border: 1px solid __BORDER_LIGHT__;
-    border-radius: 9px;
-    color: __TEXT_MUTED__;
-    padding: 4px 11px;
-    min-height: 28px;
-    min-width: 68px;
-}
-
-#studioWorkspaceToggle:hover,
-#studioWorkspaceToggle:focus,
-#workspaceToggle:hover,
-#workspaceToggle:focus {
-    border-color: __BORDER_FOCUS__;
-    background: __PANEL_RAISED__;
-    color: __TEXT__;
-}
-
-#studioWorkspaceToggle:checked,
-#workspaceToggle:checked {
-    border-color: __ACCENT__;
-    background: __ACCENT__;
-    color: __SURFACE__;
-}
-
 #tablePanel {
     background: __PANEL__;
     border: 1px solid __BORDER_LIGHT__;
@@ -292,7 +265,30 @@ QToolBar::separator {
 
 #selectionBar[active="true"] {
     border-color: __ACCENT__;
-    background: __PANEL_RAISED__;
+    background: __PANEL__;
+}
+
+#selectionPreviewHeader {
+    background: transparent;
+    border: none;
+}
+
+#selectionPreview {
+    background: transparent;
+    border: none;
+}
+
+#selectionPreviewPanel {
+    background: transparent;
+    border: none;
+}
+
+#selectionPreviewText {
+    background: __PLAIN_EDIT__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 8px;
+    color: __TEXT__;
+    padding: 6px;
 }
 
 #selectionMeta {
@@ -438,8 +434,8 @@ QToolBar::separator {
 
 #filterChip:checked {
     border-color: __ACCENT__;
-    background: __ACCENT__;
-    color: __SURFACE__;
+    background: __PANEL_RAISED__;
+    color: __TEXT__;
 }
 
 #secondaryButton {

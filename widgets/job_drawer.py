@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -129,6 +129,8 @@ class JobRow(QFrame):
 
 class QJobStatusDrawer(QWidget):
 
+    expanded_changed = Signal(bool)
+
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.setObjectName('jobDrawer')
@@ -154,7 +156,7 @@ class QJobStatusDrawer(QWidget):
         self.toggle_button.setText('Jobs')
         self.toggle_button.setCheckable(True)
         self.toggle_button.setChecked(False)
-        self.toggle_button.clicked.connect(self.set_expanded)
+        self.toggle_button.clicked.connect(self.__user_toggled)
 
         self.status_label = QLabel('Idle', self.header)
         self.status_label.setObjectName('jobStatusLabel')
@@ -213,13 +215,15 @@ class QJobStatusDrawer(QWidget):
 
         self.__compact_mode = compact
         self.setProperty('density', 'short' if compact else 'spacious')
-        if compact:
-            self.set_expanded(False)
 
         for widget in (self, self.header, self.body):
             widget.style().unpolish(widget)
             widget.style().polish(widget)
             widget.update()
+
+    def __user_toggled(self, expanded: bool) -> None:
+        self.set_expanded(expanded)
+        self.expanded_changed.emit(expanded)
 
     def set_expanded(self, expanded: bool) -> None:
         self.body.setVisible(expanded)
@@ -234,8 +238,6 @@ class QJobStatusDrawer(QWidget):
         row = JobRow(handle.name, handle, self.jobs_widget)
         self.__rows[handle.job_id] = row
         self.jobs_layout.addWidget(row)
-        if not self.__compact_mode:
-            self.set_expanded(True)
         self.log_message(f'Started: {handle.name}')
         self.refresh_state()
 
@@ -270,8 +272,6 @@ class QJobStatusDrawer(QWidget):
         else:
             self.__legacy_row.title_label.setText(message or 'Working')
 
-        if not self.__compact_mode:
-            self.set_expanded(True)
         self.__legacy_done = 0
         self.__legacy_total = total
         self.__legacy_row.apply_progress(TaskProgress(0, total, message))

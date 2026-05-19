@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QGridLayout,
     QHBoxLayout,
+    QPlainTextEdit,
     QWidget,
     QLineEdit,
     QSizePolicy,
@@ -155,6 +156,8 @@ class Ui_MainWindow(object):
 
         self.action_colorbar = QAction(MainWindow)
         self.action_colorbar.setCheckable(True)
+        self.action_activity_dock = QAction(MainWindow)
+        self.action_activity_dock.setCheckable(True)
 
         self.menubar = QMenuBar(MainWindow)
 
@@ -213,6 +216,7 @@ class Ui_MainWindow(object):
         self.menu_translation.addAction(self.action_undo)
         self.menu_view.addAction(self.action_insert)
         self.menu_view.addAction(self.action_colorbar)
+        self.menu_view.addAction(self.action_activity_dock)
         self.menu_view.addSeparator()
         self.menu_view.addAction(self.menu_numeration.menuAction())
         self.menu_numeration.addAction(self.action_num_standart)
@@ -267,8 +271,6 @@ class Ui_MainWindow(object):
 
         self.command_translate = self.__command_button(self.action_translate)
         self.command_dictionary = self.__command_button(self.action_save_dictionary)
-        self.workspace_activity_toggle = self.__workspace_toggle('Activity')
-        self.command_options = self.__command_button(self.action_options)
 
         self.command_file_group, self.command_file_label = self.__command_group(
             'File',
@@ -282,14 +284,6 @@ class Ui_MainWindow(object):
             'Translation',
             (self.command_translate, self.command_dictionary),
         )
-        self.command_activity_group, self.command_activity_label = self.__command_group(
-            'Activity',
-            (self.workspace_activity_toggle,),
-        )
-        self.command_tools_group, self.command_tools_label = self.__command_group(
-            'Tools',
-            (self.command_options,),
-        )
 
         self.action_hub = QFrame(self.command_bar)
         self.action_hub.setObjectName('studioActionHub')
@@ -299,9 +293,7 @@ class Ui_MainWindow(object):
         self.action_hub_layout.addWidget(self.command_file_group)
         self.action_hub_layout.addWidget(self.command_translation_group)
         self.action_hub_layout.addWidget(self.command_export_group)
-        self.action_hub_layout.addWidget(self.command_activity_group)
         self.action_hub_layout.addStretch()
-        self.action_hub_layout.addWidget(self.command_tools_group)
 
         self.command_layout.addWidget(self.brand_block)
         self.command_layout.addWidget(self.action_hub, 1)
@@ -395,15 +387,6 @@ class Ui_MainWindow(object):
         group_layout.addLayout(row)
         return group, text
 
-    def __workspace_toggle(self, text):
-        button = QToolButton(self.command_bar)
-        button.setObjectName('studioWorkspaceToggle')
-        button.setText(text)
-        button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
-        button.setCheckable(True)
-        button.setChecked(True)
-        return button
-
     def __filter_chip(self, text):
         button = QPushButton(text)
         button.setObjectName('filterChip')
@@ -466,9 +449,15 @@ class Ui_MainWindow(object):
     def __selection_bar(self, parent):
         bar = QFrame(parent)
         bar.setObjectName('selectionBar')
-        self.selection_layout = QHBoxLayout(bar)
+        self.selection_layout = QVBoxLayout(bar)
         self.selection_layout.setContentsMargins(12, 8, 12, 8)
-        self.selection_layout.setSpacing(10)
+        self.selection_layout.setSpacing(7)
+
+        self.selection_header = QFrame(bar)
+        self.selection_header.setObjectName('selectionPreviewHeader')
+        self.selection_header_layout = QHBoxLayout(self.selection_header)
+        self.selection_header_layout.setContentsMargins(0, 0, 0, 0)
+        self.selection_header_layout.setSpacing(10)
 
         self.selection_meta = QLabel('No string selected', bar)
         self.selection_meta.setObjectName('selectionMeta')
@@ -486,12 +475,30 @@ class Ui_MainWindow(object):
         self.selection_reset.setObjectName('secondaryButton')
         self.selection_edit = QPushButton('Open Editor', bar)
         self.selection_edit.setObjectName('secondaryButton')
+        self.selection_preview_toggle = QPushButton('Collapse preview', bar)
+        self.selection_preview_toggle.setObjectName('secondaryButton')
+        self.selection_preview_toggle.setAutoDefault(False)
 
-        self.selection_layout.addWidget(self.selection_meta, 1)
-        self.selection_layout.addWidget(self.selection_status)
-        self.selection_layout.addWidget(self.selection_validate)
-        self.selection_layout.addWidget(self.selection_reset)
-        self.selection_layout.addWidget(self.selection_edit)
+        self.selection_header_layout.addWidget(self.selection_meta, 1)
+        self.selection_header_layout.addWidget(self.selection_status)
+        self.selection_header_layout.addWidget(self.selection_preview_toggle)
+        self.selection_header_layout.addWidget(self.selection_validate)
+        self.selection_header_layout.addWidget(self.selection_reset)
+        self.selection_header_layout.addWidget(self.selection_edit)
+
+        self.selection_preview = QFrame(bar)
+        self.selection_preview.setObjectName('selectionPreview')
+        self.selection_preview_layout = QHBoxLayout(self.selection_preview)
+        self.selection_preview_layout.setContentsMargins(0, 0, 0, 0)
+        self.selection_preview_layout.setSpacing(8)
+
+        self.selection_original_panel = self.__preview_panel('Original', bar)
+        self.selection_translation_panel = self.__preview_panel('Translated', bar)
+        self.selection_preview_layout.addWidget(self.selection_original_panel, 1)
+        self.selection_preview_layout.addWidget(self.selection_translation_panel, 1)
+
+        self.selection_layout.addWidget(self.selection_header)
+        self.selection_layout.addWidget(self.selection_preview)
 
         self.inspector_meta = self.selection_meta
         self.inspector_status = self.selection_status
@@ -499,6 +506,33 @@ class Ui_MainWindow(object):
         self.inspector_reset = self.selection_reset
         self.inspector_edit = self.selection_edit
         return bar
+
+    def __preview_panel(self, title, parent):
+        panel = QFrame(parent)
+        panel.setObjectName('selectionPreviewPanel')
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(4)
+
+        label = QLabel(title, panel)
+        label.setObjectName('fieldLabel')
+
+        text = QPlainTextEdit(panel)
+        text.setObjectName('selectionPreviewText')
+        text.setReadOnly(True)
+        text.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
+        text.setMaximumHeight(92)
+        text.setPlaceholderText('Select a string to preview full text.')
+
+        layout.addWidget(label)
+        layout.addWidget(text)
+
+        if title == 'Original':
+            self.selection_original_text = text
+        else:
+            self.selection_translation_text = text
+
+        return panel
 
     def __filter_board(self, parent):
         board = QFrame(parent)
