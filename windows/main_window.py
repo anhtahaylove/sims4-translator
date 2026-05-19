@@ -353,13 +353,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             label.setVisible(self.width() >= 1180)
 
     def __set_command_button_texts(self, compact=False):
-        dictionary_label = 'Dict' if compact else 'Dictionary'
+        dictionary_label = 'Save Dict' if compact else 'Save Dictionary'
+        dictionary_tooltip = 'Save translated strings to dictionary for reuse'
         labels = (
             (self.command_open, 'Open', self.action_load_file.text()),
             (self.command_save, 'Save', self.action_save.text()),
             (self.command_import, 'Import', self.action_import_translation.text()),
             (self.command_translate, 'Translate', self.action_translate.text()),
-            (self.command_dictionary, dictionary_label, self.action_save_dictionary.text()),
+            (self.command_dictionary, dictionary_label, dictionary_tooltip),
             (self.command_options, 'Options', self.action_options.text()),
         )
         for button, label, tooltip in labels:

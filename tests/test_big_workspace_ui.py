@@ -200,7 +200,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.command_open.text(), 'Open')
             self.assertEqual(window.command_import.text(), 'Import')
             self.assertEqual(window.command_translate.text(), 'Translate')
-            self.assertEqual(window.command_dictionary.text(), 'Dict')
+            self.assertEqual(window.command_dictionary.text(), 'Save Dict')
+            self.assertIn('reuse', window.command_dictionary.toolTip())
 
             self.assertEqual(window.brand_title.text(), 'TS4+')
             self.assertFalse(window.brand_block.isVisibleTo(window))
@@ -217,7 +218,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             )
             self.assertEqual(window.brand_title.text(), 'The Sims 4 Translator Plus')
             self.assertTrue(window.brand_block.isVisibleTo(window))
-            self.assertEqual(window.command_dictionary.text(), 'Dictionary')
+            self.assertEqual(window.command_dictionary.text(), 'Save Dictionary')
             self.assertTrue(window.command_file_label.isVisibleTo(window))
             self.assertTrue(window.command_activity_label.isVisibleTo(window))
         finally:
