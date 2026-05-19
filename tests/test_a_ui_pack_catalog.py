@@ -109,6 +109,28 @@ class JobDrawerStateTests(unittest.TestCase):
         finally:
             close_widget(drawer)
 
+    def test_compact_activity_drawer_does_not_auto_expand_for_new_jobs(self):
+        class Handle:
+            name = 'Opening file...'
+            job_id = 'job-1'
+
+            def cancel(self):
+                pass
+
+        drawer = QJobStatusDrawer()
+        try:
+            drawer.set_compact_mode(True)
+            drawer.task_started(Handle())
+
+            self.assertTrue(drawer.body.isHidden())
+            self.assertIn('active background job', drawer.status_label.text())
+
+            drawer.set_expanded(True)
+
+            self.assertFalse(drawer.body.isHidden())
+        finally:
+            close_widget(drawer)
+
 
 if __name__ == '__main__':
     unittest.main()

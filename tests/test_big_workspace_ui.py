@@ -209,7 +209,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertFalse(window.command_activity_label.isVisibleTo(window))
             self.assertFalse(window.brand_badge.isVisibleTo(window))
 
-            window.resize(1500, window.height())
+            window.resize(1500, 820)
             app().processEvents()
 
             self.assertEqual(
@@ -242,14 +242,52 @@ class WorkspaceProShellTests(unittest.TestCase):
             window._MainWindow__update_filter_counts(items)
             app().processEvents()
 
-            self.assertEqual(window.filter_all.text(), 'All 1,234')
-            self.assertEqual(window.filter_original.text(), 'Original 1,234')
-            self.assertEqual(window.filter_translated.text(), 'Translated 0')
+            self.assertEqual(window.filter_all.text(), 'All 1.2k')
+            self.assertEqual(window.filter_original.text(), 'Orig 1.2k')
+            self.assertEqual(window.filter_translated.text(), 'Trans 0')
             self.assertEqual(window._MainWindow__format_filter_count(162527), '162.5k')
             self.assertLessEqual(
-                window.filter_all.fontMetrics().horizontalAdvance(window.filter_all.text()) + 24,
+                window.filter_all.fontMetrics().horizontalAdvance(window.filter_all.text()) + 10,
                 window.filter_all.width()
             )
+        finally:
+            close_widget(window)
+
+    def test_short_height_density_compacts_filters_selection_and_activity(self):
+        window = MainWindow()
+        try:
+            window.resize(900, 620)
+            window.show()
+            app().processEvents()
+
+            self.assertEqual(window.command_bar.property('density'), 'short')
+            self.assertEqual(window.filter_panel.property('density'), 'short')
+            self.assertFalse(window.filter_title.isVisibleTo(window))
+            self.assertEqual(window.filter_file_label.text(), 'Pkg')
+            self.assertEqual(window.filter_instance_label.text(), 'Inst')
+            self.assertTrue(window.activity_drawer.isVisibleTo(window))
+            self.assertFalse(window.activity_drawer.body.isVisibleTo(window))
+            self.assertFalse(window.selection_validate.isVisibleTo(window))
+
+            window.activity_drawer.toggle_button.click()
+            app().processEvents()
+
+            self.assertTrue(window.activity_drawer.body.isVisibleTo(window))
+        finally:
+            close_widget(window)
+
+    def test_large_filter_counts_use_compact_labels_with_full_tooltips_in_short_mode(self):
+        window = MainWindow()
+        items = [record(FLAG_UNVALIDATED)] * 162527
+        try:
+            window.resize(900, 620)
+            window.show()
+            app().processEvents()
+            window._MainWindow__update_filter_counts(items)
+
+            self.assertEqual(window.filter_all.text(), 'All 162.5k')
+            self.assertEqual(window.filter_original.text(), 'Orig 162.5k')
+            self.assertEqual(window.filter_original.toolTip(), 'Original: 162,527')
         finally:
             close_widget(window)
 
@@ -346,6 +384,24 @@ class WorkspaceProShellTests(unittest.TestCase):
         finally:
             close_widget(window)
 
+    def test_short_selection_bar_restores_actions_after_row_selection(self):
+        window = MainWindow()
+        item = record()
+        try:
+            window.resize(900, 620)
+            window.show()
+            app().processEvents()
+
+            self.assertFalse(window.selection_validate.isVisibleTo(window))
+            window.update_inspector_item(item)
+            app().processEvents()
+
+            self.assertTrue(window.selection_validate.isVisibleTo(window))
+            self.assertTrue(window.selection_reset.isVisibleTo(window))
+            self.assertTrue(window.selection_edit.isVisibleTo(window))
+        finally:
+            close_widget(window)
+
     def test_selection_bar_populates_from_record_without_mutating_it(self):
         window = MainWindow()
         item = record()
@@ -392,6 +448,20 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertTrue(dialog.btn_ok.isDefault())
             self.assertFalse(dialog.btn_translate.autoDefault())
             self.assertFalse(dialog.btn_cancel.autoDefault())
+        finally:
+            close_widget(dialog)
+
+    def test_edit_dialog_recovers_space_when_dictionary_suggestions_are_empty(self):
+        dialog = EditDialog()
+        try:
+            dialog.prepare(record())
+            dialog.show()
+            app().processEvents()
+
+            self.assertFalse(dialog.suggestions_splitter.isVisibleTo(dialog))
+            self.assertTrue(dialog.translation_splitter.isVisibleTo(dialog))
+            self.assertTrue(dialog.btn_ok.isDefault())
+            self.assertFalse(dialog.btn_translate.autoDefault())
         finally:
             close_widget(dialog)
 

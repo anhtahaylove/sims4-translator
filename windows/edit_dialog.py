@@ -111,6 +111,7 @@ class EditDialog(QDialog, Ui_EditDialog):
     @Slot()
     def __dictionaries_updated(self):
         app_state.dictionaries_storage.proxy.process_filter()
+        self.__sync_suggestions_visibility()
 
     def change_api(self):
         config.set_value('api', 'engine', self.cb_api.currentText())
@@ -120,6 +121,7 @@ class EditDialog(QDialog, Ui_EditDialog):
         text = sender.textCursor().selectedText()
         if len(text) >= 3:
             app_state.dictionaries_storage.proxy.filter(text=text)
+            self.__sync_suggestions_visibility()
 
     def tableview_click(self, index):
         model = self.tableview.model()
@@ -130,6 +132,7 @@ class EditDialog(QDialog, Ui_EditDialog):
             else:
                 text = item[RECORD_DICTIONARY_SOURCE]
             self.txt_search.setPlainText(text_to_edit(text))
+            self.__sync_suggestions_visibility()
 
     def prepare(self, item):
         if self.__translate_handle:
@@ -170,6 +173,18 @@ class EditDialog(QDialog, Ui_EditDialog):
 
         self.txt_resource.setText('Record: STBL - 0x{instance:016x}[0x{id:08x}]'.format(instance=item.resource.instance,
                                                                                         id=item.id))
+        self.__sync_suggestions_visibility()
+
+    def __sync_suggestions_visibility(self):
+        model = self.tableview.model()
+        has_suggestions = bool(model and model.rowCount() > 0)
+        self.suggestions_splitter.setVisible(has_suggestions)
+        self.dictionary_panel.setVisible(has_suggestions)
+        self.search_panel.setVisible(has_suggestions)
+        if has_suggestions:
+            self.edit_splitter.setSizes([180, 420])
+        else:
+            self.edit_splitter.setSizes([0, 1])
 
     def ok_click(self):
         undo.wrap(self.item)

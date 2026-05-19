@@ -137,6 +137,7 @@ class QJobStatusDrawer(QWidget):
         self.__legacy_row = None
         self.__legacy_done = 0
         self.__legacy_total = 0
+        self.__compact_mode = False
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -206,6 +207,20 @@ class QJobStatusDrawer(QWidget):
     def has_task_jobs(self) -> bool:
         return any(row.active for row in self.__rows.values())
 
+    def set_compact_mode(self, compact: bool) -> None:
+        if self.__compact_mode == compact:
+            return
+
+        self.__compact_mode = compact
+        self.setProperty('density', 'short' if compact else 'spacious')
+        if compact:
+            self.set_expanded(False)
+
+        for widget in (self, self.header, self.body):
+            widget.style().unpolish(widget)
+            widget.style().polish(widget)
+            widget.update()
+
     def set_expanded(self, expanded: bool) -> None:
         self.body.setVisible(expanded)
         self.toggle_button.blockSignals(True)
@@ -219,7 +234,8 @@ class QJobStatusDrawer(QWidget):
         row = JobRow(handle.name, handle, self.jobs_widget)
         self.__rows[handle.job_id] = row
         self.jobs_layout.addWidget(row)
-        self.set_expanded(True)
+        if not self.__compact_mode:
+            self.set_expanded(True)
         self.log_message(f'Started: {handle.name}')
         self.refresh_state()
 
@@ -254,7 +270,8 @@ class QJobStatusDrawer(QWidget):
         else:
             self.__legacy_row.title_label.setText(message or 'Working')
 
-        self.set_expanded(True)
+        if not self.__compact_mode:
+            self.set_expanded(True)
         self.__legacy_done = 0
         self.__legacy_total = total
         self.__legacy_row.apply_progress(TaskProgress(0, total, message))

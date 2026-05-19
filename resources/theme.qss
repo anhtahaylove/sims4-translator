@@ -142,6 +142,10 @@ QToolBar::separator {
     border-radius: 12px;
 }
 
+#studioHeader[density="short"] {
+    border-radius: 10px;
+}
+
 #brandTitle {
     color: __TEXT__;
     font-size: 15px;
@@ -272,10 +276,18 @@ QToolBar::separator {
     background: transparent;
 }
 
+#tablePanel[density="short"] {
+    border-radius: 10px;
+}
+
 #selectionBar {
     background: __PANEL__;
     border: 1px solid __BORDER_LIGHT__;
     border-radius: 10px;
+}
+
+#selectionBar[density="short"] {
+    border-radius: 8px;
 }
 
 #selectionBar[active="true"] {
@@ -349,6 +361,10 @@ QToolBar::separator {
     border-radius: 10px;
 }
 
+#workspaceOverview[density="short"] {
+    border-radius: 8px;
+}
+
 #workspaceSummary {
     color: __TEXT__;
     font-weight: 600;
@@ -365,6 +381,11 @@ QToolBar::separator {
     border: 1px solid __BORDER_LIGHT__;
     border-top: 2px solid __ACCENT__;
     border-radius: 12px;
+}
+
+#studioFilterTray[density="short"] {
+    border-top-width: 1px;
+    border-radius: 10px;
 }
 
 #fieldLabel {
@@ -402,6 +423,11 @@ QToolBar::separator {
     padding: 0 8px;
     min-width: 0;
     min-height: 26px;
+}
+
+#studioFilterTray[density="short"] #filterChip {
+    padding: 0 5px;
+    min-height: 24px;
 }
 
 #filterChip:hover {
@@ -921,12 +947,20 @@ QProgressBar::chunk {
     border-radius: 12px;
 }
 
+#jobDrawer[density="short"] #jobDrawerHeader {
+    border-radius: 10px;
+}
+
 #jobDrawerBody {
     background: __PANEL_ALT__;
     border-left: 1px solid __BORDER__;
     border-right: 1px solid __BORDER__;
     border-bottom: 1px solid __BORDER__;
     border-radius: 12px;
+}
+
+#jobDrawer[density="short"] #jobDrawerBody {
+    border-radius: 10px;
 }
 
 #jobDrawerToggle {

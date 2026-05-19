@@ -87,6 +87,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.setAcceptDrops(True)
         self.__workspace_panels_updating = False
+        self.__workspace_density_current = None
+        self.__filter_density_current = None
 
         self.tableview.doubleClicked.connect(self.edit_string)
         self.tableview.customContextMenuRequested.connect(self.generate_item_context_menu)
@@ -303,6 +305,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.update_workspace_summary()
         self.__sync_search_mode_label()
+        self.__filter_density_current = None
         self.__update_command_bar_density()
         self.__apply_workspace_density(force=True)
 
@@ -321,11 +324,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__update_command_bar_density()
         self.__apply_workspace_density()
 
+    def __workspace_density(self):
+        if self.height() < 760:
+            return 'short'
+        if self.width() < 1180:
+            return 'compact'
+        return 'spacious'
+
     def __update_command_bar_density(self):
         if not hasattr(self, 'command_open'):
             return
 
-        compact = self.width() < 1180
+        density = self.__workspace_density()
+        compact = density != 'spacious'
         self.__set_command_button_texts(compact=compact)
         style = Qt.ToolButtonStyle.ToolButtonTextBesideIcon
         for button in (
@@ -350,7 +361,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.command_activity_label,
                 self.command_tools_label,
         ):
-            label.setVisible(self.width() >= 1180)
+            label.setVisible(density == 'spacious')
 
     def __set_command_button_texts(self, compact=False):
         dictionary_label = 'Save Dict' if compact else 'Save Dictionary'
@@ -376,6 +387,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not hasattr(self, 'workspace_activity_toggle'):
             return
 
+        density = self.__workspace_density()
+        self.__workspace_density_current = density
+        self.__apply_density_layout(density)
+        self.__apply_filter_density(density)
+        self.__apply_selection_density(density)
+        if hasattr(self.activity_drawer, 'set_compact_mode'):
+            self.activity_drawer.set_compact_mode(density == 'short')
+
         if force:
             self.__set_workspace_toggle(
                 self.workspace_activity_toggle,
@@ -383,6 +402,171 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
 
         self.__sync_workspace_panels()
+
+    def __apply_density_layout(self, density):
+        short = density == 'short'
+
+        self.central_layout.setContentsMargins(*(6, 6, 6, 6) if short else (8, 8, 8, 8))
+        self.central_layout.setSpacing(5 if short else 8)
+        self.command_layout.setContentsMargins(*(8, 6, 8, 6) if short else (14, 10, 14, 10))
+        self.command_layout.setSpacing(8 if short else 12)
+        self.action_hub_layout.setSpacing(6 if short else 8)
+        self.table_panel_layout.setSpacing(4 if short else 7)
+        self.workspace_overview_layout.setContentsMargins(*(10, 6, 10, 6) if short else (12, 9, 12, 9))
+        self.workspace_overview_layout.setSpacing(7 if short else 10)
+        self.empty_layout.setContentsMargins(*(12, 10, 12, 10) if short else (16, 14, 16, 14))
+        self.selection_layout.setContentsMargins(*(10, 5, 10, 5) if short else (12, 8, 12, 8))
+        self.selection_layout.setSpacing(7 if short else 10)
+        self.workspace_hint.setVisible(not short)
+
+        for group in (
+                self.command_file_group,
+                self.command_translation_group,
+                self.command_export_group,
+                self.command_activity_group,
+                self.command_tools_group,
+        ):
+            group.layout().setContentsMargins(*(6, 3, 6, 3) if short else (8, 5, 8, 5))
+
+        self.__set_density_property(
+            density,
+            self.command_bar,
+            self.workspace_overview,
+            self.filter_panel,
+            self.selection_bar,
+            self.table_panel,
+            self.activity_drawer,
+        )
+
+    @staticmethod
+    def __set_density_property(density, *widgets):
+        for widget in widgets:
+            widget.setProperty('density', density)
+            widget.style().unpolish(widget)
+            widget.style().polish(widget)
+            widget.update()
+
+    def __apply_filter_density(self, density):
+        if self.__filter_density_current == density:
+            return
+
+        for widget in (
+                self.filter_title,
+                self.filter_search_label,
+                self.filter_search,
+                self.filter_search_mode,
+                self.filter_clear,
+                self.filter_status_label,
+                self.filter_all,
+                self.filter_original,
+                self.filter_translated,
+                self.filter_validated,
+                self.filter_progress,
+                self.filter_different,
+                self.filter_scope_label,
+                self.filter_file_label,
+                self.filter_file,
+                self.filter_instance_label,
+                self.filter_instance,
+        ):
+            self.filter_layout.removeWidget(widget)
+
+        if density == 'short':
+            self.filter_layout.setContentsMargins(10, 6, 10, 6)
+            self.filter_layout.setHorizontalSpacing(7)
+            self.filter_layout.setVerticalSpacing(5)
+            for column in range(7):
+                self.filter_layout.setColumnStretch(column, 1)
+
+            self.filter_title.setVisible(False)
+            self.filter_search_label.setVisible(False)
+            self.filter_status_label.setVisible(False)
+            self.filter_scope_label.setVisible(False)
+            self.filter_file_label.setText('Pkg')
+            self.filter_instance_label.setText('Inst')
+
+            self.filter_layout.addWidget(self.filter_search, 0, 0, 1, 4)
+            self.filter_layout.addWidget(self.filter_search_mode, 0, 4)
+            self.filter_layout.addWidget(self.filter_clear, 0, 5, 1, 2)
+            self.filter_layout.addWidget(self.filter_all, 1, 0)
+            self.filter_layout.addWidget(self.filter_original, 1, 1)
+            self.filter_layout.addWidget(self.filter_translated, 1, 2)
+            self.filter_layout.addWidget(self.filter_validated, 1, 3)
+            self.filter_layout.addWidget(self.filter_progress, 1, 4)
+            self.filter_layout.addWidget(self.filter_different, 1, 5, 1, 2)
+            self.filter_layout.addWidget(self.filter_file_label, 2, 0)
+            self.filter_layout.addWidget(self.filter_file, 2, 1, 1, 3)
+            self.filter_layout.addWidget(self.filter_instance_label, 2, 4)
+            self.filter_layout.addWidget(self.filter_instance, 2, 5, 1, 2)
+        else:
+            self.filter_layout.setContentsMargins(12, 9, 12, 9)
+            self.filter_layout.setHorizontalSpacing(9)
+            self.filter_layout.setVerticalSpacing(7)
+            for column in range(7):
+                self.filter_layout.setColumnStretch(column, 0)
+            self.filter_layout.setColumnStretch(2, 2)
+            self.filter_layout.setColumnStretch(3, 2)
+            self.filter_layout.setColumnStretch(5, 1)
+            self.filter_layout.setColumnStretch(6, 1)
+
+            for widget in (
+                    self.filter_title,
+                    self.filter_search_label,
+                    self.filter_status_label,
+                    self.filter_scope_label,
+            ):
+                widget.setVisible(True)
+            self.filter_file_label.setText('Package')
+            self.filter_instance_label.setText('Instance')
+
+            self.filter_layout.addWidget(self.filter_title, 0, 0)
+            self.filter_layout.addWidget(self.filter_search_label, 0, 1)
+            self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 2)
+            self.filter_layout.addWidget(self.filter_search_mode, 0, 4)
+            self.filter_layout.addWidget(self.filter_clear, 0, 6)
+            self.filter_layout.addWidget(self.filter_status_label, 1, 0)
+            self.filter_layout.addWidget(self.filter_all, 1, 1, 1, 2)
+            self.filter_layout.addWidget(self.filter_original, 1, 3, 1, 2)
+            self.filter_layout.addWidget(self.filter_translated, 1, 5, 1, 2)
+            self.filter_layout.addWidget(self.filter_validated, 2, 1, 1, 2)
+            self.filter_layout.addWidget(self.filter_progress, 2, 3, 1, 2)
+            self.filter_layout.addWidget(self.filter_different, 2, 5, 1, 2)
+            self.filter_layout.addWidget(self.filter_scope_label, 3, 0)
+            self.filter_layout.addWidget(self.filter_file_label, 3, 1)
+            self.filter_layout.addWidget(self.filter_file, 3, 2, 1, 2)
+            self.filter_layout.addWidget(self.filter_instance_label, 3, 4)
+            self.filter_layout.addWidget(self.filter_instance, 3, 5, 1, 2)
+
+        for widget in (
+                self.filter_file_label,
+                self.filter_instance_label,
+                self.filter_search,
+                self.filter_search_mode,
+                self.filter_clear,
+                self.filter_all,
+                self.filter_original,
+                self.filter_translated,
+                self.filter_validated,
+                self.filter_progress,
+                self.filter_different,
+                self.filter_file,
+                self.filter_instance,
+        ):
+            widget.setVisible(True)
+
+        self.__filter_density_current = density
+        self.__update_filter_counts(app_state.packages_storage.items() if app_state.packages_storage.enabled else ())
+
+    def __apply_selection_density(self, density):
+        has_selection = getattr(self, '_MainWindow__inspector_item', None) is not None
+        show_actions = density != 'short' or has_selection
+        for widget in (
+                self.selection_status,
+                self.selection_validate,
+                self.selection_reset,
+                self.selection_edit,
+        ):
+            widget.setVisible(show_actions)
 
     def __set_workspace_toggle(self, button, checked):
         button.blockSignals(True)
@@ -902,6 +1086,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         storage = app_state.packages_storage
         if not storage or not storage.enabled:
             self.workspace_summary.setText('No package loaded')
+            self.workspace_summary.setToolTip('')
             self.workspace_hint.setText('Open or drop a package to begin')
             self.__update_filter_counts(())
             return
@@ -916,8 +1101,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         package_count = len(getattr(storage, 'packages', []))
 
         self.workspace_summary.setText(
-            f'{visible}/{total} shown    {package_count} package(s)    '
-            f'{validated} valid    {translated} translated    {progress} progress    {original} original'
+            f'{self.__format_filter_count(visible, compact=True)}/{self.__format_filter_count(total, compact=True)} shown | '
+            f'{package_count} pkg | {self.__format_filter_count(validated, compact=True)} valid | '
+            f'{self.__format_filter_count(translated, compact=True)} translated | '
+            f'{self.__format_filter_count(progress, compact=True)} progress | '
+            f'{self.__format_filter_count(original, compact=True)} original'
+        )
+        self.workspace_summary.setToolTip(
+            f'{visible:,}/{total:,} shown\n'
+            f'{package_count:,} package(s)\n'
+            f'{validated:,} valid\n'
+            f'{translated:,} translated\n'
+            f'{progress:,} progress\n'
+            f'{original:,} original'
         )
         self.workspace_hint.setText('Filter above, double-click or use Open Editor')
         self.__update_filter_counts(items)
@@ -932,20 +1128,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             'progress': sum(1 for item in items if item.flag in (FLAG_PROGRESS, FLAG_REPLACED)),
             'different': sum(1 for item in items if item.source_old or item.translate_old),
         }
+        compact = self.__workspace_density_current == 'short'
         labels = (
-            (self.filter_all, 'All', counts['all']),
-            (self.filter_original, 'Original', counts['original']),
-            (self.filter_translated, 'Translated', counts['translated']),
-            (self.filter_validated, 'Validated', counts['validated']),
-            (self.filter_progress, 'In progress', counts['progress']),
-            (self.filter_different, 'Changed', counts['different']),
+            (self.filter_all, 'All', 'All', counts['all']),
+            (self.filter_original, 'Original', 'Orig', counts['original']),
+            (self.filter_translated, 'Translated', 'Trans', counts['translated']),
+            (self.filter_validated, 'Validated', 'Valid', counts['validated']),
+            (self.filter_progress, 'In progress', 'Prog', counts['progress']),
+            (self.filter_different, 'Changed', 'Changed', counts['different']),
         )
-        for button, label, value in labels:
-            button.setText(f'{label} {self.__format_filter_count(value)}')
+        for button, label, compact_label, value in labels:
+            button.setText(f'{compact_label if compact else label} {self.__format_filter_count(value, compact=compact)}')
             button.setToolTip(f'{label}: {value:,}')
 
     @staticmethod
-    def __format_filter_count(value):
+    def __format_filter_count(value, compact=False):
+        if compact and value >= 1000:
+            return f'{value / 1000:.1f}k'
         if value >= 100000:
             return f'{value / 1000:.1f}k'
         if value >= 10000:
@@ -965,12 +1164,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.inspector_meta.setText('No string selected')
             self.inspector_status.setText('Idle')
             self.inspector_status.setProperty('state', 'idle')
+            self.__apply_selection_density(self.__workspace_density_current or self.__workspace_density())
             self.__refresh_inspector_status_style()
             return
 
         self.inspector_meta.setText(f'Selected string: {item.id_hex} | {item.instance_hex}')
         self.inspector_status.setText(INSPECTOR_STATUS.get(item.flag, 'Unknown'))
         self.inspector_status.setProperty('state', str(item.flag))
+        self.__apply_selection_density(self.__workspace_density_current or self.__workspace_density())
         self.__refresh_inspector_status_style()
 
     def apply_inspector_translation(self):
