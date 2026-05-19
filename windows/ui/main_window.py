@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QAction, QIcon
 
 from widgets.colorbar import QColorBar
+from widgets.editor import BracketHighlighter
 from widgets.job_drawer import QJobStatusDrawer
 from widgets.tableview import QMainTableView
 from widgets.toolbar import QToolBar, FixedLineEdit, FilesComboBox, InstancesComboBox
@@ -534,6 +535,7 @@ class Ui_MainWindow(object):
         text.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
         text.setMaximumHeight(92)
         text.setPlaceholderText('Select a string to preview full text.')
+        text.highlighter = BracketHighlighter(text.document())
 
         layout.addWidget(label)
         layout.addWidget(text)

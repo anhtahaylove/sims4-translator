@@ -105,8 +105,7 @@ def create_temporary_copy(path: str) -> str:
 def text_to_table(text):
     if text:
         text = text.replace("\r", '')
-        text = re.sub(r'(\\n)+', '  ', text)
-        text = re.sub(r'\n+', '  ', text)
+        text = text.replace("\n", r'\n')
         return text
     return ''
 

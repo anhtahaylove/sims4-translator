@@ -11,6 +11,14 @@ import themes.dark as dark
 
 from singletons.config import config
 from singletons.interface import interface
+from widgets.token_highlight import (
+    TOKEN_BRACE,
+    TOKEN_LINEBREAK,
+    TOKEN_NUMBER,
+    TOKEN_SIM,
+    TOKEN_TAG,
+    iter_highlight_tokens,
+)
 
 
 class LineNumberArea(QWidget):
@@ -233,40 +241,33 @@ class BracketHighlighter(QSyntaxHighlighter):
     def __init__(self, document):
         super().__init__(document)
 
-        is_dark_theme = config.is_dark_theme()
-
-        patterns_light = [
-            (re.compile(r'{\w+\.[^}]+}'), None, True),
-            (re.compile(r'{[Mm]\w+\.[^}]+}'), QColor(light.EDITOR_MALE), light.EDITOR_MALE_BOLD),
-            (re.compile(r'{[Ff]\w+\.[^}]+}'), QColor(light.EDITOR_FEMALE), light.EDITOR_FEMALE_BOLD),
-            (re.compile(r'{\d+\.([Ss]im)[^}]+}'), QColor(light.EDITOR_SIMNAME), light.EDITOR_SIMNAME_BOLD),
-            (re.compile(r'<[^>]+>'), QColor(light.EDITOR_TAG), False),
-            (re.compile(r'(\s)'), QColor(0, 0, 0, 0), False),
-            (re.compile(r'(\s\s+)'), QColor(light.EDITOR_TAG), False)
-        ]
-
-        patterns_dark = [
-            (re.compile(r'{\w+\.[^}]+}'), QColor('#fff'), True),
-            (re.compile(r'{[Mm]\w+\.[^}]+}'), QColor(dark.EDITOR_MALE), dark.EDITOR_MALE_BOLD),
-            (re.compile(r'{[Ff]\w+\.[^}]+}'), QColor(dark.EDITOR_FEMALE), dark.EDITOR_FEMALE_BOLD),
-            (re.compile(r'{\d+\.([Ss]im)[^}]+}'), QColor(dark.EDITOR_SIMNAME), dark.EDITOR_SIMNAME_BOLD),
-            (re.compile(r'<[^>]+>'), QColor(dark.EDITOR_TAG), False),
-            (re.compile(r'(\s)'), QColor(0, 0, 0, 0), False),
-            (re.compile(r'(\s\s+)'), QColor(dark.EDITOR_TAG), False)
-        ]
-
-        self.__patterns = patterns_dark if is_dark_theme else patterns_light
+        colors = dark if config.is_dark_theme() else light
+        self.__formats = {
+            TOKEN_BRACE: self.getFormat(QColor(colors.ACCENT), True, QColor(colors.PANEL_RAISED)),
+            TOKEN_LINEBREAK: self.getFormat(QColor(colors.TEXT_ERROR), True, QColor(colors.PANEL_RAISED)),
+            TOKEN_NUMBER: self.getFormat(QColor(colors.WARNING), True, QColor(colors.PANEL_RAISED)),
+            TOKEN_SIM: self.getFormat(QColor(colors.EDITOR_SIMNAME), colors.EDITOR_SIMNAME_BOLD,
+                                      QColor(colors.PANEL_RAISED)),
+            TOKEN_TAG: self.getFormat(QColor(colors.BORDER_FOCUS), False, QColor(colors.PANEL_RAISED)),
+        }
+        self.__space_format = self.getFormat(QColor(colors.EDITOR_TAG), False)
+        self.__space_pattern = re.compile(r' {2,}|\t+')
 
     def highlightBlock(self, text):
-        for pattern, color, bold in self.__patterns:
-            for match in pattern.finditer(text):
-                start, end = match.span()
-                self.setFormat(start, end - start, self.getFormat(color, bold))
+        for token in iter_highlight_tokens(text):
+            fmt = self.__formats.get(token.kind, self.__formats[TOKEN_BRACE])
+            self.setFormat(token.start, token.end - token.start, fmt)
+        for match in self.__space_pattern.finditer(text):
+            start, end = match.span()
+            self.setFormat(start, end - start, self.__space_format)
 
-    def getFormat(self, color=None, bold=False):
+    def getFormat(self, color=None, bold=False, background=None):
         fmt = QTextCharFormat()
         if bold:
             fmt.setFontWeight(QFont.Weight.Bold)
         if color:
             fmt.setForeground(color)
+        if background:
+            background.setAlpha(70)
+            fmt.setBackground(background)
         return fmt

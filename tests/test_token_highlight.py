@@ -1,0 +1,69 @@
+# -*- coding: utf-8 -*-
+
+import os
+import unittest
+
+os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+
+from PySide6.QtWidgets import QApplication
+
+from singletons.state import app_state
+from storages.packages import PackagesStorage
+from utils.functions import text_to_table
+from widgets.delegate import MainDelegatePaint
+from widgets.token_highlight import (
+    TOKEN_LINEBREAK,
+    TOKEN_NUMBER,
+    TOKEN_SIM,
+    TOKEN_TAG,
+    classify_token,
+    iter_highlight_tokens,
+)
+
+
+def app():
+    return QApplication.instance() or QApplication([])
+
+
+class TokenHighlightTests(unittest.TestCase):
+
+    def setUp(self):
+        app()
+        app_state.set_packages_storage(PackagesStorage())
+
+    def test_token_classifier_distinguishes_tags_linebreaks_numbers_and_sims_tokens(self):
+        text = '<i></i> A\\n\\n {0.Number} <b></b> {0.SimFirstName}'
+
+        tokens = [(token.text, token.kind) for token in iter_highlight_tokens(text)]
+
+        self.assertEqual(tokens, [
+            ('<i>', TOKEN_TAG),
+            ('</i>', TOKEN_TAG),
+            ('\\n\\n', TOKEN_LINEBREAK),
+            ('{0.Number}', TOKEN_NUMBER),
+            ('<b>', TOKEN_TAG),
+            ('</b>', TOKEN_TAG),
+            ('{0.SimFirstName}', TOKEN_SIM),
+        ])
+        self.assertEqual(classify_token('{1.Money}'), TOKEN_NUMBER)
+
+    def test_table_text_keeps_linebreak_tokens_visible_for_highlighting(self):
+        self.assertEqual(text_to_table('Hello\\n\\nWorld\nAgain'), 'Hello\\n\\nWorld\\nAgain')
+
+    def test_table_delegate_renders_different_highlight_spans_for_token_groups(self):
+        delegate = MainDelegatePaint()
+
+        rendered = delegate._MainDelegatePaint__highlight_html(
+            '<font color="#1E81E6">{0.Number}</font>\\n{0.SimFirstName}<b></b>',
+            selected=False,
+        )
+
+        self.assertIn('&lt;font color=&quot;#1E81E6&quot;&gt;', rendered)
+        self.assertIn('{0.Number}', rendered)
+        self.assertIn('\\n', rendered)
+        self.assertIn('{0.SimFirstName}', rendered)
+        self.assertGreaterEqual(rendered.count('background-color'), 6)
+
+
+if __name__ == '__main__':
+    unittest.main()

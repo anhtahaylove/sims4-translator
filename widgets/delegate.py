@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import html
-import re
 
 from PySide6.QtCore import QRect, QRectF, QSize, Qt
 from PySide6.QtGui import QColor, QIcon, QTextDocument
@@ -13,9 +12,14 @@ import themes.dark as dark
 from singletons.config import config
 from singletons.state import app_state
 from utils.constants import *
-
-
-TOKEN_PATTERN = re.compile(r'(\{[^{}]+\}|</?[^<>]+>)')
+from widgets.token_highlight import (
+    TOKEN_BRACE,
+    TOKEN_LINEBREAK,
+    TOKEN_NUMBER,
+    TOKEN_SIM,
+    TOKEN_TAG,
+    iter_highlight_tokens,
+)
 
 
 STATUS_META = {
@@ -44,6 +48,11 @@ class GridPalette:
         self.selection_text = QColor(colors.SELECTION_TEXT)
         self.warning = QColor(colors.WARNING)
         self.different = QColor(colors.DIFFERENT_TABLEVIEW)
+        self.token_brace = QColor(colors.ACCENT)
+        self.token_linebreak = QColor(colors.TEXT_ERROR)
+        self.token_number = QColor(colors.WARNING)
+        self.token_sim = QColor(colors.EDITOR_SIMNAME)
+        self.token_tag = QColor(colors.BORDER_FOCUS)
 
     def row_background(self, row: int, selected: bool = False) -> QColor:
         if selected:
@@ -172,14 +181,13 @@ class MainDelegatePaint(QStyledItemDelegate):
 
     def __highlight_html(self, text: str, selected: bool) -> str:
         text_color = self.palette.selection_text if selected else self.palette.text
-        token_color = self.palette.selection_text if selected else self.palette.accent
-        token_bg = self.__mix(self.palette.accent, self.palette.panel_raised, 0.72)
 
         parts = []
         pos = 0
-        for match in TOKEN_PATTERN.finditer(text):
-            parts.append(html.escape(text[pos:match.start()]))
-            token = html.escape(match.group(0))
+        for token_match in iter_highlight_tokens(text):
+            parts.append(html.escape(text[pos:token_match.start]))
+            token = html.escape(token_match.text)
+            token_color, token_bg = self.__token_style(token_match.kind, selected)
             parts.append(
                 '<span style="'
                 f'color: {token_color.name()};'
@@ -190,7 +198,7 @@ class MainDelegatePaint(QStyledItemDelegate):
                 f'{token}'
                 '</span>'
             )
-            pos = match.end()
+            pos = token_match.end
         parts.append(html.escape(text[pos:]))
 
         return (
@@ -200,6 +208,18 @@ class MainDelegatePaint(QStyledItemDelegate):
             '</span>'
             '</body>'
         )
+
+    def __token_style(self, kind: str, selected: bool) -> tuple[QColor, QColor]:
+        color_map = {
+            TOKEN_BRACE: self.palette.token_brace,
+            TOKEN_LINEBREAK: self.palette.token_linebreak,
+            TOKEN_NUMBER: self.palette.token_number,
+            TOKEN_SIM: self.palette.token_sim,
+            TOKEN_TAG: self.palette.token_tag,
+        }
+        token_color = self.palette.selection_text if selected else color_map.get(kind, self.palette.token_brace)
+        token_bg = self.__mix(color_map.get(kind, self.palette.token_brace), self.palette.panel_raised, 0.74)
+        return token_color, token_bg
 
     @staticmethod
     def __mix(a: QColor, b: QColor, ratio: float) -> QColor:
