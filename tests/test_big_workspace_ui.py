@@ -290,10 +290,10 @@ class WorkspaceProShellTests(unittest.TestCase):
             close_widget(window)
 
     def test_sims_inspired_theme_tokens_keep_readable_contrast(self):
-        self.assertEqual(balanced.ACCENT, '#7dff5a')
-        self.assertEqual(balanced.BORDER_FOCUS, '#40dfff')
-        self.assertEqual(balanced.BUTTON_DEFAULT, '#009fe3')
-        self.assertEqual(balanced.UNVALIDATED_BAR, '#d5b75e')
+        self.assertEqual(balanced.ACCENT, '#6ef56a')
+        self.assertEqual(balanced.BORDER_FOCUS, '#3ddcff')
+        self.assertEqual(balanced.BUTTON_DEFAULT, '#18b9f2')
+        self.assertEqual(balanced.UNVALIDATED_BAR, '#d6c76a')
 
         self.assertGreaterEqual(contrast_ratio(balanced.TEXT, balanced.SURFACE), 4.5)
         self.assertGreaterEqual(contrast_ratio(balanced.TEXT_MUTED, balanced.SURFACE), 4.5)

@@ -215,7 +215,7 @@ QToolBar::separator {
 #studioCommandButton:hover,
 #commandButton:hover {
     background: __PANEL_RAISED__;
-    border-color: __ACCENT__;
+    border-color: __BORDER_FOCUS__;
 }
 
 #studioCommandButton:pressed,
@@ -223,7 +223,7 @@ QToolBar::separator {
 #commandButton:pressed,
 #commandButton:checked {
     background: __PANEL_RAISED__;
-    border-color: __ACCENT__;
+    border-color: __BORDER_FOCUS__;
 }
 
 #studioCommandButton:focus,
@@ -427,14 +427,14 @@ QToolBar::separator {
 }
 
 #filterChip:hover {
-    border-color: __ACCENT__;
+    border-color: __BORDER_FOCUS__;
     background: __PANEL_ALT__;
     color: __TEXT__;
 }
 
 #filterChip:checked {
     border-color: __ACCENT__;
-    background: __PANEL_RAISED__;
+    background: __PANEL_ALT__;
     color: __TEXT__;
 }
 
@@ -929,7 +929,7 @@ QProgressBar {
     text-align: center;
 }
 QProgressBar::chunk {
-    background-color: __ACCENT__;
+    background-color: __BUTTON_DEFAULT__;
     border-radius: 7px;
 }
 
@@ -970,13 +970,13 @@ QProgressBar::chunk {
 }
 
 #jobDrawerToggle:hover {
-    border-color: __ACCENT__;
+    border-color: __BORDER_FOCUS__;
 }
 
 #jobDrawerToggle:checked {
     color: __SURFACE__;
-    background: __ACCENT__;
-    border-color: __ACCENT_HOVER__;
+    background: __BUTTON_DEFAULT__;
+    border-color: __BUTTON_DEFAULT_HOVER__;
 }
 
 #jobStatusLabel,
