@@ -153,7 +153,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.toolbar.edt_search.textChanged.connect(self.search_timer_trigger)
         self.toolbar.cb_files.currentIndexChanged.connect(self.change_file)
         self.toolbar.cb_instances.currentIndexChanged.connect(self.change_instance)
-        self.filter_search_mode.clicked.connect(lambda _checked=False: self.search_toggle())
         self.filter_all.clicked.connect(lambda _checked=False: self.clear_status_filters())
         self.filter_original.toggled.connect(
             lambda checked: self.__filter_chip_toggled(self.toolbar.filter_validate_0, checked)
@@ -175,7 +174,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.activity_drawer.expanded_changed.connect(self.__activity_expanded_changed)
         self.activity_drawer.set_expanded(config.value('view', 'activity_expanded') is not False)
 
-        self.__search_flag = SEARCH_IN_SOURCE
+        self.__search_flag = SEARCH_IN_ALL
         self.__sync_search_mode_label()
         self.__sync_filter_chips()
         self.__apply_workspace_density(force=True)
@@ -284,6 +283,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.filter_title.setText('Studio Filters')
         self.filter_hint.setText('Search, status and scope stay close to the table.')
         self.filter_search_label.setText('Search')
+        self.filter_search.setPlaceholderText('Search ID, Original, or Translated...')
         self.filter_status_label.setText('Status')
         self.filter_scope_label.setText('Scope')
         self.filter_file_label.setText('Package')
@@ -487,16 +487,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.filter_layout.addWidget(self.filter_search, 0, 0, 1, 4)
             self.filter_layout.addWidget(self.filter_search_mode, 0, 4)
             self.filter_layout.addWidget(self.filter_clear, 0, 5, 1, 2)
-            self.filter_layout.addWidget(self.filter_all, 1, 0)
-            self.filter_layout.addWidget(self.filter_original, 1, 1)
-            self.filter_layout.addWidget(self.filter_translated, 1, 2)
-            self.filter_layout.addWidget(self.filter_validated, 1, 3)
-            self.filter_layout.addWidget(self.filter_progress, 1, 4)
-            self.filter_layout.addWidget(self.filter_different, 1, 5, 1, 2)
-            self.filter_layout.addWidget(self.filter_file_label, 2, 0)
-            self.filter_layout.addWidget(self.filter_file, 2, 1, 1, 3)
-            self.filter_layout.addWidget(self.filter_instance_label, 2, 4)
-            self.filter_layout.addWidget(self.filter_instance, 2, 5, 1, 2)
+            self.filter_layout.addWidget(self.filter_all, 1, 0, 1, 2)
+            self.filter_layout.addWidget(self.filter_original, 1, 2, 1, 2)
+            self.filter_layout.addWidget(self.filter_translated, 1, 4, 1, 3)
+            self.filter_layout.addWidget(self.filter_validated, 2, 0, 1, 2)
+            self.filter_layout.addWidget(self.filter_progress, 2, 2, 1, 2)
+            self.filter_layout.addWidget(self.filter_different, 2, 4, 1, 3)
+            self.filter_layout.addWidget(self.filter_file_label, 3, 0)
+            self.filter_layout.addWidget(self.filter_file, 3, 1, 1, 3)
+            self.filter_layout.addWidget(self.filter_instance_label, 3, 4)
+            self.filter_layout.addWidget(self.filter_instance, 3, 5, 1, 2)
         else:
             self.filter_layout.setContentsMargins(12, 7, 12, 7)
             self.filter_layout.setHorizontalSpacing(8)
@@ -665,7 +665,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             super().keyPressEvent(event)
 
     def search_toggle(self):
-        if self.__search_flag == SEARCH_IN_SOURCE:
+        if self.__search_flag == SEARCH_IN_ALL:
+            self.__search_flag = SEARCH_IN_SOURCE
+            self.toolbar.search_toggle.setIcon(QIcon(':/images/search_source.png'))
+            self.toolbar.search_toggle.setToolTip(interface.text('ToolBar', 'Search in original'))
+        elif self.__search_flag == SEARCH_IN_SOURCE:
             self.__search_flag = SEARCH_IN_DESTINATION
             self.toolbar.search_toggle.setIcon(QIcon(':/images/search_dest.png'))
             self.toolbar.search_toggle.setToolTip(interface.text('ToolBar', 'Search in translation'))
@@ -674,16 +678,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.toolbar.search_toggle.setIcon(QIcon(':/images/search_id.png'))
             self.toolbar.search_toggle.setToolTip(interface.text('ToolBar', 'Search in ID'))
         else:
-            self.__search_flag = SEARCH_IN_SOURCE
+            self.__search_flag = SEARCH_IN_ALL
             self.toolbar.search_toggle.setIcon(QIcon(':/images/search_source.png'))
-            self.toolbar.search_toggle.setToolTip(interface.text('ToolBar', 'Search in original'))
+            self.toolbar.search_toggle.setToolTip('Search ID, original and translation')
 
         if self.toolbar.edt_search.text():
             self.filter_timer_trigger()
         self.__sync_search_mode_label()
 
     def __sync_search_mode_label(self):
-        if self.__search_flag == SEARCH_IN_SOURCE:
+        if self.__search_flag == SEARCH_IN_ALL:
+            text = 'Hybrid'
+            tooltip = 'Search ID, original and translation'
+        elif self.__search_flag == SEARCH_IN_SOURCE:
             text = 'Original'
             tooltip = interface.text('ToolBar', 'Search in original')
         elif self.__search_flag == SEARCH_IN_DESTINATION:

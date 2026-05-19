@@ -138,7 +138,8 @@ class ProxyModel(QSortFilterProxyModel):
         self.__package = None
         self.__instance = None
         self.__text = None
-        self.__mode = SEARCH_IN_SOURCE
+        self.__text_id = None
+        self.__mode = SEARCH_IN_ALL
         self.__flags = []
         self.__different = False
 
@@ -152,6 +153,9 @@ class ProxyModel(QSortFilterProxyModel):
         self.__different = different
 
         if text:
+            text = text.strip()
+
+        if text:
             if mode == SEARCH_IN_ID:
                 try:
                     self.__text = int(text, 16)
@@ -159,8 +163,10 @@ class ProxyModel(QSortFilterProxyModel):
                     self.__text = -1
             else:
                 self.__text = text.lower()
+                self.__text_id = self.__parse_search_id(self.__text)
         else:
             self.__text = None
+            self.__text_id = None
 
         if instance:
             try:
@@ -197,10 +203,34 @@ class ProxyModel(QSortFilterProxyModel):
                 return self.__text in item[RECORD_MAIN_SOURCE].lower()
             elif self.__mode == SEARCH_IN_DESTINATION:
                 return self.__text in item[RECORD_MAIN_TRANSLATE].lower()
+            elif self.__mode == SEARCH_IN_ALL:
+                return self.__matches_hybrid_search(item)
             else:
                 return False
 
         return True
+
+    @staticmethod
+    def __parse_search_id(text):
+        value = text.removeprefix('0x')
+        if not value:
+            return None
+        try:
+            return int(value, 16)
+        except ValueError:
+            return None
+
+    def __matches_hybrid_search(self, item):
+        if self.__text_id is not None and self.__text_id == item[RECORD_MAIN_ID]:
+            return True
+
+        item_id = item[RECORD_MAIN_ID]
+        hex_id = f'{item_id:08x}'
+        if self.__text in hex_id or self.__text in f'0x{hex_id}' or self.__text in str(item_id):
+            return True
+
+        return self.__text in str(item[RECORD_MAIN_SOURCE]).lower() \
+            or self.__text in str(item[RECORD_MAIN_TRANSLATE]).lower()
 
     def headerData(self, section, orientation, role=None):
         if role == Qt.ItemDataRole.DisplayRole and orientation == Qt.Orientation.Horizontal:

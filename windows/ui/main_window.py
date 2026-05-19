@@ -409,16 +409,29 @@ class Ui_MainWindow(object):
         self.workspace_overview_layout.setContentsMargins(12, 9, 12, 9)
         self.workspace_overview_layout.setSpacing(10)
 
-        self.workspace_summary = QLabel('No package loaded', self.workspace_overview)
+        self.workspace_summary_block = QFrame(self.workspace_overview)
+        self.workspace_summary_block.setObjectName('workspaceSummaryBlock')
+        self.workspace_summary_block_layout = QVBoxLayout(self.workspace_summary_block)
+        self.workspace_summary_block_layout.setContentsMargins(0, 0, 0, 0)
+        self.workspace_summary_block_layout.setSpacing(3)
+
+        self.workspace_summary = QLabel('No package loaded', self.workspace_summary_block)
         self.workspace_summary.setObjectName('workspaceSummary')
         self.workspace_summary.setWordWrap(True)
         self.workspace_summary.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
 
-        self.workspace_hint = QLabel('Table-first workspace', self.workspace_overview)
+        self.workspace_hint = QLabel('Table-first workspace', self.workspace_summary_block)
         self.workspace_hint.setObjectName('workspaceHint')
+        self.workspace_hint.setWordWrap(True)
 
-        self.workspace_overview_layout.addWidget(self.workspace_summary, 1)
-        self.workspace_overview_layout.addWidget(self.workspace_hint)
+        self.workspace_summary_block_layout.addWidget(self.workspace_summary)
+        self.workspace_summary_block_layout.addWidget(self.workspace_hint)
+
+        self.filter_panel = self.__filter_board(self.workspace_overview)
+        self.filter_panel.setMinimumWidth(640)
+
+        self.workspace_overview_layout.addWidget(self.workspace_summary_block)
+        self.workspace_overview_layout.addWidget(self.filter_panel, 1)
 
         self.empty_state = QFrame(panel)
         self.empty_state.setObjectName('emptyState')
@@ -435,11 +448,9 @@ class Ui_MainWindow(object):
         self.empty_layout.addWidget(self.empty_title)
         self.empty_layout.addWidget(self.empty_detail)
 
-        self.filter_panel = self.__filter_board(panel)
         self.selection_bar = self.__selection_bar(panel)
 
         self.table_panel_layout.addWidget(self.workspace_overview)
-        self.table_panel_layout.addWidget(self.filter_panel)
         self.table_panel_layout.addWidget(self.empty_state)
         self.table_panel_layout.addWidget(self.selection_bar)
         self.table_panel_layout.addWidget(self.colorbar)
@@ -556,9 +567,9 @@ class Ui_MainWindow(object):
 
         self.filter_search_label = QLabel('Search', board)
         self.filter_search_label.setObjectName('sectionLabel')
-        self.filter_search_mode = QPushButton('Original', board)
+        self.filter_search_mode = QLabel('Hybrid', board)
         self.filter_search_mode.setObjectName('filterModeButton')
-        self.filter_search_mode.setAutoDefault(False)
+        self.filter_search_mode.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.filter_status_label = QLabel('Status', board)
         self.filter_status_label.setObjectName('sectionLabel')

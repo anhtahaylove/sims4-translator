@@ -125,10 +125,16 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.command_bar.objectName(), 'studioHeader')
             self.assertEqual(window.action_hub.objectName(), 'studioActionHub')
             self.assertEqual(window.filter_panel.objectName(), 'studioFilterTray')
-            self.assertIs(window.filter_panel.parent(), window.table_panel)
+            self.assertIs(window.filter_panel.parent(), window.workspace_overview)
+            self.assertGreater(
+                window.workspace_overview_layout.indexOf(window.filter_panel),
+                window.workspace_overview_layout.indexOf(window.workspace_summary_block),
+            )
             self.assertEqual(window.selection_bar.objectName(), 'selectionBar')
             self.assertEqual(window.workspace_overview.objectName(), 'workspaceOverview')
             self.assertEqual(window.filter_search.objectName(), 'filterSearch')
+            self.assertEqual(window.filter_search_mode.text(), 'Hybrid')
+            self.assertIn('ID', window.filter_search.placeholderText())
             self.assertIs(window.activity_drawer, window.job_drawer)
             self.assertTrue(window.action_activity_dock.isCheckable())
             self.assertIn(window.action_activity_dock, window.menu_view.actions())
@@ -411,6 +417,43 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual({item.id for item in storage.model.filtered}, {42, 7})
             self.assertTrue(window.filter_original.isChecked())
             self.assertEqual(window.filter_search.text(), '')
+        finally:
+            close_widget(window)
+
+    def test_hybrid_search_matches_id_original_and_translated_without_mode_switching(self):
+        window = MainWindow()
+        by_id = record(FLAG_UNVALIDATED)
+        by_id[RECORD_MAIN_ID] = 0xB586D7F4
+        by_id[RECORD_MAIN_SOURCE] = 'Garden chair'
+        by_id[RECORD_MAIN_TRANSLATE] = 'Chaise de jardin'
+        by_source = record(FLAG_UNVALIDATED)
+        by_source[RECORD_MAIN_ID] = 0x12345678
+        by_source[RECORD_MAIN_SOURCE] = 'Needle appears in original text'
+        by_source[RECORD_MAIN_TRANSLATE] = 'Draft without marker'
+        by_translation = record(FLAG_UNVALIDATED)
+        by_translation[RECORD_MAIN_ID] = 0x87654321
+        by_translation[RECORD_MAIN_SOURCE] = 'Source without marker'
+        by_translation[RECORD_MAIN_TRANSLATE] = 'Needle appears in translated text'
+        try:
+            storage = app_state.packages_storage
+            storage.packages.append(PackageStub())
+            storage.model.replace([by_id, by_source, by_translation])
+            storage.proxy.process_filter()
+            window.set_state_menu()
+
+            self.assertEqual(window.filter_search_mode.text(), 'Hybrid')
+
+            window.filter_search.setText('0xB586D7F4')
+            window.update_proxy()
+            self.assertEqual([item.id for item in storage.model.filtered], [0xB586D7F4])
+
+            window.filter_search.setText('original text')
+            window.update_proxy()
+            self.assertEqual([item.id for item in storage.model.filtered], [0x12345678])
+
+            window.filter_search.setText('translated text')
+            window.update_proxy()
+            self.assertEqual([item.id for item in storage.model.filtered], [0x87654321])
         finally:
             close_widget(window)
 
