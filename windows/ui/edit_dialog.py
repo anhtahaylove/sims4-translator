@@ -11,8 +11,8 @@ from widgets.editor import QTextEditor
 class Ui_EditDialog(object):
 
     def setupUi(self, EditDialog):
-        EditDialog.resize(1009, 663)
-        EditDialog.setMinimumSize(961, 611)
+        EditDialog.resize(1060, 720)
+        EditDialog.setMinimumSize(900, 620)
 
         self.lbl_original = QLabel(EditDialog)
         self.lbl_original_diff = QLabel(EditDialog)
@@ -44,13 +44,17 @@ class Ui_EditDialog(object):
         layout.setSpacing(10)
 
         self.edit_header = QFrame(EditDialog)
-        self.edit_header.setObjectName('editHeader')
+        self.edit_header.setObjectName('sheetHeader')
         header_layout = QVBoxLayout(self.edit_header)
-        header_layout.setContentsMargins(12, 10, 12, 10)
+        header_layout.setContentsMargins(14, 12, 14, 12)
         header_layout.setSpacing(6)
         self.edit_title = QLabel('Search and Edit', self.edit_header)
-        self.edit_title.setObjectName('dialogTitle')
+        self.edit_title.setObjectName('sheetTitle')
+        self.edit_detail = QLabel('Review suggestions, refine the draft, then validate the selected string.', self.edit_header)
+        self.edit_detail.setObjectName('sheetHint')
+        self.edit_detail.setWordWrap(True)
         header_layout.addWidget(self.edit_title)
+        header_layout.addWidget(self.edit_detail)
         header_layout.addWidget(self.txt_resource)
 
         layout.addWidget(self.edit_header)
@@ -75,19 +79,19 @@ class Ui_EditDialog(object):
         right_layout.addWidget(self.txt_translate_diff)
 
         self.original_panel = QFrame(EditDialog)
-        self.original_panel.setObjectName('editPanel')
+        self.original_panel.setObjectName('sheetPanel')
         original_layout = QVBoxLayout(self.original_panel)
         original_layout.setContentsMargins(0, 0, 0, 0)
         original_layout.addWidget(left_widget)
 
         self.translation_panel = QFrame(EditDialog)
-        self.translation_panel.setObjectName('editPanel')
+        self.translation_panel.setObjectName('sheetPanel')
         translation_layout = QVBoxLayout(self.translation_panel)
         translation_layout.setContentsMargins(0, 0, 0, 0)
         translation_layout.addWidget(right_widget)
 
         self.dictionary_panel = QFrame(EditDialog)
-        self.dictionary_panel.setObjectName('editPanel')
+        self.dictionary_panel.setObjectName('sheetPanel')
         dictionary_layout = QVBoxLayout(self.dictionary_panel)
         dictionary_layout.setContentsMargins(10, 10, 10, 10)
         dictionary_layout.setSpacing(6)
@@ -97,7 +101,7 @@ class Ui_EditDialog(object):
         dictionary_layout.addWidget(self.tableview)
 
         self.search_panel = QFrame(EditDialog)
-        self.search_panel.setObjectName('editPanel')
+        self.search_panel.setObjectName('sheetPanel')
         search_layout = QVBoxLayout(self.search_panel)
         search_layout.setContentsMargins(10, 10, 10, 10)
         search_layout.setSpacing(6)
@@ -143,7 +147,7 @@ class Ui_EditDialog(object):
         self.btn_cancel.setAutoDefault(False)
 
         self.edit_footer = QFrame(EditDialog)
-        self.edit_footer.setObjectName('editFooter')
+        self.edit_footer.setObjectName('sheetFooter')
         footer_layout = QVBoxLayout(self.edit_footer)
         footer_layout.setContentsMargins(10, 10, 10, 10)
         footer_layout.setSpacing(8)

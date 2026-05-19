@@ -25,8 +25,11 @@ from utils.constants import (
     RECORD_MAIN_TRANSLATE,
 )
 from windows.edit_dialog import EditDialog
+from windows.export_dialog import ExportDialog
+from windows.import_dialog import ImportDialog
 from windows.main_window import MainWindow
 from windows.options_dialog import OptionsDialog
+from windows.translate_dialog import TranslateDialog
 from widgets.delegate import MainDelegatePaint
 
 
@@ -94,22 +97,25 @@ class WorkspaceProShellTests(unittest.TestCase):
         try:
             self.assertEqual(window.project_sidebar.objectName(), 'projectSidebar')
             self.assertEqual(window.project_scroll.objectName(), 'projectSidebarScroll')
-            self.assertEqual(window.filter_panel.objectName(), 'filterPanel')
+            self.assertEqual(window.command_bar.objectName(), 'studioHeader')
+            self.assertEqual(window.action_hub.objectName(), 'studioActionHub')
+            self.assertEqual(window.filter_panel.objectName(), 'studioFilterTray')
             self.assertIs(window.filter_panel.parent(), window.table_panel)
             self.assertEqual(window.workspace_overview.objectName(), 'workspaceOverview')
             self.assertEqual(window.filter_search.objectName(), 'filterSearch')
-            self.assertEqual(window.inspector_panel.objectName(), 'inspectorPanel')
+            self.assertEqual(window.inspector_panel.objectName(), 'focusEditor')
+            self.assertIs(window.focus_editor_panel, window.inspector_panel)
             self.assertEqual(window.inspector_scroll.objectName(), 'inspectorScroll')
             self.assertEqual(window.workspace_splitter.objectName(), 'workspaceSplitter')
             self.assertIs(window.activity_drawer, window.job_drawer)
-            self.assertEqual(window.workspace_project_toggle.objectName(), 'workspaceToggle')
-            self.assertEqual(window.workspace_inspector_toggle.objectName(), 'workspaceToggle')
-            self.assertEqual(window.workspace_activity_toggle.objectName(), 'workspaceToggle')
-            self.assertEqual(window.command_file_group.objectName(), 'commandGroup')
-            self.assertEqual(window.command_export_group.objectName(), 'commandGroup')
-            self.assertEqual(window.command_translation_group.objectName(), 'commandGroup')
-            self.assertEqual(window.command_workspace_group.objectName(), 'commandGroup')
-            self.assertEqual(window.command_tools_group.objectName(), 'commandGroup')
+            self.assertEqual(window.workspace_project_toggle.objectName(), 'studioWorkspaceToggle')
+            self.assertEqual(window.workspace_inspector_toggle.objectName(), 'studioWorkspaceToggle')
+            self.assertEqual(window.workspace_activity_toggle.objectName(), 'studioWorkspaceToggle')
+            self.assertEqual(window.command_file_group.objectName(), 'studioActionGroup')
+            self.assertEqual(window.command_export_group.objectName(), 'studioActionGroup')
+            self.assertEqual(window.command_translation_group.objectName(), 'studioActionGroup')
+            self.assertEqual(window.command_workspace_group.objectName(), 'studioActionGroup')
+            self.assertEqual(window.command_tools_group.objectName(), 'studioActionGroup')
             self.assertIs(window.filter_search, window.toolbar.edt_search)
             self.assertIs(window.filter_file, window.toolbar.cb_files)
             self.assertIs(window.filter_instance, window.toolbar.cb_instances)
@@ -147,7 +153,7 @@ class WorkspaceProShellTests(unittest.TestCase):
 
             self.assertFalse(window.project_sidebar.isVisibleTo(window))
             self.assertFalse(window.inspector_panel.isVisibleTo(window))
-            self.assertTrue(window.activity_drawer.isVisibleTo(window))
+            self.assertFalse(window.activity_drawer.isVisibleTo(window))
             self.assertTrue(window.table_panel.isVisibleTo(window))
 
             window.resize(1640, 820)
@@ -216,6 +222,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.brand_title.text(), 'TS4 Translator Plus')
             self.assertFalse(window.command_file_label.isVisibleTo(window))
             self.assertFalse(window.command_workspace_label.isVisibleTo(window))
+            self.assertFalse(window.brand_badge.isVisibleTo(window))
 
             window.resize(1500, window.height())
             app().processEvents()
@@ -411,16 +418,35 @@ class WorkspaceProShellTests(unittest.TestCase):
     def test_edit_dialog_exposes_redesigned_panels_without_losing_core_controls(self):
         dialog = EditDialog()
         try:
-            self.assertEqual(dialog.edit_header.objectName(), 'editHeader')
-            self.assertEqual(dialog.dictionary_panel.objectName(), 'editPanel')
-            self.assertEqual(dialog.original_panel.objectName(), 'editPanel')
-            self.assertEqual(dialog.translation_panel.objectName(), 'editPanel')
-            self.assertEqual(dialog.edit_footer.objectName(), 'editFooter')
+            self.assertEqual(dialog.edit_header.objectName(), 'sheetHeader')
+            self.assertEqual(dialog.dictionary_panel.objectName(), 'sheetPanel')
+            self.assertEqual(dialog.original_panel.objectName(), 'sheetPanel')
+            self.assertEqual(dialog.translation_panel.objectName(), 'sheetPanel')
+            self.assertEqual(dialog.edit_footer.objectName(), 'sheetFooter')
+            self.assertEqual(dialog.edit_detail.objectName(), 'sheetHint')
             self.assertTrue(dialog.btn_ok.isDefault())
             self.assertFalse(dialog.btn_translate.autoDefault())
             self.assertFalse(dialog.btn_cancel.autoDefault())
         finally:
             close_widget(dialog)
+
+    def test_guided_sheet_dialogs_share_the_same_shell_contract(self):
+        window = MainWindow()
+        dialogs = [
+            ImportDialog(),
+            TranslateDialog(),
+            ExportDialog(window),
+        ]
+        try:
+            for dialog in dialogs:
+                self.assertEqual(dialog.header.objectName(), 'sheetHeader')
+                self.assertEqual(dialog.header_title.objectName(), 'sheetTitle')
+                self.assertEqual(dialog.header_detail.objectName(), 'sheetHint')
+                self.assertEqual(dialog.sheet_footer.objectName(), 'sheetFooter')
+        finally:
+            for dialog in dialogs:
+                close_widget(dialog)
+            close_widget(window)
 
     def test_options_dialog_hides_theme_selector_for_single_theme_app(self):
         window = MainWindow()

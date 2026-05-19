@@ -146,10 +146,11 @@ QToolBar::separator {
     width: 6px;
 }
 
+#studioHeader,
 #commandBar {
     background: __PANEL__;
     border: 1px solid __BORDER__;
-    border-radius: 10px;
+    border-radius: 12px;
 }
 
 #brandTitle {
@@ -163,12 +164,15 @@ QToolBar::separator {
     font-size: 11px;
 }
 
-#brandDivider {
-    background: __BORDER__;
-    min-width: 1px;
-    max-width: 1px;
-    min-height: 34px;
-    max-height: 34px;
+#studioBadge {
+    color: __ACCENT__;
+    background: __SURFACE__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    max-width: 54px;
 }
 
 #commandDivider {
@@ -180,63 +184,80 @@ QToolBar::separator {
     margin: 4px 2px;
 }
 
+#studioActionHub {
+    background: transparent;
+    border: none;
+}
+
+#studioActionGroup,
 #commandGroup {
     background: __SURFACE__;
     border: 1px solid __BORDER_LIGHT__;
-    border-radius: 9px;
+    border-radius: 10px;
 }
 
+#studioActionGroup:hover,
 #commandGroup:hover {
     border-color: __BORDER__;
     background: __PANEL_ALT__;
 }
 
+#studioGroupLabel,
 #commandGroupLabel {
     color: __TEXT_MUTED__;
     font-size: 10px;
     font-weight: 600;
 }
 
+#studioCommandButton,
 #commandButton {
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 7px;
+    border-radius: 8px;
     color: __TEXT__;
-    padding: 4px 8px;
+    padding: 4px 9px;
     min-height: 28px;
 }
 
+#studioCommandButton:hover,
 #commandButton:hover {
     background: __PANEL_RAISED__;
     border-color: __BORDER__;
 }
 
+#studioCommandButton:pressed,
+#studioCommandButton:checked,
 #commandButton:pressed,
 #commandButton:checked {
     background: __PANEL_ALT__;
     border-color: __ACCENT__;
 }
 
+#studioCommandButton:focus,
 #commandButton:focus {
     border-color: __BORDER_FOCUS__;
 }
 
+#studioCommandButton:disabled,
 #commandButton:disabled {
     color: __TEXT_DISABLED__;
     background: transparent;
     border-color: transparent;
 }
 
+#studioWorkspaceToggle,
 #workspaceToggle {
     background: __SURFACE__;
     border: 1px solid __BORDER_LIGHT__;
-    border-radius: 7px;
+    border-radius: 9px;
     color: __TEXT_MUTED__;
-    padding: 4px 9px;
+    padding: 4px 11px;
     min-height: 28px;
     min-width: 68px;
 }
 
+#studioWorkspaceToggle:hover,
+#studioWorkspaceToggle:focus,
 #workspaceToggle:hover,
 #workspaceToggle:focus {
     border-color: __BORDER_FOCUS__;
@@ -244,6 +265,7 @@ QToolBar::separator {
     color: __TEXT__;
 }
 
+#studioWorkspaceToggle:checked,
 #workspaceToggle:checked {
     border-color: __ACCENT__;
     background: __SELECTION__;
@@ -265,15 +287,16 @@ QToolBar::separator {
 
 #projectSidebar,
 #inspectorPanel,
+#focusEditor,
 #tablePanel {
     background: __PANEL__;
-    border: 1px solid __BORDER__;
-    border-radius: 10px;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 12px;
 }
 
 #tablePanel {
-    border-color: __BORDER__;
-    background: __SURFACE__;
+    border-color: __BORDER_LIGHT__;
+    background: transparent;
 }
 
 #projectSidebarScroll,
@@ -284,13 +307,15 @@ QToolBar::separator {
     border: none;
 }
 
-#inspectorPanel[active="true"] {
+#inspectorPanel[active="true"],
+#focusEditor[active="true"] {
     border-color: __BORDER_FOCUS__;
 }
 
 #panelTitle,
 #emptyTitle,
-#dialogTitle {
+#dialogTitle,
+#sheetTitle {
     color: __TEXT__;
     font-size: 14px;
     font-weight: 700;
@@ -298,8 +323,17 @@ QToolBar::separator {
 
 #panelHint,
 #dialogHint,
+#sheetHint,
 #projectSummary {
     color: __TEXT_MUTED__;
+}
+
+#emptyHint {
+    color: __TEXT_MUTED__;
+    background: __SURFACE__;
+    border: 1px dashed __BORDER__;
+    border-radius: 10px;
+    padding: 12px;
 }
 
 #projectSummary {
@@ -311,8 +345,8 @@ QToolBar::separator {
 
 #workspaceOverview {
     background: __PANEL__;
-    border: 1px solid __BORDER__;
-    border-radius: 8px;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 10px;
 }
 
 #workspaceSummary {
@@ -325,11 +359,12 @@ QToolBar::separator {
     font-size: 11px;
 }
 
+#studioFilterTray,
 #filterPanel {
     background: __PANEL__;
-    border: 1px solid __BORDER__;
-    border-left: 3px solid __ACCENT__;
-    border-radius: 10px;
+    border: 1px solid __BORDER_LIGHT__;
+    border-top: 2px solid __ACCENT__;
+    border-radius: 12px;
 }
 
 #fieldLabel {
@@ -377,7 +412,7 @@ QToolBar::separator {
 
 #filterChip:checked {
     border-color: __ACCENT__;
-    background: __SELECTION__;
+    background: __PANEL_RAISED__;
     color: __TEXT__;
 }
 
@@ -394,10 +429,17 @@ QToolBar::separator {
 }
 
 #emptyState,
-#dialogHeader {
+#dialogHeader,
+#sheetHeader,
+#sheetSummary {
     background: __PANEL_ALT__;
     border: 1px solid __BORDER_LIGHT__;
     border-radius: 10px;
+}
+
+#sheetSummary {
+    color: __TEXT_MUTED__;
+    padding: 10px 12px;
 }
 
 #sectionLabel {
@@ -433,7 +475,7 @@ QPlainTextEdit#inspectorText:disabled {
 
 #inspectorStatus[state="0"] {
     border-color: __UNVALIDATED_BAR__;
-    color: __TEXT_ERROR__;
+    color: __TEXT_MUTED__;
 }
 
 #primaryButton {
@@ -454,14 +496,18 @@ QPlainTextEdit#inspectorText:disabled {
     color: __TEXT_DISABLED__;
 }
 
+#sheetHeader,
+#sheetPanel,
+#sheetFooter,
 #editHeader,
 #editPanel,
 #editFooter {
     background: __PANEL__;
-    border: 1px solid __BORDER__;
-    border-radius: 10px;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 12px;
 }
 
+#sheetHeader,
 #editHeader {
     background: __PANEL_ALT__;
 }
@@ -473,8 +519,44 @@ QPlainTextEdit#inspectorText:disabled {
     border-color: __BORDER_LIGHT__;
 }
 
+#sheetPanel QLabel#sectionLabel,
 #editPanel QLabel#sectionLabel {
     color: __ACCENT__;
+}
+
+#sheetSection {
+    background: __PANEL__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 12px;
+}
+
+#sheetLog {
+    background: __SURFACE__;
+    border-color: __BORDER_LIGHT__;
+}
+
+#sheetFooter {
+    background: __PANEL_ALT__;
+}
+
+#sheetPrimary {
+    border-color: __BUTTON_DEFAULT__;
+    background: __BUTTON_DEFAULT__;
+    color: #fff;
+    min-width: 116px;
+}
+
+#sheetPrimary:hover,
+#sheetPrimary:focus {
+    border-color: __BUTTON_DEFAULT_HOVER__;
+    background: __BUTTON_DEFAULT_HOVER__;
+}
+
+#sheetSecondary {
+    border-color: __BORDER_LIGHT__;
+    background: __SURFACE__;
+    color: __TEXT__;
+    min-width: 86px;
 }
 
 QToolButton,

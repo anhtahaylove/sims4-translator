@@ -19,7 +19,7 @@ TOKEN_PATTERN = re.compile(r'(\{[^{}]+\}|</?[^<>]+>)')
 
 
 STATUS_META = {
-    FLAG_UNVALIDATED: ('Original', '#d98b7e'),
+    FLAG_UNVALIDATED: ('Original', '#b7a276'),
     FLAG_PROGRESS: ('In progress', '#f0b766'),
     FLAG_VALIDATED: ('Validated', '#62b6ff'),
     FLAG_TRANSLATED: ('Translated', '#5fd6a2'),

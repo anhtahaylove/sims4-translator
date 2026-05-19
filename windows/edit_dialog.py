@@ -84,6 +84,7 @@ class EditDialog(QDialog, Ui_EditDialog):
     def retranslate(self):
         self.setWindowTitle(interface.text('EditWindow', 'Search and Edit'))
         self.edit_title.setText(interface.text('EditWindow', 'Search and Edit'))
+        self.edit_detail.setText('Review suggestions, refine the draft, then validate the selected string.')
         self.dictionary_title.setText('Dictionary suggestions')
         self.search_title.setText('Selected suggestion')
         self.btn_translate.setText(interface.text('EditWindow', 'Translate'))

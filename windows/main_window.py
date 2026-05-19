@@ -282,8 +282,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_help.setTitle(interface.text('MainWindow', 'Help'))
         self.brand_title.setText(APP_NAME)
         self.brand_subtitle.setText('Mod localization workspace')
-        self.project_title.setText('Project')
-        self.filter_title.setText('Filters')
+        self.project_title.setText('Project Rail')
+        self.filter_title.setText('Studio Filters')
         self.filter_hint.setText('Search, status and scope stay close to the table.')
         self.filter_search_label.setText('Search')
         self.filter_status_label.setText('Status')
@@ -291,10 +291,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.filter_file_label.setText('Package')
         self.filter_instance_label.setText('Instance')
         self.filter_clear.setText('Clear filters')
-        self.workspace_hint.setText('Table-first workspace')
+        self.workspace_hint.setText('Translation table')
         self.empty_title.setText('Ready for a package')
         self.empty_detail.setText('Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.')
-        self.inspector_title.setText('Inspector')
+        self.inspector_title.setText('Focus Editor')
         self.inspector_original_label.setText('Original')
         self.inspector_translation_label.setText('Translation draft')
         self.inspector_comment_label.setText('Comment')
@@ -358,7 +358,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.brand_title.setText('TS4 Translator Plus' if compact else APP_NAME)
         self.brand_subtitle.setVisible(not compact)
-        self.brand_divider.setVisible(not compact)
+        self.brand_badge.setVisible(not compact)
         for label in (
                 self.command_file_label,
                 self.command_export_label,
@@ -395,7 +395,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if density == 'wide':
             return False, True, True
         if density == 'medium':
-            return False, False, True
+            return False, False, False
         return False, False, False
 
     def __set_workspace_toggle(self, button, checked):
@@ -431,11 +431,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.activity_drawer.setVisible(activity_visible)
 
         if self.__workspace_density == 'wide':
-            sizes = [270 if project_visible else 0, 1120, 360 if inspector_visible else 0]
+            sizes = [255 if project_visible else 0, 1200, 390 if inspector_visible else 0]
         elif self.__workspace_density == 'medium':
-            sizes = [250 if project_visible else 0, 1080, 330 if inspector_visible else 0]
+            sizes = [240 if project_visible else 0, 1120, 360 if inspector_visible else 0]
         else:
-            sizes = [238 if project_visible else 0, 900, 310 if inspector_visible else 0]
+            sizes = [220 if project_visible else 0, 900, 330 if inspector_visible else 0]
 
         self.workspace_splitter.setSizes(sizes)
         self.command_bar.setProperty('density', self.__workspace_density)
@@ -1012,6 +1012,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.inspector_edit.setEnabled(enabled)
         self.inspector_translation.setEnabled(enabled)
         self.inspector_comment.setEnabled(enabled)
+        self.inspector_empty.setVisible(not enabled)
+        self.inspector_status.setVisible(enabled)
+        self.inspector_original_label.setVisible(enabled)
+        self.inspector_original.setVisible(enabled)
+        self.inspector_translation_label.setVisible(enabled)
+        self.inspector_translation.setVisible(enabled)
+        self.inspector_comment_label.setVisible(enabled)
+        self.inspector_comment.setVisible(enabled)
 
         if not enabled:
             self.inspector_meta.setText('No string selected')

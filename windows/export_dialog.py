@@ -128,6 +128,7 @@ class ExportDialog(QDialog, Ui_ExportDialog):
         self.cb_current_instance.setVisible(False)
         self.cb_separate_instances.setVisible(False)
         self.cb_separate_packages.setVisible(False)
+        self.option_section.setVisible(False)
 
         package = app_state.packages_storage.current_package
         instance = app_state.packages_storage.current_instance
@@ -142,6 +143,12 @@ class ExportDialog(QDialog, Ui_ExportDialog):
 
                 if not package:
                     self.cb_separate_packages.setVisible(True)
+
+        self.option_section.setVisible(
+            self.cb_current_instance.isVisible() or
+            self.cb_separate_instances.isVisible() or
+            self.cb_separate_packages.isVisible()
+        )
 
         self.setMinimumHeight(0)
         self.adjustSize()
