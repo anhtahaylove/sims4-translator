@@ -17,6 +17,16 @@ def stylesheet():
         '__THEME__': theme_name,
 
         '__WINDOW__': colors.WINDOW,
+        '__SURFACE__': colors.SURFACE,
+        '__PANEL__': colors.PANEL,
+        '__PANEL_ALT__': colors.PANEL_ALT,
+        '__PANEL_RAISED__': colors.PANEL_RAISED,
+        '__BORDER__': colors.BORDER,
+        '__ACCENT__': colors.ACCENT,
+        '__ACCENT_HOVER__': colors.ACCENT_HOVER,
+        '__MUTED__': colors.MUTED,
+        '__SUCCESS__': colors.SUCCESS,
+        '__WARNING__': colors.WARNING,
 
         '__TEXT__': colors.TEXT,
         '__TEXT_DISABLED__': colors.TEXT_DISABLED,

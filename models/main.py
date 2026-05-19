@@ -13,6 +13,15 @@ from utils.functions import text_to_table
 from utils.constants import *
 
 
+STATUS_LABELS = {
+    FLAG_UNVALIDATED: 'Original',
+    FLAG_PROGRESS: 'In progress',
+    FLAG_VALIDATED: 'Validated',
+    FLAG_TRANSLATED: 'Translated',
+    FLAG_REPLACED: 'Edited',
+}
+
+
 class Model(AbstractTableModel):
 
     def __init__(self, parent=None):
@@ -27,7 +36,7 @@ class Model(AbstractTableModel):
             COLUMN_MAIN_SOURCE: RECORD_MAIN_SOURCE,
             COLUMN_MAIN_TRANSLATE: RECORD_MAIN_TRANSLATE,
             COLUMN_MAIN_FLAG: RECORD_MAIN_FLAG,
-            COLUMN_MAIN_COMMENT: RECORD_MAIN_COMMENT
+            COLUMN_MAIN_COMMENT: RECORD_MAIN_COMMENT,
         }
 
     def columnCount(self, parent=None):
@@ -54,6 +63,11 @@ class Model(AbstractTableModel):
                 txt = item.source if column == COLUMN_MAIN_SOURCE else item.translate
                 if not txt or not str(txt).strip(' '):
                     return self.color_null
+
+        elif role == Qt.ItemDataRole.TextAlignmentRole:
+            if column in (COLUMN_MAIN_INDEX, COLUMN_MAIN_ID, COLUMN_MAIN_INSTANCE,
+                          COLUMN_MAIN_GROUP, COLUMN_MAIN_FLAG):
+                return Qt.AlignmentFlag.AlignCenter
 
         elif role == Qt.ItemDataRole.DisplayRole:
             if not column:
@@ -92,6 +106,17 @@ class Model(AbstractTableModel):
 
             elif column == COLUMN_MAIN_COMMENT:
                 return item.comment
+
+            elif column == COLUMN_MAIN_FLAG:
+                return STATUS_LABELS.get(item.flag, '')
+
+        elif role == Qt.ItemDataRole.ToolTipRole:
+            if column == COLUMN_MAIN_SOURCE:
+                return text_to_table(item.source) if item.source else '[NULL]'
+            elif column == COLUMN_MAIN_TRANSLATE:
+                return text_to_table(item.translate) if item.translate else '[NULL]'
+            elif column == COLUMN_MAIN_FLAG:
+                return STATUS_LABELS.get(item.flag, '')
 
         return None
 
@@ -154,8 +179,8 @@ class ProxyModel(QSortFilterProxyModel):
         model.sort(self.__column, self.__order)
 
     def check_filter(self, item):
-        if (self.__package and item[RECORD_MAIN_PACKAGE] != self.__package) \
-                or (self.__instance and item[RECORD_MAIN_INSTANCE] != self.__instance) \
+        if (self.__package and not item.has_package(self.__package)) \
+                or (self.__instance and not item.has_instance(self.__instance)) \
                 or (self.__flags and item[RECORD_MAIN_FLAG] in self.__flags):
             return False
 
@@ -186,7 +211,8 @@ class ProxyModel(QSortFilterProxyModel):
                 COLUMN_MAIN_GROUP: interface.text('MainTableView', 'Group'),
                 COLUMN_MAIN_SOURCE: interface.text('MainTableView', 'Original'),
                 COLUMN_MAIN_TRANSLATE: interface.text('MainTableView', 'Translated'),
-                COLUMN_MAIN_COMMENT: interface.text('MainTableView', 'Comment')
+                COLUMN_MAIN_COMMENT: interface.text('MainTableView', 'Comment'),
+                COLUMN_MAIN_FLAG: interface.text('MainTableView', 'Status'),
             }
             return header_mapping.get(section, '')
         return None

@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from PySide6.QtCore import QRect
-from PySide6.QtWidgets import QStyledItemDelegate, QProxyStyle, QStyleOptionHeader, QStyle
-from PySide6.QtGui import QColor, QIcon
+import html
+import re
+
+from PySide6.QtCore import QRect, QRectF, QSize, Qt
+from PySide6.QtGui import QColor, QIcon, QTextDocument
+from PySide6.QtWidgets import QProxyStyle, QStyle, QStyledItemDelegate, QStyleOptionHeader, QStyleOptionViewItem
 
 import themes.light as light
 import themes.dark as dark
@@ -12,6 +15,42 @@ from singletons.state import app_state
 from utils.constants import *
 
 
+TOKEN_PATTERN = re.compile(r'(\{[^{}]+\}|</?[^<>]+>)')
+
+
+STATUS_META = {
+    FLAG_UNVALIDATED: ('Original', '#ef6f73'),
+    FLAG_PROGRESS: ('In progress', '#d6a85a'),
+    FLAG_VALIDATED: ('Validated', '#7aa2f7'),
+    FLAG_TRANSLATED: ('Translated', '#73bd79'),
+    FLAG_REPLACED: ('Edited', '#cf84cf'),
+}
+
+
+class GridPalette:
+
+    def __init__(self) -> None:
+        colors = dark if config.value('interface', 'theme') == 'dark' else light
+        self.surface = QColor(colors.SURFACE)
+        self.panel = QColor(colors.PANEL)
+        self.panel_alt = QColor(colors.PANEL_ALT)
+        self.panel_raised = QColor(colors.PANEL_RAISED)
+        self.border = QColor(colors.BORDER)
+        self.accent = QColor(colors.ACCENT)
+        self.muted = QColor(colors.TEXT_MUTED)
+        self.text = QColor(colors.TEXT)
+        self.disabled = QColor(colors.TEXT_DISABLED)
+        self.selection = QColor(colors.SELECTION)
+        self.selection_text = QColor(colors.SELECTION_TEXT)
+        self.warning = QColor(colors.WARNING)
+        self.different = QColor(colors.DIFFERENT_TABLEVIEW)
+
+    def row_background(self, row: int, selected: bool = False) -> QColor:
+        if selected:
+            return self.selection
+        return self.panel if row % 2 == 0 else self.panel_alt
+
+
 class MainDelegatePaint(QStyledItemDelegate):
 
     def __init__(self, parent=None):
@@ -19,68 +58,169 @@ class MainDelegatePaint(QStyledItemDelegate):
 
         self.model = app_state.packages_storage.model
         self.proxy = app_state.packages_storage.proxy
-
-        is_dark_theme = config.value('interface', 'theme') == 'dark'
-
-        colors_light = {
-            FLAG_UNVALIDATED: [QColor(light.UNVALIDATED_TABLEVIEW), QColor(light.UNVALIDATED_TABLEVIEW_ODD)],
-            FLAG_PROGRESS: [QColor(light.PROGRESS_TABLEVIEW), QColor(light.PROGRESS_TABLEVIEW_ODD)],
-            FLAG_VALIDATED: [QColor(light.VALIDATED_TABLEVIEW), QColor(light.VALIDATED_TABLEVIEW_ODD)],
-            FLAG_REPLACED: [QColor('#c7ffff'), QColor('#e6ffff')],
-            FLAG_TRANSLATED: [QColor(light.TRANSLATED_TABLEVIEW), QColor(light.TRANSLATED_TABLEVIEW_ODD)]
-        }
-
-        colors_dark = {
-            FLAG_UNVALIDATED: [QColor(dark.UNVALIDATED_TABLEVIEW), QColor(dark.UNVALIDATED_TABLEVIEW_ODD)],
-            FLAG_PROGRESS: [QColor(dark.PROGRESS_TABLEVIEW), QColor(dark.PROGRESS_TABLEVIEW_ODD)],
-            FLAG_VALIDATED: [QColor(dark.VALIDATED_TABLEVIEW), QColor(dark.VALIDATED_TABLEVIEW_ODD)],
-            FLAG_REPLACED: [QColor('#c7ffff'), QColor('#e6ffff')],
-            FLAG_TRANSLATED: [QColor(dark.TRANSLATED_TABLEVIEW), QColor(dark.TRANSLATED_TABLEVIEW_ODD)]
-        }
-
-        diffirent_light = [QColor(light.DIFFERENT_TABLEVIEW), QColor(light.DIFFERENT_TABLEVIEW_ODD)]
-        diffirent_dark = [QColor(dark.DIFFERENT_TABLEVIEW), QColor(dark.DIFFERENT_TABLEVIEW_ODD)]
-
-        self.__colors = colors_dark if is_dark_theme else colors_light
-        self.__diffirent = diffirent_dark if is_dark_theme else diffirent_light
+        self.palette = GridPalette()
 
     def paint(self, painter, option, index):
+        item = self.__item(index)
+        if item is None:
+            super().paint(painter, option, index)
+            return
+
+        opt = QStyleOptionViewItem(option)
+        self.initStyleOption(opt, index)
+
+        painter.save()
+        painter.setRenderHint(painter.RenderHint.Antialiasing, True)
+
+        selected = bool(opt.state & QStyle.StateFlag.State_Selected)
+        self.__paint_background(painter, opt, index, item, selected)
+
+        if index.column() == COLUMN_MAIN_FLAG:
+            self.__paint_status(painter, opt, item)
+        elif index.column() in (COLUMN_MAIN_SOURCE, COLUMN_MAIN_TRANSLATE):
+            self.__paint_rich_text(painter, opt, index, selected)
+        else:
+            self.__paint_text(painter, opt, index, selected)
+
+        if opt.state & QStyle.StateFlag.State_HasFocus:
+            focus_rect = opt.rect.adjusted(1, 1, -2, -2)
+            painter.setPen(self.palette.accent)
+            painter.drawRoundedRect(focus_rect, 4, 4)
+
+        painter.restore()
+
+    def sizeHint(self, option, index):
+        return QSize(super().sizeHint(option, index).width(), 42)
+
+    def __item(self, index):
         try:
             row = self.proxy.mapToSource(index).row()
-            column = index.column()
-
             if 0 <= row < len(self.model.filtered):
-                item = self.model.filtered[row]
+                return self.model.filtered[row]
+        except (AttributeError, IndexError):
+            return None
+        return None
 
-                remainder = index.row() % 2
-                if (column == COLUMN_MAIN_SOURCE and item.source_old or
-                        column == COLUMN_MAIN_TRANSLATE and item.translate_old):
-                    color = self.__diffirent[remainder]
-                else:
-                    color = self.__colors[item.flag][remainder]
+    def __paint_background(self, painter, option, index, item, selected: bool) -> None:
+        color = self.palette.row_background(index.row(), selected)
 
-                painter.fillRect(option.rect, color)
+        if not selected and (
+                index.column() == COLUMN_MAIN_SOURCE and item.source_old or
+                index.column() == COLUMN_MAIN_TRANSLATE and item.translate_old
+        ):
+            color = self.__mix(color, self.palette.warning, 0.18)
 
-        except IndexError:
-            pass
+        painter.fillRect(option.rect, color)
 
-        super().paint(painter, option, index)
+        painter.setPen(self.palette.border)
+        painter.drawLine(option.rect.bottomLeft(), option.rect.bottomRight())
+
+    def __paint_status(self, painter, option, item) -> None:
+        label, color = STATUS_META.get(item.flag, ('Unknown', self.palette.muted.name()))
+
+        pill_rect = option.rect.adjusted(8, 10, -8, -10)
+        if pill_rect.width() < 28:
+            pill_rect = option.rect.adjusted(4, 12, -4, -12)
+
+        fill = QColor(color)
+        fill.setAlpha(62 if config.value('interface', 'theme') == 'dark' else 42)
+        border = QColor(color)
+
+        painter.setPen(border)
+        painter.setBrush(fill)
+        painter.drawRoundedRect(pill_rect, pill_rect.height() / 2, pill_rect.height() / 2)
+
+        painter.setPen(border if config.value('interface', 'theme') == 'dark' else self.palette.text)
+        painter.drawText(pill_rect, Qt.AlignmentFlag.AlignCenter, label)
+
+    def __paint_rich_text(self, painter, option, index, selected: bool) -> None:
+        text = index.data(Qt.ItemDataRole.DisplayRole) or ''
+        rect = option.rect.adjusted(10, 5, -10, -5)
+
+        document = QTextDocument()
+        document.setDocumentMargin(0)
+        document.setDefaultFont(option.font)
+        document.setTextWidth(rect.width())
+        document.setHtml(self.__highlight_html(text, selected))
+
+        painter.save()
+        painter.translate(rect.topLeft())
+        painter.setClipRect(QRectF(0, 0, rect.width(), rect.height()))
+        document.drawContents(painter, QRectF(0, 0, rect.width(), rect.height()))
+        painter.restore()
+
+    def __paint_text(self, painter, option, index, selected: bool) -> None:
+        text = index.data(Qt.ItemDataRole.DisplayRole)
+        if text is None:
+            return
+
+        text = str(text)
+        rect = option.rect.adjusted(10, 0, -10, 0)
+        color = self.palette.selection_text if selected else self.palette.text
+
+        if text in ('[NULL]', '[SPACEBAR]'):
+            color = self.palette.disabled
+
+        painter.setPen(color)
+        alignment = Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft
+        if index.column() in (COLUMN_MAIN_INDEX, COLUMN_MAIN_ID, COLUMN_MAIN_INSTANCE,
+                              COLUMN_MAIN_GROUP):
+            alignment = Qt.AlignmentFlag.AlignCenter
+
+        elided = option.fontMetrics.elidedText(text, Qt.TextElideMode.ElideRight, rect.width())
+        painter.drawText(rect, alignment, elided)
+
+    def __highlight_html(self, text: str, selected: bool) -> str:
+        text_color = self.palette.selection_text if selected else self.palette.text
+        token_color = self.palette.selection_text if selected else self.palette.accent
+        token_bg = self.__mix(self.palette.accent, self.palette.panel_raised, 0.72)
+
+        parts = []
+        pos = 0
+        for match in TOKEN_PATTERN.finditer(text):
+            parts.append(html.escape(text[pos:match.start()]))
+            token = html.escape(match.group(0))
+            parts.append(
+                '<span style="'
+                f'color: {token_color.name()};'
+                f'background-color: {token_bg.name()};'
+                'font-weight: 600;'
+                'white-space: nowrap;'
+                '">'
+                f'{token}'
+                '</span>'
+            )
+            pos = match.end()
+        parts.append(html.escape(text[pos:]))
+
+        return (
+            '<body style="margin:0; padding:0;">'
+            f'<span style="color: {text_color.name()}; line-height: 1.25;">'
+            f'{"".join(parts)}'
+            '</span>'
+            '</body>'
+        )
+
+    @staticmethod
+    def __mix(a: QColor, b: QColor, ratio: float) -> QColor:
+        ratio = max(0.0, min(1.0, ratio))
+        inverse = 1.0 - ratio
+        return QColor(
+            int(a.red() * inverse + b.red() * ratio),
+            int(a.green() * inverse + b.green() * ratio),
+            int(a.blue() * inverse + b.blue() * ratio),
+        )
 
 
 class DictionaryDelegatePaint(QStyledItemDelegate):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-
-        is_dark_theme = config.value('interface', 'theme') == 'dark'
-
-        colors_light = [QColor(light.TRANSLATED_TABLEVIEW), QColor(light.TRANSLATED_TABLEVIEW_ODD)]
-        colors_dark = [QColor(dark.TRANSLATED_TABLEVIEW), QColor(dark.TRANSLATED_TABLEVIEW_ODD)]
-
-        self.__colors = colors_dark if is_dark_theme else colors_light
+        self.palette = GridPalette()
 
     def paint(self, painter, option, index):
-        painter.fillRect(option.rect, self.__colors[index.row() % 2])
+        selected = bool(option.state & QStyle.StateFlag.State_Selected)
+        painter.fillRect(option.rect, self.palette.row_background(index.row(), selected))
         super().paint(painter, option, index)
 
 

@@ -19,6 +19,30 @@ This is a simple program for easy translation of mods for The Sims 4.
 - Save the translation in a separate package or save the translation immediately in an open mod (finalization).
 - Profit.
 
+## Synthetic GUI Smoke Test
+
+If you do not have a real mod package available, generate a deterministic smoke-test package:
+
+```powershell
+python scripts\create_synthetic_package.py
+```
+
+The package is written to:
+
+```text
+build/synthetic/synthetic_smoke.package
+```
+
+Open the app, load that package, and confirm the table shows two unique rows: `Hello` and `World`. Then export the loaded strings as STBL/XML/XML-DP/JSON/Binary/CSV, and try Save As or Finalize As.
+
+After the manual click-through, verify the generated artifacts:
+
+```powershell
+python scripts\verify_synthetic_smoke.py --directory build\synthetic --require-gui-outputs
+```
+
+The verifier checks that exports contain only the two unique strings, no duplicate rows came back, no temporary export files were left behind, and the package still loads through the normal storage layer with dedupe enabled.
+
 ## Languages
 
 Starting from version 1.2, the translation of the interface has been made into separate files. They are available in the folder:

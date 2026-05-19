@@ -21,7 +21,7 @@ QMainWindow,
 QDialog,
 QMessageBox {
     color: __TEXT__;
-    background: __WINDOW__;
+    background: __SURFACE__;
 }
 
 QTableView {
@@ -116,28 +116,62 @@ QLabel:disabled {
 
 QToolBar {
     color: __TEXT__;
-    background: __WINDOW__;
-    padding: 0;
-    spacing: 1px;
+    background: __PANEL__;
+    padding: 4px;
+    spacing: 4px;
+    border: 1px solid __BORDER__;
+    border-radius: 6px;
 }
 QToolBar * {
     margin: 0px;
     padding: 0px;
 }
 QToolBar::separator {
-    width: 7px;
+    width: 8px;
     background: transparent;
     margin: 0 0 0 0;
 }
 
+#commandBar {
+    background: __PANEL__;
+    border: 1px solid __BORDER__;
+    border-radius: 8px;
+}
+
+#commandButton {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: __TEXT__;
+    padding: 5px 10px;
+    min-height: 28px;
+}
+
+#commandButton:hover {
+    background: __PANEL_RAISED__;
+    border-color: __BORDER__;
+}
+
+#commandButton:pressed,
+#commandButton:checked {
+    background: __PANEL_ALT__;
+    border-color: __ACCENT__;
+}
+
+#commandButton:disabled {
+    color: __TEXT_DISABLED__;
+    background: transparent;
+    border-color: transparent;
+}
+
 QToolButton,
 QToolButton:hover {
-    border-radius: 0;
+    border-radius: 4px;
     text-align: center;
     text-decoration: none;
     color: __TEXT__;
     border: 0;
-    background-color: __WINDOW__;
+    background-color: transparent;
     margin: 0;
     padding: 0;
     min-width: 21px;
@@ -358,7 +392,7 @@ QComboBox::drop-down:no-frame::disabled {
 }
 
 QMenuBar {
-    background-color: __WINDOW__;
+    background-color: __SURFACE__;
     padding: 4px 8px;
 }
 QMenuBar::item {
@@ -374,8 +408,8 @@ QMenuBar::item:selected {
 
 QMenu,
 QComboBox QAbstractItemView {
-    background-color: __WINDOW__;
-    border: 1px solid __BORDER_DARK__;
+    background-color: __PANEL__;
+    border: 1px solid __BORDER__;
     padding: 1px 0;
     selection-background-color: __SELECTION__;
     selection-color: __SELECTION_TEXT__;
@@ -383,10 +417,10 @@ QComboBox QAbstractItemView {
 QComboBox QAbstractItemView {
     padding: 1px;
     border-color: __BORDER_LIGHT__;
-    background-color: __WINDOW__;
+    background-color: __PANEL__;
 }
 QComboBox QAbstractItemView::item {
-    background-color: __WINDOW__;
+    background-color: __PANEL__;
     color: __TEXT__;
     padding: 0 7px;
     height: 26px;
@@ -468,7 +502,7 @@ QMenu::right-arrow:disabled {
 QHeaderView {
     border: none;
     border-bottom: 1px solid __BORDER_LIGHT__;
-    background-color: __WINDOW__;
+    background-color: __PANEL__;
     color: __TEXT__;
     border-radius: 0;
     min-width: 30px;
@@ -476,7 +510,7 @@ QHeaderView {
 QHeaderView::section {
     border: none;
     border-right: 1px solid __BORDER_LIGHT__;
-    background-color: __WINDOW__;
+    background-color: __PANEL__;
     color: __TEXT__;
     border-radius: 0;
     height: 26px;
@@ -499,15 +533,88 @@ QHeaderView::up-arrow {
 }
 
 QProgressBar {
-    border: 1px solid __BORDER_LIGHT__;
+    border: 1px solid __BORDER__;
     background-color: __PROGRESSBAR__;
-    border-radius: 0;
+    border-radius: 6px;
     color: __TEXT__;
     height: 26px;
     text-align: center;
 }
 QProgressBar::chunk {
-    background-color: __SELECTION__;
+    background-color: __ACCENT__;
+    border-radius: 5px;
+}
+
+#jobDrawer {
+    background: transparent;
+}
+
+#jobDrawerHeader {
+    background: __PANEL__;
+    border: 1px solid __BORDER__;
+    border-radius: 8px;
+}
+
+#jobDrawerBody {
+    background: __PANEL_ALT__;
+    border-left: 1px solid __BORDER__;
+    border-right: 1px solid __BORDER__;
+    border-bottom: 1px solid __BORDER__;
+    border-radius: 8px;
+}
+
+#jobDrawerToggle {
+    color: __TEXT__;
+    background: __PANEL_RAISED__;
+    border: 1px solid __BORDER__;
+    border-radius: 6px;
+    padding: 4px 10px;
+    min-width: 72px;
+    height: 26px;
+}
+
+#jobDrawerToggle:hover {
+    border-color: __ACCENT__;
+}
+
+#jobStatusLabel,
+#jobDetail,
+#jobEmptyLabel,
+#jobPercent {
+    color: __TEXT_MUTED__;
+}
+
+#jobRow {
+    background: __PANEL__;
+    border: 1px solid __BORDER__;
+    border-radius: 8px;
+}
+
+#jobTitle {
+    color: __TEXT__;
+    font-weight: 600;
+}
+
+#jobProgress {
+    min-height: 10px;
+    max-height: 10px;
+}
+
+#jobCancelButton,
+#jobClearButton {
+    min-width: 54px;
+    height: 24px;
+    border-radius: 6px;
+    padding: 0 8px;
+}
+
+#jobLog {
+    background: __SURFACE__;
+    border: 1px solid __BORDER__;
+    border-radius: 6px;
+    color: __TEXT_MUTED__;
+    font-family: __FONT_MONOSPACE__;
+    padding: 6px;
 }
 
 QToolTip {

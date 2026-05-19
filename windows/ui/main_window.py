@@ -1,10 +1,22 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtCore import QMetaObject, Qt
-from PySide6.QtWidgets import QLabel, QMenu, QMenuBar, QProgressBar, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit
+from PySide6.QtWidgets import (
+    QFrame,
+    QLabel,
+    QMenu,
+    QMenuBar,
+    QToolButton,
+    QVBoxLayout,
+    QHBoxLayout,
+    QWidget,
+    QLineEdit,
+    QSizePolicy,
+)
 from PySide6.QtGui import QAction, QIcon
 
 from widgets.colorbar import QColorBar
+from widgets.job_drawer import QJobStatusDrawer
 from widgets.tableview import QMainTableView
 from widgets.toolbar import QToolBar
 
@@ -118,6 +130,9 @@ class Ui_MainWindow(object):
         self.action_export_binary_s4s = QAction(MainWindow)
         self.action_export_binary_s4s.setIcon(QIcon(':/images/export.png'))
 
+        self.action_export_translation_hub_csv = QAction(MainWindow)
+        self.action_export_translation_hub_csv.setIcon(QIcon(':/images/export_xml.png'))
+
         self.action_group_original = QAction(MainWindow)
         self.action_group_original.setCheckable(True)
         self.action_group_highbit = QAction(MainWindow)
@@ -183,6 +198,7 @@ class Ui_MainWindow(object):
         self.menu_export_translation.addAction(self.action_export_xml_dp)
         self.menu_export_translation.addAction(self.action_export_json_s4s)
         self.menu_export_translation.addAction(self.action_export_binary_s4s)
+        self.menu_export_translation.addAction(self.action_export_translation_hub_csv)
         self.menu_translation.addAction(self.action_replace)
         self.menu_translation.addSeparator()
         self.menu_translation.addAction(self.action_translate_from_dictionaries)
@@ -213,50 +229,69 @@ class Ui_MainWindow(object):
         centralwidget = QWidget(MainWindow)
         MainWindow.setCentralWidget(centralwidget)
 
+        self.command_bar = QFrame(MainWindow)
+        self.command_bar.setObjectName('commandBar')
+        command_layout = QHBoxLayout(self.command_bar)
+        command_layout.setContentsMargins(10, 8, 10, 8)
+        command_layout.setSpacing(6)
+
+        self.command_open = self.__command_button(self.action_load_file)
+        self.command_save = self.__command_button(self.action_save)
+        self.command_import = self.__command_button(self.action_import_translation)
+
+        self.command_export = QToolButton(self.command_bar)
+        self.command_export.setObjectName('commandButton')
+        self.command_export.setIcon(QIcon(':/images/export.png'))
+        self.command_export.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        self.command_export.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        self.command_export.setMenu(self.menu_export_translation)
+        self.command_export.setEnabled(False)
+
+        self.command_translate = self.__command_button(self.action_translate)
+        self.command_dictionary = self.__command_button(self.action_save_dictionary)
+
+        command_layout.addWidget(self.command_open)
+        command_layout.addWidget(self.command_save)
+        command_layout.addWidget(self.command_import)
+        command_layout.addWidget(self.command_export)
+        command_layout.addWidget(self.command_translate)
+        command_layout.addWidget(self.command_dictionary)
+
+        command_spacer = QWidget(self.command_bar)
+        command_spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        command_layout.addWidget(command_spacer)
+
+        self.command_options = self.__command_button(self.action_options)
+        command_layout.addWidget(self.command_options)
+
         self.toolbar = QToolBar(MainWindow)
+        self.toolbar.setObjectName('filterBar')
         self.tableview = QMainTableView(MainWindow)
         self.colorbar = QColorBar(MainWindow)
+        self.job_drawer = QJobStatusDrawer(MainWindow)
 
         self.colorbar.setVisible(False)
 
-        MainWindow.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.toolbar)
-
         layout = QVBoxLayout(centralwidget)
+        layout.setContentsMargins(8, 8, 8, 8)
         layout.setSpacing(8)
+        layout.addWidget(self.command_bar)
+        layout.addWidget(self.toolbar)
         layout.addWidget(self.colorbar)
-        layout.addWidget(self.tableview)
+        layout.addWidget(self.tableview, 1)
 
         self.monospace = QLineEdit(MainWindow)
         self.monospace.setObjectName('monospace')
         self.monospace.setVisible(False)
 
         layout.addWidget(self.monospace)
-
-        self.progress_widget = QWidget(MainWindow)
-        self.progress_widget.setVisible(False)
-
-        layout_progress = QVBoxLayout(self.progress_widget)
-        layout_progress.setContentsMargins(0, 0, 0, 0)
-
-        layout_progress_percent = QHBoxLayout()
-
-        self.progress_label = QLabel(self.progress_widget)
-        self.progress_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.progress_bar = QProgressBar(self.progress_widget)
-        self.progress_bar.setTextVisible(False)
-        self.progress_bar.setMaximum(0)
-        self.progress_bar.setValue(-1)
-
-        self.percent_label = QLabel(self.progress_widget)
-        self.percent_label.setStyleSheet('padding: 0 5px;')
-
-        layout_progress_percent.addWidget(self.progress_bar)
-        layout_progress_percent.addWidget(self.percent_label)
-
-        layout_progress.addWidget(self.progress_label)
-        layout_progress.addLayout(layout_progress_percent)
-
-        layout.addWidget(self.progress_widget)
+        layout.addWidget(self.job_drawer)
 
         QMetaObject.connectSlotsByName(MainWindow)
+
+    def __command_button(self, action):
+        button = QToolButton(self.command_bar)
+        button.setObjectName('commandButton')
+        button.setDefaultAction(action)
+        button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        return button

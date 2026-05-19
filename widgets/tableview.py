@@ -23,11 +23,12 @@ class AbstractTableView(QTableView):
         self.setShowGrid(False)
         self.setGridStyle(Qt.PenStyle.NoPen)
         self.setSortingEnabled(True)
-        self.setWordWrap(False)
+        self.setWordWrap(True)
+        self.setAlternatingRowColors(False)
 
         header = self.verticalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeMode.Fixed)
-        header.setDefaultSectionSize(26)
+        header.setDefaultSectionSize(42)
         header.setVisible(False)
 
         header = self.horizontalHeader()
@@ -35,6 +36,7 @@ class AbstractTableView(QTableView):
         header.setSortIndicator(0, Qt.SortOrder.AscendingOrder)
         header.setHighlightSections(False)
         header.setStyle(HeaderProxy())
+        header.setDefaultAlignment(Qt.AlignmentFlag.AlignCenter)
 
     def selected_item(self):
         model = self.model()
@@ -72,13 +74,17 @@ class QMainTableView(AbstractTableView):
     def resize_columns(self):
         header = self.horizontalHeader()
 
+        header.setStretchLastSection(False)
+        header.setSectionResizeMode(COLUMN_MAIN_SOURCE, QHeaderView.ResizeMode.Stretch)
         header.setSectionResizeMode(COLUMN_MAIN_TRANSLATE, QHeaderView.ResizeMode.Stretch)
 
-        self.setColumnWidth(COLUMN_MAIN_INDEX, 50)
-        self.setColumnWidth(COLUMN_MAIN_INSTANCE, 160)
-        self.setColumnWidth(COLUMN_MAIN_SOURCE, 300)
+        self.setColumnWidth(COLUMN_MAIN_INDEX, 56)
+        self.setColumnWidth(COLUMN_MAIN_ID, 108)
+        self.setColumnWidth(COLUMN_MAIN_INSTANCE, 150)
+        self.setColumnWidth(COLUMN_MAIN_GROUP, 92)
+        self.setColumnWidth(COLUMN_MAIN_SOURCE, 360)
         self.setColumnWidth(COLUMN_MAIN_COMMENT, 175)
-        self.setColumnWidth(COLUMN_MAIN_FLAG, 50)
+        self.setColumnWidth(COLUMN_MAIN_FLAG, 118)
 
         self.setColumnHidden(0, True)
 

@@ -1,0 +1,9 @@
+{
+  "generated_at": "2026-05-19T04:07:06.105806+00:00",
+  "mode": "deterministic_ast",
+  "files_detected": 136,
+  "code_files_analyzed": 74,
+  "nodes": 1022,
+  "edges": 2098,
+  "communities": 32
+}

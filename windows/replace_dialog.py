@@ -2,7 +2,7 @@
 
 import re
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QDialog
+from PySide6.QtWidgets import QDialog
 
 from .ui.replace_dialog import Ui_ReplaceDialog
 
@@ -51,8 +51,6 @@ class ReplaceDialog(QDialog, Ui_ReplaceDialog):
 
         if search:
             for item in app_state.packages_storage.items():
-                QApplication.processEvents()
-
                 if self.rb_not_validated_strings.isChecked() and item.flag != FLAG_UNVALIDATED:
                     continue
 

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from dataclasses import dataclass
+
 from PySide6.QtCore import Qt, QObject, Slot
-from PySide6.QtWidgets import QApplication, QDialog, QMenu
+from PySide6.QtWidgets import QDialog, QMenu
 from PySide6.QtGui import QIcon
 
 from .ui.edit_dialog import Ui_EditDialog
@@ -16,7 +18,35 @@ from singletons.state import app_state
 from singletons.translator import translator
 from singletons.undo import undo
 from utils.functions import text_to_edit, text_to_stbl
+from utils.task_runner import CancellationToken, TaskReporter, TaskRunner
 from utils.constants import *
+
+
+@dataclass(frozen=True)
+class EditTranslationRequest:
+    engine: str
+    source: str
+
+
+@dataclass(frozen=True)
+class EditTranslationResult:
+    text: str = ''
+    error: str = ''
+
+
+def edit_translation_task(
+        token: CancellationToken,
+        _reporter: TaskReporter,
+        request: EditTranslationRequest
+) -> EditTranslationResult:
+    token.raise_if_cancelled()
+    response = translator.translate(request.engine, request.source)
+    token.raise_if_cancelled()
+
+    if response.status_code == 200:
+        return EditTranslationResult(text=response.text)
+
+    return EditTranslationResult(error=response.text)
 
 
 class EditDialog(QDialog, Ui_EditDialog):
@@ -28,6 +58,8 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowMaximizeButtonHint)
 
         self.item = None
+        self.__runner = TaskRunner(max_threads=1, parent=self)
+        self.__translate_handle = None
 
         self.tableview.clicked.connect(self.tableview_click)
         self.tableview.customContextMenuRequested.connect(self.generate_item_context_menu)
@@ -96,6 +128,11 @@ class EditDialog(QDialog, Ui_EditDialog):
             self.txt_search.setPlainText(text_to_edit(text))
 
     def prepare(self, item):
+        if self.__translate_handle:
+            self.__translate_handle.cancel()
+            self.__translate_handle = None
+            self.btn_translate.setEnabled(True)
+
         self.item = item
 
         self.txt_search.setPlainText('')
@@ -149,17 +186,48 @@ class EditDialog(QDialog, Ui_EditDialog):
     def translate_click(self):
         self.lbl_status.setStyleSheet('')
         self.lbl_status.setText(interface.text('EditWindow', 'Loading...'))
-        QApplication.processEvents()
-        response = translator.translate(self.cb_api.currentText(), self.item.source)
-        if response.status_code == 200:
-            self.txt_translate.setPlainText(text_to_edit(response.text))
-            self.lbl_status.setText('')
+        self.btn_translate.setEnabled(False)
+
+        if self.__translate_handle:
+            self.__translate_handle.cancel()
+
+        request = EditTranslationRequest(self.cb_api.currentText(), self.item.source)
+        self.__translate_handle = self.__runner.start(
+            edit_translation_task,
+            request,
+            job_name=interface.text('EditWindow', 'Translate')
+        )
+        self.__translate_handle.result.connect(self.__translated)
+        self.__translate_handle.error.connect(self.__translation_error)
+        self.__translate_handle.finished.connect(
+            lambda cancelled, handle=self.__translate_handle: self.__translation_finished(cancelled, handle)
+        )
+
+    @Slot(object)
+    def __translated(self, result: EditTranslationResult):
+        if result.error:
+            self.__show_translation_error(result.error)
         else:
-            color = dark.TEXT_ERROR if config.value('interface', 'theme') == 'dark' else light.TEXT_ERROR
-            self.lbl_status.setStyleSheet(f'color: {color};')
-            self.lbl_status.setText(response.text)
+            self.txt_translate.setPlainText(text_to_edit(result.text))
+            self.lbl_status.setText('')
+
+    @Slot(object)
+    def __translation_error(self, error):
+        self.__show_translation_error(error.message)
+
+    def __translation_finished(self, _cancelled: bool, handle):
+        if self.__translate_handle is handle:
+            self.btn_translate.setEnabled(True)
+            self.__translate_handle = None
+
+    def __show_translation_error(self, message: str):
+        color = dark.TEXT_ERROR if config.value('interface', 'theme') == 'dark' else light.TEXT_ERROR
+        self.lbl_status.setStyleSheet(f'color: {color};')
+        self.lbl_status.setText(message)
 
     def cancel_click(self):
+        if self.__translate_handle:
+            self.__translate_handle.cancel()
         self.close()
 
     def generate_item_context_menu(self, position):

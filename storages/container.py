@@ -83,6 +83,10 @@ class Container:
 
         return items
 
+    def set_loaded_metadata(self, instances: tuple, row_count: int) -> None:
+        self.instances = list(instances)
+        self.__len = row_count
+
     def open_package(self, filename: str) -> List[tuple]:
         language_source = config.value('translation', 'source')
         language_dest = config.value('translation', 'destination')
@@ -278,12 +282,12 @@ class Container:
     def save(self, path: str = None) -> None:
         if not path:
             path = os.path.join(self.directory, self.filename + '.package')
-        app_state.packages_storage.save(path)
+        app_state.packages_storage.save(path, package_key=self.key)
 
     def finalize(self, path: str = None) -> None:
         if not path:
             path = os.path.join(self.directory, self.name + '.package')
-        app_state.packages_storage.finalize(self.path, path)
+        app_state.packages_storage.finalize(self.path, path, package_key=self.key)
 
     def backup(self, path: str = None) -> str:
         backup = (path if path else self.path) + '.backup'

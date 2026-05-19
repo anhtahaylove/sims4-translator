@@ -2,7 +2,6 @@
 
 import sys
 import pyperclip
-import time
 from PySide6.QtCore import Qt, QTimer, Slot
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QMessageBox
 from PySide6.QtGui import QAction, QIcon
@@ -18,7 +17,6 @@ from .translate_dialog import TranslateDialog
 
 from singletons.config import config
 from singletons.interface import interface
-from singletons.translator import translator
 from singletons.signals import progress_signals, window_signals
 from singletons.state import app_state
 from singletons.undo import undo
@@ -96,6 +94,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_export_xml_dp.triggered.connect(self.export_translation_xml_dp)
         self.action_export_json_s4s.triggered.connect(self.export_translation_json_s4s)
         self.action_export_binary_s4s.triggered.connect(self.export_translation_binary_s4s)
+        self.action_export_translation_hub_csv.triggered.connect(self.export_translation_hub_csv)
         self.action_save_dictionary.triggered.connect(self.save_dictionary)
         self.action_close.triggered.connect(self.close_package)
         self.action_exit.triggered.connect(sys.exit)
@@ -172,6 +171,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         progress_signals.finished.connect(self.__finished_progress)
 
         window_signals.message.connect(self.__message)
+        window_signals.log.connect(self.job_drawer.log_message)
 
         undo.signals.updated.connect(self.__undo_updated)
         undo.signals.restored.connect(self.__undo_restored)
@@ -204,6 +204,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_export_xml_dp.setText(interface.text('MainWindow', 'To XML (Deaderpool\'s STBL editor)...'))
         self.action_export_json_s4s.setText(interface.text('MainWindow', 'To JSON (Sims 4 Studio format)...'))
         self.action_export_binary_s4s.setText(interface.text('MainWindow', 'To Binary (Sims 4 Studio format)...'))
+        self.action_export_translation_hub_csv.setText('Sims 4 Translation Hub CSV (*.csv)')
         self.action_group_original.setText(interface.text('MainWindow', 'Use original group'))
         self.action_group_highbit.setText(interface.text('MainWindow', 'Use high-bit'))
         self.action_export_stbl.setText(interface.text('MainWindow', 'To STBL...'))
@@ -218,6 +219,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_colorbar.setText(interface.text('MainWindow', 'Color visualization'))
         self.menu_file.setTitle(interface.text('MainWindow', 'File'))
         self.menu_export_translation.setTitle(interface.text('MainWindow', 'Export translation'))
+        self.command_export.setText(interface.text('MainWindow', 'Export'))
+        self.command_export.setToolTip(interface.text('MainWindow', 'Export translation'))
         self.menu_translation.setTitle(interface.text('MainWindow', 'Translation'))
         self.menu_view.setTitle(interface.text('MainWindow', 'View'))
         self.menu_numeration.setTitle(interface.text('MainWindow', 'Numeration'))
@@ -381,6 +384,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.action_import_translation.setEnabled(state)
         self.menu_export_translation.setEnabled(state)
+        self.command_export.setEnabled(state)
 
         self.action_add_file.setEnabled(state)
         self.action_save.setEnabled(state)
@@ -421,9 +425,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @staticmethod
     def load(filename: str, added: bool = False):
         if filename:
+            def load_package():
+                app_state.packages_storage.load(filename, added, asynchronous=True)
+
             if not app_state.dictionaries_storage.loaded:
-                app_state.dictionaries_storage.load()
-            app_state.packages_storage.load(filename, added)
+                handle = app_state.dictionaries_storage.load(asynchronous=True)
+                handle.result.connect(lambda _result: load_package())
+            else:
+                load_package()
 
     def open_file(self, added: bool = False):
         filename = open_supported(True)
@@ -474,6 +483,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def export_translation_binary_s4s(self):
         self.export_dialog.binary_s4s()
 
+    def export_translation_hub_csv(self):
+        self.export_dialog.translation_hub_csv()
+
     def translate_from_dict(self):
         for item in app_state.packages_storage.items():
             if item.flag == FLAG_UNVALIDATED:
@@ -492,66 +504,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.translate_dialog.exec()
 
     def translate(self):
-        items = self.tableview.selected_items()
-
-        if items:
-            progress_signals.initiate.emit(interface.text('System', 'Translating...'), len(items))
-
-            success_count = 0
-            error_messages = []
-            retry_delay = 1
-            max_retry_delay = 60
-
-            for i, item in enumerate(items):
-                retry_count = 0
-                max_retries = 3
-                translated = False
-
-                while retry_count <= max_retries and not translated:
-                    response = translator.translate(config.value('api', 'engine'), item.source)
-
-                    if response.status_code == 200:
-                        undo.wrap(item)
-                        item.translate = response.text
-                        item.flag = FLAG_VALIDATED
-                        success_count += 1
-                        translated = True
-                        retry_delay = max(1, retry_delay * 0.8)
-
-                    elif response.status_code == 429:  # Too Many Requests
-                        retry_count += 1
-                        if retry_count <= max_retries:
-                            time.sleep(retry_delay)
-                            retry_delay = min(max_retry_delay, retry_delay * 2)
-                        else:
-                            error_messages.append(f"Rate limit exceeded for '{item.source[:50]}...': {response.text}")
-                    else:
-                        error_messages.append(f"Error for '{item.source[:50]}...': {response.text}")
-                        break
-
-                progress_signals.increment.emit()
-
-                if i < len(items) - 1:
-                    base_delay = 0.1 if retry_delay <= 1 else 0.2
-                    time.sleep(base_delay)
-
-            if success_count > 0:
-                self.colorbar.resfesh()
-                self.tableview.refresh()
-                undo.commit()
-
-            progress_signals.finished.emit()
-
-            if error_messages:
-                error_text = "\n".join(error_messages[:5])
-                if len(error_messages) > 5:
-                    error_text += "\n" + interface.text('Messages', '... and {} other errors').format(
-                        len(error_messages) - 5)
-
-                QMessageBox.critical(self, self.windowTitle(),
-                                     interface.text('Messages',
-                                                    'Translation completed with {} successes.\n\nErrors:\n{}').format(
-                                         success_count, error_text))
+        self.translate_dialog.translate_selection()
 
     @staticmethod
     def save_dictionary():
@@ -591,9 +544,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def load_bundle():
         filename = open_xml()
         if filename:
+            def load_packages():
+                app_state.packages_storage.load_bundle(filename, asynchronous=True)
+
             if not app_state.dictionaries_storage.loaded:
-                app_state.dictionaries_storage.load()
-            app_state.packages_storage.load_bundle(filename)
+                handle = app_state.dictionaries_storage.load(asynchronous=True)
+                handle.result.connect(lambda _result: load_packages())
+            else:
+                load_packages()
 
     @staticmethod
     def save_bundle():
@@ -821,35 +779,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @Slot(str)
     def __message(self, text: str):
+        self.job_drawer.log_message(text)
         QMessageBox.information(self, self.windowTitle(), text)
 
     @Slot(str, int)
     def __initiate_progress(self, message: str, value: int):
-        if value > 0:
-            self.progress_bar.setMaximum(value)
-            self.progress_bar.setValue(0)
-        else:
-            self.progress_bar.setMaximum(0)
-            self.progress_bar.setValue(-1)
-        self.progress_label.setText(message)
-        self.percent_label.setText(self.progress_bar.text())
-        self.progress_widget.setVisible(True)
-        QApplication.processEvents()
+        self.job_drawer.start_legacy(message, value)
 
     @Slot()
     def __increment_progress(self):
-        maximum = self.progress_bar.maximum()
-        value = self.progress_bar.value() + 1
-        if maximum and value <= maximum:
-            self.progress_bar.setValue(value)
-            self.percent_label.setText(self.progress_bar.text())
-            QApplication.processEvents()
+        self.job_drawer.increment_legacy()
 
     @Slot()
     def __finished_progress(self):
-        self.progress_bar.setValue(0)
-        self.percent_label.setText(self.progress_bar.text())
-        self.progress_widget.setVisible(False)
+        self.job_drawer.finish_legacy()
 
     @Slot()
     def __undo_updated(self):

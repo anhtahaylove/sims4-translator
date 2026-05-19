@@ -1,24 +1,29 @@
 # -*- coding: utf-8 -*-
 
-import os
-import json
 import operator
-import xml.etree.ElementTree as ElementTree
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QDialog
 from typing import List
 
-from packer.stbl import Stbl
-
+from storages.package_tasks import (
+    ExportRecordDTO,
+    StructuredExportRequest,
+    TranslationHubCsvRequest,
+    TranslationHubCsvRow,
+    export_structured_task,
+    export_translation_hub_csv_task,
+)
 from storages.records import MainRecord
 
 from .ui.export_dialog import Ui_ExportDialog
 
+from singletons.config import config
 from singletons.interface import interface
-from singletons.signals import progress_signals
+from singletons.signals import window_signals
 from singletons.state import app_state
-from utils.functions import opendir, save_xml, save_stbl, text_to_stbl, text_to_edit, prettify, save_json, save_binary
+from utils.functions import opendir, save_xml, save_stbl, save_json, save_binary, savefile
 from utils.constants import *
+from utils.task_runner import TaskRunner
 
 
 class ExportDialog(QDialog, Ui_ExportDialog):
@@ -28,6 +33,9 @@ class ExportDialog(QDialog, Ui_ExportDialog):
         self.setupUi(self)
 
         self.__export = -1
+        self.__runner = TaskRunner(max_threads=1, parent=self)
+        self.__export_handle = None
+        self.__export_failed = False
 
         self.cb_current_instance.clicked.connect(self.current_instance_click)
         self.cb_separate_instances.clicked.connect(self.separate_instances_click)
@@ -57,6 +65,8 @@ class ExportDialog(QDialog, Ui_ExportDialog):
             super().keyPressEvent(event)
 
     def closeEvent(self, event):
+        if self.__export_handle:
+            self.__export_handle.cancel()
         self.__export = -1
 
     def current_instance_click(self):
@@ -104,6 +114,9 @@ class ExportDialog(QDialog, Ui_ExportDialog):
     def binary_s4s(self):
         self.__exec(EXPORT_BINARY_S4S)
 
+    def translation_hub_csv(self):
+        self.__exec(EXPORT_HUB_CSV)
+
     def __exec(self, export: int):
         self.__export = export
 
@@ -114,15 +127,16 @@ class ExportDialog(QDialog, Ui_ExportDialog):
         package = app_state.packages_storage.current_package
         instance = app_state.packages_storage.current_instance
 
-        if package is not None and instance > 0 and len(package.instances) > 1:
-            self.cb_current_instance.setVisible(True)
+        if self.__export != EXPORT_HUB_CSV:
+            if package is not None and instance > 0 and len(package.instances) > 1:
+                self.cb_current_instance.setVisible(True)
 
-        if self.__export != EXPORT_STBL:
-            if not package or len(package.instances) > 1:
-                self.cb_separate_instances.setVisible(True)
+            if self.__export != EXPORT_STBL:
+                if not package or len(package.instances) > 1:
+                    self.cb_separate_instances.setVisible(True)
 
-            if not package:
-                self.cb_separate_packages.setVisible(True)
+                if not package:
+                    self.cb_separate_packages.setVisible(True)
 
         self.setMinimumHeight(0)
         self.adjustSize()
@@ -138,13 +152,20 @@ class ExportDialog(QDialog, Ui_ExportDialog):
         separate_instances = self.cb_separate_instances.isVisible() and self.cb_separate_instances.isChecked()
         separate_packages = self.cb_separate_packages.isVisible() and self.cb_separate_packages.isChecked()
 
+        storage = app_state.packages_storage
+
         if self.rb_selection.isChecked():
             items = app_state.tableview.selected_items()
         else:
-            items = app_state.packages_storage.items()
+            items = storage.primary_items()
 
-        package = app_state.packages_storage.current_package
-        instance = app_state.packages_storage.current_instance
+        if self.__export == EXPORT_HUB_CSV:
+            if not self.rb_selection.isChecked():
+                items = storage.items()
+            return self.export_translation_hub_csv(items)
+
+        package = storage.current_package
+        instance = storage.current_instance
 
         if self.rb_selection.isChecked():
             instances = {i.instance for i in items}
@@ -189,7 +210,7 @@ class ExportDialog(QDialog, Ui_ExportDialog):
 
             if self.__export == EXPORT_STBL:
                 if one_instance or current_instance and package:
-                    items = app_state.packages_storage.items(instance=instance)
+                    items = storage.primary_items(package.key if package else None, instance)
                     item = items[0] if items else None
                     if item:
                         filename = save_stbl(item.resource.filename)
@@ -200,7 +221,7 @@ class ExportDialog(QDialog, Ui_ExportDialog):
                     directory = opendir()
                 else:
                     if one_instance or current_instance and package:
-                        items = app_state.packages_storage.items(instance=instance)
+                        items = storage.primary_items(package.key if package else None, instance)
                         item = items[0] if items else None
                         if item:
                             if self.__export == EXPORT_JSON_S4S:
@@ -210,7 +231,7 @@ class ExportDialog(QDialog, Ui_ExportDialog):
                             else:
                                 filename = save_xml(item.resource.filename)
                     elif package:
-                        items = app_state.packages_storage.items(key=package.key)
+                        items = storage.primary_items(package.key)
                         if self.__export == EXPORT_JSON_S4S:
                             filename = save_json(package.name)
                         elif self.__export == EXPORT_BINARY_S4S:
@@ -228,304 +249,152 @@ class ExportDialog(QDialog, Ui_ExportDialog):
         items = sorted(items, key=operator.itemgetter(RECORD_MAIN_INDEX), reverse=False)
 
         if filename or directory:
-            progress_signals.initiate.emit(interface.text('System', 'Exporting translate...'), len(items) / 100)
+            return self.export_structured(items, filename=filename, directory=directory)
 
-            if self.__export == EXPORT_XML:
-                self.export_xml(items, filename=filename, directory=directory)
-            elif self.__export == EXPORT_XML_DP:
-                self.export_xml_dp(items, filename=filename, directory=directory)
-            elif self.__export == EXPORT_JSON_S4S:
-                self.export_json_s4s(items, filename=filename, directory=directory)
-            elif self.__export == EXPORT_BINARY_S4S:
-                self.export_binary_s4s(items, filename=filename, directory=directory)
-            else:
-                self.export_stbl(items, filename=filename, directory=directory)
-
-            progress_signals.finished.emit()
+        return None
 
     def export_click(self):
-        self.export()
-        self.close()
+        self.__set_busy(True)
+        handle = self.export()
+        if handle is None:
+            self.__set_busy(False)
+            self.close()
 
     def cancel_click(self):
-        self.close()
+        if self.__export_handle:
+            self.__export_handle.cancel()
+            self.__set_busy(True, interface.text('System', 'Cancelling...'), cancelling=True)
+        else:
+            self.close()
 
-    def export_stbl(self, items: List[MainRecord], directory: str = None, filename: str = None) -> None:
-        stbl = {}
+    def export_structured(self, items: List[MainRecord], directory: str = None, filename: str = None):
+        if self.__export_handle:
+            self.__export_handle.cancel()
 
-        for i, item in enumerate(items):
-            if i % 100 == 0:
-                progress_signals.increment.emit()
+        message = interface.text('System', 'Exporting translate...')
+        self.__export_failed = False
+        request = StructuredExportRequest(
+            export_type=self.__export,
+            filename=filename or '',
+            directory=directory or '',
+            records=self.__export_records(items),
+            include_untranslated=self.rb_all.isChecked(),
+            separate_packages=self.cb_separate_packages.isVisible() and self.cb_separate_packages.isChecked(),
+            package_names=tuple((package.key, package.name) for package in app_state.packages_storage.packages),
+            destination_locale=config.value('translation', 'destination'),
+            message=message,
+        )
 
-            if not self.rb_all.isChecked() and item.flag == FLAG_UNVALIDATED:
-                continue
+        self.__export_handle = self.__runner.start(
+            export_structured_task,
+            request,
+            job_name=message
+        )
+        self.__set_busy(True, message)
+        self.__export_handle.result.connect(self.__export_result)
+        self.__export_handle.error.connect(
+            lambda error, handle=self.__export_handle: self.__export_error(error, handle)
+        )
+        self.__export_handle.finished.connect(
+            lambda cancelled, handle=self.__export_handle: self.__export_finished(cancelled, handle)
+        )
+        return self.__export_handle
 
-            rid = item.resource.convert_instance()
+    def export_translation_hub_csv(self, items: List[MainRecord]) -> None:
+        filename = savefile('Sims 4 Translation Hub CSV (*.csv)', 'csv', 'translation_hub')
+        if not filename:
+            return
 
-            if rid not in stbl:
-                stbl[rid] = Stbl(rid)
+        if self.__export_handle:
+            self.__export_handle.cancel()
 
-            stbl[rid].add(item.id, item.translate)
+        rows = tuple(
+            TranslationHubCsvRow(
+                string_id=item.id,
+                source_text=item.source,
+                translated_text=item.translate,
+                flag=item.flag
+            )
+            for item in sorted(items, key=operator.itemgetter(RECORD_MAIN_INDEX), reverse=False)
+        )
+        message = interface.text('System', 'Exporting Translation Hub CSV...')
+        self.__export_failed = False
+        request = TranslationHubCsvRequest(
+            path=filename,
+            rows=rows,
+            include_untranslated=self.rb_all.isChecked(),
+            message=message
+        )
 
-        if filename:
-            for rid, inst in stbl.items():
-                with open(filename, 'wb') as fp:
-                    fp.write(inst.binary)
-                break
-        elif directory:
-            for rid, inst in stbl.items():
-                filename = os.path.join(directory, rid.filename + '.stbl')
-                with open(filename, 'wb') as fp:
-                    fp.write(inst.binary)
+        self.__export_handle = self.__runner.start(
+            export_translation_hub_csv_task,
+            request,
+            job_name=message
+        )
+        self.__set_busy(True, message)
+        self.__export_handle.result.connect(self.__export_result)
+        self.__export_handle.error.connect(
+            lambda error, handle=self.__export_handle: self.__export_error(error, handle)
+        )
+        self.__export_handle.finished.connect(
+            lambda cancelled, handle=self.__export_handle: self.__export_finished(cancelled, handle)
+        )
+        return self.__export_handle
 
-    def export_xml(self, items: List[MainRecord], directory: str = None, filename: str = None) -> None:
-        root = ElementTree.Element('STBLXMLResources')
-        content = ElementTree.SubElement(root, 'Content')
+    @staticmethod
+    def __export_records(items: List[MainRecord]) -> tuple:
+        return tuple(ExportRecordDTO(
+            resource=item.resource,
+            string_id=item.id,
+            source_text=item.source,
+            translated_text=item.translate,
+            flag=item.flag,
+            package_key=item.package,
+            comment=item.comment
+        ) for item in items)
 
-        packages = {}
-        tables = {}
+    @staticmethod
+    def __export_result(result) -> None:
+        if hasattr(result, 'files'):
+            window_signals.log.emit(interface.text(
+                'System',
+                'Exported {} file(s), {} string(s)'
+            ).format(len(result.files), result.string_count))
+        elif hasattr(result, 'row_count'):
+            window_signals.log.emit(interface.text(
+                'System',
+                'Exported {} file(s), {} string(s)'
+            ).format(1, result.row_count))
 
-        separate_packages = self.cb_separate_packages.isVisible() and self.cb_separate_packages.isChecked()
+    def __export_error(self, error, handle) -> None:
+        if self.__export_handle is not handle:
+            return
+        self.__export_failed = True
+        message = getattr(error, 'message', str(error))
+        window_signals.log.emit(message)
+        window_signals.message.emit(message)
 
-        for i, item in enumerate(items):
-            if i % 100 == 0:
-                progress_signals.increment.emit()
+    def __export_finished(self, cancelled: bool, handle) -> None:
+        if self.__export_handle is handle:
+            failed = self.__export_failed
+            self.__export_handle = None
+            self.__export_failed = False
+            self.__set_busy(False)
+            if not cancelled and not failed:
+                self.close()
 
-            if not self.rb_all.isChecked() and item.flag == FLAG_UNVALIDATED:
-                continue
+    def __set_busy(self, busy: bool, message: str = '', cancelling: bool = False) -> None:
+        controls = (
+            self.rb_all,
+            self.rb_translated,
+            self.rb_selection,
+            self.cb_current_instance,
+            self.cb_separate_instances,
+            self.cb_separate_packages,
+        )
+        for control in controls:
+            control.setEnabled(not busy)
 
-            rid = item.resource.convert_instance()
-
-            if separate_packages:
-                if item.package not in packages:
-                    packages[item.package] = {}
-
-                if rid not in packages[item.package]:
-                    packages[item.package][rid] = ElementTree.SubElement(content, 'Table')
-                    packages[item.package][rid].set('instance', rid.str_instance)
-                    packages[item.package][rid].set('group', rid.str_group)
-
-                string = ElementTree.SubElement(packages[item.package][rid], 'String')
-
-            else:
-                if rid not in tables:
-                    tables[rid] = ElementTree.SubElement(content, 'Table')
-                    tables[rid].set('instance', rid.str_instance)
-                    tables[rid].set('group', rid.str_group)
-
-                string = ElementTree.SubElement(tables[rid], 'String')
-
-            string.set('id', '{id:08x}'.format(id=item.id))
-
-            _source = ElementTree.SubElement(string, 'Source')
-            _source.text = text_to_edit(item.source)
-
-            _dest = ElementTree.SubElement(string, 'Dest')
-            _dest.text = text_to_edit(item.translate)
-
-            if item.comment:
-                _comment = ElementTree.SubElement(string, 'Comment')
-                _comment.text = item.comment
-
-        if filename:
-            with open(filename, 'wb') as fp:
-                fp.write(prettify(root))
-        elif directory:
-            if separate_packages:
-                for key, tables in packages.items():
-                    package = app_state.packages_storage.find(key)
-                    filename = os.path.join(directory, package.name + '.xml')
-                    content.clear()
-                    for rid, table in tables.items():
-                        content.append(table)
-                    with open(filename, 'wb') as fp:
-                        fp.write(prettify(root))
-            else:
-                for rid, table in tables.items():
-                    filename = os.path.join(directory, rid.filename + '.xml')
-                    content.clear()
-                    content.append(table)
-                    with open(filename, 'wb') as fp:
-                        fp.write(prettify(root))
-
-    def export_xml_dp(self, items: List[MainRecord], directory: str = None, filename: str = None) -> None:
-        root = ElementTree.Element('StblData')
-        content = ElementTree.SubElement(root, 'TextStringDefinitions')
-
-        packages = {}
-        tables = {}
-
-        separate_packages = self.cb_separate_packages.isVisible() and self.cb_separate_packages.isChecked()
-
-        for i, item in enumerate(items):
-            if i % 100 == 0:
-                progress_signals.increment.emit()
-
-            if not self.rb_all.isChecked() and item.flag == FLAG_UNVALIDATED:
-                continue
-
-            rid = item.resource.convert_instance()
-
-            if separate_packages:
-                if item.package not in packages:
-                    packages[item.package] = {}
-                if rid not in packages[item.package]:
-                    packages[item.package][rid] = []
-                strings = packages[item.package][rid]
-            else:
-                if rid not in tables:
-                    tables[rid] = []
-                strings = tables[rid]
-
-            string = ElementTree.SubElement(content, 'TextStringDefinition')
-            string.set('InstanceID', '0x{id:08X}'.format(id=item.id))
-            string.set('TextString', text_to_stbl(item.translate))
-
-            strings.append(string)
-
-        if filename:
-            with open(filename, 'wb') as fp:
-                fp.write(prettify(root))
-        elif directory:
-            if separate_packages:
-                for key, tables in packages.items():
-                    package = app_state.packages_storage.find(key)
-                    filename = os.path.join(directory, package.name + '.xml')
-                    content.clear()
-                    for rid, strings in tables.items():
-                        content.extend(strings)
-                    with open(filename, 'wb') as fp:
-                        fp.write(prettify(root))
-            else:
-                for rid, strings in tables.items():
-                    filename = os.path.join(directory, rid.filename + '.xml')
-                    content.clear()
-                    content.extend(strings)
-                    with open(filename, 'wb') as fp:
-                        fp.write(prettify(root))
-
-    def export_json_s4s(self, items: List[MainRecord], directory: str = None, filename: str = None) -> None:
-        all_entries = []
-        packages = {}
-        tables = {}
-
-        separate_packages = self.cb_separate_packages.isVisible() and self.cb_separate_packages.isChecked()
-
-        for i, item in enumerate(items):
-            if i % 100 == 0:
-                progress_signals.increment.emit()
-
-            if not self.rb_all.isChecked() and item.flag == FLAG_UNVALIDATED:
-                continue
-
-            rid = item.resource.convert_instance()
-
-            if separate_packages:
-                if item.package not in packages:
-                    packages[item.package] = {}
-                if rid not in packages[item.package]:
-                    packages[item.package][rid] = []
-                entries = packages[item.package][rid]
-            else:
-                if rid not in tables:
-                    tables[rid] = []
-                entries = tables[rid]
-
-            entry = {
-                'Key': '0x{id:08X}'.format(id=item.id),
-                'Value': text_to_stbl(item.translate)
-            }
-
-            all_entries.append(entry)
-            entries.append(entry)
-
-        if filename:
-            rid = items[0].resource.convert_instance()
-            with open(filename, 'w', encoding='utf-8') as fp:
-                fp.write(json.dumps({
-                    'Locale': rid.language,
-                    'Entries': all_entries,
-                }, indent=2, ensure_ascii=False))
-        elif directory:
-            if separate_packages:
-                for key, tables in packages.items():
-                    package = app_state.packages_storage.find(key)
-                    filename = os.path.join(directory, package.name + '.json')
-                    rid = None
-                    table_entries = []
-                    for rid, entries in tables.items():
-                        table_entries.extend(entries)
-                    with open(filename, 'w', encoding='utf-8') as fp:
-                        fp.write(json.dumps({
-                            'Locale': rid.language,
-                            'Entries': table_entries
-                        }, indent=2, ensure_ascii=False))
-            else:
-                for rid, entries in tables.items():
-                    filename = os.path.join(directory, rid.filename + '.json')
-                    with open(filename, 'w', encoding='utf-8') as fp:
-                        fp.write(json.dumps({
-                            'Locale': rid.language,
-                            'Entries': entries
-                        }, indent=2, ensure_ascii=False))
-
-    def export_binary_s4s(self, items: List[MainRecord], directory: str = None, filename: str = None) -> None:
-        stbl = {}
-
-        for i, item in enumerate(items):
-            if i % 100 == 0:
-                progress_signals.increment.emit()
-
-            if not self.rb_all.isChecked() and item.flag == FLAG_UNVALIDATED:
-                continue
-
-            rid = item.resource.convert_instance()
-
-            if rid not in stbl:
-                stbl[rid] = Stbl(rid)
-
-            stbl[rid].add(item.id, item.translate)
-
-        if filename:
-            for rid, inst in stbl.items():
-                with open(filename, 'wb') as fp:
-                    fp.write(inst.binary)
-                break
-        elif directory:
-            separate_packages = self.cb_separate_packages.isVisible() and self.cb_separate_packages.isChecked()
-
-            if separate_packages:
-                packages = {}
-                for i, item in enumerate(items):
-                    if not self.rb_all.isChecked() and item.flag == FLAG_UNVALIDATED:
-                        continue
-
-                    if item.package not in packages:
-                        packages[item.package] = {}
-
-                    rid = item.resource.convert_instance()
-                    if rid not in packages[item.package]:
-                        packages[item.package][rid] = Stbl(rid)
-
-                    packages[item.package][rid].add(item.id, item.translate)
-
-                for key, tables in packages.items():
-                    package = app_state.packages_storage.find(key)
-                    filename = os.path.join(directory, package.name + '.binary')
-
-                    merged_stbl = None
-                    for rid, table in tables.items():
-                        if merged_stbl is None:
-                            merged_stbl = table
-                        else:
-                            for str_id, str_value in table._strings.items():
-                                merged_stbl.add(str_id, str_value)
-
-                    if merged_stbl:
-                        with open(filename, 'wb') as fp:
-                            fp.write(merged_stbl.binary)
-            else:
-                for rid, inst in stbl.items():
-                    filename = os.path.join(directory, rid.filename + '.binary')
-                    with open(filename, 'wb') as fp:
-                        fp.write(inst.binary)
+        self.btn_export.setEnabled(not busy)
+        self.btn_export.setText(message if busy and message else interface.text('ExportDialog', 'Export'))
+        self.btn_cancel.setEnabled(not cancelling)

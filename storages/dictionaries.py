@@ -4,6 +4,7 @@ import os
 import zlib
 import json
 import glob
+from dataclasses import dataclass
 from PySide6.QtCore import QObject, Signal, QThreadPool, QRunnable
 
 from packer import Packer
@@ -12,14 +13,116 @@ from models.dictionary import Model, ProxyModel
 
 from singletons.config import config
 from singletons.interface import interface
-from singletons.signals import progress_signals, storage_signals
+from singletons.signals import progress_signals, storage_signals, window_signals
 from singletons.state import app_state
 from utils.functions import text_to_stbl
+from utils.task_runner import CancellationToken, TaskReporter, TaskRunner
 from utils.constants import *
 
 
 class StorageSignals(QObject):
     updated = Signal()
+
+
+@dataclass(frozen=True)
+class DictionaryLoadRequest:
+    directory: str
+    message: str
+
+
+@dataclass(frozen=True)
+class DictionaryLoadResult:
+    sid_entries: tuple = ()
+    source_entries: tuple = ()
+    model_items: tuple = ()
+    file_count: int = 0
+
+
+class _NullReporter(TaskReporter):
+
+    def __init__(self):
+        pass
+
+    def progress(self, current: int = 0, total: int = 0, message: str = '') -> None:
+        pass
+
+
+def load_dictionaries_task(
+        token: CancellationToken,
+        reporter: TaskReporter,
+        request: DictionaryLoadRequest
+) -> DictionaryLoadResult:
+    dictionary_files = glob.glob(os.path.join(request.directory, '*.dct'))
+    sid_entries = {}
+    source_entries = {}
+    hash_entries = {}
+
+    if dictionary_files:
+        reporter.progress(0, len(dictionary_files), request.message)
+
+    for filename in dictionary_files:
+        token.raise_if_cancelled()
+        dictionary_name = os.path.splitext(os.path.basename(filename))[0]
+
+        with open(filename, 'rb') as fp:
+            packer = Packer(fp.read(), mode='r')
+
+        if packer.get_raw_bytes(3) == b'DCT':
+            version = packer.get_byte()
+            items = packer.get_json()
+        else:
+            content = zlib.decompress(packer.get_content()).decode('utf-8')
+            version = 1
+            items = json.loads(content)
+
+        _read_dictionary(dictionary_name, version, items, sid_entries, source_entries, hash_entries)
+        reporter.progress(1, 0, '')
+
+    return DictionaryLoadResult(
+        sid_entries=tuple((sid, tuple(entries)) for sid, entries in sid_entries.items()),
+        source_entries=tuple((source, tuple(translations)) for source, translations in source_entries.items()),
+        model_items=tuple(tuple(item) for item in hash_entries.values()),
+        file_count=len(dictionary_files)
+    )
+
+
+def _read_dictionary(
+        dictionary_name: str,
+        version: int,
+        items: list,
+        sid_entries: dict,
+        source_entries: dict,
+        hash_entries: dict
+) -> None:
+    name = dictionary_name.lower()
+
+    for item in items:
+        item = list(item)
+        if version == 1:
+            item[0] = int(item[0], 16)
+            item.append(0)
+
+        if version < 3:
+            item.append('')
+
+        if version < 4:
+            item.pop(3)
+
+        if item[1] and item[1] != item[2]:
+            _update_hash(name, item, sid_entries, source_entries, hash_entries)
+
+
+def _update_hash(name: str, item: list, sid_entries: dict, source_entries: dict, hash_entries: dict):
+    sid_entries.setdefault(item[0], []).append((name, item[1], item[2], item[3]))
+
+    if item[1] not in source_entries:
+        source_entries[item[1]] = []
+    if item[2] not in source_entries[item[1]]:
+        source_entries[item[1]].append(item[2])
+
+    key = f'{item[1]}__{item[2]}'
+    if key not in hash_entries:
+        hash_entries[key] = [name, item[1], item[2], len(item[1])]
 
 
 class UpdaterWorker(QRunnable):
@@ -68,6 +171,8 @@ class DictionariesStorage:
         self.__hash = {}
 
         self.__pool = QThreadPool()
+        self.__runner = TaskRunner(max_threads=1)
+        self.__load_handle = None
 
     def search(self, sid: int = None, source: str = None) -> list:
         if sid:
@@ -76,38 +181,69 @@ class DictionariesStorage:
             return self.__sources.get(source, [])
         return []
 
-    def load(self):
-        dictionary_files = glob.glob(os.path.join(self.directory, '*.dct'))
+    def snapshot(self) -> tuple:
+        return (
+            tuple((sid, tuple(entries)) for sid, entries in self.__sid.items()),
+            tuple((source, tuple(entries)) for source, entries in self.__sources.items())
+        )
 
-        if dictionary_files:
-            progress_signals.initiate.emit(interface.text('System', 'Loading dictionaries...'), len(dictionary_files))
+    def load(self, asynchronous: bool = False):
+        request = DictionaryLoadRequest(
+            directory=self.directory,
+            message=interface.text('System', 'Loading dictionaries...')
+        )
 
-            for filename in dictionary_files:
-                dictionary_name = os.path.splitext(os.path.basename(filename))[0]
+        if asynchronous:
+            if self.__load_handle:
+                self.__load_handle.cancel()
 
-                with open(filename, 'rb') as fp:
-                    packer = Packer(fp.read(), mode='r')
+            self.__load_handle = self.__runner.start(
+                load_dictionaries_task,
+                request,
+                job_name=request.message
+            )
+            self.__load_handle.progress.connect(self.__task_progress)
+            self.__load_handle.result.connect(self.__loaded_async)
+            self.__load_handle.error.connect(self.__load_error)
+            self.__load_handle.finished.connect(
+                lambda cancelled, handle=self.__load_handle: self.__load_finished(cancelled, handle)
+            )
+            return self.__load_handle
 
-                if packer.get_raw_bytes(3) == b'DCT':
-                    version = packer.get_byte()
-                    items = packer.get_json()
-                else:
-                    content = zlib.decompress(packer.get_content()).decode('utf-8')
-                    version = 1
-                    items = json.loads(content)
+        result = load_dictionaries_task(CancellationToken(), _NullReporter(), request)
+        self.__apply_load_result(result)
+        return None
 
-                self.read_dictionary(dictionary_name, version, items)
+    def __loaded_async(self, result: DictionaryLoadResult) -> None:
+        self.__apply_load_result(result)
+        progress_signals.finished.emit()
 
-                progress_signals.increment.emit()
+    def __apply_load_result(self, result: DictionaryLoadResult) -> None:
+        self.__sid = {sid: list(entries) for sid, entries in result.sid_entries}
+        self.__sources = {source: list(translations) for source, translations in result.source_entries}
+        self.__hash = {}
 
-            self.model.append(list(self.__hash.values()))
-            self.signals.updated.emit()
-
-            self.__hash.clear()
-
-            progress_signals.finished.emit()
-
+        self.model.replace([list(item) for item in result.model_items])
+        self.signals.updated.emit()
         self.loaded = True
+
+    @staticmethod
+    def __task_progress(progress) -> None:
+        if progress.message:
+            progress_signals.initiate.emit(progress.message, int(progress.total))
+        elif progress.current:
+            progress_signals.increment.emit()
+
+    @staticmethod
+    def __load_error(error) -> None:
+        progress_signals.finished.emit()
+        window_signals.message.emit(error.message)
+
+    def __load_finished(self, cancelled: bool, handle) -> None:
+        if cancelled:
+            progress_signals.finished.emit()
+        if self.__load_handle is handle:
+            self.__load_handle = None
 
     def read_dictionary(self, dictionary_name: str, version: int, items: list) -> None:
         name = dictionary_name.lower()

@@ -11,6 +11,7 @@ class ProgressSignals(QObject):
 
 class WindowSignals(QObject):
     message = Signal(str)
+    log = Signal(str)
 
 
 class ColorSignals(QObject):

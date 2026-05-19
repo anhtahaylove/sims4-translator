@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from PySide6.QtCore import Qt, QObject, QThreadPool, QRunnable, Signal, Slot
+from dataclasses import dataclass
+from typing import List, Tuple
+
+from PySide6.QtCore import Qt, QTimer, Slot
 from PySide6.QtWidgets import QDialog
-from typing import Union, List
 
 from windows.ui.translate_dialog import Ui_TranslateDialog
 
@@ -17,6 +19,7 @@ from singletons.signals import progress_signals, color_signals
 from singletons.state import app_state
 from singletons.translator import translator
 from singletons.undo import undo
+from utils.task_runner import CancellationToken, TaskReporter, TaskRunner
 from utils.functions import text_to_stbl, text_to_edit
 from utils.constants import *
 
@@ -27,7 +30,8 @@ def split_by_char_limit(items: List[MainRecord], char_limit: int = 256) -> list:
     current_length = 0
 
     for item in items:
-        text_length = len(item.source)
+        record = item[1] if isinstance(item, tuple) else item
+        text_length = len(record.source)
         if current_length + text_length > char_limit:
             result.append(current_chunk)
             current_chunk = [item]
@@ -42,72 +46,84 @@ def split_by_char_limit(items: List[MainRecord], char_limit: int = 256) -> list:
     return result
 
 
-class TranslateSignals(QObject):
-    finished = Signal()
-    warning = Signal(str)
-    error = Signal(str)
+@dataclass(frozen=True)
+class TranslationItemSnapshot:
+    index: int
+    source: str
 
 
-class BatchTranslateWorker(QRunnable):
+@dataclass(frozen=True)
+class TranslationChunkRequest:
+    engine: str
+    items: Tuple[TranslationItemSnapshot, ...]
+    fast: bool = False
 
-    def __init__(self, chunk: Union[MainRecord, List[MainRecord]], engine: str):
-        super().__init__()
 
-        self.chunk = chunk
-        self.engine = engine
+@dataclass(frozen=True)
+class TranslationItemResult:
+    index: int
+    text: str
 
-        self.signals = TranslateSignals()
 
-    def run(self):
-        chunk = self.chunk
-        is_fast = not isinstance(chunk, MainRecord)
+@dataclass(frozen=True)
+class TranslationChunkResult:
+    translations: Tuple[TranslationItemResult, ...] = ()
+    warning: str = ''
+    error: str = ''
 
-        if is_fast:
-            text_strings = []
 
-            for item in chunk:
-                text_string = text_to_edit(item.source)
-                hex_replacement_n = r"\x0a"
-                hex_replacement_r = r"\x0d"
-                text_string = text_string.replace("\n", hex_replacement_n)
-                text_string = text_string.replace("\r", hex_replacement_r)
-                text_strings.append(text_string)
+def translate_chunk_task(
+        token: CancellationToken,
+        _reporter: TaskReporter,
+        request: TranslationChunkRequest
+) -> TranslationChunkResult:
+    token.raise_if_cancelled()
 
-            combined_text = '\n'.join(text_strings)
+    if request.fast:
+        text_strings = []
 
-        else:
-            combined_text = text_to_edit(chunk.source)
+        for item in request.items:
+            token.raise_if_cancelled()
+            text_string = text_to_edit(item.source)
+            text_string = text_string.replace("\n", r"\x0a")
+            text_string = text_string.replace("\r", r"\x0d")
+            text_strings.append(text_string)
 
-        response = translator.translate(self.engine, combined_text)
+        combined_text = '\n'.join(text_strings)
 
-        if response.status_code == 200:
-            translated_text = response.text
+    else:
+        combined_text = text_to_edit(request.items[0].source)
 
-            if is_fast:
-                translated_texts = translated_text.split('\n')
+    response = translator.translate(request.engine, combined_text)
+    token.raise_if_cancelled()
 
-                if len(translated_texts) == len(chunk):
-                    for i, item in enumerate(chunk):
-                        undo.wrap(item)
-                        translated_text = translated_texts[i]
-                        hex_replacement_n = bytes(r"\x0a", 'utf-8').decode('unicode-escape')
-                        hex_replacement_r = bytes(r"\x0d", 'utf-8').decode('unicode-escape')
-                        translated_text = translated_text.replace("\\x0a", hex_replacement_n)
-                        translated_text = translated_text.replace("\\x0d", hex_replacement_r)
-                        item.translate = text_to_stbl(translated_text)
-                        item.flag = FLAG_VALIDATED
-                else:
-                    self.signals.warning.emit(interface.text('TranslateDialog', 'Some lines could not be translated.'))
+    if response.status_code != 200:
+        return TranslationChunkResult(error=response.text)
 
-            else:
-                undo.wrap(chunk)
-                chunk.translate = text_to_stbl(translated_text)
-                chunk.flag = FLAG_VALIDATED
+    translated_text = response.text
 
-        else:
-            self.signals.error.emit(response.text)
+    if request.fast:
+        translated_texts = translated_text.split('\n')
+        if len(translated_texts) != len(request.items):
+            return TranslationChunkResult(
+                warning=interface.text('TranslateDialog', 'Some lines could not be translated.')
+            )
 
-        self.signals.finished.emit()
+        line_break = bytes(r"\x0a", 'utf-8').decode('unicode-escape')
+        carriage_return = bytes(r"\x0d", 'utf-8').decode('unicode-escape')
+        translations = []
+
+        for item, text in zip(request.items, translated_texts):
+            token.raise_if_cancelled()
+            text = text.replace("\\x0a", line_break)
+            text = text.replace("\\x0d", carriage_return)
+            translations.append(TranslationItemResult(item.index, text_to_stbl(text)))
+
+        return TranslationChunkResult(translations=tuple(translations))
+
+    return TranslationChunkResult(
+        translations=(TranslationItemResult(request.items[0].index, text_to_stbl(translated_text)),)
+    )
 
 
 class TranslateDialog(QDialog, Ui_TranslateDialog):
@@ -121,12 +137,17 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         self.btn_translate.clicked.connect(self.translate_click)
         self.btn_cancel.clicked.connect(self.cancel_click)
 
-        self.__pool = QThreadPool()
+        self.__runner = TaskRunner(max_threads=3, parent=self)
 
         self.__progress = 0
         self.__translating = False
         self.__error = False
         self.__log = []
+        self.__items = []
+        self.__handles = []
+        self.__refresh_timer = QTimer(self)
+        self.__refresh_timer.setSingleShot(True)
+        self.__refresh_timer.timeout.connect(self.__refresh_table)
 
         self.check_api()
 
@@ -149,6 +170,9 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         self.log_box.setTitle(interface.text('TranslateDialog', 'Log'))
 
     def showEvent(self, event):
+        self.refresh_api_list()
+
+    def refresh_api_list(self):
         engine = config.value('api', 'engine')
         self.cb_api.clear()
         self.cb_api.addItems(translator.engines)
@@ -191,17 +215,21 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             progress_signals.finished.emit()
             return
 
-        self.btn_translate.setText(interface.text('TranslateDialog', 'Stop translate'))
+        self.__items = items
+
+        indexed_items = list(enumerate(items))
 
         if self.rb_fast.isChecked():
-            chunk_items = split_by_char_limit(items, 1024)
+            chunk_items = split_by_char_limit(indexed_items, 1024)
         else:
-            chunk_items = items
+            chunk_items = [[item] for item in indexed_items]
 
         self.__progress = len(chunk_items)
         self.__translating = True
         self.__error = False
         self.__log = []
+        self.__handles = []
+        self.__set_busy(True)
 
         self.edt_log.clear()
 
@@ -209,34 +237,88 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
 
         for chunk in chunk_items:
             if not self.__error:
-                worker = BatchTranslateWorker(chunk, self.cb_api.currentText())
-                worker.setAutoDelete(True)
-                worker.signals.warning.connect(self.__warning_translate_chunk)
-                worker.signals.error.connect(self.__error_translate_chunk)
-                worker.signals.finished.connect(self.__finished_translate_chunk)
-                self.__pool.start(worker)
+                snapshots = tuple(TranslationItemSnapshot(index=index, source=item.source) for index, item in chunk)
+                request = TranslationChunkRequest(
+                    engine=self.cb_api.currentText(),
+                    items=snapshots,
+                    fast=self.rb_fast.isChecked()
+                )
+                handle = self.__runner.start(
+                    translate_chunk_task,
+                    request,
+                    job_name=interface.text('System', 'Translating...')
+                )
+                self.__handles.append(handle)
+                handle.result.connect(lambda result, task_handle=handle: self.__translated_chunk(result, task_handle))
+                handle.error.connect(lambda error, task_handle=handle: self.__task_error(error, task_handle))
+                handle.finished.connect(
+                    lambda cancelled, task_handle=handle: self.__finished_translate_chunk(cancelled, task_handle)
+                )
 
     def stop_translate(self):
-        self.__progress = self.__pool.activeThreadCount()
-        self.__pool.clear()
+        for handle in self.__handles:
+            handle.cancel()
+        self.__set_busy(True, stopping=True)
         progress_signals.initiate.emit(interface.text('System',
                                                       'Stopping translate, waiting for the finish of the threads...'),
                                        self.__progress)
-        self.__pool.waitForDone()
 
-    @Slot()
-    def __finished_translate_chunk(self):
+    @Slot(object)
+    def __translated_chunk(self, result: TranslationChunkResult, handle=None):
+        if handle is not None and (handle.cancelled or handle not in self.__handles):
+            return
+
+        if result.error:
+            self.__error_translate_chunk(result.error)
+            return
+
+        if result.warning:
+            self.__warning_translate_chunk(result.warning)
+
+        for translated in result.translations:
+            if translated.index >= len(self.__items):
+                continue
+
+            item = self.__items[translated.index]
+            undo.wrap(item)
+            item.translate = translated.text
+            item.flag = FLAG_VALIDATED
+
+        if result.translations:
+            self.__refresh_timer.start(50)
+
+    @Slot(object)
+    def __task_error(self, error, handle=None):
+        if handle is not None and (handle.cancelled or handle not in self.__handles):
+            return
+        self.__error_translate_chunk(error.message)
+
+    @Slot(bool)
+    def __finished_translate_chunk(self, _cancelled: bool, handle=None):
+        if handle is not None:
+            if handle not in self.__handles:
+                return
+            self.__handles.remove(handle)
+
         self.__progress -= 1
         if self.__progress == 0:
+            if self.__refresh_timer.isActive():
+                self.__refresh_timer.stop()
+            self.__refresh_table()
             undo.commit()
             self.__progress = 0
             self.__translating = False
-            self.btn_translate.setText(interface.text('TranslateDialog', 'Translate'))
+            self.__handles = []
+            self.__set_busy(False)
             color_signals.update.emit()
             progress_signals.finished.emit()
 
-        app_state.tableview.refresh()
         progress_signals.increment.emit()
+
+    @staticmethod
+    def __refresh_table():
+        if app_state.tableview:
+            app_state.tableview.refresh()
 
     @Slot(str)
     def __error_translate_chunk(self, text: str):
@@ -263,4 +345,41 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             self.stop_translate()
 
     def cancel_click(self):
-        self.close()
+        if self.__translating:
+            self.stop_translate()
+        else:
+            self.close()
+
+    def translate_selection(self):
+        if not app_state.tableview.selected_items():
+            return
+
+        self.refresh_api_list()
+        self.rb_selection.setChecked(True)
+        self.show()
+        self.translate()
+
+    def __set_busy(self, busy: bool, stopping: bool = False) -> None:
+        controls = (
+            self.cb_api,
+            self.rb_all,
+            self.rb_validated,
+            self.rb_validated_partial,
+            self.rb_partial,
+            self.rb_selection,
+            self.rb_slow,
+            self.rb_fast,
+        )
+        for control in controls:
+            control.setEnabled(not busy)
+
+        self.btn_cancel.setEnabled(not busy)
+        self.btn_translate.setEnabled(not stopping)
+
+        if stopping:
+            self.btn_translate.setText(interface.text('TranslateDialog', 'Stopping...'))
+        elif busy:
+            self.btn_translate.setText(interface.text('TranslateDialog', 'Stop translate'))
+        else:
+            self.btn_translate.setText(interface.text('TranslateDialog', 'Translate'))
+            self.check_api()
