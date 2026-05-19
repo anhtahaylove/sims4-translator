@@ -73,6 +73,9 @@ class PackageStub:
     def __len__(self):
         return 2
 
+    def modify(self, state=True):
+        self.modified = state
+
 
 class FakeWheelEvent:
 
@@ -128,6 +131,9 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertIs(window.filter_panel.parent(), window.workspace_overview)
             self.assertEqual(window.workspace_stats_bar.objectName(), 'workspaceStatsBar')
             self.assertIs(window.workspace_summary_block.parent(), window.workspace_stats_bar)
+            self.assertIs(window.workspace_stats_bar.parent(), window.activity_drawer.header)
+            self.assertNotEqual(window.activity_drawer.header_layout.indexOf(window.workspace_stats_bar), -1)
+            self.assertEqual(window.table_panel_layout.indexOf(window.workspace_stats_bar), -1)
             self.assertEqual(window.workspace_overview_layout.indexOf(window.workspace_summary_block), -1)
             self.assertEqual(window.selection_bar.objectName(), 'selectionBar')
             self.assertEqual(window.workspace_overview.objectName(), 'workspaceOverview')
@@ -688,7 +694,10 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(dialog.translation_panel.objectName(), 'sheetPanel')
             self.assertEqual(dialog.edit_footer.objectName(), 'sheetFooter')
             self.assertEqual(dialog.edit_detail.objectName(), 'sheetHint')
+            self.assertEqual(dialog.btn_ok.text(), 'Approve (Ctrl+Enter)')
+            self.assertEqual(dialog.btn_review.text(), 'Needs Review')
             self.assertTrue(dialog.btn_ok.isDefault())
+            self.assertFalse(dialog.btn_review.autoDefault())
             self.assertFalse(dialog.btn_translate.autoDefault())
             self.assertFalse(dialog.btn_cancel.autoDefault())
         finally:
@@ -707,6 +716,35 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertFalse(dialog.btn_translate.autoDefault())
         finally:
             close_widget(dialog)
+
+    def test_edit_dialog_can_save_as_needs_review_or_approved(self):
+        storage = app_state.packages_storage
+        storage.packages.append(PackageStub())
+        review_dialog = EditDialog()
+        review_item = record(FLAG_UNVALIDATED)
+        try:
+            review_dialog.prepare(review_item)
+            review_dialog.txt_translate.setPlainText('Needs more review')
+            review_dialog.txt_comment.setText('Check token order')
+            review_dialog.needs_review_click()
+
+            self.assertEqual(review_item.translate, 'Needs more review')
+            self.assertEqual(review_item.comment, 'Check token order')
+            self.assertEqual(review_item.flag, FLAG_PROGRESS)
+        finally:
+            close_widget(review_dialog)
+
+        approve_dialog = EditDialog()
+        approved_item = record(FLAG_PROGRESS)
+        try:
+            approve_dialog.prepare(approved_item)
+            approve_dialog.txt_translate.setPlainText('Ready text')
+            approve_dialog.ok_click()
+
+            self.assertEqual(approved_item.translate, 'Ready text')
+            self.assertEqual(approved_item.flag, FLAG_VALIDATED)
+        finally:
+            close_widget(approve_dialog)
 
     def test_guided_sheet_dialogs_share_the_same_shell_contract(self):
         window = MainWindow()

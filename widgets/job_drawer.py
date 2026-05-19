@@ -147,9 +147,9 @@ class QJobStatusDrawer(QWidget):
 
         self.header = QFrame(self)
         self.header.setObjectName('jobDrawerHeader')
-        header_layout = QHBoxLayout(self.header)
-        header_layout.setContentsMargins(10, 6, 10, 6)
-        header_layout.setSpacing(8)
+        self.header_layout = QHBoxLayout(self.header)
+        self.header_layout.setContentsMargins(10, 6, 10, 6)
+        self.header_layout.setSpacing(8)
 
         self.toggle_button = QToolButton(self.header)
         self.toggle_button.setObjectName('jobDrawerToggle')
@@ -165,9 +165,9 @@ class QJobStatusDrawer(QWidget):
         self.clear_button.setObjectName('jobClearButton')
         self.clear_button.clicked.connect(self.clear_finished)
 
-        header_layout.addWidget(self.toggle_button)
-        header_layout.addWidget(self.status_label, 1)
-        header_layout.addWidget(self.clear_button)
+        self.header_layout.addWidget(self.toggle_button)
+        self.header_layout.addWidget(self.status_label, 1)
+        self.header_layout.addWidget(self.clear_button)
 
         self.body = QFrame(self)
         self.body.setObjectName('jobDrawerBody')

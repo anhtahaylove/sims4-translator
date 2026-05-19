@@ -539,6 +539,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def closeEvent(self, event):
         if self.check_modified(True):
+            if hasattr(self, 'filter_timer'):
+                self.filter_timer.stop()
             config.save()
             event.accept()
         else:
@@ -689,6 +691,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.filter_all.blockSignals(False)
 
     def update_proxy(self):
+        selected_items = self.tableview.selected_items()
         flags = []
         if not self.toolbar.filter_validate_0.isChecked():
             flags.append(FLAG_UNVALIDATED)
@@ -709,7 +712,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                              mode=self.__search_flag,
                              flags=flags,
                              different=self.toolbar.filter_validate_4.isChecked())
+        self.__restore_table_selection(selected_items)
         self.update_workspace_summary()
+
+    def __restore_table_selection(self, selected_items):
+        if not selected_items:
+            return
+
+        model = self.tableview.model()
+        selection_model = self.tableview.selectionModel()
+        if model is None or selection_model is None:
+            return
+
+        source_model = model.sourceModel()
+        for item in selected_items:
+            try:
+                source_row = source_model.filtered.index(item)
+            except ValueError:
+                continue
+
+            proxy_index = model.mapFromSource(source_model.index(source_row, COLUMN_MAIN_INDEX))
+            if proxy_index.isValid():
+                self.tableview.selectRow(proxy_index.row())
+                return
 
     def set_state_menu(self):
         state = app_state.packages_storage.enabled

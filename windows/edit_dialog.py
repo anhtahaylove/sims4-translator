@@ -65,6 +65,7 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.tableview.customContextMenuRequested.connect(self.generate_item_context_menu)
 
         self.btn_ok.clicked.connect(self.ok_click)
+        self.btn_review.clicked.connect(self.needs_review_click)
         self.btn_cancel.clicked.connect(self.cancel_click)
 
         self.cb_api.currentTextChanged.connect(self.change_api)
@@ -84,14 +85,15 @@ class EditDialog(QDialog, Ui_EditDialog):
     def retranslate(self):
         self.setWindowTitle(interface.text('EditWindow', 'Search and Edit'))
         self.edit_title.setText(interface.text('EditWindow', 'Search and Edit'))
-        self.edit_detail.setText('Review suggestions, refine the draft, then validate the selected string.')
+        self.edit_detail.setText('Review suggestions, refine the draft, then approve it or mark it for review.')
         self.dictionary_title.setText('Dictionary suggestions')
         self.search_title.setText('Selected suggestion')
         self.btn_translate.setText(interface.text('EditWindow', 'Translate'))
-        self.btn_ok.setText(interface.text('EditWindow', 'OK (Ctrl+Enter)'))
+        self.btn_ok.setText('Approve (Ctrl+Enter)')
+        self.btn_review.setText('Needs Review')
         self.lbl_original.setText(interface.text('EditWindow', 'Original text'))
         self.lbl_original_diff.setText(interface.text('EditWindow', 'Different original'))
-        self.lbl_translate.setText(interface.text('EditWindow', 'Current translation'))
+        self.lbl_translate.setText('Translation draft')
         self.lbl_translate_diff.setText(interface.text('EditWindow', 'Different translation'))
         self.btn_cancel.setText(interface.text('EditWindow', 'Cancel'))
         self.txt_comment.setPlaceholderText(interface.text('EditWindow', 'Comment...'))
@@ -187,11 +189,17 @@ class EditDialog(QDialog, Ui_EditDialog):
             self.edit_splitter.setSizes([0, 1])
 
     def ok_click(self):
+        self.__save(FLAG_VALIDATED)
+
+    def needs_review_click(self):
+        self.__save(FLAG_PROGRESS)
+
+    def __save(self, flag):
         undo.wrap(self.item)
         undo.commit()
 
         self.item.translate = text_to_stbl(self.txt_translate.toPlainText())
-        self.item.flag = FLAG_VALIDATED
+        self.item.flag = flag
         self.item.comment = self.txt_comment.text()
 
         self.item.translate_old = None

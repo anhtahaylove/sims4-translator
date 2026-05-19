@@ -411,7 +411,14 @@ class Ui_MainWindow(object):
         self.workspace_overview_layout.setContentsMargins(12, 9, 12, 9)
         self.workspace_overview_layout.setSpacing(10)
 
-        self.workspace_summary_block = QFrame(self.workspace_overview)
+        self.workspace_stats_bar = QFrame(self.activity_drawer.header)
+        self.workspace_stats_bar.setObjectName('workspaceStatsBar')
+        self.workspace_stats_layout = QHBoxLayout(self.workspace_stats_bar)
+        self.workspace_stats_layout.setContentsMargins(0, 0, 0, 0)
+        self.workspace_stats_layout.setSpacing(0)
+        self.workspace_stats_bar.setMinimumWidth(360)
+
+        self.workspace_summary_block = QFrame(self.workspace_stats_bar)
         self.workspace_summary_block.setObjectName('workspaceSummaryBlock')
         self.workspace_summary_block_layout = QVBoxLayout(self.workspace_summary_block)
         self.workspace_summary_block_layout.setContentsMargins(0, 0, 0, 0)
@@ -428,6 +435,8 @@ class Ui_MainWindow(object):
 
         self.workspace_summary_block_layout.addWidget(self.workspace_summary)
         self.workspace_summary_block_layout.addWidget(self.workspace_hint)
+        self.workspace_stats_layout.addWidget(self.workspace_summary_block)
+        self.activity_drawer.header_layout.insertWidget(2, self.workspace_stats_bar)
 
         self.filter_panel = self.__filter_board(self.workspace_overview)
         self.filter_panel.setMinimumWidth(640)
@@ -455,16 +464,7 @@ class Ui_MainWindow(object):
         self.table_panel_layout.addWidget(self.empty_state)
         self.table_panel_layout.addWidget(self.selection_bar)
         self.table_panel_layout.addWidget(self.colorbar)
-        self.workspace_stats_bar = QFrame(panel)
-        self.workspace_stats_bar.setObjectName('workspaceStatsBar')
-        self.workspace_stats_layout = QHBoxLayout(self.workspace_stats_bar)
-        self.workspace_stats_layout.setContentsMargins(12, 5, 12, 5)
-        self.workspace_stats_layout.setSpacing(8)
-        self.workspace_stats_layout.addStretch()
-        self.workspace_stats_layout.addWidget(self.workspace_summary_block)
-
         self.table_panel_layout.addWidget(self.tableview, 1)
-        self.table_panel_layout.addWidget(self.workspace_stats_bar)
         return panel
 
     def __selection_bar(self, parent):

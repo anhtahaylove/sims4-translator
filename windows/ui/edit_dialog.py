@@ -50,7 +50,7 @@ class Ui_EditDialog(object):
         header_layout.setSpacing(6)
         self.edit_title = QLabel('Search and Edit', self.edit_header)
         self.edit_title.setObjectName('sheetTitle')
-        self.edit_detail = QLabel('Review suggestions, refine the draft, then validate the selected string.', self.edit_header)
+        self.edit_detail = QLabel('Review suggestions, refine the draft, then approve it or mark it for review.', self.edit_header)
         self.edit_detail.setObjectName('sheetHint')
         self.edit_detail.setWordWrap(True)
         header_layout.addWidget(self.edit_title)
@@ -141,10 +141,15 @@ class Ui_EditDialog(object):
         self.lbl_status = QLabel(EditDialog)
 
         self.btn_ok = QPushButton(EditDialog)
+        self.btn_review = QPushButton(EditDialog)
         self.btn_cancel = QPushButton(EditDialog)
 
         self.btn_ok.setDefault(True)
+        self.btn_review.setAutoDefault(False)
         self.btn_cancel.setAutoDefault(False)
+        self.btn_ok.setObjectName('primaryButton')
+        self.btn_review.setObjectName('secondaryButton')
+        self.btn_cancel.setObjectName('secondaryButton')
 
         self.edit_footer = QFrame(EditDialog)
         self.edit_footer.setObjectName('sheetFooter')
@@ -161,6 +166,7 @@ class Ui_EditDialog(object):
         hlayout.addWidget(self.lbl_status)
         hlayout.addStretch()
         hlayout.addWidget(self.btn_cancel)
+        hlayout.addWidget(self.btn_review)
         hlayout.addWidget(self.btn_ok)
 
         footer_layout.addWidget(self.txt_comment)
