@@ -569,9 +569,10 @@ class Ui_MainWindow(object):
 
         self.filter_search_label = QLabel('Search', board)
         self.filter_search_label.setObjectName('sectionLabel')
-        self.filter_search_mode = QLabel('Hybrid', board)
+        self.filter_search_mode = QLabel('', board)
         self.filter_search_mode.setObjectName('filterModeButton')
         self.filter_search_mode.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.filter_search_mode.setVisible(False)
 
         self.filter_status_label = QLabel('Status', board)
         self.filter_status_label.setObjectName('sectionLabel')
@@ -596,9 +597,8 @@ class Ui_MainWindow(object):
 
         self.filter_layout.addWidget(self.filter_title, 0, 0)
         self.filter_layout.addWidget(self.filter_search_label, 0, 1)
-        self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 2)
-        self.filter_layout.addWidget(self.filter_search_mode, 0, 4)
-        self.filter_layout.addWidget(self.filter_clear, 0, 6)
+        self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 4)
+        self.filter_layout.addWidget(self.filter_clear, 0, 6, 1, 1)
         self.filter_layout.addWidget(self.filter_status_label, 1, 0)
         self.filter_layout.addWidget(self.filter_all, 1, 1, 1, 2)
         self.filter_layout.addWidget(self.filter_original, 1, 3, 1, 2)

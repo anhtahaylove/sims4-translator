@@ -284,6 +284,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.filter_hint.setText('Search, status and scope stay close to the table.')
         self.filter_search_label.setText('Search')
         self.filter_search.setPlaceholderText('Search ID, Original, or Translated...')
+        self.filter_search.setToolTip('Search ID, original text, and translated text at the same time.')
         self.filter_status_label.setText('Status')
         self.filter_scope_label.setText('Scope')
         self.filter_file_label.setText('Package')
@@ -453,7 +454,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.filter_title,
                 self.filter_search_label,
                 self.filter_search,
-                self.filter_search_mode,
                 self.filter_clear,
                 self.filter_status_label,
                 self.filter_all,
@@ -484,8 +484,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.filter_file_label.setText('Package')
             self.filter_instance_label.setText('Instance')
 
-            self.filter_layout.addWidget(self.filter_search, 0, 0, 1, 4)
-            self.filter_layout.addWidget(self.filter_search_mode, 0, 4)
+            self.filter_layout.addWidget(self.filter_search, 0, 0, 1, 5)
             self.filter_layout.addWidget(self.filter_clear, 0, 5, 1, 2)
             self.filter_layout.addWidget(self.filter_all, 1, 0, 1, 2)
             self.filter_layout.addWidget(self.filter_original, 1, 2, 1, 2)
@@ -521,8 +520,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             self.filter_layout.addWidget(self.filter_title, 0, 0)
             self.filter_layout.addWidget(self.filter_search_label, 0, 1)
-            self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 3)
-            self.filter_layout.addWidget(self.filter_search_mode, 0, 5)
+            self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 4)
             self.filter_layout.addWidget(self.filter_clear, 0, 6, 1, 2)
             self.filter_layout.addWidget(self.filter_status_label, 1, 0)
             self.filter_layout.addWidget(self.filter_all, 1, 1)
@@ -541,7 +539,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.filter_file_label,
                 self.filter_instance_label,
                 self.filter_search,
-                self.filter_search_mode,
                 self.filter_clear,
                 self.filter_all,
                 self.filter_original,
@@ -553,6 +550,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.filter_instance,
         ):
             widget.setVisible(True)
+        self.filter_search_mode.setVisible(False)
 
         self.__filter_density_current = density
         self.__update_filter_counts(app_state.packages_storage.items() if app_state.packages_storage.enabled else ())
@@ -665,43 +663,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             super().keyPressEvent(event)
 
     def search_toggle(self):
-        if self.__search_flag == SEARCH_IN_ALL:
-            self.__search_flag = SEARCH_IN_SOURCE
-            self.toolbar.search_toggle.setIcon(QIcon(':/images/search_source.png'))
-            self.toolbar.search_toggle.setToolTip(interface.text('ToolBar', 'Search in original'))
-        elif self.__search_flag == SEARCH_IN_SOURCE:
-            self.__search_flag = SEARCH_IN_DESTINATION
-            self.toolbar.search_toggle.setIcon(QIcon(':/images/search_dest.png'))
-            self.toolbar.search_toggle.setToolTip(interface.text('ToolBar', 'Search in translation'))
-        elif self.__search_flag == SEARCH_IN_DESTINATION:
-            self.__search_flag = SEARCH_IN_ID
-            self.toolbar.search_toggle.setIcon(QIcon(':/images/search_id.png'))
-            self.toolbar.search_toggle.setToolTip(interface.text('ToolBar', 'Search in ID'))
-        else:
-            self.__search_flag = SEARCH_IN_ALL
-            self.toolbar.search_toggle.setIcon(QIcon(':/images/search_source.png'))
-            self.toolbar.search_toggle.setToolTip('Search ID, original and translation')
-
+        self.__search_flag = SEARCH_IN_ALL
+        self.toolbar.search_toggle.setIcon(QIcon(':/images/search_source.png'))
+        self.toolbar.search_toggle.setToolTip('Search ID, original and translation')
         if self.toolbar.edt_search.text():
             self.filter_timer_trigger()
         self.__sync_search_mode_label()
 
     def __sync_search_mode_label(self):
-        if self.__search_flag == SEARCH_IN_ALL:
-            text = 'Hybrid'
-            tooltip = 'Search ID, original and translation'
-        elif self.__search_flag == SEARCH_IN_SOURCE:
-            text = 'Original'
-            tooltip = interface.text('ToolBar', 'Search in original')
-        elif self.__search_flag == SEARCH_IN_DESTINATION:
-            text = 'Translation'
-            tooltip = interface.text('ToolBar', 'Search in translation')
-        else:
-            text = 'ID'
-            tooltip = interface.text('ToolBar', 'Search in ID')
-
-        self.filter_search_mode.setText(text)
+        self.__search_flag = SEARCH_IN_ALL
+        tooltip = 'Search ID, original and translation'
+        self.filter_search_mode.setText('')
         self.filter_search_mode.setToolTip(tooltip)
+        self.filter_search.setToolTip(tooltip)
 
     def update_current_file(self):
         key = None

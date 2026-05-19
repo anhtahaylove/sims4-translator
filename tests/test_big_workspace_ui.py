@@ -133,8 +133,10 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.selection_bar.objectName(), 'selectionBar')
             self.assertEqual(window.workspace_overview.objectName(), 'workspaceOverview')
             self.assertEqual(window.filter_search.objectName(), 'filterSearch')
-            self.assertEqual(window.filter_search_mode.text(), 'Hybrid')
+            self.assertFalse(window.filter_search_mode.isVisibleTo(window))
+            self.assertEqual(window.filter_search_mode.text(), '')
             self.assertIn('ID', window.filter_search.placeholderText())
+            self.assertIn('original', window.filter_search.toolTip())
             self.assertIs(window.activity_drawer, window.job_drawer)
             self.assertTrue(window.action_activity_dock.isCheckable())
             self.assertIn(window.action_activity_dock, window.menu_view.actions())
@@ -441,7 +443,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             storage.proxy.process_filter()
             window.set_state_menu()
 
-            self.assertEqual(window.filter_search_mode.text(), 'Hybrid')
+            self.assertFalse(window.filter_search_mode.isVisibleTo(window))
 
             window.filter_search.setText('0xB586D7F4')
             window.update_proxy()
