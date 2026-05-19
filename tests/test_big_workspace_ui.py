@@ -717,6 +717,21 @@ class WorkspaceProShellTests(unittest.TestCase):
         finally:
             close_widget(dialog)
 
+    def test_edit_dialog_keeps_escape_tokens_visible_for_highlighting(self):
+        dialog = EditDialog()
+        item = record()
+        item[RECORD_MAIN_SOURCE] = 'Hello\\n\\n{0.SimFirstName}<b></b>'
+        item[RECORD_MAIN_TRANSLATE] = 'Xin chao\\n{1.Money}<i></i>'
+        try:
+            dialog.prepare(item)
+
+            self.assertIn('\\n\\n', dialog.txt_original.toPlainText())
+            self.assertIn('{0.SimFirstName}', dialog.txt_original.toPlainText())
+            self.assertIn('\\n', dialog.txt_translate.toPlainText())
+            self.assertIn('{1.Money}', dialog.txt_translate.toPlainText())
+        finally:
+            close_widget(dialog)
+
     def test_edit_dialog_can_save_as_needs_review_or_approved(self):
         storage = app_state.packages_storage
         storage.packages.append(PackageStub())

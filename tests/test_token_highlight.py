@@ -11,6 +11,7 @@ from singletons.state import app_state
 from storages.packages import PackagesStorage
 from utils.functions import text_to_table
 from widgets.delegate import MainDelegatePaint
+from widgets.editor import QTextEditor
 from widgets.token_highlight import (
     TOKEN_LINEBREAK,
     TOKEN_NUMBER,
@@ -63,6 +64,33 @@ class TokenHighlightTests(unittest.TestCase):
         self.assertIn('\\n', rendered)
         self.assertIn('{0.SimFirstName}', rendered)
         self.assertGreaterEqual(rendered.count('background-color'), 6)
+
+    def test_editor_highlighter_uses_preview_token_groups(self):
+        editor = QTextEditor()
+        try:
+            editor.setPlainText('<b></b>\\n{0.SimFirstName} {1.Money}')
+            editor.highlighter.rehighlight()
+            app().processEvents()
+
+            formats = editor.document().firstBlock().layout().formats()
+            highlighted = [
+                (
+                    editor.document().firstBlock().text()[fmt.start:fmt.start + fmt.length],
+                    fmt.format.foreground().color().name(),
+                    fmt.format.background().color().name(),
+                )
+                for fmt in formats
+            ]
+
+            self.assertEqual([item[0] for item in highlighted], [
+                '<b></b>',
+                '\\n',
+                '{0.SimFirstName}',
+                '{1.Money}',
+            ])
+            self.assertGreaterEqual(len({item[2] for item in highlighted}), 3)
+        finally:
+            editor.close()
 
 
 if __name__ == '__main__':

@@ -17,7 +17,7 @@ from singletons.signals import color_signals, storage_signals
 from singletons.state import app_state
 from singletons.translator import translator
 from singletons.undo import undo
-from utils.functions import text_to_edit, text_to_stbl
+from utils.functions import text_to_table, text_to_stbl
 from utils.task_runner import CancellationToken, TaskReporter, TaskRunner
 from utils.constants import *
 
@@ -133,7 +133,7 @@ class EditDialog(QDialog, Ui_EditDialog):
                 text = item[RECORD_DICTIONARY_TRANSLATE]
             else:
                 text = item[RECORD_DICTIONARY_SOURCE]
-            self.txt_search.setPlainText(text_to_edit(text))
+            self.txt_search.setPlainText(text_to_table(text))
             self.__sync_suggestions_visibility()
 
     def prepare(self, item):
@@ -146,8 +146,8 @@ class EditDialog(QDialog, Ui_EditDialog):
 
         self.txt_search.setPlainText('')
 
-        self.txt_original.setPlainText(text_to_edit(item.source))
-        self.txt_translate.setPlainText(text_to_edit(item.translate))
+        self.txt_original.setPlainText(text_to_table(item.source))
+        self.txt_translate.setPlainText(text_to_table(item.translate))
 
         self.txt_comment.setText(item.comment)
 
@@ -158,7 +158,7 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.cb_api.setCurrentIndex(engine_index if engine_index >= 0 else 0)
 
         if item.source_old:
-            self.txt_original_diff.setPlainText(text_to_edit(item.source_old))
+            self.txt_original_diff.setPlainText(text_to_table(item.source_old))
             self.txt_original_diff.setVisible(True)
             self.lbl_original_diff.setVisible(True)
         else:
@@ -166,7 +166,7 @@ class EditDialog(QDialog, Ui_EditDialog):
             self.lbl_original_diff.setVisible(False)
 
         if item.translate_old:
-            self.txt_translate_diff.setPlainText(text_to_edit(item.translate_old))
+            self.txt_translate_diff.setPlainText(text_to_table(item.translate_old))
             self.txt_translate_diff.setVisible(True)
             self.lbl_translate_diff.setVisible(True)
         else:
@@ -235,7 +235,7 @@ class EditDialog(QDialog, Ui_EditDialog):
         if result.error:
             self.__show_translation_error(result.error)
         else:
-            self.txt_translate.setPlainText(text_to_edit(result.text))
+            self.txt_translate.setPlainText(text_to_table(result.text))
             self.lbl_status.setText('')
 
     @Slot(object)
@@ -275,4 +275,4 @@ class EditDialog(QDialog, Ui_EditDialog):
 
         if action == use_action:
             item = self.tableview.selected_item()
-            self.txt_translate.setPlainText(text_to_edit(item[RECORD_DICTIONARY_TRANSLATE]))
+            self.txt_translate.setPlainText(text_to_table(item[RECORD_DICTIONARY_TRANSLATE]))

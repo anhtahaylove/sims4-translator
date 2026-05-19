@@ -243,12 +243,11 @@ class BracketHighlighter(QSyntaxHighlighter):
 
         colors = dark if config.is_dark_theme() else light
         self.__formats = {
-            TOKEN_BRACE: self.getFormat(QColor(colors.ACCENT), True, QColor(colors.PANEL_RAISED)),
-            TOKEN_LINEBREAK: self.getFormat(QColor(colors.TEXT_ERROR), True, QColor(colors.PANEL_RAISED)),
-            TOKEN_NUMBER: self.getFormat(QColor(colors.WARNING), True, QColor(colors.PANEL_RAISED)),
-            TOKEN_SIM: self.getFormat(QColor(colors.EDITOR_SIMNAME), colors.EDITOR_SIMNAME_BOLD,
-                                      QColor(colors.PANEL_RAISED)),
-            TOKEN_TAG: self.getFormat(QColor(colors.BORDER_FOCUS), False, QColor(colors.PANEL_RAISED)),
+            TOKEN_BRACE: self.getTokenFormat(colors.ACCENT, True),
+            TOKEN_LINEBREAK: self.getTokenFormat(colors.TEXT_ERROR, True),
+            TOKEN_NUMBER: self.getTokenFormat(colors.WARNING, True),
+            TOKEN_SIM: self.getTokenFormat(colors.EDITOR_SIMNAME, colors.EDITOR_SIMNAME_BOLD),
+            TOKEN_TAG: self.getTokenFormat(colors.BORDER_FOCUS, False),
         }
         self.__space_format = self.getFormat(QColor(colors.EDITOR_TAG), False)
         self.__space_pattern = re.compile(r' {2,}|\t+')
@@ -261,13 +260,16 @@ class BracketHighlighter(QSyntaxHighlighter):
             start, end = match.span()
             self.setFormat(start, end - start, self.__space_format)
 
-    def getFormat(self, color=None, bold=False, background=None):
+    def getTokenFormat(self, color, bold=False):
+        return self.getFormat(QColor(color), bold, QColor(color), background_alpha=46)
+
+    def getFormat(self, color=None, bold=False, background=None, background_alpha=70):
         fmt = QTextCharFormat()
         if bold:
             fmt.setFontWeight(QFont.Weight.Bold)
         if color:
             fmt.setForeground(color)
         if background:
-            background.setAlpha(70)
+            background.setAlpha(background_alpha)
             fmt.setBackground(background)
         return fmt
