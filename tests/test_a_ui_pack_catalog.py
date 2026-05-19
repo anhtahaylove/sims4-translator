@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QApplication
 from singletons.config import config
 from singletons.expansions import Expansion, expansions
 from windows.options_dialog import Model
-from widgets.job_drawer import JobRow
+from widgets.job_drawer import JobRow, QJobStatusDrawer
 
 
 def app():
@@ -95,6 +95,19 @@ class JobDrawerStateTests(unittest.TestCase):
         self.assertEqual(row.property('state'), 'done')
         self.assertEqual(row.percent_label.text(), 'Done')
         close_widget(row)
+
+    def test_activity_drawer_starts_collapsed_but_can_expand(self):
+        drawer = QJobStatusDrawer()
+        try:
+            self.assertTrue(drawer.body.isHidden())
+            self.assertFalse(drawer.toggle_button.isChecked())
+
+            drawer.set_expanded(True)
+
+            self.assertFalse(drawer.body.isHidden())
+            self.assertTrue(drawer.toggle_button.isChecked())
+        finally:
+            close_widget(drawer)
 
 
 if __name__ == '__main__':

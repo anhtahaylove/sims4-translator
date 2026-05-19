@@ -271,28 +271,41 @@ class Ui_MainWindow(object):
         self.workspace_project_toggle = self.__workspace_toggle('Project')
         self.workspace_inspector_toggle = self.__workspace_toggle('Inspector')
         self.workspace_activity_toggle = self.__workspace_toggle('Activity')
+        self.command_options = self.__command_button(self.action_options)
+
+        self.command_file_group, self.command_file_label = self.__command_group(
+            'File',
+            (self.command_open, self.command_save, self.command_import),
+        )
+        self.command_export_group, self.command_export_label = self.__command_group(
+            'Export',
+            (self.command_export,),
+        )
+        self.command_translation_group, self.command_translation_label = self.__command_group(
+            'Translation',
+            (self.command_translate, self.command_dictionary),
+        )
+        self.command_workspace_group, self.command_workspace_label = self.__command_group(
+            'Workspace',
+            (self.workspace_project_toggle, self.workspace_inspector_toggle, self.workspace_activity_toggle),
+        )
+        self.command_tools_group, self.command_tools_label = self.__command_group(
+            'Tools',
+            (self.command_options,),
+        )
 
         command_layout.addWidget(self.brand_block)
         command_layout.addWidget(self.brand_divider)
-        command_layout.addWidget(self.command_open)
-        command_layout.addWidget(self.command_save)
-        command_layout.addWidget(self.command_import)
-        command_layout.addWidget(self.command_export)
-        command_layout.addWidget(self.__command_divider())
-        command_layout.addWidget(self.command_translate)
-        command_layout.addWidget(self.__command_divider())
-        command_layout.addWidget(self.command_dictionary)
-        command_layout.addWidget(self.__command_divider())
-        command_layout.addWidget(self.workspace_project_toggle)
-        command_layout.addWidget(self.workspace_inspector_toggle)
-        command_layout.addWidget(self.workspace_activity_toggle)
+        command_layout.addWidget(self.command_file_group)
+        command_layout.addWidget(self.command_export_group)
+        command_layout.addWidget(self.command_translation_group)
+        command_layout.addWidget(self.command_workspace_group)
 
         command_spacer = QWidget(self.command_bar)
         command_spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         command_layout.addWidget(command_spacer)
 
-        self.command_options = self.__command_button(self.action_options)
-        command_layout.addWidget(self.command_options)
+        command_layout.addWidget(self.command_tools_group)
 
         self.toolbar = QToolBar(MainWindow)
         self.toolbar.setObjectName('filterBar')
@@ -362,6 +375,27 @@ class Ui_MainWindow(object):
         divider = QFrame(self.command_bar)
         divider.setObjectName('commandDivider')
         return divider
+
+    def __command_group(self, label, widgets):
+        group = QFrame(self.command_bar)
+        group.setObjectName('commandGroup')
+        group_layout = QVBoxLayout(group)
+        group_layout.setContentsMargins(6, 4, 6, 4)
+        group_layout.setSpacing(3)
+
+        row = QHBoxLayout()
+        row.setContentsMargins(0, 0, 0, 0)
+        row.setSpacing(4)
+        for widget in widgets:
+            row.addWidget(widget)
+
+        text = QLabel(label, group)
+        text.setObjectName('commandGroupLabel')
+        text.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        group_layout.addLayout(row)
+        group_layout.addWidget(text)
+        return group, text
 
     def __workspace_toggle(self, text):
         button = QToolButton(self.command_bar)

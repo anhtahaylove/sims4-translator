@@ -19,7 +19,7 @@ TOKEN_PATTERN = re.compile(r'(\{[^{}]+\}|</?[^<>]+>)')
 
 
 STATUS_META = {
-    FLAG_UNVALIDATED: ('Original', '#ff8580'),
+    FLAG_UNVALIDATED: ('Original', '#d98b7e'),
     FLAG_PROGRESS: ('In progress', '#f0b766'),
     FLAG_VALIDATED: ('Validated', '#62b6ff'),
     FLAG_TRANSLATED: ('Translated', '#5fd6a2'),
@@ -90,7 +90,7 @@ class MainDelegatePaint(QStyledItemDelegate):
         painter.restore()
 
     def sizeHint(self, option, index):
-        return QSize(super().sizeHint(option, index).width(), 42)
+        return QSize(super().sizeHint(option, index).width(), 38)
 
     def __item(self, index):
         try:

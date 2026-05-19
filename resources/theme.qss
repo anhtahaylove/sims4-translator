@@ -25,12 +25,13 @@ QMessageBox {
 }
 
 QTableView {
-    border: 1px solid __BORDER_LIGHT__;
+    border: 1px solid __BORDER__;
+    border-radius: 8px;
     background: __PLAIN_EDIT__;
     color: __TEXT__;
     selection-background-color: __SELECTION__;
     selection-color: __SELECTION_TEXT__;
-    gridline-color: __BORDER_LIGHT__;
+    gridline-color: __SURFACE__;
     alternate-background-color: __PANEL_ALT__;
 }
 
@@ -148,7 +149,7 @@ QToolBar::separator {
 #commandBar {
     background: __PANEL__;
     border: 1px solid __BORDER__;
-    border-radius: 12px;
+    border-radius: 10px;
 }
 
 #brandTitle {
@@ -179,13 +180,30 @@ QToolBar::separator {
     margin: 4px 2px;
 }
 
+#commandGroup {
+    background: __SURFACE__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 9px;
+}
+
+#commandGroup:hover {
+    border-color: __BORDER__;
+    background: __PANEL_ALT__;
+}
+
+#commandGroupLabel {
+    color: __TEXT_MUTED__;
+    font-size: 10px;
+    font-weight: 600;
+}
+
 #commandButton {
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 9px;
+    border-radius: 7px;
     color: __TEXT__;
-    padding: 6px 12px;
-    min-height: 30px;
+    padding: 4px 8px;
+    min-height: 28px;
 }
 
 #commandButton:hover {
@@ -212,9 +230,9 @@ QToolBar::separator {
 #workspaceToggle {
     background: __SURFACE__;
     border: 1px solid __BORDER_LIGHT__;
-    border-radius: 10px;
+    border-radius: 7px;
     color: __TEXT_MUTED__;
-    padding: 5px 10px;
+    padding: 4px 9px;
     min-height: 28px;
     min-width: 68px;
 }
@@ -250,11 +268,11 @@ QToolBar::separator {
 #tablePanel {
     background: __PANEL__;
     border: 1px solid __BORDER__;
-    border-radius: 12px;
+    border-radius: 10px;
 }
 
 #tablePanel {
-    border-color: __ACCENT__;
+    border-color: __BORDER__;
     background: __SURFACE__;
 }
 
@@ -267,7 +285,7 @@ QToolBar::separator {
 }
 
 #inspectorPanel[active="true"] {
-    border-color: __ACCENT__;
+    border-color: __BORDER_FOCUS__;
 }
 
 #panelTitle,
@@ -293,8 +311,8 @@ QToolBar::separator {
 
 #workspaceOverview {
     background: __PANEL__;
-    border: 1px solid __BORDER_LIGHT__;
-    border-radius: 10px;
+    border: 1px solid __BORDER__;
+    border-radius: 8px;
 }
 
 #workspaceSummary {
@@ -310,8 +328,8 @@ QToolBar::separator {
 #filterPanel {
     background: __PANEL__;
     border: 1px solid __BORDER__;
-    border-left: 4px solid __ACCENT__;
-    border-radius: 12px;
+    border-left: 3px solid __ACCENT__;
+    border-radius: 10px;
 }
 
 #fieldLabel {
@@ -799,7 +817,7 @@ QMenu::right-arrow:disabled {
 QHeaderView {
     border: none;
     border-bottom: 1px solid __BORDER_LIGHT__;
-    background-color: __PANEL__;
+    background-color: __SURFACE__;
     color: __TEXT__;
     border-radius: 0;
     min-width: 30px;
@@ -807,10 +825,10 @@ QHeaderView {
 QHeaderView::section {
     border: none;
     border-right: 1px solid __BORDER_LIGHT__;
-    background-color: __PANEL__;
+    background-color: __SURFACE__;
     color: __TEXT__;
     border-radius: 0;
-    height: 30px;
+    height: 32px;
     min-width: 30px;
     padding: 0;
 }
@@ -821,7 +839,7 @@ QHeaderView::section:last {
     border: none;
 }
 QHeaderView::section:hover {
-    background-color: __HEADER__;
+    background-color: __PANEL_ALT__;
 }
 QHeaderView::down-arrow,
 QHeaderView::up-arrow {

@@ -307,6 +307,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.workspace_inspector_toggle.setToolTip('Show or hide the selected string Inspector')
         self.workspace_activity_toggle.setText('Activity')
         self.workspace_activity_toggle.setToolTip('Show or hide background jobs and logs')
+        self.command_file_label.setText('File')
+        self.command_export_label.setText('Export')
+        self.command_translation_label.setText('Translation')
+        self.command_workspace_label.setText('Workspace')
+        self.command_tools_label.setText('Tools')
 
         for col in self.action_column:
             col.retranslate()
@@ -354,6 +359,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.brand_title.setText('TS4 Translator Plus' if compact else APP_NAME)
         self.brand_subtitle.setVisible(not compact)
         self.brand_divider.setVisible(not compact)
+        for label in (
+                self.command_file_label,
+                self.command_export_label,
+                self.command_translation_label,
+                self.command_workspace_label,
+                self.command_tools_label,
+        ):
+            label.setVisible(not compact)
 
     def __apply_workspace_density(self, force=False):
         if not hasattr(self, 'workspace_project_toggle'):

@@ -5,9 +5,9 @@ import unittest
 
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtGui import QTextOption
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QStyleOptionViewItem
 
 from packer.resource import ResourceID
 from singletons.config import config
@@ -27,6 +27,7 @@ from utils.constants import (
 from windows.edit_dialog import EditDialog
 from windows.main_window import MainWindow
 from windows.options_dialog import OptionsDialog
+from widgets.delegate import MainDelegatePaint
 
 
 def app():
@@ -104,6 +105,11 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.workspace_project_toggle.objectName(), 'workspaceToggle')
             self.assertEqual(window.workspace_inspector_toggle.objectName(), 'workspaceToggle')
             self.assertEqual(window.workspace_activity_toggle.objectName(), 'workspaceToggle')
+            self.assertEqual(window.command_file_group.objectName(), 'commandGroup')
+            self.assertEqual(window.command_export_group.objectName(), 'commandGroup')
+            self.assertEqual(window.command_translation_group.objectName(), 'commandGroup')
+            self.assertEqual(window.command_workspace_group.objectName(), 'commandGroup')
+            self.assertEqual(window.command_tools_group.objectName(), 'commandGroup')
             self.assertIs(window.filter_search, window.toolbar.edt_search)
             self.assertIs(window.filter_file, window.toolbar.cb_files)
             self.assertIs(window.filter_instance, window.toolbar.cb_instances)
@@ -208,6 +214,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             )
 
             self.assertEqual(window.brand_title.text(), 'TS4 Translator Plus')
+            self.assertFalse(window.command_file_label.isVisibleTo(window))
+            self.assertFalse(window.command_workspace_label.isVisibleTo(window))
 
             window.resize(1500, window.height())
             app().processEvents()
@@ -217,6 +225,16 @@ class WorkspaceProShellTests(unittest.TestCase):
                 Qt.ToolButtonStyle.ToolButtonTextBesideIcon
             )
             self.assertEqual(window.brand_title.text(), 'The Sims 4 Translator Plus')
+            self.assertTrue(window.command_file_label.isVisibleTo(window))
+            self.assertTrue(window.command_workspace_label.isVisibleTo(window))
+        finally:
+            close_widget(window)
+
+    def test_table_delegate_uses_dense_professional_row_height(self):
+        window = MainWindow()
+        try:
+            delegate = MainDelegatePaint(window.tableview)
+            self.assertEqual(delegate.sizeHint(QStyleOptionViewItem(), QModelIndex()).height(), 38)
         finally:
             close_widget(window)
 

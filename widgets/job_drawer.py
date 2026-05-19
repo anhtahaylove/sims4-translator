@@ -152,7 +152,7 @@ class QJobStatusDrawer(QWidget):
         self.toggle_button.setObjectName('jobDrawerToggle')
         self.toggle_button.setText('Jobs')
         self.toggle_button.setCheckable(True)
-        self.toggle_button.setChecked(True)
+        self.toggle_button.setChecked(False)
         self.toggle_button.clicked.connect(self.set_expanded)
 
         self.status_label = QLabel('Idle', self.header)
@@ -193,6 +193,7 @@ class QJobStatusDrawer(QWidget):
 
         layout.addWidget(self.header)
         layout.addWidget(self.body)
+        self.set_expanded(False)
 
         task_runner_signals.started.connect(self.task_started)
         task_runner_signals.progress.connect(self.task_progress)
@@ -207,6 +208,9 @@ class QJobStatusDrawer(QWidget):
 
     def set_expanded(self, expanded: bool) -> None:
         self.body.setVisible(expanded)
+        self.toggle_button.blockSignals(True)
+        self.toggle_button.setChecked(expanded)
+        self.toggle_button.blockSignals(False)
         self.toggle_button.setText('Jobs' if expanded else 'Jobs hidden')
 
     def task_started(self, handle) -> None:
@@ -215,6 +219,7 @@ class QJobStatusDrawer(QWidget):
         row = JobRow(handle.name, handle, self.jobs_widget)
         self.__rows[handle.job_id] = row
         self.jobs_layout.addWidget(row)
+        self.set_expanded(True)
         self.log_message(f'Started: {handle.name}')
         self.refresh_state()
 
@@ -249,6 +254,7 @@ class QJobStatusDrawer(QWidget):
         else:
             self.__legacy_row.title_label.setText(message or 'Working')
 
+        self.set_expanded(True)
         self.__legacy_done = 0
         self.__legacy_total = total
         self.__legacy_row.apply_progress(TaskProgress(0, total, message))
