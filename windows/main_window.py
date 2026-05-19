@@ -325,7 +325,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__apply_workspace_density()
 
     def __workspace_density(self):
-        if self.height() < 760:
+        if self.height() < 900:
             return 'short'
         if self.width() < 1180:
             return 'compact'

@@ -209,7 +209,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertFalse(window.command_activity_label.isVisibleTo(window))
             self.assertFalse(window.brand_badge.isVisibleTo(window))
 
-            window.resize(1500, 820)
+            window.resize(1500, 930)
             app().processEvents()
 
             self.assertEqual(
@@ -276,6 +276,27 @@ class WorkspaceProShellTests(unittest.TestCase):
         finally:
             close_widget(window)
 
+    def test_wide_low_height_window_uses_short_density_for_laptop_screens(self):
+        window = MainWindow()
+        try:
+            window.resize(1580, 840)
+            window.show()
+            app().processEvents()
+
+            self.assertEqual(window.command_bar.property('density'), 'short')
+            self.assertFalse(window.brand_block.isVisibleTo(window))
+            self.assertFalse(window.command_file_label.isVisibleTo(window))
+            self.assertFalse(window.activity_drawer.body.isVisibleTo(window))
+
+            window.resize(1580, 930)
+            app().processEvents()
+
+            self.assertEqual(window.command_bar.property('density'), 'spacious')
+            self.assertTrue(window.brand_block.isVisibleTo(window))
+            self.assertTrue(window.command_file_label.isVisibleTo(window))
+        finally:
+            close_widget(window)
+
     def test_large_filter_counts_use_compact_labels_with_full_tooltips_in_short_mode(self):
         window = MainWindow()
         items = [record(FLAG_UNVALIDATED)] * 162527
@@ -312,8 +333,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual([item.id for item in storage.model.filtered], [7])
             self.assertEqual([list(original), list(validated)], before)
             self.assertIn('All 2', window.filter_all.text())
-            self.assertIn('Original 1', window.filter_original.text())
-            self.assertIn('Validated 1', window.filter_validated.text())
+            self.assertIn('Orig 1', window.filter_original.text())
+            self.assertIn('Valid 1', window.filter_validated.text())
 
             window.clear_filters()
             window.update_proxy()
