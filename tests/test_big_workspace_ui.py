@@ -96,6 +96,9 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.inspector_scroll.objectName(), 'inspectorScroll')
             self.assertEqual(window.workspace_splitter.objectName(), 'workspaceSplitter')
             self.assertIs(window.activity_drawer, window.job_drawer)
+            self.assertEqual(window.workspace_project_toggle.objectName(), 'workspaceToggle')
+            self.assertEqual(window.workspace_inspector_toggle.objectName(), 'workspaceToggle')
+            self.assertEqual(window.workspace_activity_toggle.objectName(), 'workspaceToggle')
             self.assertIs(window.filter_search, window.toolbar.edt_search)
             self.assertIs(window.filter_file, window.toolbar.cb_files)
             self.assertIs(window.filter_instance, window.toolbar.cb_instances)
@@ -106,19 +109,79 @@ class WorkspaceProShellTests(unittest.TestCase):
         finally:
             close_widget(window)
 
-    def test_minimum_window_keeps_primary_filter_controls_visible(self):
+    def test_minimum_window_prioritizes_table_and_panel_toggles(self):
         window = MainWindow()
         try:
             window.resize(window.minimumSize())
             window.show()
             app().processEvents()
 
-            self.assertTrue(window.project_scroll.isVisibleTo(window))
-            self.assertTrue(window.filter_search.isVisibleTo(window))
-            self.assertTrue(window.filter_search_mode.isVisibleTo(window))
-            self.assertTrue(window.filter_all.isVisibleTo(window))
-            self.assertGreater(window.filter_panel.width(), 150)
-            self.assertGreater(window.filter_search.height(), 20)
+            self.assertFalse(window.project_sidebar.isVisibleTo(window))
+            self.assertFalse(window.inspector_panel.isVisibleTo(window))
+            self.assertFalse(window.activity_drawer.isVisibleTo(window))
+            self.assertTrue(window.table_panel.isVisibleTo(window))
+            self.assertTrue(window.tableview.isVisibleTo(window))
+            self.assertTrue(window.workspace_project_toggle.isVisibleTo(window))
+            self.assertTrue(window.workspace_inspector_toggle.isVisibleTo(window))
+            self.assertTrue(window.workspace_activity_toggle.isVisibleTo(window))
+        finally:
+            close_widget(window)
+
+    def test_workspace_density_defaults_for_wide_medium_and_small(self):
+        window = MainWindow()
+        try:
+            window.resize(1360, 760)
+            window.show()
+            app().processEvents()
+
+            self.assertTrue(window.project_sidebar.isVisibleTo(window))
+            self.assertTrue(window.inspector_panel.isVisibleTo(window))
+            self.assertTrue(window.activity_drawer.isVisibleTo(window))
+
+            window.resize(1120, 720)
+            app().processEvents()
+
+            self.assertTrue(window.project_sidebar.isVisibleTo(window))
+            self.assertFalse(window.inspector_panel.isVisibleTo(window))
+            self.assertTrue(window.activity_drawer.isVisibleTo(window))
+
+            window.resize(window.minimumSize())
+            app().processEvents()
+
+            self.assertFalse(window.project_sidebar.isVisibleTo(window))
+            self.assertFalse(window.inspector_panel.isVisibleTo(window))
+            self.assertFalse(window.activity_drawer.isVisibleTo(window))
+            self.assertTrue(window.table_panel.isVisibleTo(window))
+        finally:
+            close_widget(window)
+
+    def test_workspace_panel_toggles_reopen_collapsed_drawers_without_mutating_records(self):
+        window = MainWindow()
+        item = record()
+        before = list(item)
+        try:
+            window.update_inspector_item(item)
+            window.resize(window.minimumSize())
+            window.show()
+            app().processEvents()
+
+            window.workspace_project_toggle.setChecked(True)
+            app().processEvents()
+
+            self.assertTrue(window.project_sidebar.isVisibleTo(window))
+            self.assertFalse(window.inspector_panel.isVisibleTo(window))
+
+            window.workspace_inspector_toggle.setChecked(True)
+            app().processEvents()
+
+            self.assertFalse(window.project_sidebar.isVisibleTo(window))
+            self.assertTrue(window.inspector_panel.isVisibleTo(window))
+
+            window.workspace_activity_toggle.setChecked(True)
+            app().processEvents()
+
+            self.assertTrue(window.activity_drawer.isVisibleTo(window))
+            self.assertEqual(list(item), before)
         finally:
             close_widget(window)
 
@@ -138,13 +201,16 @@ class WorkspaceProShellTests(unittest.TestCase):
                 Qt.ToolButtonStyle.ToolButtonIconOnly
             )
 
-            window.resize(1180, window.height())
+            self.assertEqual(window.brand_title.text(), 'TS4 Translator Plus')
+
+            window.resize(1500, window.height())
             app().processEvents()
 
             self.assertEqual(
                 window.command_open.toolButtonStyle(),
                 Qt.ToolButtonStyle.ToolButtonTextBesideIcon
             )
+            self.assertEqual(window.brand_title.text(), 'The Sims 4 Translator Plus')
         finally:
             close_widget(window)
 
@@ -154,6 +220,8 @@ class WorkspaceProShellTests(unittest.TestCase):
         try:
             window.resize(window.minimumSize())
             window.show()
+            app().processEvents()
+            window.workspace_project_toggle.setChecked(True)
             app().processEvents()
             window._MainWindow__update_filter_counts(items)
             app().processEvents()
@@ -253,6 +321,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             window.update_inspector_item(item)
             window.resize(window.minimumSize())
             window.show()
+            app().processEvents()
+            window.workspace_inspector_toggle.setChecked(True)
             app().processEvents()
 
             self.assertEqual(

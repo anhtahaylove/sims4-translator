@@ -267,6 +267,9 @@ class Ui_MainWindow(object):
 
         self.command_translate = self.__command_button(self.action_translate)
         self.command_dictionary = self.__command_button(self.action_save_dictionary)
+        self.workspace_project_toggle = self.__workspace_toggle('Project')
+        self.workspace_inspector_toggle = self.__workspace_toggle('Inspector')
+        self.workspace_activity_toggle = self.__workspace_toggle('Activity')
 
         command_layout.addWidget(self.brand_block)
         command_layout.addWidget(self.brand_divider)
@@ -278,6 +281,10 @@ class Ui_MainWindow(object):
         command_layout.addWidget(self.command_translate)
         command_layout.addWidget(self.__command_divider())
         command_layout.addWidget(self.command_dictionary)
+        command_layout.addWidget(self.__command_divider())
+        command_layout.addWidget(self.workspace_project_toggle)
+        command_layout.addWidget(self.workspace_inspector_toggle)
+        command_layout.addWidget(self.workspace_activity_toggle)
 
         command_spacer = QWidget(self.command_bar)
         command_spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
@@ -351,6 +358,15 @@ class Ui_MainWindow(object):
         divider = QFrame(self.command_bar)
         divider.setObjectName('commandDivider')
         return divider
+
+    def __workspace_toggle(self, text):
+        button = QToolButton(self.command_bar)
+        button.setObjectName('workspaceToggle')
+        button.setText(text)
+        button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
+        button.setCheckable(True)
+        button.setChecked(True)
+        return button
 
     def __project_sidebar(self, parent):
         sidebar = QFrame(parent)

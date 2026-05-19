@@ -86,6 +86,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__set_window_title()
 
         self.setAcceptDrops(True)
+        self.__workspace_density = None
+        self.__workspace_panels_updating = False
 
         self.tableview.doubleClicked.connect(self.edit_string)
         self.tableview.customContextMenuRequested.connect(self.generate_item_context_menu)
@@ -165,10 +167,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             lambda checked: self.__filter_chip_toggled(self.toolbar.filter_validate_4, checked)
         )
         self.filter_clear.clicked.connect(lambda _checked=False: self.clear_filters())
+        self.workspace_project_toggle.toggled.connect(
+            lambda checked: self.__workspace_panel_toggled('project', checked)
+        )
+        self.workspace_inspector_toggle.toggled.connect(
+            lambda checked: self.__workspace_panel_toggled('inspector', checked)
+        )
+        self.workspace_activity_toggle.toggled.connect(
+            lambda checked: self.__workspace_panel_toggled('activity', checked)
+        )
 
         self.__search_flag = SEARCH_IN_SOURCE
         self.__sync_search_mode_label()
         self.__sync_filter_chips()
+        self.__apply_workspace_density(force=True)
 
         self.edit_dialog = EditDialog()
         self.replace_dialog = ReplaceDialog()
@@ -287,6 +299,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.inspector_apply.setText('Apply + Validate')
         self.inspector_reset.setText('Reset')
         self.inspector_edit.setText('Open Editor')
+        self.workspace_project_toggle.setText('Project')
+        self.workspace_project_toggle.setToolTip('Show or hide the Project and Filters panel')
+        self.workspace_inspector_toggle.setText('Inspector')
+        self.workspace_inspector_toggle.setToolTip('Show or hide the selected string Inspector')
+        self.workspace_activity_toggle.setText('Activity')
+        self.workspace_activity_toggle.setToolTip('Show or hide background jobs and logs')
 
         for col in self.action_column:
             col.retranslate()
@@ -294,6 +312,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.update_workspace_summary()
         self.__sync_search_mode_label()
         self.__update_command_bar_density()
+        self.__apply_workspace_density(force=True)
 
     def __set_window_title(self):
         title = f'{APP_NAME} {APP_VERSION}'
@@ -308,12 +327,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.__update_command_bar_density()
+        self.__apply_workspace_density()
 
     def __update_command_bar_density(self):
         if not hasattr(self, 'command_open'):
             return
 
-        compact = self.width() < 1060
+        compact = self.width() < 1440
         style = (
             Qt.ToolButtonStyle.ToolButtonIconOnly
             if compact else Qt.ToolButtonStyle.ToolButtonTextBesideIcon
@@ -329,8 +349,86 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         ):
             button.setToolButtonStyle(style)
 
+        self.brand_title.setText('TS4 Translator Plus' if compact else APP_NAME)
         self.brand_subtitle.setVisible(not compact)
         self.brand_divider.setVisible(not compact)
+
+    def __apply_workspace_density(self, force=False):
+        if not hasattr(self, 'workspace_project_toggle'):
+            return
+
+        density = self.__workspace_density_for_width(self.width())
+        if force or density != getattr(self, '_MainWindow__workspace_density', None):
+            self.__workspace_density = density
+            project, inspector, activity = self.__workspace_density_defaults(density)
+            self.__set_workspace_toggle(self.workspace_project_toggle, project)
+            self.__set_workspace_toggle(self.workspace_inspector_toggle, inspector)
+            self.__set_workspace_toggle(self.workspace_activity_toggle, activity)
+
+        self.__sync_workspace_panels()
+
+    @staticmethod
+    def __workspace_density_for_width(width):
+        if width >= 1280:
+            return 'wide'
+        if width >= 1060:
+            return 'medium'
+        return 'small'
+
+    @staticmethod
+    def __workspace_density_defaults(density):
+        if density == 'wide':
+            return True, True, True
+        if density == 'medium':
+            return True, False, True
+        return False, False, False
+
+    def __set_workspace_toggle(self, button, checked):
+        button.blockSignals(True)
+        button.setChecked(checked)
+        button.blockSignals(False)
+
+    def __workspace_panel_toggled(self, panel, checked):
+        if self.__workspace_panels_updating:
+            return
+
+        if self.__workspace_density == 'small' and checked:
+            if panel == 'project':
+                self.__set_workspace_toggle(self.workspace_inspector_toggle, False)
+            elif panel == 'inspector':
+                self.__set_workspace_toggle(self.workspace_project_toggle, False)
+
+        self.__sync_workspace_panels()
+
+    def __sync_workspace_panels(self):
+        self.__workspace_panels_updating = True
+
+        project_visible = self.workspace_project_toggle.isChecked()
+        inspector_visible = self.workspace_inspector_toggle.isChecked()
+        activity_visible = self.workspace_activity_toggle.isChecked()
+
+        if self.__workspace_density == 'small' and project_visible and inspector_visible:
+            inspector_visible = False
+            self.__set_workspace_toggle(self.workspace_inspector_toggle, False)
+
+        self.project_sidebar.setVisible(project_visible)
+        self.inspector_panel.setVisible(inspector_visible)
+        self.activity_drawer.setVisible(activity_visible)
+
+        if self.__workspace_density == 'wide':
+            sizes = [260 if project_visible else 0, 760, 320 if inspector_visible else 0]
+        elif self.__workspace_density == 'medium':
+            sizes = [260 if project_visible else 0, 860, 300 if inspector_visible else 0]
+        else:
+            sizes = [248 if project_visible else 0, 900, 300 if inspector_visible else 0]
+
+        self.workspace_splitter.setSizes(sizes)
+        self.command_bar.setProperty('density', self.__workspace_density)
+        self.command_bar.style().unpolish(self.command_bar)
+        self.command_bar.style().polish(self.command_bar)
+        self.command_bar.update()
+
+        self.__workspace_panels_updating = False
 
     def dragEnterEvent(self, event):
         event.setAccepted(False)

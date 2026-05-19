@@ -209,6 +209,29 @@ QToolBar::separator {
     border-color: transparent;
 }
 
+#workspaceToggle {
+    background: __SURFACE__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 8px;
+    color: __TEXT_MUTED__;
+    padding: 5px 10px;
+    min-height: 28px;
+    min-width: 68px;
+}
+
+#workspaceToggle:hover,
+#workspaceToggle:focus {
+    border-color: __BORDER_FOCUS__;
+    background: __PANEL_RAISED__;
+    color: __TEXT__;
+}
+
+#workspaceToggle:checked {
+    border-color: __ACCENT__;
+    background: __PANEL_RAISED__;
+    color: __TEXT__;
+}
+
 #workspaceSplitter {
     background: transparent;
 }
