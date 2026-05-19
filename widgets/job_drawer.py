@@ -18,11 +18,13 @@ from utils.task_runner import TaskProgress, task_runner_signals
 
 class JobRow(QFrame):
 
-    def __init__(self, title: str, handle=None, parent=None) -> None:
+    def __init__(self, title: str, handle=None, parent=None, active: bool = None) -> None:
         super().__init__(parent)
         self.setObjectName('jobRow')
+        self.setProperty('state', 'running')
 
         self.handle = handle
+        self.active = handle is not None if active is None else active
         self.current = 0
         self.total = 0
 
@@ -57,6 +59,7 @@ class JobRow(QFrame):
         self.cancel_button = QPushButton('Cancel', self)
         self.cancel_button.setObjectName('jobCancelButton')
         self.cancel_button.setEnabled(handle is not None)
+        self.cancel_button.setVisible(handle is not None)
         self.cancel_button.clicked.connect(self.cancel)
 
         layout.addLayout(text_layout, 2)
@@ -69,6 +72,7 @@ class JobRow(QFrame):
             self.handle.cancel()
             self.detail_label.setText('Cancelling...')
             self.cancel_button.setEnabled(False)
+            self.set_state('cancelling')
 
     def apply_progress(self, progress: TaskProgress) -> None:
         if progress.message:
@@ -89,20 +93,32 @@ class JobRow(QFrame):
         self.percent_label.setText(self.percent_text())
 
     def finish(self, cancelled: bool = False, error: str = '') -> None:
+        self.active = False
         self.cancel_button.setEnabled(False)
+        self.cancel_button.setVisible(False)
+        self.progress_bar.setVisible(False)
         if error:
+            self.set_state('error')
             self.detail_label.setText(error)
             self.percent_label.setText('Error')
             return
 
         if cancelled:
+            self.set_state('cancelled')
             self.detail_label.setText('Cancelled')
             self.percent_label.setText('Cancelled')
             return
 
+        self.set_state('done')
         self.progress_bar.setMaximum(1)
         self.progress_bar.setValue(1)
         self.percent_label.setText('Done')
+
+    def set_state(self, state: str) -> None:
+        self.setProperty('state', state)
+        self.style().unpolish(self)
+        self.style().polish(self)
+        self.update()
 
     def percent_text(self) -> str:
         if self.total > 0:
@@ -187,7 +203,7 @@ class QJobStatusDrawer(QWidget):
 
     @property
     def has_task_jobs(self) -> bool:
-        return any(row.cancel_button.isEnabled() for row in self.__rows.values())
+        return any(row.active for row in self.__rows.values())
 
     def set_expanded(self, expanded: bool) -> None:
         self.body.setVisible(expanded)
@@ -227,7 +243,7 @@ class QJobStatusDrawer(QWidget):
             return
 
         if self.__legacy_row is None:
-            self.__legacy_row = JobRow(message or 'Working', None, self.jobs_widget)
+            self.__legacy_row = JobRow(message or 'Working', None, self.jobs_widget, active=True)
             self.jobs_layout.addWidget(self.__legacy_row)
             self.log_message(f'Started: {message or "Working"}')
         else:
@@ -264,12 +280,12 @@ class QJobStatusDrawer(QWidget):
 
     def clear_finished(self) -> None:
         for job_id, row in tuple(self.__rows.items()):
-            if not row.cancel_button.isEnabled():
+            if not row.active:
                 row.setParent(None)
                 row.deleteLater()
                 del self.__rows[job_id]
 
-        if self.__legacy_row and not self.__legacy_row.cancel_button.isEnabled():
+        if self.__legacy_row and not self.__legacy_row.active:
             self.__legacy_row.setParent(None)
             self.__legacy_row.deleteLater()
             self.__legacy_row = None
@@ -278,7 +294,9 @@ class QJobStatusDrawer(QWidget):
 
     def refresh_state(self) -> None:
         visible_rows = len(self.__rows) + (1 if self.__legacy_row else 0)
-        running = sum(1 for row in self.__rows.values() if row.cancel_button.isEnabled())
+        running = sum(1 for row in self.__rows.values() if row.active)
+        if self.__legacy_row and self.__legacy_row.active:
+            running += 1
 
         self.empty_label.setVisible(visible_rows == 0)
         self.clear_button.setEnabled(visible_rows > running)

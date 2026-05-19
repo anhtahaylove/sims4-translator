@@ -8,10 +8,29 @@ from singletons.config import config
 from singletons.interface import interface
 
 
-class Expansion(namedtuple('Expansion', 'names folder')):
+STUFF_PACK_CODES = {
+    'SP01', 'SP02', 'SP03', 'SP04', 'SP05', 'SP06', 'SP07', 'SP08', 'SP09',
+    'SP10', 'SP11', 'SP12', 'SP13', 'SP14', 'SP15', 'SP16', 'SP17', 'SP18',
+    'SP46', 'SP49',
+}
+
+CATEGORY_TITLES = {
+    'expansion': 'Expansion packs',
+    'game': 'Game packs',
+    'stuff': 'Stuff packs',
+    'kit': 'Kits',
+    'free': 'Free packs',
+}
+
+
+class Expansion(namedtuple('Expansion', 'names folder metadata')):
 
     names: Union[str, Dict[str, str]]
     folder: str
+    metadata: Dict[str, str]
+
+    def __new__(cls, names, folder, metadata=None):
+        return super().__new__(cls, names, folder, metadata or {})
 
     @property
     def status(self) -> str:
@@ -34,6 +53,37 @@ class Expansion(namedtuple('Expansion', 'names folder')):
             return self.names.get(key, self.names.get('name_en_us', self.folder))
         else:
             return self.folder
+
+    @property
+    def category(self) -> str:
+        pack_type = self.metadata.get('type', '').lower()
+        if pack_type == 'base game' or '/' in self.folder:
+            return 'base'
+        if pack_type == 'expansion pack':
+            return 'expansion'
+        if pack_type == 'game pack':
+            return 'game'
+        if pack_type == 'stuff pack':
+            return 'stuff'
+        if pack_type == 'kit':
+            return 'kit'
+        if pack_type == 'free pack':
+            return 'free'
+
+        folder = self.folder.upper()
+        if folder.startswith('EP'):
+            return 'expansion'
+        if folder.startswith('GP'):
+            return 'game'
+        if folder.startswith('FP'):
+            return 'free'
+        if folder.startswith('SP'):
+            return 'stuff' if folder in STUFF_PACK_CODES else 'kit'
+        return 'kit'
+
+    @property
+    def category_title(self) -> str:
+        return CATEGORY_TITLES.get(self.category, self.category.title())
 
     @property
     def offset(self) -> str:
@@ -81,42 +131,77 @@ class Expansions:
 
     @property
     def items(self) -> List[Union[str, Expansion]]:
-        baseexp = Expansion('BASE GAME', 'Data/Client')
+        return self.filtered_items()
 
-        rows = [baseexp]
+    def filtered_items(self, filter_text: str = '') -> List[Union[str, Expansion]]:
+        baseexp = Expansion('BASE GAME', 'Data/Client', {'type': 'Base Game'})
 
-        exp = ['', 'Expansion packs']
-        game = ['', 'Game packs']
-        stuff = ['', 'Stuff packs']
+        query = filter_text.strip().lower()
+        rows = []
+        if self._matches(baseexp, query):
+            rows.append(baseexp)
+
+        groups = {
+            'expansion': ['', CATEGORY_TITLES['expansion']],
+            'game': ['', CATEGORY_TITLES['game']],
+            'stuff': ['', CATEGORY_TITLES['stuff']],
+            'kit': ['', CATEGORY_TITLES['kit']],
+            'free': ['', CATEGORY_TITLES['free']],
+        }
 
         packs = self._parse_expansion_packs()
 
         if packs:
-            for key, items in packs.items():
-                if key.upper().startswith('EP'):
-                    exp.append(Expansion(items, key))
-                elif key.upper().startswith('GP'):
-                    game.append(Expansion(items, key))
-                elif key.upper().startswith('SP'):
-                    stuff.append(Expansion(items, key))
+            for key, item in packs.items():
+                expansion = Expansion(item.get('names', {}), key, item.get('metadata', {}))
+                group = groups.get(expansion.category)
+                if group is not None and self._matches(expansion, query):
+                    group.append(expansion)
 
         elif baseexp.exists_source:
             for dirname in os.listdir(config.value('dictionaries', 'gamepath')):
+                expansion = Expansion(dirname, dirname)
+                group = groups.get(expansion.category)
+                if group is None or not self._matches(expansion, query):
+                    continue
                 if dirname.upper().startswith('EP'):
-                    exp.append(Expansion(dirname, dirname))
+                    group.append(expansion)
                 elif dirname.upper().startswith('GP'):
-                    game.append(Expansion(dirname, dirname))
+                    group.append(expansion)
                 elif dirname.upper().startswith('SP'):
-                    stuff.append(Expansion(dirname, dirname))
+                    group.append(expansion)
+                elif dirname.upper().startswith('FP'):
+                    group.append(expansion)
 
-        if len(exp) > 2:
-            rows.extend(exp)
-        if len(game) > 2:
-            rows.extend(game)
-        if len(stuff) > 2:
-            rows.extend(stuff)
+        for key in ('expansion', 'game', 'stuff', 'kit', 'free'):
+            group = groups[key]
+            if len(group) > 2:
+                rows.extend(group)
 
         return rows
+
+    @staticmethod
+    def _matches(expansion: Expansion, query: str) -> bool:
+        if not query:
+            return True
+
+        values = (
+            expansion.folder,
+            expansion.name,
+            expansion.category_title,
+            expansion.metadata.get('releasedate', ''),
+        )
+        return any(query in value.lower() for value in values)
+
+    @staticmethod
+    def summary(items: List[Union[str, Expansion]]) -> Dict[str, int]:
+        packs = [item for item in items if isinstance(item, Expansion)]
+        return {
+            'total': len(packs),
+            'found': sum(1 for item in packs if item.exists),
+            'ready': sum(1 for item in packs if item.exists_strings),
+            'missing': sum(1 for item in packs if not item.exists),
+        }
 
     @property
     def strings_source(self) -> str:
@@ -128,8 +213,11 @@ class Expansions:
 
     def exists(self) -> List[Expansion]:
         return [exp for exp in self.items if isinstance(exp, Expansion) and exp.exists_strings]
+
+    def reset_cache(self) -> None:
+        self.__packs = None
     
-    def _parse_expansion_packs(self) -> Dict[str, Dict[str, str]]:
+    def _parse_expansion_packs(self) -> Dict[str, Dict[str, Dict[str, str]]]:
         if self.__packs is not None:
             return self.__packs
 
@@ -147,13 +235,15 @@ class Expansions:
             line = line.strip()
             if line.startswith('[') and line.endswith(']'):
                 pack_code = line[1:-1]
-                current_pack = {}
+                current_pack = {'names': {}, 'metadata': {}}
                 self.__packs[pack_code] = current_pack
             elif '=' in line and current_pack is not None:
                 key, value = line.split('=', 1)
                 key = key.lower().strip()
                 if key.startswith('name_'):
-                    current_pack[key] = value.strip()
+                    current_pack['names'][key] = value.strip()
+                else:
+                    current_pack['metadata'][key] = value.strip()
 
         return self.__packs
 

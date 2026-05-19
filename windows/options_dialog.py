@@ -3,7 +3,7 @@
 from PySide6.QtCore import Qt, QCoreApplication, QObject, QTimer, QAbstractTableModel, \
     Signal, Slot, QThreadPool, QRunnable
 from PySide6.QtWidgets import QHeaderView, QStyledItemDelegate, QDialog
-from PySide6.QtGui import QColor
+from PySide6.QtGui import QColor, QFont, QPainter
 
 from windows.ui.options_dialog import Ui_OptionsDialog
 
@@ -78,11 +78,13 @@ class DictWorker(QRunnable):
 
 class Model(QAbstractTableModel):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, filter_text: str = ''):
         super().__init__(parent)
 
-        self.items = []
-        self.count = 0
+        self.items = expansions.filtered_items(filter_text)
+        self.count = len(self.items)
+        self.summary = expansions.summary(self.items)
+        self.summary_text = self._summary_text()
 
         self.is_dark_theme = config.value('interface', 'theme') == 'dark'
 
@@ -90,6 +92,7 @@ class Model(QAbstractTableModel):
         self.color_not_found = QColor(dark.TEXT_ERROR)
 
         self.color_null = QColor(dark.TEXT_MUTED) if self.is_dark_theme else QColor(light.TEXT_MUTED)
+        self.color_heading = QColor(dark.ACCENT if self.is_dark_theme else light.ACCENT)
 
     def rowCount(self, parent=None):
         return self.count
@@ -108,7 +111,7 @@ class Model(QAbstractTableModel):
             return None
 
         item = self.items[row]
-        extension = isinstance(item, tuple)
+        extension = isinstance(item, Expansion)
 
         if role == Qt.ItemDataRole.TextAlignmentRole:
             if column == 2:
@@ -120,6 +123,14 @@ class Model(QAbstractTableModel):
                     return self.color_null
                 elif self.is_dark_theme:
                     return self.color_found if item.exists_strings else self.color_not_found
+            else:
+                return self.color_heading
+
+        elif role == Qt.ItemDataRole.FontRole:
+            if not extension:
+                font = QFont()
+                font.setBold(True)
+                return font
 
         elif role == Qt.ItemDataRole.DisplayRole:
             if not column:
@@ -131,30 +142,59 @@ class Model(QAbstractTableModel):
             elif column == 2:
                 return item.status + ' ' if extension else None
 
+        elif role == Qt.ItemDataRole.ToolTipRole:
+            if extension:
+                return '{}\n{}\n{}'.format(item.folder, item.name, item.status)
+
         return None
 
+    def _summary_text(self) -> str:
+        total = self.summary['total']
+        ready = self.summary['ready']
+        found = self.summary['found']
+        missing = self.summary['missing']
+        label = 'pack' if total == 1 else 'packs'
+        return f'{total} {label} listed | {ready} ready | {found} found | {missing} missing'
 
-class DelegatePaint(QStyledItemDelegate):
+
+class PackStatusDelegate(QStyledItemDelegate):
 
     def __init__(self, parent=None, model=None):
         super().__init__(parent)
-
         self.__model = model
-
-        self.__found = QColor('#dceedd')
-        self.__not_found = QColor('#f2c3c2')
 
     def paint(self, painter, option, index):
         try:
             row = index.row()
-            if 0 <= row < self.__model.count:
-                item = self.__model.items[row]
-                extension = isinstance(item, tuple)
-                if extension and item.exists:
-                    painter.fillRect(option.rect, self.__found if item.exists_strings else self.__not_found)
+            item = self.__model.items[row]
         except IndexError:
-            pass
-        super().paint(painter, option, index)
+            item = None
+
+        if index.column() != 2 or not isinstance(item, Expansion):
+            super().paint(painter, option, index)
+            return
+
+        if item.exists_strings:
+            bg = QColor(dark.SUCCESS if self.__model.is_dark_theme else light.SUCCESS)
+            fg = QColor('#ffffff')
+        elif item.exists:
+            bg = QColor(dark.WARNING if self.__model.is_dark_theme else light.WARNING)
+            fg = QColor('#172433')
+        else:
+            bg = QColor(dark.PANEL_RAISED if self.__model.is_dark_theme else light.PANEL_RAISED)
+            fg = QColor(dark.TEXT_MUTED if self.__model.is_dark_theme else light.TEXT_MUTED)
+
+        text = item.status
+        painter.save()
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        width = min(option.rect.width() - 12, max(84, option.fontMetrics.horizontalAdvance(text) + 22))
+        rect = option.rect.adjusted(option.rect.width() - width - 6, 5, -6, -5)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(bg)
+        painter.drawRoundedRect(rect, 8, 8)
+        painter.setPen(fg)
+        painter.drawText(rect, int(Qt.AlignmentFlag.AlignCenter), text)
+        painter.restore()
 
 
 class OptionsDialog(QDialog, Ui_OptionsDialog):
@@ -195,6 +235,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
 
         self.txt_path.textChanged.connect(self.change_path)
         self.btn_path.clicked.connect(self.select_path)
+        self.txt_pack_search.textChanged.connect(self.refresh)
 
         self.txt_deepl_key.textChanged.connect(self.change_deepl_key)
 
@@ -205,10 +246,8 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.culling_timer.timeout.connect(self.refresh)
 
         self.start_culling_timer()
-        self.blank = Model()
+        self.blank = Model(filter_text='__no_pack_matches__')
         self.model = Model()
-        self.model.items = expansions.items
-        self.model.count = len(self.model.items)
         self.tableview.setModel(self.model)
 
         header = self.tableview.verticalHeader()
@@ -220,8 +259,9 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.tableview.setColumnWidth(2, 150)
         self.tableview.setColumnHidden(0, True)
 
-        if config.value('interface', 'theme') != 'dark':
-            self.tableview.setItemDelegate(DelegatePaint(model=self.model))
+        self.tableview.setItemDelegate(PackStatusDelegate(model=self.model))
+        self.lbl_pack_summary.setText(self.model.summary_text)
+        self.btn_build.setEnabled(len(expansions.exists()) > 0)
 
         self.__pool = QThreadPool()
         self.__progress = 0
@@ -241,6 +281,16 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.label_source.setText(interface.text('OptionsDialog', 'Source'))
         self.label_dest.setText(interface.text('OptionsDialog', 'Destination'))
         self.btn_build.setText(interface.text('OptionsDialog', 'Build dictionaries'))
+        self.btn_path.setText(interface.text('OptionsDialog', 'Browse...'))
+        self.txt_pack_search.setPlaceholderText(interface.text('OptionsDialog', 'Filter packs...'))
+        self.lbl_path_hint.setText(interface.text(
+            'OptionsDialog',
+            'Select the folder that contains Data, EP, GP, SP, and FP folders from your The Sims 4 installation.'
+        ))
+        self.lbl_pack_empty.setText(interface.text(
+            'OptionsDialog',
+            'No packs match the current filter. Clear the search field to see the full catalog.'
+        ))
         self.tabs.setTabText(self.tabs.indexOf(self.tab_general), interface.text('OptionsDialog', 'General'))
         self.tabs.setTabText(self.tabs.indexOf(self.tab_dictionaries), interface.text('OptionsDialog', 'Dictionaries'))
         self.gb_deepl.setTitle(interface.text('OptionsDialog', 'DeepL API key'))
@@ -282,11 +332,14 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
     def refresh(self):
         self.tableview.setModel(self.blank)
 
-        self.model = Model()
-        self.model.items = expansions.items
-        self.model.count = len(self.model.items)
+        self.model = Model(filter_text=self.txt_pack_search.text())
 
         self.tableview.setModel(self.model)
+        self.tableview.setItemDelegate(PackStatusDelegate(model=self.model))
+        self.lbl_pack_summary.setText(self.model.summary_text)
+        self.lbl_pack_empty.setVisible(self.model.summary['total'] == 0)
+        self.tableview.setVisible(self.model.summary['total'] > 0)
+        self.btn_build.setEnabled(len(expansions.exists()) > 0)
 
     def change_deepl_key(self):
         config.set_value('api', 'deepl_key', self.txt_deepl_key.text())
@@ -314,7 +367,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         config.set_value('interface', 'language', self.cb_language.currentData())
         interface.reload()
         self.retranslate()
-        self.model.layoutChanged.emit()
+        self.refresh()
         self.main_window.edit_dialog.retranslate()
         self.main_window.export_dialog.retranslate()
         self.main_window.import_dialog.retranslate()

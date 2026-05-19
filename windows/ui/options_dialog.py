@@ -8,8 +8,8 @@ from PySide6.QtWidgets import QWidget, QAbstractItemView, QCheckBox, QComboBox, 
 class Ui_OptionsDialog(object):
 
     def setupUi(self, OptionsDialog):
-        OptionsDialog.resize(545, 490)
-        OptionsDialog.setMinimumSize(545, 490)
+        OptionsDialog.resize(680, 620)
+        OptionsDialog.setMinimumSize(620, 520)
 
         layout = QVBoxLayout(OptionsDialog)
 
@@ -150,18 +150,46 @@ class Ui_OptionsDialog(object):
 
         self.gb_path = QGroupBox(self.tab_dictionaries)
 
-        layout_path = QHBoxLayout(self.gb_path)
+        layout_path_group = QVBoxLayout(self.gb_path)
+        layout_path = QHBoxLayout()
 
         self.txt_path = QLineEdit(self.gb_path)
 
         self.btn_path = QPushButton(self.gb_path)
-        self.btn_path.setText('...')
+        self.btn_path.setText('Browse...')
         self.btn_path.setAutoDefault(False)
 
         layout_path.addWidget(self.txt_path)
         layout_path.addWidget(self.btn_path)
+        layout_path_group.addLayout(layout_path)
+
+        self.lbl_path_hint = QLabel(self.gb_path)
+        self.lbl_path_hint.setObjectName('packHintLabel')
+        self.lbl_path_hint.setWordWrap(True)
+        layout_path_group.addWidget(self.lbl_path_hint)
 
         vlayout.addWidget(self.gb_path)
+
+        layout_summary = QHBoxLayout()
+        layout_summary.setSpacing(8)
+
+        self.txt_pack_search = QLineEdit(self.tab_dictionaries)
+        self.txt_pack_search.setObjectName('packSearch')
+
+        self.lbl_pack_summary = QLabel(self.tab_dictionaries)
+        self.lbl_pack_summary.setObjectName('packSummaryLabel')
+        self.lbl_pack_summary.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+
+        layout_summary.addWidget(self.txt_pack_search, 1)
+        layout_summary.addWidget(self.lbl_pack_summary)
+
+        vlayout.addLayout(layout_summary)
+
+        self.lbl_pack_empty = QLabel(self.tab_dictionaries)
+        self.lbl_pack_empty.setObjectName('packHintLabel')
+        self.lbl_pack_empty.setWordWrap(True)
+        self.lbl_pack_empty.setVisible(False)
+        vlayout.addWidget(self.lbl_pack_empty)
 
         self.tableview = QTableView(self.tab_dictionaries)
         self.tableview.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)

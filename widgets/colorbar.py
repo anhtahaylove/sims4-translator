@@ -67,9 +67,9 @@ class QColorBar(QFrame):
 
         self.layout = QHBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.setSpacing(0)
+        self.layout.setSpacing(2)
 
-        self.setFixedHeight(10)
+        self.setFixedHeight(8)
 
         self.translated = TranslatedWidget(self)
         self.validated = ValidatedWidget(self)

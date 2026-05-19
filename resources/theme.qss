@@ -159,6 +159,15 @@ QToolBar::separator {
     max-height: 34px;
 }
 
+#commandDivider {
+    background: __BORDER_LIGHT__;
+    min-width: 1px;
+    max-width: 1px;
+    min-height: 26px;
+    max-height: 26px;
+    margin: 4px 2px;
+}
+
 #commandButton {
     background: transparent;
     border: 1px solid transparent;
@@ -617,9 +626,24 @@ QProgressBar::chunk {
     border-radius: 10px;
 }
 
+#jobRow[state="done"],
+#jobRow[state="cancelled"] {
+    background: __SURFACE__;
+    border-color: __BORDER_LIGHT__;
+}
+
+#jobRow[state="error"] {
+    border-color: __TEXT_ERROR__;
+}
+
 #jobTitle {
     color: __TEXT__;
     font-weight: 600;
+}
+
+#jobRow[state="done"] QLabel#jobTitle,
+#jobRow[state="cancelled"] QLabel#jobTitle {
+    color: __TEXT_MUTED__;
 }
 
 #jobProgress {
@@ -652,7 +676,9 @@ QToolTip {
 }
 
 QColorBar {
-    border: 1px solid __BORDER_LIGHT__;
+    border: none;
+    background: __PANEL_ALT__;
+    border-radius: 4px;
 }
 TranslatedWidget {
     background: __TRANSLATED_BAR__;
@@ -695,4 +721,13 @@ TranslateDialog QTextEdit {
 }
 #muted {
     color: __TEXT_MUTED__;
+}
+
+#packHintLabel,
+#packSummaryLabel {
+    color: __TEXT_MUTED__;
+}
+
+#packSearch {
+    min-width: 160px;
 }

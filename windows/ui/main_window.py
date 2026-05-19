@@ -270,7 +270,9 @@ class Ui_MainWindow(object):
         command_layout.addWidget(self.command_save)
         command_layout.addWidget(self.command_import)
         command_layout.addWidget(self.command_export)
+        command_layout.addWidget(self.__command_divider())
         command_layout.addWidget(self.command_translate)
+        command_layout.addWidget(self.__command_divider())
         command_layout.addWidget(self.command_dictionary)
 
         command_spacer = QWidget(self.command_bar)
@@ -311,3 +313,8 @@ class Ui_MainWindow(object):
         button.setDefaultAction(action)
         button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         return button
+
+    def __command_divider(self):
+        divider = QFrame(self.command_bar)
+        divider.setObjectName('commandDivider')
+        return divider
