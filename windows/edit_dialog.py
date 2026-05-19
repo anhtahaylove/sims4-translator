@@ -232,6 +232,8 @@ class EditDialog(QDialog, Ui_EditDialog):
 
     def needs_review_click(self):
         self.__refresh_token_state()
+        if not self.__token_result.ok:
+            self.__show_needs_review_warning()
         self.__save(FLAG_PROGRESS)
 
     def __save(self, flag):
@@ -354,6 +356,16 @@ class EditDialog(QDialog, Ui_EditDialog):
             QMessageBox.StandardButton.No,
         )
         return answer == QMessageBox.StandardButton.Yes
+
+    def __show_needs_review_warning(self):
+        self.token_detail.setText(self.__token_result.details() + ' This string will be marked as Needs Review.')
+        QMessageBox.warning(
+            self,
+            'Token warnings saved for review',
+            self.__token_result.details() + '\n\nThe string will be marked as Needs Review so it can be fixed later.',
+            QMessageBox.StandardButton.Ok,
+            QMessageBox.StandardButton.Ok,
+        )
 
     def __set_translate_busy(self, busy: bool):
         self.btn_translate.setEnabled(not busy)

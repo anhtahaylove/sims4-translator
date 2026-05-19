@@ -337,11 +337,32 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.filter_all.text(), 'All 1.2k')
             self.assertEqual(window.filter_original.text(), 'Untranslated 1.2k')
             self.assertEqual(window.filter_translated.text(), 'Draft 0')
+            self.assertFalse(window.filter_translated.isVisibleTo(window))
             self.assertEqual(window._MainWindow__format_filter_count(162527), '162.5k')
             self.assertLessEqual(
                 window.filter_all.fontMetrics().horizontalAdvance(window.filter_all.text()) + 10,
                 window.filter_all.width()
             )
+        finally:
+            close_widget(window)
+
+    def test_draft_status_chip_only_appears_when_draft_rows_exist(self):
+        window = MainWindow()
+        try:
+            window.resize(window.minimumSize())
+            window.show()
+            app().processEvents()
+
+            window._MainWindow__update_filter_counts([record(FLAG_UNVALIDATED)])
+            app().processEvents()
+
+            self.assertFalse(window.filter_translated.isVisibleTo(window))
+
+            window._MainWindow__update_filter_counts([record(FLAG_TRANSLATED)])
+            app().processEvents()
+
+            self.assertTrue(window.filter_translated.isVisibleTo(window))
+            self.assertEqual(window.filter_translated.text(), 'Draft 1')
         finally:
             close_widget(window)
 
@@ -824,10 +845,12 @@ class WorkspaceProShellTests(unittest.TestCase):
         try:
             dialog.prepare(item)
 
-            with patch.object(QMessageBox, 'question') as question:
+            with patch.object(QMessageBox, 'question') as question, \
+                    patch.object(QMessageBox, 'warning', return_value=QMessageBox.StandardButton.Ok) as warning:
                 dialog.needs_review_click()
 
             question.assert_not_called()
+            warning.assert_called_once()
             self.assertEqual(item.flag, FLAG_PROGRESS)
             self.assertIn('Missing', dialog.token_status.text())
         finally:

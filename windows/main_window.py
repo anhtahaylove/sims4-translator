@@ -1082,6 +1082,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for button, label, value in labels:
             button.setText(f'{label} {self.__format_filter_count(value, compact=True)}')
             button.setToolTip(f'{label}: {value:,}')
+        self.__sync_status_chip_layout(show_draft=counts['translated'] > 0)
+
+    def __sync_status_chip_layout(self, show_draft: bool):
+        self.filter_translated.setVisible(show_draft)
+        self.filter_layout.removeWidget(self.filter_all)
+        self.filter_layout.removeWidget(self.filter_original)
+        self.filter_layout.removeWidget(self.filter_translated)
+        self.filter_layout.removeWidget(self.filter_validated)
+        self.filter_layout.removeWidget(self.filter_progress)
+
+        self.filter_layout.addWidget(self.filter_all, 1, 1)
+        self.filter_layout.addWidget(self.filter_original, 1, 2)
+        if show_draft:
+            self.filter_layout.addWidget(self.filter_translated, 1, 3)
+            self.filter_layout.addWidget(self.filter_validated, 1, 4)
+            self.filter_layout.addWidget(self.filter_progress, 1, 5, 1, 2)
+        else:
+            self.filter_layout.addWidget(self.filter_validated, 1, 3)
+            self.filter_layout.addWidget(self.filter_progress, 1, 4, 1, 3)
 
     @staticmethod
     def __format_filter_count(value, compact=False):
