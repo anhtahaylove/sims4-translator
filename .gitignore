@@ -12,6 +12,7 @@ venv/
 # IDE
 .vscode/
 .idea/
+.omx/
 
 build/
 dist/
@@ -19,6 +20,9 @@ dictionary/
 prefs/config.xml
 prefs/interface/sync.py
 setup.py
+.understand-anything/dashboard.pid
+.understand-anything/tmp/
+graphify-out/cache/
 
 *.bat
 *.dct

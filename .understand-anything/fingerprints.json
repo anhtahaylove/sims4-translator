@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "606ca092b97b9ecd964363dfa38998d2558c3a01",
-  "generatedAt": "2026-05-19T04:08:15.805349+00:00",
+  "gitCommitHash": "51ebc90ec66aba2e0b21418cb9e7a5481dc389aa",
+  "generatedAt": "2026-05-19T07:41:34.227949+00:00",
   "files": {
     "CHANGELOG.md": {
       "filePath": "CHANGELOG.md",
@@ -11,6 +11,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 81,
+      "hasStructuralAnalysis": false
+    },
+    "CONTRIBUTING.md": {
+      "filePath": "CONTRIBUTING.md",
+      "contentHash": "98a50684dc55f6df2934f037d26533ca63cd40ba528053d9e841fd9db405af50",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 53,
       "hasStructuralAnalysis": false
     },
     "LICENSE": {
@@ -23,14 +33,44 @@
       "totalLines": 21,
       "hasStructuralAnalysis": false
     },
-    "README.md": {
-      "filePath": "README.md",
-      "contentHash": "1dcf4df81ff345678eb1f057858b0086d19e218fe2cd2ba97e8e8874d8a82cd4",
+    "NOTICE.md": {
+      "filePath": "NOTICE.md",
+      "contentHash": "ec074b29cc1c4af99c2e9e0ac2ea5d884778064e38a1844abca441e06b7f287e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 38,
+      "totalLines": 44,
+      "hasStructuralAnalysis": false
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "8673cf86ecdbda62c75803e7dd2ddab373fd24ac0bd9a24fc001f2515b9219b6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 128,
+      "hasStructuralAnalysis": false
+    },
+    "README.vi.md": {
+      "filePath": "README.vi.md",
+      "contentHash": "fd1d22b0ebd0e808bf9bbf38ad57e27b76764bc6ff27535db1bc46be1d8b206a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 126,
+      "hasStructuralAnalysis": false
+    },
+    "docs/release-checklist.md": {
+      "filePath": "docs/release-checklist.md",
+      "contentHash": "87e80232cf509c5a652785a5f30a45791ebba036776dcee5f7375b08bf5bcfeb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 47,
       "hasStructuralAnalysis": false
     },
     "fonts/LICENSE-JetBrains.txt": {
@@ -486,12 +526,12 @@
     },
     "resources/theme.qss": {
       "filePath": "resources/theme.qss",
-      "contentHash": "66f542506ddbdcc930a135a4ce6ba8bb253df2cacdf82dee9aab9d3b72027547",
+      "contentHash": "d467dcb07e25fdb37a925f354489d5e4f46121ff547bf88e575e49a8e28bcf69",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 671,
+      "totalLines": 698,
       "hasStructuralAnalysis": false
     },
     "scripts/__init__.py": {
@@ -1691,7 +1731,7 @@
     },
     "themes/dark.py": {
       "filePath": "themes/dark.py",
-      "contentHash": "16e08527f2d0e849362694f41573347fb350e2977ceade979dbbd355e252eb56",
+      "contentHash": "ee135d925ade8e5eb0326132086e41e0c0a8ad7c8fd75ec32a8a286799750a97",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1701,7 +1741,7 @@
     },
     "themes/light.py": {
       "filePath": "themes/light.py",
-      "contentHash": "9e98e93223173a8b52665e48acbecec6dcd98b91871a1572e7fc717b096c3190",
+      "contentHash": "35e23be251371548ef3cc0d871baa0537aa7287d5d30f121d0a4532c2916d669",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1741,12 +1781,12 @@
     },
     "utils/constants.py": {
       "filePath": "utils/constants.py",
-      "contentHash": "2bb8f641e73ec19b3eab85d4bdd26c6c64c6af9107d3259da56d6303ee40b7c4",
+      "contentHash": "1ebcd95f6fac2a474e043c8e7fb3cfc9c57124c2f3d4f13458229ee4fda8005e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 62,
+      "totalLines": 73,
       "hasStructuralAnalysis": true
     },
     "utils/functions.py": {
@@ -1884,7 +1924,7 @@
     },
     "widgets/delegate.py": {
       "filePath": "widgets/delegate.py",
-      "contentHash": "df16324d73082e7c7509cfaa9ea9f4f585e3624fb4f9902434f9e1f89ce46bd1",
+      "contentHash": "bdccf67cd18cad3fd37d2cc46f959212655bc7f8af296284d7bd3ed0b4d5f612",
       "functions": [
         "__highlight_html",
         "__init__",
@@ -2288,7 +2328,7 @@
     },
     "windows/main_window.py": {
       "filePath": "windows/main_window.py",
-      "contentHash": "84897ba3e325aa4df085079ee26b8df5fd5717fee701d49d7a093fca988e82a4",
+      "contentHash": "2f6937d19dfc445a321384dfc6e921aeded4dbda5f7ef1891308c53a16586ceb",
       "functions": [
         "__finished_progress",
         "__increment_progress",
@@ -2298,8 +2338,10 @@
         "__packages_cleared",
         "__packages_closed",
         "__packages_loaded",
+        "__set_window_title",
         "__undo_restored",
         "__undo_updated",
+        "about_app",
         "about_qt",
         "add_file",
         "batch_translate",
@@ -2406,7 +2448,7 @@
         "utils.functions.save_xml"
       ],
       "exports": [],
-      "totalLines": 857,
+      "totalLines": 884,
       "hasStructuralAnalysis": true
     },
     "windows/options_dialog.py": {
@@ -2654,7 +2696,7 @@
     },
     "windows/ui/main_window.py": {
       "filePath": "windows/ui/main_window.py",
-      "contentHash": "06b3c305c0b727d8fd1abcc386f826d4b831d5aeb7f487883ca05b5cb8145401",
+      "contentHash": "6a183ca87c9ffaf126a23a893b9761256bd39000743b326af861035be3980c72",
       "functions": [
         "__command_button",
         "setupUi"
@@ -2677,6 +2719,7 @@
         "PySide6.QtWidgets.QToolButton",
         "PySide6.QtWidgets.QVBoxLayout",
         "PySide6.QtWidgets.QWidget",
+        "utils.constants.APP_NAME",
         "utils.constants.APP_RELEASE_CANDITATE",
         "utils.constants.APP_VERSION",
         "widgets.colorbar.QColorBar",
@@ -2685,7 +2728,7 @@
         "widgets.toolbar.QToolBar"
       ],
       "exports": [],
-      "totalLines": 297,
+      "totalLines": 313,
       "hasStructuralAnalysis": true
     },
     "windows/ui/options_dialog.py": {

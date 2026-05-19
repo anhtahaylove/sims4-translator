@@ -20,7 +20,7 @@ from widgets.job_drawer import QJobStatusDrawer
 from widgets.tableview import QMainTableView
 from widgets.toolbar import QToolBar
 
-from utils.constants import APP_VERSION, APP_RELEASE_CANDITATE
+from utils.constants import APP_NAME, APP_VERSION, APP_RELEASE_CANDITATE
 
 
 class Ui_MainWindow(object):
@@ -29,7 +29,7 @@ class Ui_MainWindow(object):
         MainWindow.resize(1125, 723)
         MainWindow.setMinimumSize(935, 620)
 
-        title = f'The Sims 4 Translator {APP_VERSION}'
+        title = f'{APP_NAME} {APP_VERSION}'
         if APP_RELEASE_CANDITATE:
             title += ' RC'
 
@@ -232,8 +232,22 @@ class Ui_MainWindow(object):
         self.command_bar = QFrame(MainWindow)
         self.command_bar.setObjectName('commandBar')
         command_layout = QHBoxLayout(self.command_bar)
-        command_layout.setContentsMargins(10, 8, 10, 8)
-        command_layout.setSpacing(6)
+        command_layout.setContentsMargins(12, 9, 12, 9)
+        command_layout.setSpacing(8)
+
+        self.brand_block = QFrame(self.command_bar)
+        brand_layout = QVBoxLayout(self.brand_block)
+        brand_layout.setContentsMargins(0, 0, 4, 0)
+        brand_layout.setSpacing(1)
+        self.brand_title = QLabel(APP_NAME, self.brand_block)
+        self.brand_title.setObjectName('brandTitle')
+        self.brand_subtitle = QLabel('Mod localization workspace', self.brand_block)
+        self.brand_subtitle.setObjectName('brandSubtitle')
+        brand_layout.addWidget(self.brand_title)
+        brand_layout.addWidget(self.brand_subtitle)
+
+        self.brand_divider = QFrame(self.command_bar)
+        self.brand_divider.setObjectName('brandDivider')
 
         self.command_open = self.__command_button(self.action_load_file)
         self.command_save = self.__command_button(self.action_save)
@@ -250,6 +264,8 @@ class Ui_MainWindow(object):
         self.command_translate = self.__command_button(self.action_translate)
         self.command_dictionary = self.__command_button(self.action_save_dictionary)
 
+        command_layout.addWidget(self.brand_block)
+        command_layout.addWidget(self.brand_divider)
         command_layout.addWidget(self.command_open)
         command_layout.addWidget(self.command_save)
         command_layout.addWidget(self.command_import)

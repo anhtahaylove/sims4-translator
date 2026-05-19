@@ -1,6 +1,6 @@
 * {
     font-family: __FONT_SANS__;
-    font-size: 12px;
+    font-size: 13px;
     outline: none;
     border: none;
 }
@@ -30,6 +30,8 @@ QTableView {
     color: __TEXT__;
     selection-background-color: __SELECTION__;
     selection-color: __SELECTION_TEXT__;
+    gridline-color: __BORDER_LIGHT__;
+    alternate-background-color: __PANEL_ALT__;
 }
 
 QScrollBar {
@@ -120,7 +122,7 @@ QToolBar {
     padding: 4px;
     spacing: 4px;
     border: 1px solid __BORDER__;
-    border-radius: 6px;
+    border-radius: 10px;
 }
 QToolBar * {
     margin: 0px;
@@ -135,16 +137,35 @@ QToolBar::separator {
 #commandBar {
     background: __PANEL__;
     border: 1px solid __BORDER__;
-    border-radius: 8px;
+    border-radius: 12px;
+}
+
+#brandTitle {
+    color: __TEXT__;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+#brandSubtitle {
+    color: __TEXT_MUTED__;
+    font-size: 11px;
+}
+
+#brandDivider {
+    background: __BORDER__;
+    min-width: 1px;
+    max-width: 1px;
+    min-height: 34px;
+    max-height: 34px;
 }
 
 #commandButton {
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: 9px;
     color: __TEXT__;
-    padding: 5px 10px;
-    min-height: 28px;
+    padding: 6px 12px;
+    min-height: 30px;
 }
 
 #commandButton:hover {
@@ -156,6 +177,10 @@ QToolBar::separator {
 #commandButton:checked {
     background: __PANEL_ALT__;
     border-color: __ACCENT__;
+}
+
+#commandButton:focus {
+    border-color: __BORDER_FOCUS__;
 }
 
 #commandButton:disabled {
@@ -193,15 +218,15 @@ QToolButton:checked {
 }
 
 QPushButton {
-    border-radius: 2px;
+    border-radius: 7px;
     text-align: center;
     text-decoration: none;
     color: __TEXT__;
     border: 1px solid __BORDER_DARK__;
     background-color: __BUTTON__;
-    padding: 0x 10px;
+    padding: 0 10px;
     min-width: 26px;
-    height: 26px;
+    height: 28px;
 }
 QPushButton:hover {
     background-color: __BUTTON_HOVER__;
@@ -232,9 +257,10 @@ QPushButton::default:pressed {
 
 QGroupBox {
     margin-top: 8px;
-    padding-top: 5px;
-    border-radius: 0;
+    padding-top: 8px;
+    border-radius: 10px;
     border: 1px solid __BORDER_LIGHT__;
+    background: __PANEL__;
 }
 QGroupBox::title {
     subcontrol-origin: margin;
@@ -309,7 +335,7 @@ QRadioButton::indicator:checked:hover {
     image: url(:/images/__THEME__/radio_checked.png);
 }
 QRadioButton::indicator:checked:focus,
-QRadioButton::indicato::menu-arrowr:checked:pressed {
+QRadioButton::indicator:checked:pressed {
     image: url(:/images/__THEME__/radio_checked.png);
 }
 QRadioButton::indicator:indeterminate,
@@ -327,14 +353,14 @@ QLineEdit {
     background-color: __LINE_EDIT__;
     border: 1px solid __BORDER_DARK__;
     color: __TEXT__;
-    border-radius: 0;
+    border-radius: 7px;
     min-width: 60px;
     selection-background-color: __SELECTION__;
     selection-color: __SELECTION_TEXT__;
-    padding: 0 4px;
+    padding: 0 6px;
 }
 QLineEdit {
-    height: 26px;
+    height: 28px;
 }
 QTextEdit:focus,
 QLineEdit:focus {
@@ -354,15 +380,15 @@ QLineEdit:read-only:focus {
 
 QComboBox {
     padding-right: 20px;
-    padding-left: 4px;
+    padding-left: 6px;
     border: 1px solid __BORDER_DARK__;
     background-color: __COMBOBOX__;
     color: __TEXT__;
-    height: 26px;
+    height: 28px;
     min-width: 50px;
     selection-background-color: __SELECTION__;
     selection-color: __SELECTION_TEXT__;
-    border-radius: 0;
+    border-radius: 7px;
 }
 QComboBox:focus, QComboBox:on {
     border: 1px solid __BORDER_FOCUS__;
@@ -398,7 +424,7 @@ QMenuBar {
 QMenuBar::item {
     color: __TEXT__;
     background-color: transparent;
-    border-radius: 0;
+    border-radius: 6px;
     padding: 5px 7px;
 }
 QMenuBar::item:selected {
@@ -410,7 +436,7 @@ QMenu,
 QComboBox QAbstractItemView {
     background-color: __PANEL__;
     border: 1px solid __BORDER__;
-    padding: 1px 0;
+    padding: 4px 0;
     selection-background-color: __SELECTION__;
     selection-color: __SELECTION_TEXT__;
 }
@@ -423,14 +449,15 @@ QComboBox QAbstractItemView::item {
     background-color: __PANEL__;
     color: __TEXT__;
     padding: 0 7px;
-    height: 26px;
+    height: 28px;
 }
 QMenu::item {
-    padding: 0 7px 0 12px;
-    height: 26px;
-    margin: 0 1px;
+    padding: 0 10px 0 14px;
+    height: 28px;
+    margin: 1px 4px;
     color: __TEXT__;
     min-width: 100px;
+    border-radius: 6px;
 }
 QMenu::item:selected:!disabled,
 QComboBox QAbstractItemView::item:selected:!disabled,
@@ -513,7 +540,7 @@ QHeaderView::section {
     background-color: __PANEL__;
     color: __TEXT__;
     border-radius: 0;
-    height: 26px;
+    height: 30px;
     min-width: 30px;
     padding: 0;
 }
@@ -535,14 +562,14 @@ QHeaderView::up-arrow {
 QProgressBar {
     border: 1px solid __BORDER__;
     background-color: __PROGRESSBAR__;
-    border-radius: 6px;
+    border-radius: 8px;
     color: __TEXT__;
-    height: 26px;
+    height: 28px;
     text-align: center;
 }
 QProgressBar::chunk {
     background-color: __ACCENT__;
-    border-radius: 5px;
+    border-radius: 7px;
 }
 
 #jobDrawer {
@@ -552,7 +579,7 @@ QProgressBar::chunk {
 #jobDrawerHeader {
     background: __PANEL__;
     border: 1px solid __BORDER__;
-    border-radius: 8px;
+    border-radius: 12px;
 }
 
 #jobDrawerBody {
@@ -560,17 +587,17 @@ QProgressBar::chunk {
     border-left: 1px solid __BORDER__;
     border-right: 1px solid __BORDER__;
     border-bottom: 1px solid __BORDER__;
-    border-radius: 8px;
+    border-radius: 12px;
 }
 
 #jobDrawerToggle {
     color: __TEXT__;
     background: __PANEL_RAISED__;
     border: 1px solid __BORDER__;
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 4px 10px;
     min-width: 72px;
-    height: 26px;
+    height: 30px;
 }
 
 #jobDrawerToggle:hover {
@@ -587,7 +614,7 @@ QProgressBar::chunk {
 #jobRow {
     background: __PANEL__;
     border: 1px solid __BORDER__;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
 #jobTitle {
@@ -603,15 +630,15 @@ QProgressBar::chunk {
 #jobCancelButton,
 #jobClearButton {
     min-width: 54px;
-    height: 24px;
-    border-radius: 6px;
+    height: 26px;
+    border-radius: 8px;
     padding: 0 8px;
 }
 
 #jobLog {
     background: __SURFACE__;
     border: 1px solid __BORDER__;
-    border-radius: 6px;
+    border-radius: 8px;
     color: __TEXT_MUTED__;
     font-family: __FONT_MONOSPACE__;
     padding: 6px;

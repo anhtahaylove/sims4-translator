@@ -4,6 +4,17 @@ APP_VERSION = '1.4'
 APP_RELEASE_CANDITATE = False
 DICTIONARY_VERSION = 4
 
+APP_NAME = 'The Sims 4 Translator Plus'
+APP_SHORT_NAME = 'Translator Plus'
+APP_UPSTREAM_NAME = 'The Sims 4 Translator'
+APP_FORK_URL = 'https://github.com/anhtahaylove/sims4-translator'
+APP_UPSTREAM_URL = 'https://github.com/voky1/sims4-translator'
+APP_LICENSE = 'MIT'
+APP_DISCLAIMER = (
+    'Community-maintained fork of voky1/sims4-translator. '
+    'Not affiliated with Electronic Arts, Maxis, The Sims, or the upstream maintainer.'
+)
+
 COLUMN_MAIN_INDEX = 1
 COLUMN_MAIN_ID = 2
 COLUMN_MAIN_INSTANCE = 3

@@ -1,15 +1,15 @@
 # Graph Report - C:\Users\VET\sims4-translator  (2026-05-19)
 
 ## Corpus Check
-- Corpus is ~43,000 words - fits in a single context window. You may not need a graph.
+- Corpus is ~44,750 words - fits in a single context window. You may not need a graph.
 
 ## Summary
-- 1022 nodes · 2098 edges · 32 communities detected
-- Extraction: 49% EXTRACTED · 51% INFERRED · 0% AMBIGUOUS · INFERRED: 1068 edges (avg confidence: 0.5)
+- 1024 nodes · 2102 edges · 32 communities detected
+- Extraction: 49% EXTRACTED · 51% INFERRED · 0% AMBIGUOUS · INFERRED: 1070 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
 ## God Nodes (most connected - your core abstractions)
-1. `MainWindow` - 67 edges
+1. `MainWindow` - 69 edges
 2. `ResourceID` - 62 edges
 3. `CancellationToken` - 58 edges
 4. `TaskReporter` - 57 edges
@@ -35,20 +35,20 @@
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.04
+Cohesion: 0.05
 Nodes (77): Container, DbpfPackage, Exception, NamedTuple, _build_export_stbl(), _build_stbl(), _converted_resource(), DictionarySnapshot (+69 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.03
-Nodes (33): AbstractTableModel, AbstractTableModel, UpdateSignals, DictionariesStorage, DictionaryLoadRequest, DictionaryLoadResult, load_dictionaries_task(), _NullReporter (+25 more)
+Nodes (34): AbstractTableModel, AbstractTableModel, UpdateSignals, DictionariesStorage, DictionaryLoadRequest, DictionaryLoadResult, load_dictionaries_task(), _NullReporter (+26 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.04
-Nodes (24): list, AbstractRecord, MainRecord, resource_for_occurrence(), NoopReporter, TranslationTaskTests, __error_translate_chunk(), __finished_translate_chunk() (+16 more)
+Nodes (16): ColumnAction, finalize(), finalize_as(), load(), load_bundle(), MainWindow, __packages_cleared(), __packages_closed() (+8 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.04
-Nodes (16): ColumnAction, finalize(), finalize_as(), load(), load_bundle(), MainWindow, __packages_cleared(), __packages_closed() (+8 more)
+Cohesion: 0.06
+Nodes (24): list, AbstractRecord, MainRecord, resource_for_occurrence(), NoopReporter, TranslationTaskTests, __error_translate_chunk(), __finished_translate_chunk() (+16 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.06
@@ -63,20 +63,20 @@ Cohesion: 0.07
 Nodes (10): __export_records(), ExportDialog, Ui_ExportDialog, object, app(), Button, Checked, ExportDialogAsyncTests (+2 more)
 
 ### Community 7 - "Community 7"
+Cohesion: 0.1
+Nodes (14): __finished(), ProgressWidget, QColorBar, TranslatedWidget, UnvalidatedWidget, __update(), UpdateWorker, ValidatedWidget (+6 more)
+
+### Community 8 - "Community 8"
 Cohesion: 0.09
 Nodes (11): DictionaryDelegatePaint, GridPalette, HeaderProxy, MainDelegatePaint, __mix(), QProxyStyle, QStyledItemDelegate, QTableView (+3 more)
 
-### Community 8 - "Community 8"
-Cohesion: 0.07
-Nodes (13): edit_translation_task(), EditDialog, EditTranslationRequest, EditTranslationResult, __translated(), __translation_error(), Ui_EditDialog, QDialog (+5 more)
-
 ### Community 9 - "Community 9"
-Cohesion: 0.11
-Nodes (13): __finished(), ProgressWidget, QColorBar, TranslatedWidget, UnvalidatedWidget, __update(), UpdateWorker, ValidatedWidget (+5 more)
+Cohesion: 0.06
+Nodes (7): DbpfLocator, _DbpfReader, _DbpfWriter, decode_ref_pack(), read(), write(), Resource
 
 ### Community 10 - "Community 10"
 Cohesion: 0.07
-Nodes (7): DbpfLocator, _DbpfReader, _DbpfWriter, decode_ref_pack(), read(), write(), Resource
+Nodes (13): edit_translation_task(), EditDialog, EditTranslationRequest, EditTranslationResult, __translated(), __translation_error(), Ui_EditDialog, QDialog (+5 more)
 
 ### Community 11 - "Community 11"
 Cohesion: 0.11
@@ -103,36 +103,36 @@ Cohesion: 0.13
 Nodes (5): BracketHighlighter, LineNumberArea, QTextEditor, QPlainTextEdit, QSyntaxHighlighter
 
 ### Community 17 - "Community 17"
+Cohesion: 0.09
+Nodes (0):
+
+### Community 18 - "Community 18"
 Cohesion: 0.13
 Nodes (14): compare(), fnv32(), fnv64(), _hash(), open_supported(), open_xml(), openfile(), save_binary() (+6 more)
 
-### Community 18 - "Community 18"
+### Community 19 - "Community 19"
 Cohesion: 0.19
 Nodes (5): app(), export_records(), export_request(), SyntheticPackageIntegrationTests, wait_for()
 
-### Community 19 - "Community 19"
+### Community 20 - "Community 20"
 Cohesion: 0.26
 Nodes (4): ConfigManager, __convert_to_str(), __convert_value(), theme_name()
 
-### Community 20 - "Community 20"
+### Community 21 - "Community 21"
 Cohesion: 0.26
 Nodes (2): Interface, Lang
 
-### Community 21 - "Community 21"
+### Community 22 - "Community 22"
 Cohesion: 0.31
 Nodes (6): __deepl(), extract_placeholders(), __google(), insert_placeholders(), __mymemory(), Translator
 
-### Community 22 - "Community 22"
+### Community 23 - "Community 23"
 Cohesion: 0.31
 Nodes (3): destination(), Languages, source()
 
-### Community 23 - "Community 23"
+### Community 24 - "Community 24"
 Cohesion: 0.22
 Nodes (1): AppState
-
-### Community 24 - "Community 24"
-Cohesion: 0.39
-Nodes (2): app(), TaskRunnerTests
 
 ### Community 25 - "Community 25"
 Cohesion: 0.43
@@ -175,11 +175,11 @@ Nodes (0):
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `MainWindow` connect `Community 3` to `Community 2`, `Community 4`, `Community 6`, `Community 8`, `Community 12`?**
-  _High betweenness centrality (0.142) - this node is a cross-community bridge._
-- **Why does `PackagesStorage` connect `Community 5` to `Community 0`, `Community 1`, `Community 2`, `Community 13`, `Community 14`, `Community 18`, `Community 25`?**
+- **Why does `MainWindow` connect `Community 2` to `Community 3`, `Community 4`, `Community 6`, `Community 10`, `Community 12`?**
+  _High betweenness centrality (0.145) - this node is a cross-community bridge._
+- **Why does `PackagesStorage` connect `Community 5` to `Community 0`, `Community 1`, `Community 3`, `Community 13`, `Community 14`, `Community 19`, `Community 25`?**
   _High betweenness centrality (0.106) - this node is a cross-community bridge._
-- **Why does `MainRecord` connect `Community 2` to `Community 0`, `Community 4`, `Community 5`, `Community 6`, `Community 12`?**
+- **Why does `MainRecord` connect `Community 3` to `Community 0`, `Community 4`, `Community 5`, `Community 6`, `Community 12`, `Community 17`?**
   _High betweenness centrality (0.106) - this node is a cross-community bridge._
 - **Are the 7 inferred relationships involving `MainWindow` (e.g. with `Ui_MainWindow` and `EditDialog`) actually correct?**
   _`MainWindow` has 7 INFERRED edges - model-reasoned connections that need verification._

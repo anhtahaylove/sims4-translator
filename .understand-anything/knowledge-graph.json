@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "project": {
-    "name": "The Sims 4 Translator",
+    "name": "The Sims 4 Translator Plus",
     "languages": [
       "ini",
       "markdown",
@@ -16,9 +16,9 @@
       "PySide6",
       "Qt"
     ],
-    "description": "A PySide6 desktop application for translating The Sims 4 mod package strings, saving dictionaries, exporting translated packages, and generating/verifying synthetic package smoke fixtures.",
-    "analyzedAt": "2026-05-19T04:08:15.805349+00:00",
-    "gitCommitHash": "606ca092b97b9ecd964363dfa38998d2558c3a01"
+    "description": "A PySide6 community fork for translating The Sims 4 mod package strings with async workflows, dedupe safety, synthetic smoke fixtures, and public release documentation.",
+    "analyzedAt": "2026-05-19T07:41:34.227949+00:00",
+    "gitCommitHash": "51ebc90ec66aba2e0b21418cb9e7a5481dc389aa"
   },
   "nodes": [
     {
@@ -27,6 +27,18 @@
       "name": "CHANGELOG.md",
       "filePath": "CHANGELOG.md",
       "summary": "Documentation artifact: CHANGELOG.md.",
+      "tags": [
+        "md",
+        "document"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:CONTRIBUTING.md",
+      "type": "document",
+      "name": "CONTRIBUTING.md",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Documentation artifact: CONTRIBUTING.md.",
       "tags": [
         "md",
         "document"
@@ -46,6 +58,18 @@
       "complexity": "simple"
     },
     {
+      "id": "document:NOTICE.md",
+      "type": "document",
+      "name": "NOTICE.md",
+      "filePath": "NOTICE.md",
+      "summary": "Documentation artifact: NOTICE.md.",
+      "tags": [
+        "md",
+        "document"
+      ],
+      "complexity": "simple"
+    },
+    {
       "id": "document:README.md",
       "type": "document",
       "name": "README.md",
@@ -53,6 +77,31 @@
       "summary": "Documentation artifact: README.md.",
       "tags": [
         "md",
+        "document"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.vi.md",
+      "type": "document",
+      "name": "README.vi.md",
+      "filePath": "README.vi.md",
+      "summary": "Documentation artifact: README.vi.md.",
+      "tags": [
+        "md",
+        "document"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/release-checklist.md",
+      "type": "document",
+      "name": "release-checklist.md",
+      "filePath": "docs/release-checklist.md",
+      "summary": "Documentation artifact: docs/release-checklist.md.",
+      "tags": [
+        "md",
+        "release",
         "document"
       ],
       "complexity": "simple"
@@ -10428,6 +10477,18 @@
       "complexity": "complex"
     },
     {
+      "id": "function:windows/main_window.py:MainWindow.__set_window_title",
+      "type": "function",
+      "name": "MainWindow.__set_window_title",
+      "filePath": "windows/main_window.py",
+      "summary": "Function MainWindow.__set_window_title defined in windows/main_window.py.",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
       "id": "function:windows/main_window.py:MainWindow.showEvent",
       "type": "function",
       "name": "MainWindow.showEvent",
@@ -11177,6 +11238,18 @@
       "name": "MainWindow.about_qt",
       "filePath": "windows/main_window.py",
       "summary": "Function MainWindow.about_qt defined in windows/main_window.py.",
+      "tags": [
+        "python",
+        "function"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:windows/main_window.py:MainWindow.about_app",
+      "type": "function",
+      "name": "MainWindow.about_app",
+      "filePath": "windows/main_window.py",
+      "summary": "Function MainWindow.about_app defined in windows/main_window.py.",
       "tags": [
         "python",
         "function"
@@ -17909,6 +17982,13 @@
     },
     {
       "source": "class:windows/main_window.py:MainWindow",
+      "target": "function:windows/main_window.py:MainWindow.__set_window_title",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:windows/main_window.py:MainWindow",
       "target": "function:windows/main_window.py:MainWindow.showEvent",
       "type": "contains",
       "direction": "forward",
@@ -18344,6 +18424,13 @@
     {
       "source": "class:windows/main_window.py:MainWindow",
       "target": "function:windows/main_window.py:MainWindow.about_qt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:windows/main_window.py:MainWindow",
+      "target": "function:windows/main_window.py:MainWindow.about_app",
       "type": "contains",
       "direction": "forward",
       "weight": 1.0
@@ -20834,8 +20921,12 @@
       "description": "Files belonging to Project Docs and Runtime Config.",
       "nodeIds": [
         "document:CHANGELOG.md",
+        "document:CONTRIBUTING.md",
         "document:LICENSE",
+        "document:NOTICE.md",
         "document:README.md",
+        "document:README.vi.md",
+        "document:docs/release-checklist.md",
         "document:fonts/LICENSE-JetBrains.txt",
         "document:fonts/LICENSE-Roboto.txt",
         "config:prefs/dlc.ini",
@@ -21187,6 +21278,7 @@
         "class:windows/main_window.py:MainWindow",
         "function:windows/main_window.py:MainWindow.__init__",
         "function:windows/main_window.py:MainWindow.retranslate",
+        "function:windows/main_window.py:MainWindow.__set_window_title",
         "function:windows/main_window.py:MainWindow.showEvent",
         "function:windows/main_window.py:MainWindow.dragEnterEvent",
         "function:windows/main_window.py:MainWindow.dragMoveEvent",
@@ -21250,6 +21342,7 @@
         "function:windows/main_window.py:MainWindow.num_xml_dp",
         "function:windows/main_window.py:MainWindow.undo_restore",
         "function:windows/main_window.py:MainWindow.about_qt",
+        "function:windows/main_window.py:MainWindow.about_app",
         "function:windows/main_window.py:MainWindow.generate_item_context_menu",
         "function:windows/main_window.py:MainWindow.__message",
         "function:windows/main_window.py:MainWindow.__initiate_progress",
@@ -21910,12 +22003,14 @@
   "tour": [
     {
       "order": 1,
-      "title": "Project Overview and Startup",
-      "description": "Start with README, requirements, and main.py to understand purpose and bootstrapping.",
+      "title": "Public Fork Identity and Docs",
+      "description": "Start with README, NOTICE, contribution, and release checklist files for public positioning.",
       "nodeIds": [
         "document:README.md",
-        "document:requirements.txt",
-        "file:main.py"
+        "document:README.vi.md",
+        "document:NOTICE.md",
+        "document:CONTRIBUTING.md",
+        "document:docs/release-checklist.md"
       ]
     },
     {
@@ -21932,11 +22027,11 @@
     {
       "order": 3,
       "title": "Main UI Workflows",
-      "description": "Review the main window, import dialog, export dialog, and job drawer for user-facing behavior.",
+      "description": "Review the main window, import dialog, export dialog, theme files, and job drawer for user-facing behavior.",
       "nodeIds": [
         "file:windows/main_window.py",
-        "file:windows/import_dialog.py",
-        "file:windows/export_dialog.py",
+        "file:windows/ui/main_window.py",
+        "config:resources/theme.qss",
         "file:widgets/job_drawer.py"
       ]
     },
@@ -21948,7 +22043,6 @@
         "file:scripts/synthetic_package.py",
         "file:scripts/create_synthetic_package.py",
         "file:scripts/verify_synthetic_smoke.py",
-        "file:tests/test_synthetic_package_integration.py",
         "file:tests/test_synthetic_smoke_verifier.py"
       ]
     }

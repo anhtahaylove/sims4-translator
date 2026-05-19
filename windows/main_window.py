@@ -74,6 +74,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.__set_window_title()
 
         self.setAcceptDrops(True)
 
@@ -119,6 +120,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_group_lowbit.setChecked(config.value('group', 'lowbit'))
 
         self.action_about_qt.triggered.connect(self.about_qt)
+        self.action_about_app = QAction(self)
+        self.action_about_app.triggered.connect(self.about_app)
+        self.menu_help.insertAction(self.action_about_qt, self.action_about_app)
+        self.menu_help.insertSeparator(self.action_about_qt)
 
         self.action_num_standart.triggered.connect(self.num_standart)
         self.action_num_source.triggered.connect(self.num_source)
@@ -195,6 +200,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_add_file.setText(interface.text('MainWindow', 'Add file...'))
         self.action_undo.setText(interface.text('MainWindow', 'Undo'))
         self.action_about_qt.setText(interface.text('MainWindow', 'About Qt...'))
+        self.action_about_app.setText(f'About {APP_NAME}...')
         self.action_options.setText(interface.text('MainWindow', 'Options...'))
         self.action_export_xml.setText(interface.text('MainWindow', 'To XML...'))
         self.action_translate_from_dictionaries.setText(interface.text('MainWindow', 'Translate from dictionaries'))
@@ -227,9 +233,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_options.setTitle(interface.text('MainWindow', 'Options'))
         self.menu_group.setTitle(interface.text('MainWindow', 'Group'))
         self.menu_help.setTitle(interface.text('MainWindow', 'Help'))
+        self.brand_title.setText(APP_NAME)
+        self.brand_subtitle.setText('Mod localization workspace')
 
         for col in self.action_column:
             col.retranslate()
+
+    def __set_window_title(self):
+        title = f'{APP_NAME} {APP_VERSION}'
+        if APP_RELEASE_CANDITATE:
+            title += ' RC'
+        self.setWindowTitle(title)
 
     def showEvent(self, event):
         app_state.set_tableview(self.tableview)
@@ -712,6 +726,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @staticmethod
     def about_qt():
         QApplication.instance().aboutQt()
+
+    def about_app(self):
+        text = (
+            f'<h2>{APP_NAME}</h2>'
+            f'<p>Version {APP_VERSION}</p>'
+            '<p>A community-maintained fork focused on faster package workflows, '
+            'dedupe-safe exports, and a clearer translation workspace.</p>'
+            f'<p>Fork: <a href="{APP_FORK_URL}">{APP_FORK_URL}</a><br>'
+            f'Upstream: <a href="{APP_UPSTREAM_URL}">{APP_UPSTREAM_URL}</a></p>'
+            f'<p>License: {APP_LICENSE}</p>'
+            f'<p><small>{APP_DISCLAIMER}</small></p>'
+        )
+        QMessageBox.about(self, f'About {APP_NAME}', text)
 
     def generate_item_context_menu(self, position):
         index = self.sender().indexAt(position)
