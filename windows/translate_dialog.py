@@ -155,6 +155,11 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
 
     def retranslate(self):
         self.setWindowTitle(interface.text('TranslateDialog', 'Batch translate'))
+        self.header_title.setText(interface.text('TranslateDialog', 'Batch translate'))
+        self.header_detail.setText(interface.text(
+            'TranslateDialog',
+            'Translate the chosen records in the background and keep the workspace responsive.'
+        ))
         self.rb_all.setText(interface.text('ImportDialog', 'Everything'))
         self.rb_validated.setText(interface.text('ImportDialog', 'Everything but already validated strings'))
         self.rb_validated_partial.setText(interface.text('ImportDialog',

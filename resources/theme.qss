@@ -134,6 +134,17 @@ QToolBar::separator {
     margin: 0 0 0 0;
 }
 
+#projectSidebar QToolBar {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+#projectSidebar QToolBar::separator {
+    height: 6px;
+    width: 6px;
+}
+
 #commandBar {
     background: __PANEL__;
     border: 1px solid __BORDER__;
@@ -196,6 +207,107 @@ QToolBar::separator {
     color: __TEXT_DISABLED__;
     background: transparent;
     border-color: transparent;
+}
+
+#workspaceSplitter {
+    background: transparent;
+}
+
+#workspaceSplitter::handle {
+    background: __SURFACE__;
+    width: 8px;
+}
+
+#workspaceSplitter::handle:hover {
+    background: __PANEL_RAISED__;
+}
+
+#projectSidebar,
+#inspectorPanel,
+#tablePanel {
+    background: __PANEL__;
+    border: 1px solid __BORDER__;
+    border-radius: 12px;
+}
+
+#tablePanel {
+    border-color: __BORDER_LIGHT__;
+}
+
+#panelTitle,
+#emptyTitle,
+#dialogTitle {
+    color: __TEXT__;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+#panelHint,
+#dialogHint,
+#projectSummary {
+    color: __TEXT_MUTED__;
+}
+
+#projectSummary {
+    background: __PANEL_ALT__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 9px;
+    padding: 8px;
+}
+
+#emptyState,
+#dialogHeader {
+    background: __PANEL_ALT__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 10px;
+}
+
+#sectionLabel {
+    color: __TEXT_MUTED__;
+    font-weight: 600;
+}
+
+#inspectorText {
+    min-height: 84px;
+    border-radius: 8px;
+}
+
+#inspectorStatus {
+    background: __PANEL_ALT__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 10px;
+    padding: 5px 8px;
+    color: __TEXT_MUTED__;
+}
+
+#inspectorStatus[state="2"],
+#inspectorStatus[state="3"] {
+    background: __SELECTION__;
+    border-color: __ACCENT__;
+    color: __SELECTION_TEXT__;
+}
+
+#inspectorStatus[state="0"] {
+    border-color: __UNVALIDATED_BAR__;
+    color: __TEXT_ERROR__;
+}
+
+#primaryButton {
+    border-color: __BUTTON_DEFAULT__;
+    background: __BUTTON_DEFAULT__;
+    color: #fff;
+}
+
+#primaryButton:hover,
+#primaryButton:focus {
+    border-color: __BUTTON_DEFAULT_HOVER__;
+    background: __BUTTON_DEFAULT_HOVER__;
+}
+
+#primaryButton:disabled {
+    border-color: __BORDER_LIGHT__;
+    background: __BUTTON_DISABLED__;
+    color: __TEXT_DISABLED__;
 }
 
 QToolButton,

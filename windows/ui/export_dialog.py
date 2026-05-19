@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtCore import QMetaObject
-from PySide6.QtWidgets import QCheckBox, QGroupBox, QHBoxLayout, QPushButton, QRadioButton, QVBoxLayout
+from PySide6.QtWidgets import QCheckBox, QFrame, QGroupBox, QHBoxLayout, QLabel, QPushButton, QRadioButton, QVBoxLayout
 
 
 class Ui_ExportDialog(object):
@@ -11,6 +11,20 @@ class Ui_ExportDialog(object):
         ExportDialog.setMinimumSize(390, 134)
 
         layout = QVBoxLayout(ExportDialog)
+
+        self.header = QFrame(ExportDialog)
+        self.header.setObjectName('dialogHeader')
+        header_layout = QVBoxLayout(self.header)
+        header_layout.setContentsMargins(12, 10, 12, 10)
+        header_layout.setSpacing(2)
+        self.header_title = QLabel('Export translation', self.header)
+        self.header_title.setObjectName('dialogTitle')
+        self.header_detail = QLabel('Choose which records to write, then continue in the background.', self.header)
+        self.header_detail.setObjectName('dialogHint')
+        self.header_detail.setWordWrap(True)
+        header_layout.addWidget(self.header_title)
+        header_layout.addWidget(self.header_detail)
+        layout.addWidget(self.header)
 
         self.gb_rec = QGroupBox(ExportDialog)
 

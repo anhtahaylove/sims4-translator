@@ -133,12 +133,13 @@ class Expansions:
     def items(self) -> List[Union[str, Expansion]]:
         return self.filtered_items()
 
-    def filtered_items(self, filter_text: str = '') -> List[Union[str, Expansion]]:
+    def filtered_items(self, filter_text: str = '', category_filter: str = 'all') -> List[Union[str, Expansion]]:
         baseexp = Expansion('BASE GAME', 'Data/Client', {'type': 'Base Game'})
 
         query = filter_text.strip().lower()
+        category_filter = category_filter or 'all'
         rows = []
-        if self._matches(baseexp, query):
+        if category_filter in ('all', 'base') and self._matches(baseexp, query):
             rows.append(baseexp)
 
         groups = {
@@ -155,14 +156,14 @@ class Expansions:
             for key, item in packs.items():
                 expansion = Expansion(item.get('names', {}), key, item.get('metadata', {}))
                 group = groups.get(expansion.category)
-                if group is not None and self._matches(expansion, query):
+                if group is not None and self._matches(expansion, query) and self._matches_category(expansion, category_filter):
                     group.append(expansion)
 
         elif baseexp.exists_source:
             for dirname in os.listdir(config.value('dictionaries', 'gamepath')):
                 expansion = Expansion(dirname, dirname)
                 group = groups.get(expansion.category)
-                if group is None or not self._matches(expansion, query):
+                if group is None or not self._matches(expansion, query) or not self._matches_category(expansion, category_filter):
                     continue
                 if dirname.upper().startswith('EP'):
                     group.append(expansion)
@@ -179,6 +180,10 @@ class Expansions:
                 rows.extend(group)
 
         return rows
+
+    @staticmethod
+    def _matches_category(expansion: Expansion, category_filter: str) -> bool:
+        return category_filter == 'all' or expansion.category == category_filter
 
     @staticmethod
     def _matches(expansion: Expansion, query: str) -> bool:

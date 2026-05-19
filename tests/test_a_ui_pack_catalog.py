@@ -17,6 +17,12 @@ def app():
     return QApplication.instance() or QApplication([])
 
 
+def close_widget(widget):
+    widget.close()
+    widget.deleteLater()
+    app().processEvents()
+
+
 class PackCatalogTests(unittest.TestCase):
 
     def setUp(self):
@@ -61,6 +67,14 @@ class PackCatalogTests(unittest.TestCase):
         self.assertIn('1 pack', model.summary_text)
         self.assertIn('0 ready', model.summary_text)
 
+    def test_pack_model_category_filter_shows_only_kits(self):
+        model = Model(category_filter='kit')
+        folders = [item.folder for item in model.items if isinstance(item, Expansion)]
+
+        self.assertIn('SP68', folders)
+        self.assertNotIn('EP21', folders)
+        self.assertNotIn('FP01', folders)
+
 
 class JobDrawerStateTests(unittest.TestCase):
 
@@ -80,6 +94,7 @@ class JobDrawerStateTests(unittest.TestCase):
         self.assertTrue(row.cancel_button.isHidden())
         self.assertEqual(row.property('state'), 'done')
         self.assertEqual(row.percent_label.text(), 'Done')
+        close_widget(row)
 
 
 if __name__ == '__main__':

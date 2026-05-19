@@ -78,10 +78,10 @@ class DictWorker(QRunnable):
 
 class Model(QAbstractTableModel):
 
-    def __init__(self, parent=None, filter_text: str = ''):
+    def __init__(self, parent=None, filter_text: str = '', category_filter: str = 'all'):
         super().__init__(parent)
 
-        self.items = expansions.filtered_items(filter_text)
+        self.items = expansions.filtered_items(filter_text, category_filter)
         self.count = len(self.items)
         self.summary = expansions.summary(self.items)
         self.summary_text = self._summary_text()
@@ -236,6 +236,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.txt_path.textChanged.connect(self.change_path)
         self.btn_path.clicked.connect(self.select_path)
         self.txt_pack_search.textChanged.connect(self.refresh)
+        self.cb_pack_category.currentIndexChanged.connect(self.refresh)
 
         self.txt_deepl_key.textChanged.connect(self.change_deepl_key)
 
@@ -283,6 +284,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.btn_build.setText(interface.text('OptionsDialog', 'Build dictionaries'))
         self.btn_path.setText(interface.text('OptionsDialog', 'Browse...'))
         self.txt_pack_search.setPlaceholderText(interface.text('OptionsDialog', 'Filter packs...'))
+        self.__retranslate_pack_categories()
         self.lbl_path_hint.setText(interface.text(
             'OptionsDialog',
             'Select the folder that contains Data, EP, GP, SP, and FP folders from your The Sims 4 installation.'
@@ -320,6 +322,20 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             self.cb_theme.setCurrentIndex(1)
         self.cb_theme.blockSignals(False)
 
+    def __retranslate_pack_categories(self):
+        current = self.cb_pack_category.currentData() or 'all'
+        self.cb_pack_category.blockSignals(True)
+        self.cb_pack_category.clear()
+        self.cb_pack_category.addItem(interface.text('OptionsDialog', 'All packs'), 'all')
+        self.cb_pack_category.addItem(interface.text('OptionsDialog', 'Expansion packs'), 'expansion')
+        self.cb_pack_category.addItem(interface.text('OptionsDialog', 'Game packs'), 'game')
+        self.cb_pack_category.addItem(interface.text('OptionsDialog', 'Stuff packs'), 'stuff')
+        self.cb_pack_category.addItem(interface.text('OptionsDialog', 'Kits'), 'kit')
+        self.cb_pack_category.addItem(interface.text('OptionsDialog', 'Free packs'), 'free')
+        index = self.cb_pack_category.findData(current)
+        self.cb_pack_category.setCurrentIndex(index if index >= 0 else 0)
+        self.cb_pack_category.blockSignals(False)
+
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:
             self.close()
@@ -332,7 +348,10 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
     def refresh(self):
         self.tableview.setModel(self.blank)
 
-        self.model = Model(filter_text=self.txt_pack_search.text())
+        self.model = Model(
+            filter_text=self.txt_pack_search.text(),
+            category_filter=self.cb_pack_category.currentData() or 'all'
+        )
 
         self.tableview.setModel(self.model)
         self.tableview.setItemDelegate(PackStatusDelegate(model=self.model))

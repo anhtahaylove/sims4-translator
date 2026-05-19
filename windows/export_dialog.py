@@ -48,6 +48,11 @@ class ExportDialog(QDialog, Ui_ExportDialog):
 
     def retranslate(self):
         self.setWindowTitle(interface.text('ExportDialog', 'Export translate'))
+        self.header_title.setText(interface.text('ExportDialog', 'Export translate'))
+        self.header_detail.setText(interface.text(
+            'ExportDialog',
+            'Choose which records to write, then continue in the background.'
+        ))
         self.gb_rec.setTitle(interface.text('ExportDialog', 'Exported records'))
         self.rb_all.setText(interface.text('ExportDialog', 'Everything'))
         self.rb_translated.setText(interface.text('ExportDialog', 'Everything but untranslated strings'))

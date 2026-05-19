@@ -6,6 +6,9 @@ from PySide6.QtWidgets import (
     QLabel,
     QMenu,
     QMenuBar,
+    QPlainTextEdit,
+    QPushButton,
+    QSplitter,
     QToolButton,
     QVBoxLayout,
     QHBoxLayout,
@@ -284,9 +287,15 @@ class Ui_MainWindow(object):
 
         self.toolbar = QToolBar(MainWindow)
         self.toolbar.setObjectName('filterBar')
+        self.toolbar.setOrientation(Qt.Orientation.Vertical)
+        self.toolbar.edt_search.adjusted_size = 220
+        self.toolbar.cb_files.adjusted_size = 220
+        self.toolbar.cb_instances.adjusted_size = 220
+
         self.tableview = QMainTableView(MainWindow)
         self.colorbar = QColorBar(MainWindow)
         self.job_drawer = QJobStatusDrawer(MainWindow)
+        self.activity_drawer = self.job_drawer
 
         self.colorbar.setVisible(False)
 
@@ -294,16 +303,28 @@ class Ui_MainWindow(object):
         layout.setContentsMargins(8, 8, 8, 8)
         layout.setSpacing(8)
         layout.addWidget(self.command_bar)
-        layout.addWidget(self.toolbar)
-        layout.addWidget(self.colorbar)
-        layout.addWidget(self.tableview, 1)
+
+        self.workspace_splitter = QSplitter(Qt.Orientation.Horizontal, MainWindow)
+        self.workspace_splitter.setObjectName('workspaceSplitter')
+        self.workspace_splitter.setChildrenCollapsible(False)
+
+        self.project_sidebar = self.__project_sidebar(MainWindow)
+        self.table_panel = self.__table_panel(MainWindow)
+        self.inspector_panel = self.__inspector_panel(MainWindow)
+
+        self.workspace_splitter.addWidget(self.project_sidebar)
+        self.workspace_splitter.addWidget(self.table_panel)
+        self.workspace_splitter.addWidget(self.inspector_panel)
+        self.workspace_splitter.setSizes([260, 680, 310])
+
+        layout.addWidget(self.workspace_splitter, 1)
 
         self.monospace = QLineEdit(MainWindow)
         self.monospace.setObjectName('monospace')
         self.monospace.setVisible(False)
 
         layout.addWidget(self.monospace)
-        layout.addWidget(self.job_drawer)
+        layout.addWidget(self.activity_drawer)
 
         QMetaObject.connectSlotsByName(MainWindow)
 
@@ -318,3 +339,122 @@ class Ui_MainWindow(object):
         divider = QFrame(self.command_bar)
         divider.setObjectName('commandDivider')
         return divider
+
+    def __project_sidebar(self, parent):
+        sidebar = QFrame(parent)
+        sidebar.setObjectName('projectSidebar')
+        sidebar.setMinimumWidth(238)
+        sidebar.setMaximumWidth(310)
+        layout = QVBoxLayout(sidebar)
+        layout.setContentsMargins(12, 12, 12, 12)
+        layout.setSpacing(10)
+
+        self.project_title = QLabel('Project', sidebar)
+        self.project_title.setObjectName('panelTitle')
+
+        self.project_summary = QLabel('No package loaded', sidebar)
+        self.project_summary.setObjectName('projectSummary')
+        self.project_summary.setWordWrap(True)
+
+        self.project_hint = QLabel('Open a package or synthetic smoke file to begin translating.', sidebar)
+        self.project_hint.setObjectName('panelHint')
+        self.project_hint.setWordWrap(True)
+
+        self.filter_title = QLabel('Filters', sidebar)
+        self.filter_title.setObjectName('panelTitle')
+
+        layout.addWidget(self.project_title)
+        layout.addWidget(self.project_summary)
+        layout.addWidget(self.project_hint)
+        layout.addSpacing(8)
+        layout.addWidget(self.filter_title)
+        layout.addWidget(self.toolbar)
+        layout.addStretch()
+        return sidebar
+
+    def __table_panel(self, parent):
+        panel = QFrame(parent)
+        panel.setObjectName('tablePanel')
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(8)
+
+        self.empty_state = QFrame(panel)
+        self.empty_state.setObjectName('emptyState')
+        empty_layout = QVBoxLayout(self.empty_state)
+        empty_layout.setContentsMargins(16, 14, 16, 14)
+        empty_layout.setSpacing(3)
+
+        self.empty_title = QLabel('Ready for a package', self.empty_state)
+        self.empty_title.setObjectName('emptyTitle')
+        self.empty_detail = QLabel('Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.', self.empty_state)
+        self.empty_detail.setObjectName('panelHint')
+        self.empty_detail.setWordWrap(True)
+
+        empty_layout.addWidget(self.empty_title)
+        empty_layout.addWidget(self.empty_detail)
+
+        layout.addWidget(self.empty_state)
+        layout.addWidget(self.colorbar)
+        layout.addWidget(self.tableview, 1)
+        return panel
+
+    def __inspector_panel(self, parent):
+        panel = QFrame(parent)
+        panel.setObjectName('inspectorPanel')
+        panel.setMinimumWidth(286)
+        panel.setMaximumWidth(380)
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(12, 12, 12, 12)
+        layout.setSpacing(8)
+
+        self.inspector_title = QLabel('Inspector', panel)
+        self.inspector_title.setObjectName('panelTitle')
+
+        self.inspector_meta = QLabel('No string selected', panel)
+        self.inspector_meta.setObjectName('panelHint')
+        self.inspector_meta.setWordWrap(True)
+
+        self.inspector_status = QLabel('Idle', panel)
+        self.inspector_status.setObjectName('inspectorStatus')
+
+        self.inspector_original_label = QLabel('Original', panel)
+        self.inspector_original_label.setObjectName('sectionLabel')
+        self.inspector_original = QPlainTextEdit(panel)
+        self.inspector_original.setObjectName('inspectorText')
+        self.inspector_original.setReadOnly(True)
+
+        self.inspector_translation_label = QLabel('Translation draft', panel)
+        self.inspector_translation_label.setObjectName('sectionLabel')
+        self.inspector_translation = QPlainTextEdit(panel)
+        self.inspector_translation.setObjectName('inspectorText')
+
+        self.inspector_comment_label = QLabel('Comment', panel)
+        self.inspector_comment_label.setObjectName('sectionLabel')
+        self.inspector_comment = QLineEdit(panel)
+        self.inspector_comment.setObjectName('inspectorComment')
+
+        self.inspector_apply = QPushButton('Apply + Validate', panel)
+        self.inspector_apply.setObjectName('primaryButton')
+        self.inspector_reset = QPushButton('Reset', panel)
+        self.inspector_edit = QPushButton('Open Editor', panel)
+
+        button_row = QHBoxLayout()
+        button_row.setContentsMargins(0, 0, 0, 0)
+        button_row.setSpacing(6)
+        button_row.addWidget(self.inspector_reset)
+        button_row.addWidget(self.inspector_edit)
+
+        layout.addWidget(self.inspector_title)
+        layout.addWidget(self.inspector_meta)
+        layout.addWidget(self.inspector_status)
+        layout.addWidget(self.inspector_original_label)
+        layout.addWidget(self.inspector_original, 1)
+        layout.addWidget(self.inspector_translation_label)
+        layout.addWidget(self.inspector_translation, 1)
+        layout.addWidget(self.inspector_comment_label)
+        layout.addWidget(self.inspector_comment)
+        layout.addWidget(self.inspector_apply)
+        layout.addLayout(button_row)
+        layout.addStretch()
+        return panel

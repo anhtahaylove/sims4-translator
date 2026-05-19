@@ -20,8 +20,17 @@ from singletons.interface import interface
 from singletons.signals import progress_signals, window_signals
 from singletons.state import app_state
 from singletons.undo import undo
-from utils.functions import open_supported, open_xml, save_package, save_xml
+from utils.functions import open_supported, open_xml, save_package, save_xml, text_to_edit, text_to_stbl
 from utils.constants import *
+
+
+INSPECTOR_STATUS = {
+    FLAG_UNVALIDATED: 'Original',
+    FLAG_PROGRESS: 'In progress',
+    FLAG_VALIDATED: 'Validated',
+    FLAG_TRANSLATED: 'Translated',
+    FLAG_REPLACED: 'Edited',
+}
 
 
 class ColumnAction(QAction):
@@ -149,6 +158,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.tableview.set_model()
         self.edit_dialog.tableview.set_model()
+        self.__inspector_item = None
+        self.tableview.selectionModel().selectionChanged.connect(self.__selection_changed)
+        self.inspector_apply.clicked.connect(self.apply_inspector_translation)
+        self.inspector_reset.clicked.connect(self.reset_inspector_translation)
+        self.inspector_edit.clicked.connect(self.edit_string)
+        self.update_inspector_item(None)
 
         self.num_change()
 
@@ -235,9 +250,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_help.setTitle(interface.text('MainWindow', 'Help'))
         self.brand_title.setText(APP_NAME)
         self.brand_subtitle.setText('Mod localization workspace')
+        self.project_title.setText('Project')
+        self.filter_title.setText('Filters')
+        self.empty_title.setText('Ready for a package')
+        self.empty_detail.setText('Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.')
+        self.inspector_title.setText('Inspector')
+        self.inspector_original_label.setText('Original')
+        self.inspector_translation_label.setText('Translation draft')
+        self.inspector_comment_label.setText('Comment')
+        self.inspector_apply.setText('Apply + Validate')
+        self.inspector_reset.setText('Reset')
+        self.inspector_edit.setText('Open Editor')
 
         for col in self.action_column:
             col.retranslate()
+
+        self.update_workspace_summary()
 
     def __set_window_title(self):
         title = f'{APP_NAME} {APP_VERSION}'
@@ -392,6 +420,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                              mode=self.__search_flag,
                              flags=flags,
                              different=self.toolbar.filter_validate_4.isChecked())
+        self.update_workspace_summary()
 
     def set_state_menu(self):
         state = app_state.packages_storage.enabled
@@ -417,6 +446,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.colorbar.resfesh()
         self.colorbar.setVisible(config.value('view', 'colorbar') and state)
+        self.empty_state.setVisible(not state)
+        self.update_workspace_summary()
+        if not state:
+            self.update_inspector_item(None)
 
     def check_modified(self, multi: bool = False):
         package = app_state.packages_storage.current_package
@@ -511,6 +544,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.colorbar.resfesh()
         self.tableview.refresh()
+        self.update_workspace_summary()
 
         undo.commit()
 
@@ -578,6 +612,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if item:
             self.edit_dialog.prepare(item)
             self.edit_dialog.exec()
+            self.update_inspector_item(item)
 
     def validate_selected(self, flag):
         if not app_state.packages_storage.enabled:
@@ -593,6 +628,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.colorbar.resfesh()
         self.tableview.refresh()
+        self.update_workspace_summary()
+        self.update_inspector_item(self.tableview.selected_item())
 
         undo.commit()
 
@@ -609,6 +646,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.colorbar.resfesh()
         self.tableview.refresh()
+        self.update_workspace_summary()
+        self.update_inspector_item(self.tableview.selected_item())
 
         undo.commit()
 
@@ -645,6 +684,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.colorbar.resfesh()
         self.tableview.refresh()
+        self.update_workspace_summary()
+        self.update_inspector_item(self.tableview.selected_item())
 
         undo.commit()
 
@@ -665,6 +706,111 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def colorbar_toggle(self):
         config.set_value('view', 'colorbar', self.action_colorbar.isChecked())
         self.colorbar.setVisible(config.value('view', 'colorbar') and app_state.packages_storage.enabled)
+
+    @Slot()
+    def __selection_changed(self):
+        self.update_inspector_item(self.tableview.selected_item())
+
+    def update_workspace_summary(self):
+        storage = app_state.packages_storage
+        if not storage or not storage.enabled:
+            self.project_summary.setText('No package loaded')
+            self.project_hint.setText(
+                'Use Load file to open a mod package, STBL, XML, JSON, Binary, or the synthetic smoke package.'
+            )
+            return
+
+        items = list(storage.items())
+        total = len(items)
+        validated = sum(1 for item in items if item.flag == FLAG_VALIDATED)
+        translated = sum(1 for item in items if item.flag == FLAG_TRANSLATED)
+        progress = sum(1 for item in items if item.flag in (FLAG_PROGRESS, FLAG_REPLACED))
+        original = sum(1 for item in items if item.flag == FLAG_UNVALIDATED)
+        package_count = len(getattr(storage, 'packages', []))
+
+        self.project_summary.setText(
+            f'{total} strings | {package_count} package(s)\n'
+            f'{validated} validated | {translated} translated\n'
+            f'{progress} in progress | {original} original'
+        )
+        self.project_hint.setText('Use filters below to narrow the workspace. Select a row to edit it in the Inspector.')
+
+    def update_inspector_item(self, item):
+        self.__inspector_item = item
+        enabled = item is not None
+
+        self.inspector_apply.setEnabled(enabled)
+        self.inspector_reset.setEnabled(enabled)
+        self.inspector_edit.setEnabled(enabled)
+        self.inspector_translation.setEnabled(enabled)
+        self.inspector_comment.setEnabled(enabled)
+
+        if not enabled:
+            self.inspector_meta.setText('No string selected')
+            self.inspector_status.setText('Idle')
+            self.inspector_status.setProperty('state', 'idle')
+            self.inspector_original.setPlainText('')
+            self.inspector_translation.setPlainText('')
+            self.inspector_comment.setText('')
+            self.__refresh_inspector_status_style()
+            return
+
+        self.inspector_meta.setText(f'{item.id_hex} | {item.instance_hex}')
+        self.inspector_status.setText(INSPECTOR_STATUS.get(item.flag, 'Unknown'))
+        self.inspector_status.setProperty('state', str(item.flag))
+        self.inspector_original.setPlainText(text_to_edit(item.source))
+        self.inspector_translation.setPlainText(text_to_edit(item.translate))
+        self.inspector_comment.setText(item.comment)
+        self.__refresh_inspector_status_style()
+
+    def apply_inspector_translation(self):
+        item = self.__inspector_item
+        if item is None:
+            return
+
+        wrapped = self.__wrap_for_undo(item)
+        item.translate = text_to_stbl(self.inspector_translation.toPlainText())
+        item.comment = self.inspector_comment.text()
+        item.translate_old = None
+        item.flag = FLAG_VALIDATED
+        if wrapped:
+            undo.commit()
+        self.__sync_after_inspector_change(item)
+
+    def reset_inspector_translation(self):
+        item = self.__inspector_item
+        if item is None:
+            return
+
+        wrapped = self.__wrap_for_undo(item)
+        item.translate = item.source
+        item.translate_old = None
+        item.flag = FLAG_UNVALIDATED
+        if wrapped:
+            undo.commit()
+        self.__sync_after_inspector_change(item)
+
+    def __sync_after_inspector_change(self, item):
+        if app_state.packages_storage.enabled and hasattr(app_state.dictionaries_storage, 'update'):
+            app_state.dictionaries_storage.update(item)
+        self.colorbar.resfesh()
+        self.tableview.refresh()
+        self.update_workspace_summary()
+        self.update_inspector_item(item)
+
+    @staticmethod
+    def __wrap_for_undo(item):
+        storage = app_state.packages_storage
+        package = storage.find(item.package) if storage and item.package else None
+        if package:
+            undo.wrap(item)
+            return True
+        return False
+
+    def __refresh_inspector_status_style(self):
+        self.inspector_status.style().unpolish(self.inspector_status)
+        self.inspector_status.style().polish(self.inspector_status)
+        self.inspector_status.update()
 
     def group_change(self):
         self.action_group_original.setChecked(config.value('group', 'original'))

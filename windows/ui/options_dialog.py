@@ -175,12 +175,15 @@ class Ui_OptionsDialog(object):
 
         self.txt_pack_search = QLineEdit(self.tab_dictionaries)
         self.txt_pack_search.setObjectName('packSearch')
+        self.cb_pack_category = QComboBox(self.tab_dictionaries)
+        self.cb_pack_category.setObjectName('packCategory')
 
         self.lbl_pack_summary = QLabel(self.tab_dictionaries)
         self.lbl_pack_summary.setObjectName('packSummaryLabel')
         self.lbl_pack_summary.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
 
         layout_summary.addWidget(self.txt_pack_search, 1)
+        layout_summary.addWidget(self.cb_pack_category)
         layout_summary.addWidget(self.lbl_pack_summary)
 
         vlayout.addLayout(layout_summary)

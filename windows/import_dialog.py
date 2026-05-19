@@ -42,6 +42,11 @@ class ImportDialog(QDialog, Ui_ImportDialog):
 
     def retranslate(self):
         self.setWindowTitle(interface.text('ImportDialog', 'Import translate'))
+        self.header_title.setText(interface.text('ImportDialog', 'Import translate'))
+        self.header_detail.setText(interface.text(
+            'ImportDialog',
+            'Apply matching translations while keeping validated work protected.'
+        ))
         self.gb_overwrite.setTitle(interface.text('ImportDialog', 'Overwrite'))
         self.rb_all.setText(interface.text('ImportDialog', 'Everything'))
         self.rb_validated.setText(interface.text('ImportDialog', 'Everything but already validated strings'))

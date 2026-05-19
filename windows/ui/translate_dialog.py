@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtCore import QMetaObject
-from PySide6.QtWidgets import QComboBox, QGroupBox, QHBoxLayout, QPushButton, QRadioButton, QVBoxLayout, \
+from PySide6.QtWidgets import QComboBox, QFrame, QGroupBox, QHBoxLayout, QPushButton, QRadioButton, QVBoxLayout, \
     QLabel, QTextEdit
 
 
@@ -12,6 +12,20 @@ class Ui_TranslateDialog(object):
         TranslateDialog.setMinimumSize(590, 470)
 
         layout = QVBoxLayout(TranslateDialog)
+
+        self.header = QFrame(TranslateDialog)
+        self.header.setObjectName('dialogHeader')
+        header_layout = QVBoxLayout(self.header)
+        header_layout.setContentsMargins(12, 10, 12, 10)
+        header_layout.setSpacing(2)
+        self.header_title = QLabel('Batch translate', self.header)
+        self.header_title.setObjectName('dialogTitle')
+        self.header_detail = QLabel('Translate the chosen records in the background and keep the workspace responsive.', self.header)
+        self.header_detail.setObjectName('dialogHint')
+        self.header_detail.setWordWrap(True)
+        header_layout.addWidget(self.header_title)
+        header_layout.addWidget(self.header_detail)
+        layout.addWidget(self.header)
 
         gbox = QGroupBox(TranslateDialog)
         vlayout = QVBoxLayout(gbox)
