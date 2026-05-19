@@ -25,10 +25,10 @@ from utils.constants import *
 
 
 INSPECTOR_STATUS = {
-    FLAG_UNVALIDATED: 'Original',
-    FLAG_PROGRESS: 'In progress',
-    FLAG_VALIDATED: 'Validated',
-    FLAG_TRANSLATED: 'Translated',
+    FLAG_UNVALIDATED: 'Untranslated',
+    FLAG_PROGRESS: 'Needs review',
+    FLAG_VALIDATED: 'Approved',
+    FLAG_TRANSLATED: 'Draft',
     FLAG_REPLACED: 'Edited',
 }
 
@@ -238,7 +238,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_save.setText(interface.text('MainWindow', 'Save'))
         self.action_save_dictionary.setText(interface.text('MainWindow', 'Save dictionary'))
         self.action_replace.setText(interface.text('MainWindow', 'Search and replace...'))
-        self.action_validate_all_translations.setText(interface.text('MainWindow', 'Validate all translations'))
+        self.action_validate_all_translations.setText('Approve all translations')
         self.action_reset_all_translations.setText(interface.text('MainWindow', 'Reset all translations'))
         self.action_exit.setText(interface.text('MainWindow', 'Exit'))
         self.action_add_file.setText(interface.text('MainWindow', 'Add file...'))
@@ -278,13 +278,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_options.setTitle(interface.text('MainWindow', 'Options'))
         self.menu_group.setTitle(interface.text('MainWindow', 'Group'))
         self.menu_help.setTitle(interface.text('MainWindow', 'Help'))
-        self.brand_title.setText(APP_NAME)
-        self.brand_subtitle.setText('Mod localization workspace')
         self.filter_title.setText('Studio Filters')
         self.filter_hint.setText('Search, status and scope stay close to the table.')
         self.filter_search_label.setText('Search')
-        self.filter_search.setPlaceholderText('Search ID, Original, or Translated...')
-        self.filter_search.setToolTip('Search ID, original text, and translated text at the same time.')
+        self.filter_search.setPlaceholderText('Search ID, Original, or Translation...')
+        self.filter_search.setToolTip('Search ID, original text, and translation text at the same time.')
         self.filter_status_label.setText('Status')
         self.filter_scope_label.setText('Scope')
         self.command_scope_label.setText('Scope')
@@ -294,7 +292,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.workspace_hint.setText('Translation table')
         self.empty_title.setText('Ready for a package')
         self.empty_detail.setText('Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.')
-        self.inspector_apply.setText('Validate')
+        self.inspector_apply.setText('Approve')
         self.inspector_reset.setText('Reset')
         self.inspector_edit.setText('Open Editor')
         self.selection_preview_toggle.setText('Collapse preview' if self.__selection_preview_expanded else 'Expand preview')
@@ -328,19 +326,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__apply_workspace_density()
 
     def __workspace_density(self):
-        if self.height() < 900:
-            return 'short'
-        if self.width() < 1180:
-            return 'compact'
         return 'spacious'
 
     def __update_command_bar_density(self):
         if not hasattr(self, 'command_open'):
             return
 
-        density = self.__workspace_density()
-        compact = density != 'spacious'
-        self.__set_command_button_texts(compact=compact)
+        self.__set_command_button_texts()
         style = Qt.ToolButtonStyle.ToolButtonTextBesideIcon
         for button in (
                 self.command_open,
@@ -352,18 +344,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         ):
             button.setToolButtonStyle(style)
 
-        self.brand_title.setText('TS4+' if compact else APP_NAME)
-        self.brand_block.setVisible(not compact)
-        self.brand_subtitle.setVisible(not compact)
-        self.brand_badge.setVisible(not compact)
+        self.brand_block.setVisible(False)
+        self.brand_subtitle.setVisible(False)
+        self.brand_badge.setVisible(False)
         for label in (
                 self.command_file_label,
                 self.command_export_label,
                 self.command_translation_label,
         ):
-            label.setVisible(density == 'spacious')
+            label.setVisible(True)
 
-    def __set_command_button_texts(self, compact=False):
+    def __set_command_button_texts(self):
         dictionary_label = 'Save Dictionary'
         dictionary_tooltip = 'Save translated strings to dictionary for reuse'
         labels = (
@@ -392,7 +383,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__apply_filter_density(density)
         self.__apply_selection_density(density)
         if hasattr(self.activity_drawer, 'set_compact_mode'):
-            self.activity_drawer.set_compact_mode(density == 'short')
+            self.activity_drawer.set_compact_mode(False)
 
         if force:
             self.__set_workspace_toggle(
@@ -403,32 +394,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__sync_workspace_panels()
 
     def __apply_density_layout(self, density):
-        short = density == 'short'
-
-        self.central_layout.setContentsMargins(*(6, 6, 6, 6) if short else (8, 8, 8, 8))
-        self.central_layout.setSpacing(5 if short else 8)
-        self.command_layout.setContentsMargins(*(8, 6, 8, 6) if short else (14, 10, 14, 10))
-        self.command_layout.setSpacing(8 if short else 12)
-        self.action_hub_layout.setSpacing(6 if short else 8)
-        self.table_panel_layout.setSpacing(4 if short else 7)
-        self.workspace_overview_layout.setContentsMargins(*(10, 6, 10, 6) if short else (12, 9, 12, 9))
-        self.workspace_overview_layout.setSpacing(7 if short else 10)
-        self.empty_layout.setContentsMargins(*(12, 10, 12, 10) if short else (16, 14, 16, 14))
-        self.selection_layout.setContentsMargins(*(10, 5, 10, 5) if short else (12, 8, 12, 8))
-        self.selection_layout.setSpacing(5 if short else 7)
-        self.selection_header_layout.setSpacing(7 if short else 10)
-        preview_height = 76 if short else 112
+        self.central_layout.setContentsMargins(8, 8, 8, 8)
+        self.central_layout.setSpacing(8)
+        self.command_layout.setContentsMargins(14, 10, 14, 10)
+        self.command_layout.setSpacing(8)
+        self.action_hub_layout.setSpacing(8)
+        self.table_panel_layout.setSpacing(7)
+        self.workspace_overview_layout.setContentsMargins(12, 9, 12, 9)
+        self.workspace_overview_layout.setSpacing(10)
+        self.empty_layout.setContentsMargins(16, 14, 16, 14)
+        self.selection_layout.setContentsMargins(12, 8, 12, 8)
+        self.selection_layout.setSpacing(7)
+        self.selection_header_layout.setSpacing(10)
+        preview_height = 112
         self.selection_original_text.setMaximumHeight(preview_height)
         self.selection_translation_text.setMaximumHeight(preview_height)
-        self.workspace_hint.setVisible(not short)
+        self.workspace_hint.setVisible(True)
 
         for group in (
                 self.command_file_group,
                 self.command_translation_group,
                 self.command_export_group,
         ):
-            group.layout().setContentsMargins(*(6, 3, 6, 3) if short else (8, 5, 8, 5))
-        self.command_scope_layout.setContentsMargins(*(6, 3, 6, 3) if short else (8, 5, 8, 5))
+            group.layout().setContentsMargins(8, 5, 8, 5)
+        self.command_scope_layout.setContentsMargins(8, 5, 8, 5)
 
         self.__set_density_property(
             density,
@@ -453,150 +442,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.__filter_density_current == density:
             return
 
-        filter_widgets = (
-                self.filter_title,
-                self.filter_search_label,
-                self.filter_search,
-                self.filter_clear,
-                self.filter_status_label,
-                self.filter_all,
-                self.filter_original,
-                self.filter_translated,
-                self.filter_validated,
-                self.filter_progress,
-                self.filter_different,
-                self.filter_scope_label,
-                self.filter_file_label,
-                self.filter_file,
-                self.filter_instance_label,
-                self.filter_instance,
-        )
-        for layout in (self.filter_layout, self.command_scope_layout):
-            for widget in filter_widgets:
-                layout.removeWidget(widget)
-
-        if density == 'short':
-            self.command_scope_group.setVisible(False)
-            self.filter_layout.setContentsMargins(10, 6, 10, 6)
-            self.filter_layout.setHorizontalSpacing(7)
-            self.filter_layout.setVerticalSpacing(5)
-            for column in range(7):
-                self.filter_layout.setColumnStretch(column, 1)
-
-            self.filter_title.setVisible(False)
-            self.filter_search_label.setVisible(False)
-            self.filter_status_label.setVisible(False)
-            self.filter_scope_label.setVisible(False)
-            self.filter_file_label.setText('Package')
-            self.filter_instance_label.setText('Instance')
-
-            self.filter_layout.addWidget(self.filter_search, 0, 0, 1, 5)
-            self.filter_layout.addWidget(self.filter_clear, 0, 5, 1, 2)
-            self.filter_layout.addWidget(self.filter_all, 1, 0, 1, 2)
-            self.filter_layout.addWidget(self.filter_original, 1, 2, 1, 2)
-            self.filter_layout.addWidget(self.filter_translated, 1, 4, 1, 3)
-            self.filter_layout.addWidget(self.filter_validated, 2, 0, 1, 2)
-            self.filter_layout.addWidget(self.filter_progress, 2, 2, 1, 2)
-            self.filter_layout.addWidget(self.filter_different, 2, 4, 1, 3)
-            self.filter_layout.addWidget(self.filter_file_label, 3, 0)
-            self.filter_layout.addWidget(self.filter_file, 3, 1, 1, 3)
-            self.filter_layout.addWidget(self.filter_instance_label, 3, 4)
-            self.filter_layout.addWidget(self.filter_instance, 3, 5, 1, 2)
-        elif density == 'spacious':
-            self.command_scope_group.setVisible(True)
-            self.filter_layout.setContentsMargins(12, 7, 12, 7)
-            self.filter_layout.setHorizontalSpacing(8)
-            self.filter_layout.setVerticalSpacing(5)
-            for column in range(8):
-                self.filter_layout.setColumnStretch(column, 0)
-            self.filter_layout.setColumnStretch(2, 2)
-            self.filter_layout.setColumnStretch(3, 2)
-            self.filter_layout.setColumnStretch(4, 2)
-            self.filter_layout.setColumnStretch(5, 2)
-
-            for widget in (
-                    self.filter_title,
-                    self.filter_search_label,
-                    self.filter_status_label,
-            ):
-                widget.setVisible(True)
-            self.filter_scope_label.setVisible(False)
-            self.filter_file_label.setText('Package')
-            self.filter_instance_label.setText('Instance')
-
-            self.filter_layout.addWidget(self.filter_title, 0, 0)
-            self.filter_layout.addWidget(self.filter_search_label, 0, 1)
-            self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 6)
-            self.filter_layout.addWidget(self.filter_status_label, 1, 0)
-            self.filter_layout.addWidget(self.filter_all, 1, 1)
-            self.filter_layout.addWidget(self.filter_original, 1, 2)
-            self.filter_layout.addWidget(self.filter_translated, 1, 3)
-            self.filter_layout.addWidget(self.filter_validated, 1, 4)
-            self.filter_layout.addWidget(self.filter_progress, 1, 5)
-
-            self.command_scope_layout.addWidget(self.command_scope_label, 0, 0)
-            self.command_scope_layout.addWidget(self.filter_file_label, 0, 1)
-            self.command_scope_layout.addWidget(self.filter_file, 0, 2)
-            self.command_scope_layout.addWidget(self.filter_instance_label, 0, 3)
-            self.command_scope_layout.addWidget(self.filter_instance, 0, 4)
-            self.command_scope_layout.addWidget(self.filter_different, 0, 5)
-            self.command_scope_layout.addWidget(self.filter_clear, 0, 6)
-        else:
-            self.command_scope_group.setVisible(False)
-            self.filter_layout.setContentsMargins(12, 7, 12, 7)
-            self.filter_layout.setHorizontalSpacing(8)
-            self.filter_layout.setVerticalSpacing(5)
-            for column in range(8):
-                self.filter_layout.setColumnStretch(column, 0)
-            self.filter_layout.setColumnStretch(2, 2)
-            self.filter_layout.setColumnStretch(3, 2)
-            self.filter_layout.setColumnStretch(4, 2)
-            self.filter_layout.setColumnStretch(6, 1)
-            self.filter_layout.setColumnStretch(7, 1)
-
-            for widget in (
-                    self.filter_title,
-                    self.filter_search_label,
-                    self.filter_status_label,
-                    self.filter_scope_label,
-            ):
-                widget.setVisible(True)
-            self.filter_file_label.setText('Package')
-            self.filter_instance_label.setText('Instance')
-
-            self.filter_layout.addWidget(self.filter_title, 0, 0)
-            self.filter_layout.addWidget(self.filter_search_label, 0, 1)
-            self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 4)
-            self.filter_layout.addWidget(self.filter_clear, 0, 6, 1, 2)
-            self.filter_layout.addWidget(self.filter_status_label, 1, 0)
-            self.filter_layout.addWidget(self.filter_all, 1, 1)
-            self.filter_layout.addWidget(self.filter_original, 1, 2)
-            self.filter_layout.addWidget(self.filter_translated, 1, 3)
-            self.filter_layout.addWidget(self.filter_validated, 1, 4)
-            self.filter_layout.addWidget(self.filter_progress, 1, 5)
-            self.filter_layout.addWidget(self.filter_different, 1, 6, 1, 2)
-            self.filter_layout.addWidget(self.filter_scope_label, 2, 0)
-            self.filter_layout.addWidget(self.filter_file_label, 2, 1)
-            self.filter_layout.addWidget(self.filter_file, 2, 2, 1, 3)
-            self.filter_layout.addWidget(self.filter_instance_label, 2, 5)
-            self.filter_layout.addWidget(self.filter_instance, 2, 6, 1, 2)
+        self.command_scope_group.setVisible(True)
+        self.filter_layout.setContentsMargins(12, 7, 12, 7)
+        self.filter_layout.setHorizontalSpacing(8)
+        self.filter_layout.setVerticalSpacing(5)
+        for column in range(8):
+            self.filter_layout.setColumnStretch(column, 0)
+        self.filter_layout.setColumnStretch(2, 2)
+        self.filter_layout.setColumnStretch(3, 2)
+        self.filter_layout.setColumnStretch(4, 2)
+        self.filter_layout.setColumnStretch(5, 2)
 
         for widget in (
-                self.filter_file_label,
-                self.filter_instance_label,
+                self.filter_title,
+                self.filter_search_label,
+                self.filter_status_label,
                 self.filter_search,
-                self.filter_clear,
                 self.filter_all,
                 self.filter_original,
                 self.filter_translated,
                 self.filter_validated,
                 self.filter_progress,
-                self.filter_different,
+                self.filter_file_label,
                 self.filter_file,
+                self.filter_instance_label,
                 self.filter_instance,
+                self.filter_different,
+                self.filter_clear,
         ):
             widget.setVisible(True)
-        self.command_scope_label.setVisible(density == 'spacious')
+        self.filter_scope_label.setVisible(False)
+        self.filter_file_label.setText('Package')
+        self.filter_instance_label.setText('Instance')
+        self.command_scope_label.setVisible(True)
         self.filter_search_mode.setVisible(False)
 
         self.__filter_density_current = density
@@ -1142,20 +1020,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.workspace_summary.setText(
             f'{self.__format_filter_count(visible, compact=True)}/{self.__format_filter_count(total, compact=True)} shown | '
-            f'{package_count} pkg | {self.__format_filter_count(validated, compact=True)} valid | '
-            f'{self.__format_filter_count(translated, compact=True)} translated | '
-            f'{self.__format_filter_count(progress, compact=True)} progress | '
-            f'{self.__format_filter_count(original, compact=True)} original'
+            f'{package_count} pkg | {self.__format_filter_count(validated, compact=True)} approved | '
+            f'{self.__format_filter_count(translated, compact=True)} draft | '
+            f'{self.__format_filter_count(progress, compact=True)} review | '
+            f'{self.__format_filter_count(original, compact=True)} untranslated'
         )
         self.workspace_summary.setToolTip(
             f'{visible:,}/{total:,} shown\n'
             f'{package_count:,} package(s)\n'
-            f'{validated:,} valid\n'
-            f'{translated:,} translated\n'
-            f'{progress:,} progress\n'
-            f'{original:,} original'
+            f'{validated:,} approved\n'
+            f'{translated:,} draft\n'
+            f'{progress:,} needs review\n'
+            f'{original:,} untranslated'
         )
-        self.workspace_hint.setText('Filter above, double-click or use Open Editor')
+        self.workspace_hint.setText('Workspace stats')
         self.__update_filter_counts(items)
 
     def __update_filter_counts(self, items):
@@ -1168,17 +1046,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             'progress': sum(1 for item in items if item.flag in (FLAG_PROGRESS, FLAG_REPLACED)),
             'different': sum(1 for item in items if item.source_old or item.translate_old),
         }
-        compact = self.__workspace_density_current == 'short'
         labels = (
             (self.filter_all, 'All', counts['all']),
-            (self.filter_original, 'Original', counts['original']),
-            (self.filter_translated, 'Translated', counts['translated']),
-            (self.filter_validated, 'Validated', counts['validated']),
-            (self.filter_progress, 'In progress', counts['progress']),
-            (self.filter_different, 'Changed', counts['different']),
+            (self.filter_original, 'Untranslated', counts['original']),
+            (self.filter_translated, 'Draft', counts['translated']),
+            (self.filter_validated, 'Approved', counts['validated']),
+            (self.filter_progress, 'Needs review', counts['progress']),
+            (self.filter_different, 'Modified only', counts['different']),
         )
         for button, label, value in labels:
-            button.setText(f'{label} {self.__format_filter_count(value, compact=compact)}')
+            button.setText(f'{label} {self.__format_filter_count(value, compact=True)}')
             button.setToolTip(f'{label}: {value:,}')
 
     @staticmethod
@@ -1356,12 +1233,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         context_menu.addSeparator()
 
-        validate_2_action = context_menu.addAction(QIcon(':/images/validate_2.png'),
-                                                   interface.text('MainWindow', 'Validate as [translated]'))
+        validate_2_action = context_menu.addAction(QIcon(':/images/validate_2.png'), 'Approve')
         validate_2_action.setShortcut('F1')
 
-        validate_1_action = context_menu.addAction(QIcon(':/images/validate_1.png'),
-                                                   interface.text('MainWindow', 'Validate as [work in progress]'))
+        validate_1_action = context_menu.addAction(QIcon(':/images/validate_1.png'), 'Mark as needs review')
         validate_1_action.setShortcut('F2')
 
         validate_0_action = context_menu.addAction(QIcon(':/images/validate_0.png'),

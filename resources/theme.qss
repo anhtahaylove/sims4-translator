@@ -363,6 +363,18 @@ QToolBar::separator {
     border-radius: 8px;
 }
 
+#workspaceStatsBar {
+    background: transparent;
+    border: none;
+}
+
+#workspaceSummaryBlock {
+    background: __PANEL__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 10px;
+    padding: 6px 10px;
+}
+
 #workspaceSummary {
     color: __TEXT__;
     font-weight: 600;

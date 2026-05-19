@@ -75,12 +75,12 @@ class QToolBar(ToolBar):
         self.retranslate()
 
     def retranslate(self):
-        self.search_toggle.setToolTip(interface.text('ToolBar', 'Search in original'))
-        self.filter_validate_0.setToolTip(interface.text('ToolBar', 'Not translated'))
-        self.filter_validate_1.setToolTip(interface.text('ToolBar', 'Partial translation'))
-        self.filter_validate_2.setToolTip(interface.text('ToolBar', 'Validated translation'))
-        self.filter_validate_3.setToolTip(interface.text('ToolBar', 'Translated'))
-        self.filter_validate_4.setToolTip(interface.text('ToolBar', 'Different strings'))
+        self.search_toggle.setToolTip('Search ID, original and translation')
+        self.filter_validate_0.setToolTip('Untranslated')
+        self.filter_validate_1.setToolTip('Needs review')
+        self.filter_validate_2.setToolTip('Approved')
+        self.filter_validate_3.setToolTip('Draft')
+        self.filter_validate_4.setToolTip('Modified strings')
 
         self.edt_search.setPlaceholderText(interface.text('ToolBar', 'Search...'))
         self.cb_instances.setItemText(0, interface.text('ToolBar', '-- All instances --'))

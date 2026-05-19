@@ -14,10 +14,10 @@ from utils.constants import *
 
 
 STATUS_LABELS = {
-    FLAG_UNVALIDATED: 'Original',
-    FLAG_PROGRESS: 'In progress',
-    FLAG_VALIDATED: 'Validated',
-    FLAG_TRANSLATED: 'Translated',
+    FLAG_UNVALIDATED: 'Untranslated',
+    FLAG_PROGRESS: 'Needs review',
+    FLAG_VALIDATED: 'Approved',
+    FLAG_TRANSLATED: 'Draft',
     FLAG_REPLACED: 'Edited',
 }
 

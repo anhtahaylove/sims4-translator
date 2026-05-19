@@ -23,10 +23,10 @@ from widgets.token_highlight import (
 
 
 STATUS_META = {
-    FLAG_UNVALIDATED: ('Original', '#d6c76a'),
-    FLAG_PROGRESS: ('In progress', '#ffd45a'),
-    FLAG_VALIDATED: ('Validated', '#6ef56a'),
-    FLAG_TRANSLATED: ('Translated', '#3ddcff'),
+    FLAG_UNVALIDATED: ('Untranslated', '#d6c76a'),
+    FLAG_PROGRESS: ('Needs review', '#ffd45a'),
+    FLAG_VALIDATED: ('Approved', '#6ef56a'),
+    FLAG_TRANSLATED: ('Draft', '#3ddcff'),
     FLAG_REPLACED: ('Edited', '#f4a7df'),
 }
 

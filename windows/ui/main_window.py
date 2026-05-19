@@ -238,9 +238,9 @@ class Ui_MainWindow(object):
 
         self.command_bar = QFrame(MainWindow)
         self.command_bar.setObjectName('studioHeader')
-        self.command_layout = QHBoxLayout(self.command_bar)
+        self.command_layout = QVBoxLayout(self.command_bar)
         self.command_layout.setContentsMargins(14, 10, 14, 10)
-        self.command_layout.setSpacing(12)
+        self.command_layout.setSpacing(8)
 
         self.brand_block = QFrame(self.command_bar)
         brand_layout = QVBoxLayout(self.brand_block)
@@ -256,6 +256,7 @@ class Ui_MainWindow(object):
         self.brand_badge = QLabel('Studio', self.brand_block)
         self.brand_badge.setObjectName('studioBadge')
         brand_layout.addWidget(self.brand_badge)
+        self.brand_block.setVisible(False)
 
         self.command_open = self.__command_button(self.action_load_file)
         self.command_save = self.__command_button(self.action_save)
@@ -296,8 +297,7 @@ class Ui_MainWindow(object):
         self.action_hub_layout.addWidget(self.command_export_group)
         self.action_hub_layout.addStretch()
 
-        self.command_layout.addWidget(self.brand_block)
-        self.command_layout.addWidget(self.action_hub, 1)
+        self.command_layout.addWidget(self.action_hub)
 
         self.toolbar = QToolBar(MainWindow)
         self.toolbar.setObjectName('filterBar')
@@ -432,7 +432,6 @@ class Ui_MainWindow(object):
         self.filter_panel = self.__filter_board(self.workspace_overview)
         self.filter_panel.setMinimumWidth(640)
 
-        self.workspace_overview_layout.addWidget(self.workspace_summary_block)
         self.workspace_overview_layout.addWidget(self.filter_panel, 1)
 
         self.empty_state = QFrame(panel)
@@ -456,7 +455,16 @@ class Ui_MainWindow(object):
         self.table_panel_layout.addWidget(self.empty_state)
         self.table_panel_layout.addWidget(self.selection_bar)
         self.table_panel_layout.addWidget(self.colorbar)
+        self.workspace_stats_bar = QFrame(panel)
+        self.workspace_stats_bar.setObjectName('workspaceStatsBar')
+        self.workspace_stats_layout = QHBoxLayout(self.workspace_stats_bar)
+        self.workspace_stats_layout.setContentsMargins(12, 5, 12, 5)
+        self.workspace_stats_layout.setSpacing(8)
+        self.workspace_stats_layout.addStretch()
+        self.workspace_stats_layout.addWidget(self.workspace_summary_block)
+
         self.table_panel_layout.addWidget(self.tableview, 1)
+        self.table_panel_layout.addWidget(self.workspace_stats_bar)
         return panel
 
     def __selection_bar(self, parent):
@@ -482,7 +490,7 @@ class Ui_MainWindow(object):
         self.selection_status.setMinimumWidth(92)
         self.selection_status.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.selection_validate = QPushButton('Validate', bar)
+        self.selection_validate = QPushButton('Approve', bar)
         self.selection_validate.setObjectName('primaryButton')
         self.selection_reset = QPushButton('Reset', bar)
         self.selection_reset.setObjectName('secondaryButton')
@@ -578,11 +586,11 @@ class Ui_MainWindow(object):
         self.filter_status_label = QLabel('Status', board)
         self.filter_status_label.setObjectName('sectionLabel')
         self.filter_all = self.__filter_chip('All')
-        self.filter_original = self.__filter_chip('Original')
-        self.filter_translated = self.__filter_chip('Translated')
-        self.filter_validated = self.__filter_chip('Validated')
-        self.filter_progress = self.__filter_chip('In progress')
-        self.filter_different = self.__filter_chip('Changed')
+        self.filter_original = self.__filter_chip('Untranslated')
+        self.filter_translated = self.__filter_chip('Draft')
+        self.filter_validated = self.__filter_chip('Approved')
+        self.filter_progress = self.__filter_chip('Needs review')
+        self.filter_different = self.__filter_chip('Modified only')
         self.filter_different.setChecked(False)
 
         self.filter_scope_label = QLabel('Scope', board)
@@ -599,13 +607,13 @@ class Ui_MainWindow(object):
 
         self.filter_layout.addWidget(self.filter_title, 0, 0)
         self.filter_layout.addWidget(self.filter_search_label, 0, 1)
-        self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 4)
+        self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 5)
         self.filter_layout.addWidget(self.filter_status_label, 1, 0)
-        self.filter_layout.addWidget(self.filter_all, 1, 1, 1, 2)
-        self.filter_layout.addWidget(self.filter_original, 1, 3, 1, 2)
-        self.filter_layout.addWidget(self.filter_translated, 1, 5, 1, 2)
-        self.filter_layout.addWidget(self.filter_validated, 2, 1, 1, 3)
-        self.filter_layout.addWidget(self.filter_progress, 2, 4, 1, 3)
+        self.filter_layout.addWidget(self.filter_all, 1, 1)
+        self.filter_layout.addWidget(self.filter_original, 1, 2)
+        self.filter_layout.addWidget(self.filter_translated, 1, 3)
+        self.filter_layout.addWidget(self.filter_validated, 1, 4)
+        self.filter_layout.addWidget(self.filter_progress, 1, 5, 1, 2)
 
         return board
 
@@ -631,4 +639,4 @@ class Ui_MainWindow(object):
         self.command_scope_layout.setColumnStretch(2, 2)
         self.command_scope_layout.setColumnStretch(4, 1)
 
-        self.command_layout.addWidget(self.command_scope_group, 2)
+        self.command_layout.addWidget(self.command_scope_group)
