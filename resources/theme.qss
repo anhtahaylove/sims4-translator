@@ -137,7 +137,7 @@ QToolBar::separator {
 
 #studioHeader,
 #commandBar {
-    background: __PANEL__;
+    background: __PANEL_ALT__;
     border: 1px solid __BORDER__;
     border-radius: 12px;
 }
@@ -158,9 +158,9 @@ QToolBar::separator {
 }
 
 #studioBadge {
-    color: __ACCENT__;
-    background: __SURFACE__;
-    border: 1px solid __BORDER_LIGHT__;
+    color: __SURFACE__;
+    background: __ACCENT__;
+    border: 1px solid __ACCENT_HOVER__;
     border-radius: 999px;
     padding: 2px 8px;
     font-size: 10px;
@@ -184,14 +184,14 @@ QToolBar::separator {
 
 #studioActionGroup,
 #commandGroup {
-    background: __SURFACE__;
+    background: __PANEL__;
     border: 1px solid __BORDER_LIGHT__;
     border-radius: 10px;
 }
 
 #studioActionGroup:hover,
 #commandGroup:hover {
-    border-color: __BORDER__;
+    border-color: __ACCENT__;
     background: __PANEL_ALT__;
 }
 
@@ -215,14 +215,14 @@ QToolBar::separator {
 #studioCommandButton:hover,
 #commandButton:hover {
     background: __PANEL_RAISED__;
-    border-color: __BORDER__;
+    border-color: __ACCENT__;
 }
 
 #studioCommandButton:pressed,
 #studioCommandButton:checked,
 #commandButton:pressed,
 #commandButton:checked {
-    background: __PANEL_ALT__;
+    background: __PANEL_RAISED__;
     border-color: __ACCENT__;
 }
 
@@ -261,8 +261,8 @@ QToolBar::separator {
 #studioWorkspaceToggle:checked,
 #workspaceToggle:checked {
     border-color: __ACCENT__;
-    background: __SELECTION__;
-    color: __TEXT__;
+    background: __ACCENT__;
+    color: __SURFACE__;
 }
 
 #tablePanel {
@@ -292,7 +292,7 @@ QToolBar::separator {
 
 #selectionBar[active="true"] {
     border-color: __ACCENT__;
-    background: __PANEL_ALT__;
+    background: __PANEL_RAISED__;
 }
 
 #selectionMeta {
@@ -314,9 +314,9 @@ QToolBar::separator {
 
 #selectionStatus[state="2"],
 #selectionStatus[state="3"] {
-    background: __PANEL_RAISED__;
+    background: __ACCENT__;
     border-color: __ACCENT__;
-    color: __TEXT__;
+    color: __SURFACE__;
 }
 
 #selectionStatus[state="0"] {
@@ -404,7 +404,7 @@ QToolBar::separator {
     min-width: 0;
     min-height: 26px;
     border-color: __BORDER_LIGHT__;
-    background: __SURFACE__;
+    background: __PANEL_ALT__;
     color: __TEXT__;
 }
 
@@ -431,15 +431,15 @@ QToolBar::separator {
 }
 
 #filterChip:hover {
-    border-color: __BORDER__;
+    border-color: __ACCENT__;
     background: __PANEL_ALT__;
     color: __TEXT__;
 }
 
 #filterChip:checked {
     border-color: __ACCENT__;
-    background: __PANEL_RAISED__;
-    color: __TEXT__;
+    background: __ACCENT__;
+    color: __SURFACE__;
 }
 
 #secondaryButton {
@@ -476,7 +476,7 @@ QToolBar::separator {
 #primaryButton {
     border-color: __BUTTON_DEFAULT__;
     background: __BUTTON_DEFAULT__;
-    color: #fff;
+    color: __SURFACE__;
 }
 
 #primaryButton:hover,
@@ -504,7 +504,7 @@ QToolBar::separator {
 
 #sheetHeader,
 #editHeader {
-    background: __PANEL_ALT__;
+    background: __PANEL_RAISED__;
 }
 
 #editResource {
@@ -537,7 +537,7 @@ QToolBar::separator {
 #sheetPrimary {
     border-color: __BUTTON_DEFAULT__;
     background: __BUTTON_DEFAULT__;
-    color: #fff;
+    color: __SURFACE__;
     min-width: 116px;
 }
 
@@ -610,7 +610,7 @@ QPushButton::menu-indicator:disabled {
 }
 QPushButton::default {
     border: 1px solid __BUTTON_DEFAULT__;
-    color: #fff;
+    color: __SURFACE__;
     background-color: __BUTTON_DEFAULT__;
 }
 QPushButton::default:focus,
@@ -894,7 +894,7 @@ QMenu::right-arrow:disabled {
 QHeaderView {
     border: none;
     border-bottom: 1px solid __BORDER_LIGHT__;
-    background-color: __SURFACE__;
+    background-color: __HEADER__;
     color: __TEXT__;
     border-radius: 0;
     min-width: 30px;
@@ -902,7 +902,7 @@ QHeaderView {
 QHeaderView::section {
     border: none;
     border-right: 1px solid __BORDER_LIGHT__;
-    background-color: __SURFACE__;
+    background-color: __HEADER__;
     color: __TEXT__;
     border-radius: 0;
     height: 32px;
@@ -916,7 +916,7 @@ QHeaderView::section:last {
     border: none;
 }
 QHeaderView::section:hover {
-    background-color: __PANEL_ALT__;
+    background-color: __PANEL_RAISED__;
 }
 QHeaderView::down-arrow,
 QHeaderView::up-arrow {
@@ -975,6 +975,12 @@ QProgressBar::chunk {
 
 #jobDrawerToggle:hover {
     border-color: __ACCENT__;
+}
+
+#jobDrawerToggle:checked {
+    color: __SURFACE__;
+    background: __ACCENT__;
+    border-color: __ACCENT_HOVER__;
 }
 
 #jobStatusLabel,

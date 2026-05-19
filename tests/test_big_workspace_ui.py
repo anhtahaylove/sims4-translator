@@ -8,6 +8,7 @@ os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtWidgets import QApplication, QStyleOptionViewItem
 
+import themes.balanced as balanced
 from packer.resource import ResourceID
 from singletons.config import config
 from singletons.interface import interface
@@ -17,6 +18,8 @@ from storages.packages import PackagesStorage
 from storages.records import MainRecord
 from utils.constants import (
     FLAG_PROGRESS,
+    FLAG_REPLACED,
+    FLAG_TRANSLATED,
     FLAG_UNVALIDATED,
     FLAG_VALIDATED,
     RECORD_MAIN_ID,
@@ -29,7 +32,7 @@ from windows.import_dialog import ImportDialog
 from windows.main_window import MainWindow
 from windows.options_dialog import OptionsDialog
 from windows.translate_dialog import TranslateDialog
-from widgets.delegate import MainDelegatePaint
+from widgets.delegate import MainDelegatePaint, STATUS_META
 
 
 def app():
@@ -78,6 +81,29 @@ class FakeWheelEvent:
 
     def ignore(self):
         self.ignored = True
+
+
+def hex_to_rgb(value):
+    value = value.lstrip('#')
+    return tuple(int(value[i:i + 2], 16) / 255 for i in (0, 2, 4))
+
+
+def relative_luminance(value):
+    channels = []
+    for channel in hex_to_rgb(value):
+        if channel <= 0.03928:
+            channels.append(channel / 12.92)
+        else:
+            channels.append(((channel + 0.055) / 1.055) ** 2.4)
+    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+
+
+def contrast_ratio(foreground, background):
+    foreground_luminance = relative_luminance(foreground)
+    background_luminance = relative_luminance(background)
+    lighter = max(foreground_luminance, background_luminance)
+    darker = min(foreground_luminance, background_luminance)
+    return (lighter + 0.05) / (darker + 0.05)
 
 
 class WorkspaceProShellTests(unittest.TestCase):
@@ -231,6 +257,24 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(delegate.sizeHint(QStyleOptionViewItem(), QModelIndex()).height(), 38)
         finally:
             close_widget(window)
+
+    def test_sims_inspired_theme_tokens_keep_readable_contrast(self):
+        self.assertEqual(balanced.ACCENT, '#7dff5a')
+        self.assertEqual(balanced.BORDER_FOCUS, '#40dfff')
+        self.assertEqual(balanced.BUTTON_DEFAULT, '#009fe3')
+        self.assertEqual(balanced.UNVALIDATED_BAR, '#d5b75e')
+
+        self.assertGreaterEqual(contrast_ratio(balanced.TEXT, balanced.SURFACE), 4.5)
+        self.assertGreaterEqual(contrast_ratio(balanced.TEXT_MUTED, balanced.SURFACE), 4.5)
+        self.assertGreaterEqual(contrast_ratio(balanced.SURFACE, balanced.ACCENT), 4.5)
+        self.assertGreaterEqual(contrast_ratio(balanced.SURFACE, balanced.BUTTON_DEFAULT), 4.5)
+        self.assertGreaterEqual(contrast_ratio(balanced.TEXT, balanced.SELECTION), 4.5)
+
+        self.assertEqual(STATUS_META[FLAG_UNVALIDATED][1], balanced.UNVALIDATED_BAR)
+        self.assertEqual(STATUS_META[FLAG_PROGRESS][1], balanced.WARNING)
+        self.assertEqual(STATUS_META[FLAG_VALIDATED][1], balanced.SUCCESS)
+        self.assertEqual(STATUS_META[FLAG_TRANSLATED][1], balanced.BORDER_FOCUS)
+        self.assertEqual(STATUS_META[FLAG_REPLACED][1], balanced.EDITOR_FEMALE)
 
     def test_large_filter_counts_are_readable_in_table_filter_board(self):
         window = MainWindow()
