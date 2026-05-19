@@ -6,7 +6,6 @@ import unittest
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
 from PySide6.QtCore import QModelIndex, Qt
-from PySide6.QtGui import QTextOption
 from PySide6.QtWidgets import QApplication, QStyleOptionViewItem
 
 from packer.resource import ResourceID
@@ -89,112 +88,92 @@ class WorkspaceProShellTests(unittest.TestCase):
         interface.reload()
         config.set_value('translation', 'source', 'ENG_US')
         config.set_value('translation', 'destination', 'FRE_FR')
+        config.set_value('view', 'activity_visible', True)
         app_state.set_packages_storage(PackagesStorage())
         app_state.set_dictionaries_storage(DictionariesStorage())
 
     def test_main_window_creates_workspace_pro_shell_without_losing_legacy_actions(self):
         window = MainWindow()
         try:
-            self.assertEqual(window.project_sidebar.objectName(), 'projectSidebar')
-            self.assertEqual(window.project_scroll.objectName(), 'projectSidebarScroll')
             self.assertEqual(window.command_bar.objectName(), 'studioHeader')
             self.assertEqual(window.action_hub.objectName(), 'studioActionHub')
             self.assertEqual(window.filter_panel.objectName(), 'studioFilterTray')
             self.assertIs(window.filter_panel.parent(), window.table_panel)
+            self.assertEqual(window.selection_bar.objectName(), 'selectionBar')
             self.assertEqual(window.workspace_overview.objectName(), 'workspaceOverview')
             self.assertEqual(window.filter_search.objectName(), 'filterSearch')
-            self.assertEqual(window.inspector_panel.objectName(), 'focusEditor')
-            self.assertIs(window.focus_editor_panel, window.inspector_panel)
-            self.assertEqual(window.inspector_scroll.objectName(), 'inspectorScroll')
-            self.assertEqual(window.workspace_splitter.objectName(), 'workspaceSplitter')
             self.assertIs(window.activity_drawer, window.job_drawer)
-            self.assertEqual(window.workspace_project_toggle.objectName(), 'studioWorkspaceToggle')
-            self.assertEqual(window.workspace_inspector_toggle.objectName(), 'studioWorkspaceToggle')
             self.assertEqual(window.workspace_activity_toggle.objectName(), 'studioWorkspaceToggle')
             self.assertEqual(window.command_file_group.objectName(), 'studioActionGroup')
             self.assertEqual(window.command_export_group.objectName(), 'studioActionGroup')
             self.assertEqual(window.command_translation_group.objectName(), 'studioActionGroup')
-            self.assertEqual(window.command_workspace_group.objectName(), 'studioActionGroup')
+            self.assertEqual(window.command_activity_group.objectName(), 'studioActionGroup')
             self.assertEqual(window.command_tools_group.objectName(), 'studioActionGroup')
+            self.assertFalse(hasattr(window, 'project_sidebar'))
+            self.assertFalse(hasattr(window, 'inspector_panel'))
+            self.assertFalse(hasattr(window, 'workspace_splitter'))
+            self.assertFalse(hasattr(window, 'workspace_project_toggle'))
+            self.assertFalse(hasattr(window, 'workspace_inspector_toggle'))
             self.assertIs(window.filter_search, window.toolbar.edt_search)
             self.assertIs(window.filter_file, window.toolbar.cb_files)
             self.assertIs(window.filter_instance, window.toolbar.cb_instances)
             self.assertIsNot(window.filter_search.parent(), window.toolbar)
-            self.assertIs(window.command_open.defaultAction(), window.action_load_file)
-            self.assertIs(window.command_translate.defaultAction(), window.action_translate)
+            self.assertEqual(window.command_open.property('commandLabel'), 'Open')
+            self.assertEqual(window.command_translate.property('commandLabel'), 'Translate')
             self.assertFalse(window.inspector_apply.isEnabled())
         finally:
             close_widget(window)
 
-    def test_minimum_window_prioritizes_table_and_panel_toggles(self):
+    def test_minimum_window_prioritizes_table_and_keeps_activity_visible(self):
         window = MainWindow()
         try:
             window.resize(window.minimumSize())
             window.show()
             app().processEvents()
 
-            self.assertFalse(window.project_sidebar.isVisibleTo(window))
-            self.assertFalse(window.inspector_panel.isVisibleTo(window))
-            self.assertFalse(window.activity_drawer.isVisibleTo(window))
+            self.assertTrue(window.activity_drawer.isVisibleTo(window))
             self.assertTrue(window.table_panel.isVisibleTo(window))
             self.assertTrue(window.tableview.isVisibleTo(window))
-            self.assertTrue(window.workspace_project_toggle.isVisibleTo(window))
-            self.assertTrue(window.workspace_inspector_toggle.isVisibleTo(window))
             self.assertTrue(window.workspace_activity_toggle.isVisibleTo(window))
         finally:
             close_widget(window)
 
-    def test_workspace_density_defaults_for_wide_medium_and_small(self):
+    def test_activity_visibility_persists_through_config(self):
         window = MainWindow()
         try:
-            window.resize(1360, 760)
             window.show()
             app().processEvents()
 
-            self.assertFalse(window.project_sidebar.isVisibleTo(window))
-            self.assertFalse(window.inspector_panel.isVisibleTo(window))
-            self.assertFalse(window.activity_drawer.isVisibleTo(window))
-            self.assertTrue(window.table_panel.isVisibleTo(window))
-
-            window.resize(1640, 820)
-            app().processEvents()
-
-            self.assertFalse(window.project_sidebar.isVisibleTo(window))
-            self.assertTrue(window.inspector_panel.isVisibleTo(window))
             self.assertTrue(window.activity_drawer.isVisibleTo(window))
-
-            window.resize(window.minimumSize())
+            window.workspace_activity_toggle.setChecked(False)
             app().processEvents()
 
-            self.assertFalse(window.project_sidebar.isVisibleTo(window))
-            self.assertFalse(window.inspector_panel.isVisibleTo(window))
             self.assertFalse(window.activity_drawer.isVisibleTo(window))
-            self.assertTrue(window.table_panel.isVisibleTo(window))
+            self.assertFalse(config.value('view', 'activity_visible'))
         finally:
             close_widget(window)
 
-    def test_workspace_panel_toggles_reopen_collapsed_drawers_without_mutating_records(self):
+        restored = MainWindow()
+        try:
+            restored.show()
+            app().processEvents()
+
+            self.assertFalse(restored.activity_drawer.isVisibleTo(restored))
+        finally:
+            config.set_value('view', 'activity_visible', True)
+            close_widget(restored)
+
+    def test_activity_toggle_does_not_mutate_selected_record(self):
         window = MainWindow()
         item = record()
         before = list(item)
         try:
             window.update_inspector_item(item)
-            window.resize(window.minimumSize())
             window.show()
             app().processEvents()
 
-            window.workspace_project_toggle.setChecked(True)
+            window.workspace_activity_toggle.setChecked(False)
             app().processEvents()
-
-            self.assertTrue(window.project_sidebar.isVisibleTo(window))
-            self.assertFalse(window.inspector_panel.isVisibleTo(window))
-
-            window.workspace_inspector_toggle.setChecked(True)
-            app().processEvents()
-
-            self.assertFalse(window.project_sidebar.isVisibleTo(window))
-            self.assertTrue(window.inspector_panel.isVisibleTo(window))
-
             window.workspace_activity_toggle.setChecked(True)
             app().processEvents()
 
@@ -203,7 +182,7 @@ class WorkspaceProShellTests(unittest.TestCase):
         finally:
             close_widget(window)
 
-    def test_command_bar_switches_to_icon_only_at_minimum_width(self):
+    def test_command_bar_keeps_icon_and_text_at_minimum_width(self):
         window = MainWindow()
         try:
             window.resize(window.minimumSize())
@@ -212,16 +191,21 @@ class WorkspaceProShellTests(unittest.TestCase):
 
             self.assertEqual(
                 window.command_open.toolButtonStyle(),
-                Qt.ToolButtonStyle.ToolButtonIconOnly
+                Qt.ToolButtonStyle.ToolButtonTextBesideIcon
             )
             self.assertEqual(
                 window.command_options.toolButtonStyle(),
-                Qt.ToolButtonStyle.ToolButtonIconOnly
+                Qt.ToolButtonStyle.ToolButtonTextBesideIcon
             )
+            self.assertEqual(window.command_open.text(), 'Open')
+            self.assertEqual(window.command_import.text(), 'Import')
+            self.assertEqual(window.command_translate.text(), 'Translate')
+            self.assertEqual(window.command_dictionary.text(), 'Dict')
 
-            self.assertEqual(window.brand_title.text(), 'TS4 Translator Plus')
+            self.assertEqual(window.brand_title.text(), 'TS4+')
+            self.assertFalse(window.brand_block.isVisibleTo(window))
             self.assertFalse(window.command_file_label.isVisibleTo(window))
-            self.assertFalse(window.command_workspace_label.isVisibleTo(window))
+            self.assertFalse(window.command_activity_label.isVisibleTo(window))
             self.assertFalse(window.brand_badge.isVisibleTo(window))
 
             window.resize(1500, window.height())
@@ -232,8 +216,10 @@ class WorkspaceProShellTests(unittest.TestCase):
                 Qt.ToolButtonStyle.ToolButtonTextBesideIcon
             )
             self.assertEqual(window.brand_title.text(), 'The Sims 4 Translator Plus')
+            self.assertTrue(window.brand_block.isVisibleTo(window))
+            self.assertEqual(window.command_dictionary.text(), 'Dictionary')
             self.assertTrue(window.command_file_label.isVisibleTo(window))
-            self.assertTrue(window.command_workspace_label.isVisibleTo(window))
+            self.assertTrue(window.command_activity_label.isVisibleTo(window))
         finally:
             close_widget(window)
 
@@ -251,8 +237,6 @@ class WorkspaceProShellTests(unittest.TestCase):
         try:
             window.resize(window.minimumSize())
             window.show()
-            app().processEvents()
-            window.workspace_project_toggle.setChecked(True)
             app().processEvents()
             window._MainWindow__update_filter_counts(items)
             app().processEvents()
@@ -340,7 +324,7 @@ class WorkspaceProShellTests(unittest.TestCase):
         finally:
             close_widget(window)
 
-    def test_inspector_wraps_and_scrolls_without_overlapping_at_minimum_size(self):
+    def test_selection_bar_handles_long_vietnamese_selection_without_overlapping(self):
         window = MainWindow()
         item = record()
         long_text = (
@@ -354,30 +338,14 @@ class WorkspaceProShellTests(unittest.TestCase):
             window.resize(window.minimumSize())
             window.show()
             app().processEvents()
-            window.workspace_inspector_toggle.setChecked(True)
-            app().processEvents()
 
-            self.assertEqual(
-                window.inspector_original.wordWrapMode(),
-                QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere
-            )
-            self.assertEqual(
-                window.inspector_translation.horizontalScrollBarPolicy(),
-                Qt.ScrollBarPolicy.ScrollBarAlwaysOff
-            )
-            self.assertLess(
-                window.inspector_original_label.geometry().bottom(),
-                window.inspector_original.geometry().top()
-            )
-            self.assertLess(
-                window.inspector_original.geometry().bottom(),
-                window.inspector_translation_label.geometry().top()
-            )
-            self.assertGreaterEqual(window.inspector_scroll.verticalScrollBar().maximum(), 0)
+            self.assertTrue(window.selection_bar.isVisibleTo(window))
+            self.assertLess(window.selection_meta.geometry().right(), window.selection_status.geometry().left())
+            self.assertLess(window.selection_status.geometry().right(), window.selection_validate.geometry().left())
         finally:
             close_widget(window)
 
-    def test_inspector_populates_from_record_without_mutating_it(self):
+    def test_selection_bar_populates_from_record_without_mutating_it(self):
         window = MainWindow()
         item = record()
         before = list(item)
@@ -386,25 +354,21 @@ class WorkspaceProShellTests(unittest.TestCase):
 
             self.assertEqual(list(item), before)
             self.assertIn('0x0000002A', window.inspector_meta.text())
-            self.assertEqual(window.inspector_original.toPlainText(), 'Hello source')
-            self.assertEqual(window.inspector_translation.toPlainText(), 'Bonjour draft')
-            self.assertEqual(window.inspector_comment.text(), 'Needs review')
+            self.assertEqual(window.inspector_status.text(), 'In progress')
             self.assertTrue(window.inspector_apply.isEnabled())
-            self.assertEqual(window.inspector_panel.property('active'), True)
+            self.assertEqual(window.selection_bar.property('active'), True)
         finally:
             close_widget(window)
 
-    def test_inspector_reset_and_apply_use_existing_record_state(self):
+    def test_selection_bar_reset_and_validate_use_existing_record_state(self):
         window = MainWindow()
         item = record()
         try:
             window.update_inspector_item(item)
-            window.inspector_translation.setPlainText('Salut')
-            window.inspector_comment.setText('Reviewed')
             window.apply_inspector_translation()
 
-            self.assertEqual(item.translate, 'Salut')
-            self.assertEqual(item.comment, 'Reviewed')
+            self.assertEqual(item.translate, 'Bonjour draft')
+            self.assertEqual(item.comment, 'Needs review')
             self.assertEqual(item.flag, FLAG_VALIDATED)
 
             window.update_inspector_item(item)

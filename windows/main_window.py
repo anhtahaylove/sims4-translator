@@ -20,7 +20,7 @@ from singletons.interface import interface
 from singletons.signals import progress_signals, window_signals
 from singletons.state import app_state
 from singletons.undo import undo
-from utils.functions import open_supported, open_xml, save_package, save_xml, text_to_edit, text_to_stbl
+from utils.functions import open_supported, open_xml, save_package, save_xml
 from utils.constants import *
 
 
@@ -86,7 +86,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__set_window_title()
 
         self.setAcceptDrops(True)
-        self.__workspace_density = None
         self.__workspace_panels_updating = False
 
         self.tableview.doubleClicked.connect(self.edit_string)
@@ -167,14 +166,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             lambda checked: self.__filter_chip_toggled(self.toolbar.filter_validate_4, checked)
         )
         self.filter_clear.clicked.connect(lambda _checked=False: self.clear_filters())
-        self.workspace_project_toggle.toggled.connect(
-            lambda checked: self.__workspace_panel_toggled('project', checked)
-        )
-        self.workspace_inspector_toggle.toggled.connect(
-            lambda checked: self.__workspace_panel_toggled('inspector', checked)
-        )
         self.workspace_activity_toggle.toggled.connect(
-            lambda checked: self.__workspace_panel_toggled('activity', checked)
+            self.__activity_toggled
         )
 
         self.__search_flag = SEARCH_IN_SOURCE
@@ -282,7 +275,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_help.setTitle(interface.text('MainWindow', 'Help'))
         self.brand_title.setText(APP_NAME)
         self.brand_subtitle.setText('Mod localization workspace')
-        self.project_title.setText('Project Rail')
         self.filter_title.setText('Studio Filters')
         self.filter_hint.setText('Search, status and scope stay close to the table.')
         self.filter_search_label.setText('Search')
@@ -294,24 +286,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.workspace_hint.setText('Translation table')
         self.empty_title.setText('Ready for a package')
         self.empty_detail.setText('Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.')
-        self.inspector_title.setText('Focus Editor')
-        self.inspector_original_label.setText('Original')
-        self.inspector_translation_label.setText('Translation draft')
-        self.inspector_comment_label.setText('Comment')
-        self.inspector_apply.setText('Apply + Validate')
+        self.inspector_apply.setText('Validate')
         self.inspector_reset.setText('Reset')
         self.inspector_edit.setText('Open Editor')
-        self.workspace_project_toggle.setText('Project')
-        self.workspace_project_toggle.setToolTip('Show or hide the Project and Filters panel')
-        self.workspace_inspector_toggle.setText('Inspector')
-        self.workspace_inspector_toggle.setToolTip('Show or hide the selected string Inspector')
         self.workspace_activity_toggle.setText('Activity')
-        self.workspace_activity_toggle.setToolTip('Show or hide background jobs and logs')
+        self.workspace_activity_toggle.setToolTip('Show or hide Activity')
         self.command_file_label.setText('File')
         self.command_export_label.setText('Export')
         self.command_translation_label.setText('Translation')
-        self.command_workspace_label.setText('Workspace')
+        self.command_activity_label.setText('Activity')
         self.command_tools_label.setText('Tools')
+        self.__set_command_button_texts()
 
         for col in self.action_column:
             col.retranslate()
@@ -340,11 +325,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not hasattr(self, 'command_open'):
             return
 
-        compact = self.width() < 1440
-        style = (
-            Qt.ToolButtonStyle.ToolButtonIconOnly
-            if compact else Qt.ToolButtonStyle.ToolButtonTextBesideIcon
-        )
+        compact = self.width() < 1180
+        self.__set_command_button_texts(compact=compact)
+        style = Qt.ToolButtonStyle.ToolButtonTextBesideIcon
         for button in (
                 self.command_open,
                 self.command_save,
@@ -356,89 +339,66 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         ):
             button.setToolButtonStyle(style)
 
-        self.brand_title.setText('TS4 Translator Plus' if compact else APP_NAME)
+        self.brand_title.setText('TS4+' if compact else APP_NAME)
+        self.brand_block.setVisible(not compact)
         self.brand_subtitle.setVisible(not compact)
         self.brand_badge.setVisible(not compact)
         for label in (
                 self.command_file_label,
                 self.command_export_label,
                 self.command_translation_label,
-                self.command_workspace_label,
+                self.command_activity_label,
                 self.command_tools_label,
         ):
-            label.setVisible(not compact)
+            label.setVisible(self.width() >= 1180)
+
+    def __set_command_button_texts(self, compact=False):
+        dictionary_label = 'Dict' if compact else 'Dictionary'
+        labels = (
+            (self.command_open, 'Open', self.action_load_file.text()),
+            (self.command_save, 'Save', self.action_save.text()),
+            (self.command_import, 'Import', self.action_import_translation.text()),
+            (self.command_translate, 'Translate', self.action_translate.text()),
+            (self.command_dictionary, dictionary_label, self.action_save_dictionary.text()),
+            (self.command_options, 'Options', self.action_options.text()),
+        )
+        for button, label, tooltip in labels:
+            button.setProperty('commandLabel', label)
+            button.setText(label)
+            button.setToolTip(tooltip)
+            button.setMinimumWidth(max(82, button.fontMetrics().horizontalAdvance(label) + 34))
+        self.command_export.setText('Export')
+        self.command_export.setToolTip(interface.text('MainWindow', 'Export translation'))
+        self.command_export.setMinimumWidth(max(94, self.command_export.fontMetrics().horizontalAdvance('Export') + 44))
 
     def __apply_workspace_density(self, force=False):
-        if not hasattr(self, 'workspace_project_toggle'):
+        if not hasattr(self, 'workspace_activity_toggle'):
             return
 
-        density = self.__workspace_density_for_width(self.width())
-        if force or density != getattr(self, '_MainWindow__workspace_density', None):
-            self.__workspace_density = density
-            project, inspector, activity = self.__workspace_density_defaults(density)
-            self.__set_workspace_toggle(self.workspace_project_toggle, project)
-            self.__set_workspace_toggle(self.workspace_inspector_toggle, inspector)
-            self.__set_workspace_toggle(self.workspace_activity_toggle, activity)
+        if force:
+            self.__set_workspace_toggle(
+                self.workspace_activity_toggle,
+                config.value('view', 'activity_visible') is not False
+            )
 
         self.__sync_workspace_panels()
-
-    @staticmethod
-    def __workspace_density_for_width(width):
-        if width >= 1560:
-            return 'wide'
-        if width >= 1180:
-            return 'medium'
-        return 'small'
-
-    @staticmethod
-    def __workspace_density_defaults(density):
-        if density == 'wide':
-            return False, True, True
-        if density == 'medium':
-            return False, False, False
-        return False, False, False
 
     def __set_workspace_toggle(self, button, checked):
         button.blockSignals(True)
         button.setChecked(checked)
         button.blockSignals(False)
 
-    def __workspace_panel_toggled(self, panel, checked):
+    def __activity_toggled(self, checked):
         if self.__workspace_panels_updating:
             return
-
-        if self.__workspace_density == 'small' and checked:
-            if panel == 'project':
-                self.__set_workspace_toggle(self.workspace_inspector_toggle, False)
-            elif panel == 'inspector':
-                self.__set_workspace_toggle(self.workspace_project_toggle, False)
-
+        config.set_value('view', 'activity_visible', checked)
+        config.save()
         self.__sync_workspace_panels()
 
     def __sync_workspace_panels(self):
         self.__workspace_panels_updating = True
-
-        project_visible = self.workspace_project_toggle.isChecked()
-        inspector_visible = self.workspace_inspector_toggle.isChecked()
         activity_visible = self.workspace_activity_toggle.isChecked()
-
-        if self.__workspace_density == 'small' and project_visible and inspector_visible:
-            inspector_visible = False
-            self.__set_workspace_toggle(self.workspace_inspector_toggle, False)
-
-        self.project_sidebar.setVisible(project_visible)
-        self.inspector_panel.setVisible(inspector_visible)
         self.activity_drawer.setVisible(activity_visible)
-
-        if self.__workspace_density == 'wide':
-            sizes = [255 if project_visible else 0, 1200, 390 if inspector_visible else 0]
-        elif self.__workspace_density == 'medium':
-            sizes = [240 if project_visible else 0, 1120, 360 if inspector_visible else 0]
-        else:
-            sizes = [220 if project_visible else 0, 900, 330 if inspector_visible else 0]
-
-        self.workspace_splitter.setSizes(sizes)
-        self.command_bar.setProperty('density', self.__workspace_density)
         self.command_bar.style().unpolish(self.command_bar)
         self.command_bar.style().polish(self.command_bar)
         self.command_bar.update()
@@ -940,11 +900,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def update_workspace_summary(self):
         storage = app_state.packages_storage
         if not storage or not storage.enabled:
-            self.project_summary.setText('No package loaded')
             self.workspace_summary.setText('No package loaded')
-            self.project_hint.setText(
-                'Project details appear here after loading a file. Filters stay above the table.'
-            )
             self.workspace_hint.setText('Open or drop a package to begin')
             self.__update_filter_counts(())
             return
@@ -958,18 +914,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         original = sum(1 for item in items if item.flag == FLAG_UNVALIDATED)
         package_count = len(getattr(storage, 'packages', []))
 
-        summary_text = (
-            f'{visible}/{total} shown | {package_count} package(s)\n'
-            f'{validated} valid | {translated} translated\n'
-            f'{progress} progress | {original} original'
-        )
-        self.project_summary.setText(summary_text)
         self.workspace_summary.setText(
             f'{visible}/{total} shown    {package_count} package(s)    '
             f'{validated} valid    {translated} translated    {progress} progress    {original} original'
         )
-        self.project_hint.setText('Select a row to edit it in the Inspector.')
-        self.workspace_hint.setText('Use filters above, edit selected rows in Inspector')
+        self.workspace_hint.setText('Filter above, double-click or use Open Editor')
         self.__update_filter_counts(items)
 
     def __update_filter_counts(self, items):
@@ -1006,37 +955,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__inspector_item = item
         enabled = item is not None
 
-        self.inspector_panel.setProperty('active', enabled)
+        self.selection_bar.setProperty('active', enabled)
         self.inspector_apply.setEnabled(enabled)
         self.inspector_reset.setEnabled(enabled)
         self.inspector_edit.setEnabled(enabled)
-        self.inspector_translation.setEnabled(enabled)
-        self.inspector_comment.setEnabled(enabled)
-        self.inspector_empty.setVisible(not enabled)
-        self.inspector_status.setVisible(enabled)
-        self.inspector_original_label.setVisible(enabled)
-        self.inspector_original.setVisible(enabled)
-        self.inspector_translation_label.setVisible(enabled)
-        self.inspector_translation.setVisible(enabled)
-        self.inspector_comment_label.setVisible(enabled)
-        self.inspector_comment.setVisible(enabled)
 
         if not enabled:
             self.inspector_meta.setText('No string selected')
             self.inspector_status.setText('Idle')
             self.inspector_status.setProperty('state', 'idle')
-            self.inspector_original.setPlainText('')
-            self.inspector_translation.setPlainText('')
-            self.inspector_comment.setText('')
             self.__refresh_inspector_status_style()
             return
 
-        self.inspector_meta.setText(f'Selected string\n{item.id_hex} | {item.instance_hex}')
+        self.inspector_meta.setText(f'Selected string: {item.id_hex} | {item.instance_hex}')
         self.inspector_status.setText(INSPECTOR_STATUS.get(item.flag, 'Unknown'))
         self.inspector_status.setProperty('state', str(item.flag))
-        self.inspector_original.setPlainText(text_to_edit(item.source))
-        self.inspector_translation.setPlainText(text_to_edit(item.translate))
-        self.inspector_comment.setText(item.comment)
         self.__refresh_inspector_status_style()
 
     def apply_inspector_translation(self):
@@ -1045,8 +978,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         wrapped = self.__wrap_for_undo(item)
-        item.translate = text_to_stbl(self.inspector_translation.toPlainText())
-        item.comment = self.inspector_comment.text()
         item.translate_old = None
         item.flag = FLAG_VALIDATED
         if wrapped:
@@ -1087,9 +1018,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.inspector_status.style().unpolish(self.inspector_status)
         self.inspector_status.style().polish(self.inspector_status)
         self.inspector_status.update()
-        self.inspector_panel.style().unpolish(self.inspector_panel)
-        self.inspector_panel.style().polish(self.inspector_panel)
-        self.inspector_panel.update()
+        self.selection_bar.style().unpolish(self.selection_bar)
+        self.selection_bar.style().polish(self.selection_bar)
+        self.selection_bar.update()
 
     def group_change(self):
         self.action_group_original.setChecked(config.value('group', 'original'))

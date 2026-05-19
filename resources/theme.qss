@@ -135,17 +135,6 @@ QToolBar::separator {
     margin: 0 0 0 0;
 }
 
-#projectSidebar QToolBar {
-    background: transparent;
-    border: none;
-    padding: 0;
-}
-
-#projectSidebar QToolBar::separator {
-    height: 6px;
-    width: 6px;
-}
-
 #studioHeader,
 #commandBar {
     background: __PANEL__;
@@ -272,22 +261,6 @@ QToolBar::separator {
     color: __TEXT__;
 }
 
-#workspaceSplitter {
-    background: transparent;
-}
-
-#workspaceSplitter::handle {
-    background: __SURFACE__;
-    width: 8px;
-}
-
-#workspaceSplitter::handle:hover {
-    background: __PANEL_RAISED__;
-}
-
-#projectSidebar,
-#inspectorPanel,
-#focusEditor,
 #tablePanel {
     background: __PANEL__;
     border: 1px solid __BORDER_LIGHT__;
@@ -299,17 +272,44 @@ QToolBar::separator {
     background: transparent;
 }
 
-#projectSidebarScroll,
-#projectSidebarContent,
-#inspectorScroll,
-#inspectorContent {
-    background: transparent;
-    border: none;
+#selectionBar {
+    background: __PANEL__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 10px;
 }
 
-#inspectorPanel[active="true"],
-#focusEditor[active="true"] {
-    border-color: __BORDER_FOCUS__;
+#selectionBar[active="true"] {
+    border-color: __ACCENT__;
+    background: __PANEL_ALT__;
+}
+
+#selectionMeta {
+    color: __TEXT_MUTED__;
+    font-weight: 600;
+}
+
+#selectionBar[active="true"] #selectionMeta {
+    color: __TEXT__;
+}
+
+#selectionStatus {
+    background: __SURFACE__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 999px;
+    padding: 4px 10px;
+    color: __TEXT_MUTED__;
+}
+
+#selectionStatus[state="2"],
+#selectionStatus[state="3"] {
+    background: __PANEL_RAISED__;
+    border-color: __ACCENT__;
+    color: __TEXT__;
+}
+
+#selectionStatus[state="0"] {
+    border-color: __UNVALIDATED_BAR__;
+    color: __TEXT_MUTED__;
 }
 
 #panelTitle,
@@ -445,37 +445,6 @@ QToolBar::separator {
 #sectionLabel {
     color: __TEXT_MUTED__;
     font-weight: 600;
-}
-
-#inspectorText {
-    min-height: 92px;
-    border-radius: 8px;
-}
-
-QPlainTextEdit#inspectorText:disabled {
-    background: __SURFACE__;
-    border-color: __BORDER_LIGHT__;
-    color: __TEXT_DISABLED__;
-}
-
-#inspectorStatus {
-    background: __PANEL_ALT__;
-    border: 1px solid __BORDER_LIGHT__;
-    border-radius: 10px;
-    padding: 5px 8px;
-    color: __TEXT_MUTED__;
-}
-
-#inspectorStatus[state="2"],
-#inspectorStatus[state="3"] {
-    background: __SELECTION__;
-    border-color: __ACCENT__;
-    color: __SELECTION_TEXT__;
-}
-
-#inspectorStatus[state="0"] {
-    border-color: __UNVALIDATED_BAR__;
-    color: __TEXT_MUTED__;
 }
 
 #primaryButton {

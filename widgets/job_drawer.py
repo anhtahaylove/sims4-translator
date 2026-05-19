@@ -211,7 +211,7 @@ class QJobStatusDrawer(QWidget):
         self.toggle_button.blockSignals(True)
         self.toggle_button.setChecked(expanded)
         self.toggle_button.blockSignals(False)
-        self.toggle_button.setText('Jobs' if expanded else 'Jobs hidden')
+        self.toggle_button.setText('Hide jobs' if expanded else 'Show jobs')
 
     def task_started(self, handle) -> None:
         self.finish_legacy(cancelled=True, silent=True)

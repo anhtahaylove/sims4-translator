@@ -73,6 +73,7 @@ class ConfigManager:
             'source': True,
             'comment': False,
             'colorbar': False,
+            'activity_visible': True,
             'numeration': NUMERATION_STANDART
         },
         'temporary': {

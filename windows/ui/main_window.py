@@ -6,10 +6,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QMenu,
     QMenuBar,
-    QPlainTextEdit,
     QPushButton,
-    QScrollArea,
-    QSplitter,
     QToolButton,
     QVBoxLayout,
     QGridLayout,
@@ -18,7 +15,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QSizePolicy,
 )
-from PySide6.QtGui import QAction, QIcon, QTextOption
+from PySide6.QtGui import QAction, QIcon
 
 from widgets.colorbar import QColorBar
 from widgets.job_drawer import QJobStatusDrawer
@@ -266,11 +263,10 @@ class Ui_MainWindow(object):
         self.command_export.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         self.command_export.setMenu(self.menu_export_translation)
         self.command_export.setEnabled(False)
+        self.command_export.setMinimumWidth(94)
 
         self.command_translate = self.__command_button(self.action_translate)
         self.command_dictionary = self.__command_button(self.action_save_dictionary)
-        self.workspace_project_toggle = self.__workspace_toggle('Project')
-        self.workspace_inspector_toggle = self.__workspace_toggle('Inspector')
         self.workspace_activity_toggle = self.__workspace_toggle('Activity')
         self.command_options = self.__command_button(self.action_options)
 
@@ -286,9 +282,9 @@ class Ui_MainWindow(object):
             'Translation',
             (self.command_translate, self.command_dictionary),
         )
-        self.command_workspace_group, self.command_workspace_label = self.__command_group(
-            'Workspace',
-            (self.workspace_project_toggle, self.workspace_inspector_toggle, self.workspace_activity_toggle),
+        self.command_activity_group, self.command_activity_label = self.__command_group(
+            'Activity',
+            (self.workspace_activity_toggle,),
         )
         self.command_tools_group, self.command_tools_label = self.__command_group(
             'Tools',
@@ -303,7 +299,7 @@ class Ui_MainWindow(object):
         action_hub_layout.addWidget(self.command_file_group)
         action_hub_layout.addWidget(self.command_translation_group)
         action_hub_layout.addWidget(self.command_export_group)
-        action_hub_layout.addWidget(self.command_workspace_group)
+        action_hub_layout.addWidget(self.command_activity_group)
         action_hub_layout.addStretch()
         action_hub_layout.addWidget(self.command_tools_group)
 
@@ -343,20 +339,8 @@ class Ui_MainWindow(object):
         layout.setSpacing(8)
         layout.addWidget(self.command_bar)
 
-        self.workspace_splitter = QSplitter(Qt.Orientation.Horizontal, MainWindow)
-        self.workspace_splitter.setObjectName('workspaceSplitter')
-        self.workspace_splitter.setChildrenCollapsible(False)
-
-        self.project_sidebar = self.__project_sidebar(MainWindow)
         self.table_panel = self.__table_panel(MainWindow)
-        self.inspector_panel = self.__inspector_panel(MainWindow)
-
-        self.workspace_splitter.addWidget(self.project_sidebar)
-        self.workspace_splitter.addWidget(self.table_panel)
-        self.workspace_splitter.addWidget(self.inspector_panel)
-        self.workspace_splitter.setSizes([260, 680, 310])
-
-        layout.addWidget(self.workspace_splitter, 1)
+        layout.addWidget(self.table_panel, 1)
 
         self.monospace = QLineEdit(MainWindow)
         self.monospace.setObjectName('monospace')
@@ -370,9 +354,21 @@ class Ui_MainWindow(object):
     def __command_button(self, action):
         button = QToolButton(self.command_bar)
         button.setObjectName('studioCommandButton')
-        button.setDefaultAction(action)
+        button.setIcon(action.icon())
+        button.setEnabled(action.isEnabled())
+        button.clicked.connect(action.trigger)
         button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        button.setMinimumWidth(82)
+        action.changed.connect(lambda action=action, button=button: self.__sync_command_button(button, action))
         return button
+
+    @staticmethod
+    def __sync_command_button(button, action):
+        button.setIcon(action.icon())
+        button.setEnabled(action.isEnabled())
+        label = button.property('commandLabel')
+        button.setText(label if label else action.text())
+        button.setToolTip(action.text())
 
     def __command_divider(self):
         divider = QFrame(self.command_bar)
@@ -407,48 +403,6 @@ class Ui_MainWindow(object):
         button.setCheckable(True)
         button.setChecked(True)
         return button
-
-    def __project_sidebar(self, parent):
-        sidebar = QFrame(parent)
-        sidebar.setObjectName('projectSidebar')
-        sidebar.setMinimumWidth(220)
-        sidebar.setMaximumWidth(300)
-        layout = QVBoxLayout(sidebar)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-
-        self.project_scroll = QScrollArea(sidebar)
-        self.project_scroll.setObjectName('projectSidebarScroll')
-        self.project_scroll.setWidgetResizable(True)
-        self.project_scroll.setFrameShape(QFrame.Shape.NoFrame)
-        self.project_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-
-        content = QFrame(self.project_scroll)
-        content.setObjectName('projectSidebarContent')
-        content_layout = QVBoxLayout(content)
-        content_layout.setContentsMargins(12, 12, 12, 12)
-        content_layout.setSpacing(10)
-
-        self.project_title = QLabel('Project Rail', content)
-        self.project_title.setObjectName('panelTitle')
-
-        self.project_summary = QLabel('No package loaded', content)
-        self.project_summary.setObjectName('projectSummary')
-        self.project_summary.setWordWrap(True)
-
-        self.project_hint = QLabel('Open a package or synthetic smoke file to begin translating.', content)
-        self.project_hint.setObjectName('panelHint')
-        self.project_hint.setWordWrap(True)
-        self.project_hint.setMinimumHeight(56)
-
-        content_layout.addWidget(self.project_title)
-        content_layout.addWidget(self.project_summary)
-        content_layout.addWidget(self.project_hint)
-        content_layout.addStretch()
-
-        self.project_scroll.setWidget(content)
-        layout.addWidget(self.project_scroll)
-        return sidebar
 
     def __filter_chip(self, text):
         button = QPushButton(text)
@@ -499,13 +453,52 @@ class Ui_MainWindow(object):
         empty_layout.addWidget(self.empty_detail)
 
         self.filter_panel = self.__filter_board(panel)
+        self.selection_bar = self.__selection_bar(panel)
 
         layout.addWidget(self.workspace_overview)
         layout.addWidget(self.filter_panel)
         layout.addWidget(self.empty_state)
+        layout.addWidget(self.selection_bar)
         layout.addWidget(self.colorbar)
         layout.addWidget(self.tableview, 1)
         return panel
+
+    def __selection_bar(self, parent):
+        bar = QFrame(parent)
+        bar.setObjectName('selectionBar')
+        layout = QHBoxLayout(bar)
+        layout.setContentsMargins(12, 8, 12, 8)
+        layout.setSpacing(10)
+
+        self.selection_meta = QLabel('No string selected', bar)
+        self.selection_meta.setObjectName('selectionMeta')
+        self.selection_meta.setWordWrap(True)
+        self.selection_meta.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+
+        self.selection_status = QLabel('Idle', bar)
+        self.selection_status.setObjectName('selectionStatus')
+        self.selection_status.setMinimumWidth(92)
+        self.selection_status.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.selection_validate = QPushButton('Validate', bar)
+        self.selection_validate.setObjectName('primaryButton')
+        self.selection_reset = QPushButton('Reset', bar)
+        self.selection_reset.setObjectName('secondaryButton')
+        self.selection_edit = QPushButton('Open Editor', bar)
+        self.selection_edit.setObjectName('secondaryButton')
+
+        layout.addWidget(self.selection_meta, 1)
+        layout.addWidget(self.selection_status)
+        layout.addWidget(self.selection_validate)
+        layout.addWidget(self.selection_reset)
+        layout.addWidget(self.selection_edit)
+
+        self.inspector_meta = self.selection_meta
+        self.inspector_status = self.selection_status
+        self.inspector_apply = self.selection_validate
+        self.inspector_reset = self.selection_reset
+        self.inspector_edit = self.selection_edit
+        return bar
 
     def __filter_board(self, parent):
         board = QFrame(parent)
@@ -573,91 +566,3 @@ class Ui_MainWindow(object):
         layout.addWidget(self.filter_instance, 3, 5, 1, 2)
 
         return board
-
-    def __inspector_panel(self, parent):
-        panel = QFrame(parent)
-        panel.setObjectName('focusEditor')
-        panel.setMinimumWidth(300)
-        panel.setMaximumWidth(430)
-        self.focus_editor_panel = panel
-        layout = QVBoxLayout(panel)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-
-        self.inspector_scroll = QScrollArea(panel)
-        self.inspector_scroll.setObjectName('inspectorScroll')
-        self.inspector_scroll.setWidgetResizable(True)
-        self.inspector_scroll.setFrameShape(QFrame.Shape.NoFrame)
-        self.inspector_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-
-        content = QFrame(self.inspector_scroll)
-        content.setObjectName('inspectorContent')
-        content_layout = QVBoxLayout(content)
-        content_layout.setContentsMargins(12, 12, 12, 12)
-        content_layout.setSpacing(8)
-
-        self.inspector_title = QLabel('Focus Editor', content)
-        self.inspector_title.setObjectName('panelTitle')
-
-        self.inspector_meta = QLabel('No string selected', content)
-        self.inspector_meta.setObjectName('panelHint')
-        self.inspector_meta.setWordWrap(True)
-
-        self.inspector_empty = QLabel('Select a string in the table to edit its translation here.', content)
-        self.inspector_empty.setObjectName('emptyHint')
-        self.inspector_empty.setWordWrap(True)
-
-        self.inspector_status = QLabel('Idle', content)
-        self.inspector_status.setObjectName('inspectorStatus')
-
-        self.inspector_original_label = QLabel('Original', content)
-        self.inspector_original_label.setObjectName('sectionLabel')
-        self.inspector_original = QPlainTextEdit(content)
-        self.inspector_original.setObjectName('inspectorText')
-        self.inspector_original.setReadOnly(True)
-        self.inspector_original.setMinimumHeight(130)
-
-        self.inspector_translation_label = QLabel('Translation draft', content)
-        self.inspector_translation_label.setObjectName('sectionLabel')
-        self.inspector_translation = QPlainTextEdit(content)
-        self.inspector_translation.setObjectName('inspectorText')
-        self.inspector_translation.setMinimumHeight(150)
-
-        for editor in (self.inspector_original, self.inspector_translation):
-            editor.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
-            editor.setWordWrapMode(QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere)
-            editor.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-
-        self.inspector_comment_label = QLabel('Comment', content)
-        self.inspector_comment_label.setObjectName('sectionLabel')
-        self.inspector_comment = QLineEdit(content)
-        self.inspector_comment.setObjectName('inspectorComment')
-
-        self.inspector_apply = QPushButton('Apply + Validate', content)
-        self.inspector_apply.setObjectName('primaryButton')
-        self.inspector_reset = QPushButton('Reset', content)
-        self.inspector_edit = QPushButton('Open Editor', content)
-
-        button_row = QHBoxLayout()
-        button_row.setContentsMargins(0, 0, 0, 0)
-        button_row.setSpacing(6)
-        button_row.addWidget(self.inspector_reset)
-        button_row.addWidget(self.inspector_edit)
-
-        content_layout.addWidget(self.inspector_title)
-        content_layout.addWidget(self.inspector_meta)
-        content_layout.addWidget(self.inspector_empty)
-        content_layout.addWidget(self.inspector_status)
-        content_layout.addWidget(self.inspector_original_label)
-        content_layout.addWidget(self.inspector_original)
-        content_layout.addWidget(self.inspector_translation_label)
-        content_layout.addWidget(self.inspector_translation)
-        content_layout.addWidget(self.inspector_comment_label)
-        content_layout.addWidget(self.inspector_comment)
-        content_layout.addWidget(self.inspector_apply)
-        content_layout.addLayout(button_row)
-        content_layout.addStretch()
-
-        self.inspector_scroll.setWidget(content)
-        layout.addWidget(self.inspector_scroll)
-        return panel
