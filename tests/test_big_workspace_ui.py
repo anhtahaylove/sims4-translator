@@ -143,6 +143,11 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.command_file_group.objectName(), 'studioActionGroup')
             self.assertEqual(window.command_export_group.objectName(), 'studioActionGroup')
             self.assertEqual(window.command_translation_group.objectName(), 'studioActionGroup')
+            self.assertEqual(window.command_scope_group.objectName(), 'studioScopeGroup')
+            self.assertGreater(
+                window.command_layout.indexOf(window.command_scope_group),
+                window.command_layout.indexOf(window.action_hub),
+            )
             self.assertEqual(window.selection_preview.objectName(), 'selectionPreview')
             self.assertFalse(hasattr(window, 'project_sidebar'))
             self.assertFalse(hasattr(window, 'inspector_panel'))
@@ -339,9 +344,13 @@ class WorkspaceProShellTests(unittest.TestCase):
 
             self.assertEqual(window.command_bar.property('density'), 'short')
             self.assertEqual(window.filter_panel.property('density'), 'short')
+            self.assertFalse(window.command_scope_group.isVisibleTo(window))
             self.assertFalse(window.filter_title.isVisibleTo(window))
             self.assertEqual(window.filter_file_label.text(), 'Package')
             self.assertEqual(window.filter_instance_label.text(), 'Instance')
+            self.assertNotEqual(window.filter_layout.indexOf(window.filter_file), -1)
+            self.assertNotEqual(window.filter_layout.indexOf(window.filter_instance), -1)
+            self.assertNotEqual(window.filter_layout.indexOf(window.filter_different), -1)
             self.assertTrue(window.activity_drawer.isVisibleTo(window))
             self.assertTrue(window.activity_drawer.body.isVisibleTo(window))
             self.assertFalse(window.selection_validate.isVisibleTo(window))
@@ -371,6 +380,27 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.command_bar.property('density'), 'spacious')
             self.assertTrue(window.brand_block.isVisibleTo(window))
             self.assertTrue(window.command_file_label.isVisibleTo(window))
+            self.assertTrue(window.command_scope_group.isVisibleTo(window))
+        finally:
+            close_widget(window)
+
+    def test_spacious_workspace_uses_header_scope_block_for_secondary_filters(self):
+        window = MainWindow()
+        try:
+            window.resize(1640, 930)
+            window.show()
+            app().processEvents()
+
+            self.assertEqual(window.command_bar.property('density'), 'spacious')
+            self.assertTrue(window.command_scope_group.isVisibleTo(window))
+            self.assertNotEqual(window.command_scope_layout.indexOf(window.filter_file), -1)
+            self.assertNotEqual(window.command_scope_layout.indexOf(window.filter_instance), -1)
+            self.assertNotEqual(window.command_scope_layout.indexOf(window.filter_different), -1)
+            self.assertNotEqual(window.command_scope_layout.indexOf(window.filter_clear), -1)
+            self.assertEqual(window.filter_layout.indexOf(window.filter_file), -1)
+            self.assertEqual(window.filter_layout.indexOf(window.filter_instance), -1)
+            self.assertEqual(window.filter_layout.indexOf(window.filter_different), -1)
+            self.assertEqual(window.filter_layout.indexOf(window.filter_clear), -1)
         finally:
             close_widget(window)
 

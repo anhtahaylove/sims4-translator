@@ -183,6 +183,7 @@ QToolBar::separator {
 }
 
 #studioActionGroup,
+#studioScopeGroup,
 #commandGroup {
     background: __PANEL__;
     border: 1px solid __BORDER_LIGHT__;
@@ -190,6 +191,7 @@ QToolBar::separator {
 }
 
 #studioActionGroup:hover,
+#studioScopeGroup:hover,
 #commandGroup:hover {
     border-color: __ACCENT__;
     background: __PANEL_ALT__;

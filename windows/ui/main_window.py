@@ -319,6 +319,7 @@ class Ui_MainWindow(object):
         self.toolbar.edt_search = self.filter_search
         self.toolbar.cb_files = self.filter_file
         self.toolbar.cb_instances = self.filter_instance
+        self.command_scope_group = None
 
         self.tableview = QMainTableView(MainWindow)
         self.colorbar = QColorBar(MainWindow)
@@ -594,22 +595,40 @@ class Ui_MainWindow(object):
         self.filter_clear = QPushButton('Clear filters', board)
         self.filter_clear.setObjectName('secondaryButton')
         self.filter_clear.setAutoDefault(False)
+        self.__scope_group()
 
         self.filter_layout.addWidget(self.filter_title, 0, 0)
         self.filter_layout.addWidget(self.filter_search_label, 0, 1)
         self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 4)
-        self.filter_layout.addWidget(self.filter_clear, 0, 6, 1, 1)
         self.filter_layout.addWidget(self.filter_status_label, 1, 0)
         self.filter_layout.addWidget(self.filter_all, 1, 1, 1, 2)
         self.filter_layout.addWidget(self.filter_original, 1, 3, 1, 2)
         self.filter_layout.addWidget(self.filter_translated, 1, 5, 1, 2)
-        self.filter_layout.addWidget(self.filter_validated, 2, 1, 1, 2)
-        self.filter_layout.addWidget(self.filter_progress, 2, 3, 1, 2)
-        self.filter_layout.addWidget(self.filter_different, 2, 5, 1, 2)
-        self.filter_layout.addWidget(self.filter_scope_label, 3, 0)
-        self.filter_layout.addWidget(self.filter_file_label, 3, 1)
-        self.filter_layout.addWidget(self.filter_file, 3, 2, 1, 2)
-        self.filter_layout.addWidget(self.filter_instance_label, 3, 4)
-        self.filter_layout.addWidget(self.filter_instance, 3, 5, 1, 2)
+        self.filter_layout.addWidget(self.filter_validated, 2, 1, 1, 3)
+        self.filter_layout.addWidget(self.filter_progress, 2, 4, 1, 3)
 
         return board
+
+    def __scope_group(self):
+        self.command_scope_group = QFrame(self.command_bar)
+        self.command_scope_group.setObjectName('studioScopeGroup')
+        self.command_scope_layout = QGridLayout(self.command_scope_group)
+        self.command_scope_layout.setContentsMargins(8, 5, 8, 5)
+        self.command_scope_layout.setHorizontalSpacing(7)
+        self.command_scope_layout.setVerticalSpacing(4)
+
+        self.command_scope_label = QLabel('Scope', self.command_scope_group)
+        self.command_scope_label.setObjectName('studioGroupLabel')
+        self.command_scope_label.setAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
+
+        self.command_scope_layout.addWidget(self.command_scope_label, 0, 0)
+        self.command_scope_layout.addWidget(self.filter_file_label, 0, 1)
+        self.command_scope_layout.addWidget(self.filter_file, 0, 2)
+        self.command_scope_layout.addWidget(self.filter_instance_label, 0, 3)
+        self.command_scope_layout.addWidget(self.filter_instance, 0, 4)
+        self.command_scope_layout.addWidget(self.filter_different, 0, 5)
+        self.command_scope_layout.addWidget(self.filter_clear, 0, 6)
+        self.command_scope_layout.setColumnStretch(2, 2)
+        self.command_scope_layout.setColumnStretch(4, 1)
+
+        self.command_layout.addWidget(self.command_scope_group, 2)

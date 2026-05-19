@@ -287,6 +287,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.filter_search.setToolTip('Search ID, original text, and translated text at the same time.')
         self.filter_status_label.setText('Status')
         self.filter_scope_label.setText('Scope')
+        self.command_scope_label.setText('Scope')
         self.filter_file_label.setText('Package')
         self.filter_instance_label.setText('Instance')
         self.filter_clear.setText('Clear filters')
@@ -427,10 +428,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.command_export_group,
         ):
             group.layout().setContentsMargins(*(6, 3, 6, 3) if short else (8, 5, 8, 5))
+        self.command_scope_layout.setContentsMargins(*(6, 3, 6, 3) if short else (8, 5, 8, 5))
 
         self.__set_density_property(
             density,
             self.command_bar,
+            self.command_scope_group,
             self.workspace_overview,
             self.filter_panel,
             self.selection_bar,
@@ -450,7 +453,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.__filter_density_current == density:
             return
 
-        for widget in (
+        filter_widgets = (
                 self.filter_title,
                 self.filter_search_label,
                 self.filter_search,
@@ -467,10 +470,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.filter_file,
                 self.filter_instance_label,
                 self.filter_instance,
-        ):
-            self.filter_layout.removeWidget(widget)
+        )
+        for layout in (self.filter_layout, self.command_scope_layout):
+            for widget in filter_widgets:
+                layout.removeWidget(widget)
 
         if density == 'short':
+            self.command_scope_group.setVisible(False)
             self.filter_layout.setContentsMargins(10, 6, 10, 6)
             self.filter_layout.setHorizontalSpacing(7)
             self.filter_layout.setVerticalSpacing(5)
@@ -496,7 +502,47 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.filter_layout.addWidget(self.filter_file, 3, 1, 1, 3)
             self.filter_layout.addWidget(self.filter_instance_label, 3, 4)
             self.filter_layout.addWidget(self.filter_instance, 3, 5, 1, 2)
+        elif density == 'spacious':
+            self.command_scope_group.setVisible(True)
+            self.filter_layout.setContentsMargins(12, 7, 12, 7)
+            self.filter_layout.setHorizontalSpacing(8)
+            self.filter_layout.setVerticalSpacing(5)
+            for column in range(8):
+                self.filter_layout.setColumnStretch(column, 0)
+            self.filter_layout.setColumnStretch(2, 2)
+            self.filter_layout.setColumnStretch(3, 2)
+            self.filter_layout.setColumnStretch(4, 2)
+            self.filter_layout.setColumnStretch(5, 2)
+
+            for widget in (
+                    self.filter_title,
+                    self.filter_search_label,
+                    self.filter_status_label,
+            ):
+                widget.setVisible(True)
+            self.filter_scope_label.setVisible(False)
+            self.filter_file_label.setText('Package')
+            self.filter_instance_label.setText('Instance')
+
+            self.filter_layout.addWidget(self.filter_title, 0, 0)
+            self.filter_layout.addWidget(self.filter_search_label, 0, 1)
+            self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 6)
+            self.filter_layout.addWidget(self.filter_status_label, 1, 0)
+            self.filter_layout.addWidget(self.filter_all, 1, 1)
+            self.filter_layout.addWidget(self.filter_original, 1, 2)
+            self.filter_layout.addWidget(self.filter_translated, 1, 3)
+            self.filter_layout.addWidget(self.filter_validated, 1, 4)
+            self.filter_layout.addWidget(self.filter_progress, 1, 5)
+
+            self.command_scope_layout.addWidget(self.command_scope_label, 0, 0)
+            self.command_scope_layout.addWidget(self.filter_file_label, 0, 1)
+            self.command_scope_layout.addWidget(self.filter_file, 0, 2)
+            self.command_scope_layout.addWidget(self.filter_instance_label, 0, 3)
+            self.command_scope_layout.addWidget(self.filter_instance, 0, 4)
+            self.command_scope_layout.addWidget(self.filter_different, 0, 5)
+            self.command_scope_layout.addWidget(self.filter_clear, 0, 6)
         else:
+            self.command_scope_group.setVisible(False)
             self.filter_layout.setContentsMargins(12, 7, 12, 7)
             self.filter_layout.setHorizontalSpacing(8)
             self.filter_layout.setVerticalSpacing(5)
@@ -550,6 +596,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.filter_instance,
         ):
             widget.setVisible(True)
+        self.command_scope_label.setVisible(density == 'spacious')
         self.filter_search_mode.setVisible(False)
 
         self.__filter_density_current = density
