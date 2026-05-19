@@ -252,7 +252,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.command_open.text(), 'Open')
             self.assertEqual(window.command_import.text(), 'Import')
             self.assertEqual(window.command_translate.text(), 'Translate')
-            self.assertEqual(window.command_dictionary.text(), 'Save Dict')
+            self.assertEqual(window.command_dictionary.text(), 'Save Dictionary')
             self.assertIn('reuse', window.command_dictionary.toolTip())
             self.assertFalse(hasattr(window, 'command_options'))
 
@@ -312,8 +312,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             app().processEvents()
 
             self.assertEqual(window.filter_all.text(), 'All 1.2k')
-            self.assertEqual(window.filter_original.text(), 'Orig 1.2k')
-            self.assertEqual(window.filter_translated.text(), 'Trans 0')
+            self.assertEqual(window.filter_original.text(), 'Original 1.2k')
+            self.assertEqual(window.filter_translated.text(), 'Translated 0')
             self.assertEqual(window._MainWindow__format_filter_count(162527), '162.5k')
             self.assertLessEqual(
                 window.filter_all.fontMetrics().horizontalAdvance(window.filter_all.text()) + 10,
@@ -332,8 +332,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.command_bar.property('density'), 'short')
             self.assertEqual(window.filter_panel.property('density'), 'short')
             self.assertFalse(window.filter_title.isVisibleTo(window))
-            self.assertEqual(window.filter_file_label.text(), 'Pkg')
-            self.assertEqual(window.filter_instance_label.text(), 'Inst')
+            self.assertEqual(window.filter_file_label.text(), 'Package')
+            self.assertEqual(window.filter_instance_label.text(), 'Instance')
             self.assertTrue(window.activity_drawer.isVisibleTo(window))
             self.assertTrue(window.activity_drawer.body.isVisibleTo(window))
             self.assertFalse(window.selection_validate.isVisibleTo(window))
@@ -376,7 +376,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             window._MainWindow__update_filter_counts(items)
 
             self.assertEqual(window.filter_all.text(), 'All 162.5k')
-            self.assertEqual(window.filter_original.text(), 'Orig 162.5k')
+            self.assertEqual(window.filter_original.text(), 'Original 162.5k')
             self.assertEqual(window.filter_original.toolTip(), 'Original: 162,527')
         finally:
             close_widget(window)
@@ -402,8 +402,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual([item.id for item in storage.model.filtered], [7])
             self.assertEqual([list(original), list(validated)], before)
             self.assertIn('All 2', window.filter_all.text())
-            self.assertIn('Orig 1', window.filter_original.text())
-            self.assertIn('Valid 1', window.filter_validated.text())
+            self.assertIn('Original 1', window.filter_original.text())
+            self.assertIn('Validated 1', window.filter_validated.text())
 
             window.clear_filters()
             window.update_proxy()

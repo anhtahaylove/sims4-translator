@@ -362,7 +362,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             label.setVisible(density == 'spacious')
 
     def __set_command_button_texts(self, compact=False):
-        dictionary_label = 'Save Dict' if compact else 'Save Dictionary'
+        dictionary_label = 'Save Dictionary'
         dictionary_tooltip = 'Save translated strings to dictionary for reuse'
         labels = (
             (self.command_open, 'Open', self.action_load_file.text()),
@@ -481,8 +481,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.filter_search_label.setVisible(False)
             self.filter_status_label.setVisible(False)
             self.filter_scope_label.setVisible(False)
-            self.filter_file_label.setText('Pkg')
-            self.filter_instance_label.setText('Inst')
+            self.filter_file_label.setText('Package')
+            self.filter_instance_label.setText('Instance')
 
             self.filter_layout.addWidget(self.filter_search, 0, 0, 1, 4)
             self.filter_layout.addWidget(self.filter_search_mode, 0, 4)
@@ -1142,15 +1142,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         }
         compact = self.__workspace_density_current == 'short'
         labels = (
-            (self.filter_all, 'All', 'All', counts['all']),
-            (self.filter_original, 'Original', 'Orig', counts['original']),
-            (self.filter_translated, 'Translated', 'Trans', counts['translated']),
-            (self.filter_validated, 'Validated', 'Valid', counts['validated']),
-            (self.filter_progress, 'In progress', 'Prog', counts['progress']),
-            (self.filter_different, 'Changed', 'Changed', counts['different']),
+            (self.filter_all, 'All', counts['all']),
+            (self.filter_original, 'Original', counts['original']),
+            (self.filter_translated, 'Translated', counts['translated']),
+            (self.filter_validated, 'Validated', counts['validated']),
+            (self.filter_progress, 'In progress', counts['progress']),
+            (self.filter_different, 'Changed', counts['different']),
         )
-        for button, label, compact_label, value in labels:
-            button.setText(f'{compact_label if compact else label} {self.__format_filter_count(value, compact=compact)}')
+        for button, label, value in labels:
+            button.setText(f'{label} {self.__format_filter_count(value, compact=compact)}')
             button.setToolTip(f'{label}: {value:,}')
 
     @staticmethod
