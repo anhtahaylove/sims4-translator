@@ -771,28 +771,28 @@ QCheckBox::indicator {
 }
 QCheckBox::indicator:unchecked,
 QCheckBox::indicator:unchecked:hover {
-    image: url(:/images/__THEME__/checkbox_unchecked.png);
+    image: url(:/images/life/checkbox_unchecked.png);
 }
 QCheckBox::indicator:unchecked:focus,
 QCheckBox::indicator:unchecked:pressed {
-    image: url(:/images/__THEME__/checkbox_unchecked.png);
+    image: url(:/images/life/checkbox_unchecked.png);
 }
 QCheckBox::indicator:checked,
 QCheckBox::indicator:checked:hover {
-    image: url(:/images/__THEME__/checkbox_checked.png);
+    image: url(:/images/life/checkbox_checked.png);
 }
 QCheckBox::indicator:checked:focus,
 QCheckBox::indicator:checked:pressed {
-    image: url(:/images/__THEME__/checkbox_checked.png);
+    image: url(:/images/life/checkbox_checked.png);
 }
 QCheckBox::indicator:indeterminate,
 QCheckBox::indicator:indeterminate:hover,
 QCheckBox::indicator:indeterminate:pressed,
 QCheckBox::indicator:checked:disabled {
-    image: url(:/images/__THEME__/checkbox_checked_disabled.png);
+    image: url(:/images/life/checkbox_checked_disabled.png);
 }
 QCheckBox::indicator:unchecked:disabled {
-    image: url(:/images/__THEME__/checkbox_unchecked_disabled.png);
+    image: url(:/images/life/checkbox_unchecked_disabled.png);
 }
 
 QRadioButton {
@@ -809,28 +809,28 @@ QRadioButton::indicator {
 }
 QRadioButton::indicator:unchecked,
 QRadioButton::indicator:unchecked:hover {
-    image: url(:/images/__THEME__/radio_unchecked.png);
+    image: url(:/images/life/radio_unchecked.png);
 }
 QRadioButton::indicator:unchecked:focus,
 QRadioButton::indicator:unchecked:pressed {
-    image: url(:/images/__THEME__/radio_unchecked.png);
+    image: url(:/images/life/radio_unchecked.png);
 }
 QRadioButton::indicator:checked,
 QRadioButton::indicator:checked:hover {
-    image: url(:/images/__THEME__/radio_checked.png);
+    image: url(:/images/life/radio_checked.png);
 }
 QRadioButton::indicator:checked:focus,
 QRadioButton::indicator:checked:pressed {
-    image: url(:/images/__THEME__/radio_checked.png);
+    image: url(:/images/life/radio_checked.png);
 }
 QRadioButton::indicator:indeterminate,
 QRadioButton::indicator:indeterminate:hover,
 QRadioButton::indicator:indeterminate:pressed,
 QRadioButton::indicator:checked:disabled {
-    image: url(:/images/__THEME__/radio_checked_disabled.png);
+    image: url(:/images/life/radio_checked_disabled.png);
 }
 QRadioButton::indicator:unchecked:disabled {
-    image: url(:/images/__THEME__/radio_unchecked_disabled.png);
+    image: url(:/images/life/radio_unchecked_disabled.png);
 }
 
 QTextEdit,
@@ -886,7 +886,7 @@ QComboBox::drop-down {
     border-radius: 0;
 }
 QComboBox::down-arrow {
-    image: url(:/images/__THEME__/arrow_down.png);
+    image: url(:/images/life/arrow_down.png);
 }
 QComboBox:disabled,
 QComboBox::drop-down:disabled {
@@ -894,7 +894,7 @@ QComboBox::drop-down:disabled {
     color: __TEXT_DISABLED__;
 }
 QComboBox::down-arrow:disabled {
-    image: url(:/images/__THEME__/arrow_down.png);
+    image: url(:/images/life/arrow_down.png);
 }
 QComboBox::drop-down:no-frame,
 QComboBox::drop-down:no-frame::disabled {
@@ -983,14 +983,14 @@ QComboBox QAbstractItemView::indicator:non-exclusive:checked,
 QComboBox QAbstractItemView::indicator:non-exclusive:checked:selected,
 QComboBox QAbstractItemView::indicator:exclusive:checked,
 QComboBox QAbstractItemView::indicator:exclusive:checked:selected {
-    image: url(:/images/__THEME__/checked.png);
+    image: url(:/images/life/checked.png);
     position: absolute;
     top: 0;
     left: 7px;
 }
 QMenu::indicator:non-exclusive:checked:selected,
 QMenu::indicator:exclusive:checked:selected {
-    image: url(:/images/__THEME__/checked_hover.png);
+    image: url(:/images/life/checked_hover.png);
     position: absolute;
     top: 0;
     left: 7px;
@@ -1001,14 +1001,14 @@ QMenu::separator {
     margin: 1px 0;
 }
 QMenu::right-arrow:selected:!disabled {
-    image: url(:/images/__THEME__/menu_right_arrow_hover.png);
+    image: url(:/images/life/menu_right_arrow_hover.png);
 }
 QMenu::right-arrow {
-    image: url(:/images/__THEME__/menu_right_arrow.png);
+    image: url(:/images/life/menu_right_arrow.png);
     margin-right: 7px;
 }
 QMenu::right-arrow:disabled {
-    image: url(:/images/__THEME__/menu_right_arrow_disabled.png);
+    image: url(:/images/life/menu_right_arrow_disabled.png);
 }
 
 QHeaderView {
@@ -1226,5 +1226,80 @@ TranslateDialog QTextEdit {
 }
 
 #packSearch {
-    min-width: 160px;
+    min-width: 220px;
+}
+
+QDialog#optionsDialog {
+    background: __SURFACE__;
+}
+
+QDialog#optionsDialog QTabWidget::pane {
+    border-color: __BORDER__;
+    border-radius: 14px;
+    background: __PANEL_ALT__;
+}
+
+QDialog#optionsDialog QTabBar::tab {
+    border-radius: 10px 10px 0 0;
+    min-width: 110px;
+}
+
+#optionsSection {
+    background: __PANEL__;
+    border: 1px solid __BORDER__;
+    border-radius: 14px;
+    margin-top: 10px;
+    padding-top: 14px;
+}
+
+#optionsSection::title {
+    color: __BUTTON_DEFAULT__;
+    font-weight: 700;
+    left: 10px;
+    top: 1px;
+}
+
+#optionsHint {
+    color: __TEXT_MUTED__;
+    background: __SURFACE__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 10px;
+    padding: 7px 9px;
+}
+
+#packManagerTable {
+    background: __SURFACE__;
+    border-color: __BORDER__;
+    border-radius: 12px;
+}
+
+#packManagerTable::item {
+    padding: 4px 8px;
+}
+
+#packSummaryLabel {
+    background: __SURFACE__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 999px;
+    padding: 5px 10px;
+    min-width: 220px;
+}
+
+#packCategory {
+    min-width: 150px;
+}
+
+#packBuildButton {
+    min-height: 34px;
+    border-radius: 12px;
+    background: __BUTTON_DEFAULT__;
+    border-color: __BUTTON_DEFAULT__;
+    color: __SURFACE__;
+    font-weight: 600;
+}
+
+#packBuildButton:hover,
+#packBuildButton:focus {
+    background: __BUTTON_DEFAULT_HOVER__;
+    border-color: __BUTTON_DEFAULT_HOVER__;
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ts language="en_US" name="English" version="1.4" authors="">
+<ts language="en_US" name="English" version="1.4.1" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>

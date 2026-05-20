@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PySide6.QtCore import QMetaObject, Qt
+from PySide6.QtCore import QMetaObject, QSize, Qt
 from PySide6.QtWidgets import (
     QFrame,
     QLabel,
@@ -355,6 +355,7 @@ class Ui_MainWindow(object):
         button = QToolButton(self.command_bar)
         button.setObjectName('studioCommandButton')
         button.setIcon(action.icon())
+        button.setIconSize(QSize(22, 22))
         button.setEnabled(action.isEnabled())
         button.clicked.connect(action.trigger)
         button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)

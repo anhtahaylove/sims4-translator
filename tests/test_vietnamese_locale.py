@@ -3,6 +3,7 @@
 import os
 import tempfile
 import unittest
+import textwrap
 from unittest.mock import patch
 
 from packer.resource import ResourceID
@@ -60,6 +61,25 @@ class VietnameseLocaleTests(unittest.TestCase):
         self.assertEqual(ConfigManager.DEFAULTS['translation']['source'], 'ENG_US')
         self.assertEqual(ConfigManager.DEFAULTS['translation']['destination'], 'VI_VN')
 
+    def test_legacy_english_to_french_default_migrates_to_vietnamese_once(self):
+        manager = self.__config_from_xml('ENG_US', 'FRE_FR')
+
+        self.assertEqual(manager.value('translation', 'source'), 'ENG_US')
+        self.assertEqual(manager.value('translation', 'destination'), 'VI_VN')
+        self.assertTrue(manager.value('migrations', 'translation_default_vi_vn'))
+
+    def test_user_destination_is_not_overwritten_after_default_migration_marker(self):
+        manager = self.__config_from_xml('ENG_US', 'FRE_FR', migrated=True)
+
+        self.assertEqual(manager.value('translation', 'destination'), 'FRE_FR')
+        self.assertTrue(manager.value('migrations', 'translation_default_vi_vn'))
+
+    def test_non_default_user_destination_sets_marker_without_overwrite(self):
+        manager = self.__config_from_xml('ENG_US', 'RUS_RU')
+
+        self.assertEqual(manager.value('translation', 'destination'), 'RUS_RU')
+        self.assertTrue(manager.value('migrations', 'translation_default_vi_vn'))
+
     def test_deepl_engine_supports_english_to_vietnamese_when_key_is_configured(self):
         config.set_value('api', 'deepl_key', 'sample:fx')
 
@@ -84,6 +104,39 @@ class VietnameseLocaleTests(unittest.TestCase):
         self.assertEqual(kwargs['data']['split_sentences'], 'nonewlines')
         self.assertEqual(kwargs['data']['preserve_formatting'], '1')
         self.assertNotIn('tag_handling', kwargs['data'])
+
+    @staticmethod
+    def __config_from_xml(source: str, destination: str, migrated=None):
+        cwd = os.getcwd()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            prefs = os.path.join(tmpdir, 'prefs')
+            os.makedirs(prefs, exist_ok=True)
+            migration_xml = ''
+            if migrated is not None:
+                migration_xml = f'''
+  <migrations>
+    <translation_default_vi_vn>{str(migrated).lower()}</translation_default_vi_vn>
+  </migrations>'''
+            with open(os.path.join(prefs, 'config.xml'), 'w', encoding='utf-8') as fp:
+                fp.write(textwrap.dedent(f'''\
+                    <?xml version="1.0" encoding="utf-8"?>
+                    <config>
+                      <interface>
+                        <language>en_US</language>
+                        <theme>balanced</theme>
+                      </interface>
+                      <translation>
+                        <source>{source}</source>
+                        <destination>{destination}</destination>
+                      </translation>
+                      {migration_xml}
+                    </config>
+                ''').lstrip())
+            try:
+                os.chdir(tmpdir)
+                return ConfigManager()
+            finally:
+                os.chdir(cwd)
 
     def test_resource_id_converts_to_vietnamese_language_slot(self):
         source = ResourceID(group=0, instance=0x0000000000000001, type=0x220557DA)

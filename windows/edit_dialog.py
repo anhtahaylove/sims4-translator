@@ -8,8 +8,7 @@ from PySide6.QtGui import QGuiApplication, QIcon
 
 from .ui.edit_dialog import Ui_EditDialog
 
-import themes.light as light
-import themes.dark as dark
+import themes.balanced as theme
 
 from singletons.config import config
 from singletons.interface import interface
@@ -304,8 +303,7 @@ class EditDialog(QDialog, Ui_EditDialog):
             self.__translate_handle = None
 
     def __show_translation_error(self, message: str):
-        color = dark.TEXT_ERROR if config.is_dark_theme() else light.TEXT_ERROR
-        self.lbl_status.setStyleSheet(f'color: {color};')
+        self.lbl_status.setStyleSheet(f'color: {theme.TEXT_ERROR};')
         self.lbl_status.setText(message)
 
     def cancel_click(self):

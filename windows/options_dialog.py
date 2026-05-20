@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtCore import Qt, QCoreApplication, QObject, QTimer, QAbstractTableModel, \
-    Signal, Slot, QThreadPool, QRunnable
+    QSize, Signal, Slot, QThreadPool, QRunnable
 from PySide6.QtWidgets import QHeaderView, QStyledItemDelegate, QDialog
 from PySide6.QtGui import QColor, QFont, QIcon, QPainter
 
@@ -12,8 +12,7 @@ from packer.stbl import Stbl
 
 from storages.records import MainRecord
 
-import themes.light as light
-import themes.dark as dark
+import themes.balanced as theme
 
 from singletons.config import config
 from singletons.expansions import expansions, Expansion
@@ -87,13 +86,11 @@ class Model(QAbstractTableModel):
         self.summary = expansions.summary(self.items)
         self.summary_text = self._summary_text()
 
-        self.is_dark_theme = config.is_dark_theme()
+        self.color_found = QColor(theme.EDITOR_SIMNAME)
+        self.color_not_found = QColor(theme.TEXT_ERROR)
 
-        self.color_found = QColor(dark.EDITOR_SIMNAME)
-        self.color_not_found = QColor(dark.TEXT_ERROR)
-
-        self.color_null = QColor(dark.TEXT_MUTED) if self.is_dark_theme else QColor(light.TEXT_MUTED)
-        self.color_heading = QColor(dark.ACCENT if self.is_dark_theme else light.ACCENT)
+        self.color_null = QColor(theme.TEXT_MUTED)
+        self.color_heading = QColor(theme.ACCENT)
 
     def rowCount(self, parent=None):
         return self.count
@@ -122,7 +119,7 @@ class Model(QAbstractTableModel):
             if extension:
                 if not item.exists:
                     return self.color_null
-                elif self.is_dark_theme:
+                else:
                     return self.color_found if item.exists_strings else self.color_not_found
             else:
                 return self.color_heading
@@ -155,7 +152,7 @@ class Model(QAbstractTableModel):
         found = self.summary['found']
         missing = self.summary['missing']
         label = 'pack' if total == 1 else 'packs'
-        return f'{total} {label} listed | {ready} ready | {found} found | {missing} missing'
+        return f'{total} {label} listed · {ready} ready · {found} found · {missing} missing'
 
 
 class PackStatusDelegate(QStyledItemDelegate):
@@ -176,20 +173,20 @@ class PackStatusDelegate(QStyledItemDelegate):
             return
 
         if item.exists_strings:
-            bg = QColor(dark.SUCCESS if self.__model.is_dark_theme else light.SUCCESS)
+            bg = QColor(theme.SUCCESS)
             fg = QColor('#ffffff')
         elif item.exists:
-            bg = QColor(dark.WARNING if self.__model.is_dark_theme else light.WARNING)
+            bg = QColor(theme.WARNING)
             fg = QColor('#172433')
         else:
-            bg = QColor(dark.PANEL_RAISED if self.__model.is_dark_theme else light.PANEL_RAISED)
-            fg = QColor(dark.TEXT_MUTED if self.__model.is_dark_theme else light.TEXT_MUTED)
+            bg = QColor(theme.PANEL_RAISED)
+            fg = QColor(theme.TEXT_MUTED)
 
         text = item.status
         painter.save()
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        width = min(option.rect.width() - 12, max(84, option.fontMetrics.horizontalAdvance(text) + 22))
-        rect = option.rect.adjusted(option.rect.width() - width - 6, 5, -6, -5)
+        width = min(option.rect.width() - 12, max(96, option.fontMetrics.horizontalAdvance(text) + 26))
+        rect = option.rect.adjusted(option.rect.width() - width - 6, 6, -6, -6)
         painter.setPen(Qt.PenStyle.NoPen)
         painter.setBrush(bg)
         painter.drawRoundedRect(rect, 8, 8)
@@ -204,6 +201,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         super().__init__(parent)
         self.setupUi(self)
         self.setWindowIcon(QIcon(':/logo.ico'))
+        self.__configure_action_icons()
 
         self.main_window = parent
 
@@ -258,11 +256,11 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
 
         header = self.tableview.verticalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeMode.Fixed)
-        header.setDefaultSectionSize(26)
+        header.setDefaultSectionSize(32)
 
         self.tableview.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
 
-        self.tableview.setColumnWidth(2, 150)
+        self.tableview.setColumnWidth(2, 170)
         self.tableview.setColumnHidden(0, True)
 
         self.tableview.setItemDelegate(PackStatusDelegate(model=self.model))
@@ -277,6 +275,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
     def retranslate(self):
         self.setWindowTitle(interface.text('OptionsDialog', 'Options and dictionaries'))
         self.gb_interface.setTitle(interface.text('OptionsDialog', 'Interface'))
+        self.gb_safety.setTitle(interface.text('OptionsDialog', 'Safety defaults'))
         self.cb_backup.setText(interface.text('OptionsDialog', 'Create backup before Finalize'))
         self.cb_backup.setToolTip(interface.text(
             'OptionsDialog',
@@ -296,8 +295,14 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             'When enabled, dictionary auto-fill is stricter and avoids fallback matches from the same source text. '
             'Leave disabled to reuse more dictionary translations, then review context-sensitive strings manually.'
         ))
+        self.lbl_safety_hint.setText(interface.text(
+            'OptionsDialog',
+            'These choices are saved automatically. For Vietnamese release work, keep backups on, leave '
+            'conflict-free mode off unless testing a copy, and review context-sensitive dictionary matches.'
+        ))
         self.gb_path.setTitle(interface.text('OptionsDialog', 'Game path'))
         self.gb_lang.setTitle(interface.text('OptionsDialog', 'Languages'))
+        self.gb_pack_manager.setTitle(interface.text('OptionsDialog', 'Pack Manager'))
         self.label_source.setText(interface.text('OptionsDialog', 'Source'))
         self.label_dest.setText(interface.text('OptionsDialog', 'Destination'))
         self.btn_build.setText(interface.text('OptionsDialog', 'Build dictionaries'))
@@ -355,6 +360,19 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         index = self.cb_pack_category.findData(current)
         self.cb_pack_category.setCurrentIndex(index if index >= 0 else 0)
         self.cb_pack_category.blockSignals(False)
+
+    def __configure_action_icons(self):
+        button_icons = (
+            (self.btn_path, ':/images/load.png', QSize(20, 20)),
+            (self.btn_deepl_test, ':/images/life_validate.png', QSize(20, 20)),
+            (self.btn_deepl_usage, ':/images/api.png', QSize(20, 20)),
+            (self.btn_build, ':/images/dict.png', QSize(22, 22)),
+        )
+        for button, icon_path, size in button_icons:
+            icon = QIcon(icon_path)
+            button.setIcon(icon)
+            button.setIconSize(size)
+            button.setMinimumHeight(max(button.minimumHeight(), size.height() + 12))
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:

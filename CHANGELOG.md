@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 1.4.1 - 2026-05-21
+
+- Added the Life Studio Green rebrand with a single green asset system.
+- Added community Vietnamese destination locale `VI_VN` and default `ENG_US -> VI_VN` workflow.
+- Added a partial Vietnamese interface language with English fallback for untranslated strings.
+- Added Pre-release Validation Report with Soft and Strict release profiles.
+- Added DeepL key diagnostics, usage checks, batch cost guard, context, glossary ID support, and safer placeholder handling.
+- Added a Windows build script for repeatable PyInstaller builds.
+- Improved the table-first workspace, Selection Preview, Editor token highlighting, Options, Pack Manager, and release QA documentation.
+
 ## Version 1.4 - 2025-08-05
 
 - Resolved issues with Google Translate (It's not perfect, so check the results)

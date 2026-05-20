@@ -5,6 +5,7 @@ import ctypes
 import ctypes.wintypes
 import xml.etree.ElementTree as ElementTree
 from xml.dom import minidom
+from copy import deepcopy
 from typing import Union
 
 from utils.constants import *
@@ -62,6 +63,9 @@ class ConfigManager:
             'source': 'ENG_US',
             'destination': 'VI_VN'
         },
+        'migrations': {
+            'translation_default_vi_vn': False
+        },
         'api': {
             'engine': '',
             'deepl_key': '',
@@ -86,13 +90,15 @@ class ConfigManager:
 
     def __init__(self) -> None:
         self.__config_file = './prefs/config.xml'
-        self.__config = self.DEFAULTS.copy()
+        self.__config = deepcopy(self.DEFAULTS)
         self.__load()
 
     def __load(self) -> None:
         try:
             self.__update_defaults_from_file()
         except (ElementTree.ParseError, FileNotFoundError) as e:
+            self.save()
+        if self.__normalize_translation_defaults():
             self.save()
 
     def save(self) -> None:
@@ -130,6 +136,17 @@ class ConfigManager:
                     self.__config[section_name] = {}
                 self.__config[section_name][option_name] = option_value
 
+    def __normalize_translation_defaults(self) -> bool:
+        migrated = self.value('migrations', 'translation_default_vi_vn')
+        if migrated:
+            return False
+
+        if self.value('translation', 'source') == 'ENG_US' and self.value('translation', 'destination') == 'FRE_FR':
+            self.set_value('translation', 'destination', 'VI_VN')
+
+        self.set_value('migrations', 'translation_default_vi_vn', True)
+        return True
+
     @staticmethod
     def __convert_value(value: str) -> Union[str, int, bool, None]:
         if value is None:
@@ -152,7 +169,7 @@ class ConfigManager:
         name = self.value('interface', 'theme')
         if name != 'balanced':
             self.set_value('interface', 'theme', 'balanced')
-        return 'dark'
+        return 'life'
 
     def is_dark_theme(self):
         return True

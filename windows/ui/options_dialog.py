@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PySide6.QtCore import QMetaObject, Qt
+from PySide6.QtCore import QMetaObject, QSize, Qt
 from PySide6.QtWidgets import QWidget, QAbstractItemView, QCheckBox, QComboBox, QGroupBox, QHBoxLayout, QLabel, \
     QLineEdit, QPushButton, QTableView, QVBoxLayout, QTabWidget, QHeaderView
 
@@ -8,10 +8,13 @@ from PySide6.QtWidgets import QWidget, QAbstractItemView, QCheckBox, QComboBox, 
 class Ui_OptionsDialog(object):
 
     def setupUi(self, OptionsDialog):
-        OptionsDialog.resize(680, 620)
-        OptionsDialog.setMinimumSize(620, 520)
+        OptionsDialog.resize(840, 680)
+        OptionsDialog.setMinimumSize(760, 580)
+        OptionsDialog.setObjectName('optionsDialog')
 
         layout = QVBoxLayout(OptionsDialog)
+        layout.setContentsMargins(14, 14, 14, 14)
+        layout.setSpacing(10)
 
         self.tab_general = QWidget()
         self.tab_dictionaries = QWidget()
@@ -29,10 +32,14 @@ class Ui_OptionsDialog(object):
 
     def build_general_tab(self):
         vlayout = QVBoxLayout(self.tab_general)
+        vlayout.setContentsMargins(8, 8, 8, 8)
+        vlayout.setSpacing(10)
 
         self.gb_interface = QGroupBox(self.tab_general)
+        self.gb_interface.setObjectName('optionsSection')
 
         layout_group = QVBoxLayout(self.gb_interface)
+        layout_group.setSpacing(8)
 
         layout_lang = QHBoxLayout()
         self.lbl_language = QLabel(self.gb_interface)
@@ -70,22 +77,30 @@ class Ui_OptionsDialog(object):
 
         vlayout.addWidget(self.gb_interface)
 
-        gbox = QGroupBox(self.tab_general)
-        layout_group = QVBoxLayout(gbox)
+        self.gb_safety = QGroupBox(self.tab_general)
+        self.gb_safety.setObjectName('optionsSection')
+        layout_group = QVBoxLayout(self.gb_safety)
+        layout_group.setSpacing(7)
 
-        self.cb_backup = QCheckBox(gbox)
-        self.cb_experemental = QCheckBox(gbox)
-        self.cb_strong = QCheckBox(gbox)
+        self.cb_backup = QCheckBox(self.gb_safety)
+        self.cb_experemental = QCheckBox(self.gb_safety)
+        self.cb_strong = QCheckBox(self.gb_safety)
+        self.lbl_safety_hint = QLabel(self.gb_safety)
+        self.lbl_safety_hint.setObjectName('optionsHint')
+        self.lbl_safety_hint.setWordWrap(True)
 
         layout_group.addWidget(self.cb_backup)
         layout_group.addWidget(self.cb_experemental)
         layout_group.addWidget(self.cb_strong)
+        layout_group.addWidget(self.lbl_safety_hint)
 
-        vlayout.addWidget(gbox)
+        vlayout.addWidget(self.gb_safety)
 
         self.gb_lang = QGroupBox(self.tab_general)
+        self.gb_lang.setObjectName('optionsSection')
 
         layout_lang = QHBoxLayout(self.gb_lang)
+        layout_lang.setSpacing(10)
 
         self.label_source = QLabel(self.gb_lang)
         self.label_dest = QLabel(self.gb_lang)
@@ -104,8 +119,10 @@ class Ui_OptionsDialog(object):
         vlayout.addWidget(self.gb_lang)
 
         self.gb_deepl = QGroupBox(self.tab_general)
+        self.gb_deepl.setObjectName('optionsSection')
 
         layout_deepl = QVBoxLayout(self.gb_deepl)
+        layout_deepl.setSpacing(8)
 
         self.txt_deepl_key = QLineEdit(self.gb_deepl)
         self.txt_deepl_key.setEchoMode(QLineEdit.EchoMode.Password)
@@ -117,6 +134,8 @@ class Ui_OptionsDialog(object):
         self.btn_deepl_usage = QPushButton(self.gb_deepl)
         self.btn_deepl_test.setAutoDefault(False)
         self.btn_deepl_usage.setAutoDefault(False)
+        self.btn_deepl_test.setIconSize(QSize(20, 20))
+        self.btn_deepl_usage.setIconSize(QSize(20, 20))
         layout_deepl_actions.addWidget(self.btn_deepl_test)
         layout_deepl_actions.addWidget(self.btn_deepl_usage)
         layout_deepl_actions.addStretch()
@@ -142,18 +161,23 @@ class Ui_OptionsDialog(object):
 
     def build_dictionaries_tab(self):
         vlayout = QVBoxLayout(self.tab_dictionaries)
-        vlayout.setSpacing(8)
+        vlayout.setContentsMargins(8, 8, 8, 8)
+        vlayout.setSpacing(10)
 
         self.gb_path = QGroupBox(self.tab_dictionaries)
+        self.gb_path.setObjectName('optionsSection')
 
         layout_path_group = QVBoxLayout(self.gb_path)
+        layout_path_group.setSpacing(8)
         layout_path = QHBoxLayout()
+        layout_path.setSpacing(8)
 
         self.txt_path = QLineEdit(self.gb_path)
 
         self.btn_path = QPushButton(self.gb_path)
         self.btn_path.setText('Browse...')
         self.btn_path.setAutoDefault(False)
+        self.btn_path.setIconSize(QSize(20, 20))
 
         layout_path.addWidget(self.txt_path)
         layout_path.addWidget(self.btn_path)
@@ -166,15 +190,20 @@ class Ui_OptionsDialog(object):
 
         vlayout.addWidget(self.gb_path)
 
+        self.gb_pack_manager = QGroupBox(self.tab_dictionaries)
+        self.gb_pack_manager.setObjectName('optionsSection')
+        layout_pack_manager = QVBoxLayout(self.gb_pack_manager)
+        layout_pack_manager.setSpacing(8)
+
         layout_summary = QHBoxLayout()
         layout_summary.setSpacing(8)
 
-        self.txt_pack_search = QLineEdit(self.tab_dictionaries)
+        self.txt_pack_search = QLineEdit(self.gb_pack_manager)
         self.txt_pack_search.setObjectName('packSearch')
-        self.cb_pack_category = QComboBox(self.tab_dictionaries)
+        self.cb_pack_category = QComboBox(self.gb_pack_manager)
         self.cb_pack_category.setObjectName('packCategory')
 
-        self.lbl_pack_summary = QLabel(self.tab_dictionaries)
+        self.lbl_pack_summary = QLabel(self.gb_pack_manager)
         self.lbl_pack_summary.setObjectName('packSummaryLabel')
         self.lbl_pack_summary.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
 
@@ -182,15 +211,16 @@ class Ui_OptionsDialog(object):
         layout_summary.addWidget(self.cb_pack_category)
         layout_summary.addWidget(self.lbl_pack_summary)
 
-        vlayout.addLayout(layout_summary)
+        layout_pack_manager.addLayout(layout_summary)
 
-        self.lbl_pack_empty = QLabel(self.tab_dictionaries)
+        self.lbl_pack_empty = QLabel(self.gb_pack_manager)
         self.lbl_pack_empty.setObjectName('packHintLabel')
         self.lbl_pack_empty.setWordWrap(True)
         self.lbl_pack_empty.setVisible(False)
-        vlayout.addWidget(self.lbl_pack_empty)
+        layout_pack_manager.addWidget(self.lbl_pack_empty)
 
-        self.tableview = QTableView(self.tab_dictionaries)
+        self.tableview = QTableView(self.gb_pack_manager)
+        self.tableview.setObjectName('packManagerTable')
         self.tableview.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.tableview.setAutoScroll(False)
         self.tableview.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -203,11 +233,14 @@ class Ui_OptionsDialog(object):
 
         header = self.tableview.verticalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeMode.Fixed)
-        header.setDefaultSectionSize(26)
+        header.setDefaultSectionSize(32)
         header.setVisible(False)
         
-        self.btn_build = QPushButton(self.tab_dictionaries)
+        self.btn_build = QPushButton(self.gb_pack_manager)
+        self.btn_build.setObjectName('packBuildButton')
         self.btn_build.setAutoDefault(False)
+        self.btn_build.setIconSize(QSize(22, 22))
 
-        vlayout.addWidget(self.tableview)
-        vlayout.addWidget(self.btn_build)
+        layout_pack_manager.addWidget(self.tableview)
+        layout_pack_manager.addWidget(self.btn_build)
+        vlayout.addWidget(self.gb_pack_manager)

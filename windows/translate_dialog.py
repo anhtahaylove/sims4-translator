@@ -11,8 +11,7 @@ from windows.ui.translate_dialog import Ui_TranslateDialog
 
 from storages.records import MainRecord
 
-import themes.light as light
-import themes.dark as dark
+import themes.balanced as theme
 
 from singletons.config import config
 from singletons.interface import interface
@@ -345,8 +344,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
     def __error_translate_chunk(self, text: str):
         if not self.__error:
             self.__error = True
-            color = dark.TEXT_ERROR if config.is_dark_theme() else light.TEXT_ERROR
-            self.__log.append(f'<span style="color: {color};">{text}</span>')
+            self.__log.append(f'<span style="color: {theme.TEXT_ERROR};">{text}</span>')
             self.print_log()
             self.stop_translate()
 

@@ -1,50 +1,123 @@
 # The Sims 4 Translator Plus
 
-**The Sims 4 Translator Plus** là bản fork cộng đồng của
-[voky1/sims4-translator](https://github.com/voky1/sims4-translator), một ứng
-dụng desktop dùng để dịch chuỗi text trong package mod của The Sims 4.
-
-Bản fork này giữ nguyên định dạng package/export và workflow dịch của app gốc,
-đồng thời bổ sung ổn định hiệu năng, xử lý job bất đồng bộ, dedupe an toàn,
-synthetic smoke test, và chuẩn bị lại tài liệu để public open-source bài bản hơn.
-
-> Dự án này không liên kết với Electronic Arts, Maxis, The Sims, hoặc maintainer
-> upstream. The Sims 4 là trademark của chủ sở hữu tương ứng.
+**The Sims 4 Translator Plus** là ứng dụng desktop Windows hỗ trợ dịch chuỗi
+text trong mod/package của The Sims 4. Dự án này là bản fork cộng đồng từ
+[voky1/sims4-translator](https://github.com/voky1/sims4-translator), giữ nguyên
+workflow package/export quen thuộc và bổ sung giao diện Life Studio Green, hỗ trợ
+`VI_VN`, kiểm tra trước khi phát hành, job chạy nền an toàn hơn, và build Windows
+lặp lại được.
 
 [English README](README.md)
 
-## Trạng Thái
+> Dự án này không liên kết với Electronic Arts, Maxis, The Sims, hoặc maintainer
+> upstream. The Sims 4 là trademark của chủ sở hữu tương ứng. Fork này dùng asset
+> cộng đồng tự tạo, không ship artwork, logo, font, hoặc UI asset chính thức của
+> EA, Maxis, hoặc The Sims.
 
-Fork này đang được chuẩn bị để public open-source. Trọng tâm hiện tại là ổn định,
-rebrand rõ ràng, và kiểm tra release trước khi phân phối rộng rãi.
+## Điểm nổi bật
 
-## Công Cụ Này Làm Gì
+- Workspace dạng bảng, ưu tiên làm việc với package lớn.
+- Locale cộng đồng cho Việt hóa: `VI_VN`.
+- Workflow mặc định: `ENG_US -> VI_VN`.
+- Search hybrid theo ID, Original, hoặc Translation.
+- Selection Preview để đọc chuỗi dài ngay trên màn hình chính.
+- Editor Focus Studio có highlight token và cảnh báo token mềm.
+- Batch Translate có DeepL cost guard và kiểm tra usage/API key.
+- Pre-release Validation Report với chế độ Soft release và Strict release.
+- Save as package, Finalize, và Export giữ nguyên format hiện có.
+- Giao diện Life Studio Green và bộ resource rebrand thống nhất.
+- Script build Windows bằng PyInstaller dạng build-only dependency.
 
-- Mở nguồn dịch `.package`, `.stbl`, `.xml`, `.json`, và `.binary`.
-- Hiển thị source và bản dịch trong workspace desktop.
-- Dịch từ dictionary hoặc các engine dịch online được app hỗ trợ.
-- Lưu dictionary để tái sử dụng khi mod cập nhật phiên bản mới.
-- Export bản dịch sang STBL, XML, XML-DP, JSON, Binary, hoặc Translation Hub CSV.
-- Lưu bản dịch thành package riêng hoặc finalize vào bản copy của package.
+## Định dạng hỗ trợ
 
-## Cải Tiến Trong Fork Này
+App có thể mở:
 
-- Async hóa package loading, dictionary loading, export, save, và finalize.
-- UI vẫn phản hồi trong lúc job nền đang chạy.
-- Chuỗi duplicate exact trong package được bỏ qua, không import vào workspace.
-- Export/save/finalize giữ nguyên format hiện tại nhưng tránh ghi duplicate rows.
-- Job Drawer log non-modal cho các summary load/import/export/save.
-- Hỗ trợ destination cộng đồng `VI_VN` cho workflow Việt hóa fan localization.
-- Giao diện TS4 Plus Balanced thống nhất, không còn cảm giác tách rời giữa light/dark theme.
-- Synthetic package generator và verifier để smoke test GUI khi không có package thật.
-- Regression tests cho dedupe, import, cancel translate, export, save, finalize, và smoke artifacts.
+- `.package`
+- `.stbl`
+- `.xml`
+- `.json`
+- `.binary`
 
-## Cài Đặt Và Chạy Từ Source
+App có thể export hoặc lưu bản dịch thành:
+
+- STBL
+- XML
+- XML-DP cho Deaderpool's STBL editor
+- JSON
+- Binary
+- Translation Hub CSV
+- `.package` đã chứa bản dịch
+
+## Tải và chạy
+
+Người dùng thông thường nên tải bản Windows ZIP tại trang
+[Releases](https://github.com/anhtahaylove/sims4-translator/releases), giải nén,
+rồi chạy:
+
+```text
+The Sims 4 Translator Plus.exe
+```
+
+App lưu thiết lập cá nhân trong `prefs/config.xml` cạnh ứng dụng khi chạy từ
+source hoặc từ bản build đã giải nén. File config local này không được commit vào
+git.
+
+## Workflow Việt hóa khuyến nghị
+
+Thiết lập nên dùng:
+
+- Source: `ENG_US`
+- Destination: `VI_VN`
+- Interface Language: `Vietnamese` hoặc `English`
+- Create backup before Finalize: bật
+- Use conflict-free save mode: tắt, trừ khi bạn đang test trên package copy
+
+Quy trình phát hành an toàn:
+
+1. Open hoặc Add một hay nhiều file `.package`.
+2. Search, filter, edit, translate, và approve các string.
+3. Chạy `Validate Release...`.
+4. Dùng `Save as package` để tạo package đưa vào thư mục Mods.
+5. Test package trong `Documents\Electronic Arts\The Sims 4\Mods`.
+6. Chỉ dùng `Finalize` khi bạn thật sự muốn ghi lại vào một package copy.
+
+`VI_VN` là locale cộng đồng/fan dành cho workflow Việt hóa. Nó không được trình
+bày như locale chính thức của EA.
+
+## Thiết lập DeepL
+
+DeepL là tùy chọn. Cách dùng:
+
+1. Mở `Options`.
+2. Dán DeepL API key.
+3. Bấm `Test key` để kiểm tra key mà không tốn ký tự dịch.
+4. Bấm `Check usage` trước khi batch translate lớn.
+5. Chọn DeepL trong Editor hoặc Batch Translate.
+
+Optional glossary ID chỉ cần khi bạn đã tự tạo glossary trong DeepL và muốn các
+thuật ngữ như `Trait`, `Lot`, hoặc `Moodlet` được dịch nhất quán. Batch Translate
+sẽ ước tính số ký tự nguồn trước khi gửi job DeepL để tránh tốn quota ngoài ý muốn.
+
+## Validate Release là gì?
+
+`Validate Release...` là báo cáo kiểm tra trước khi bạn public hoặc ghi file phát
+hành. Nó giúp phát hiện rủi ro blank text, thiếu Sims token, lệch `\n`, lệch tag,
+duplicate output, hoặc lỗi chuyển sang destination locale.
+
+- **Soft release**: phù hợp trong lúc làm việc. Untranslated, Draft, và Needs
+  review là warning.
+- **Strict release**: phù hợp trước khi public. Untranslated, Draft, và Needs
+  review là critical.
+
+Report này là safety gate mềm. Bạn có thể quay lại sửa hoặc tiếp tục nếu thật sự
+muốn, nhưng nên sửa các lỗi critical trước khi phát hành rộng rãi.
+
+## Chạy từ source
 
 Yêu cầu:
 
+- Windows
 - Python 3.12+
-- Windows là môi trường desktop chính đang được test.
 
 Cài dependency:
 
@@ -58,71 +131,55 @@ Chạy app:
 python main.py
 ```
 
-## Workflow Cơ Bản
+## Kiểm tra khi phát triển
 
-1. Chọn ngôn ngữ nguồn và ngôn ngữ đích trong Options. Nếu Việt hóa, chọn destination `VI_VN`.
-2. Mở package mod hoặc file dịch được hỗ trợ.
-3. Chỉnh sửa hoặc tạo bản dịch.
-4. Validate các dòng đã dịch.
-5. Export định dạng cần dùng, lưu dictionary, save thành package mới, hoặc finalize vào bản copy package.
-
-## Synthetic GUI Smoke Test
-
-Nếu bạn không có package mod thật, hãy tạo package test cố định:
-
-```powershell
-python scripts\create_synthetic_package.py
-```
-
-Package sẽ được ghi vào:
-
-```text
-build/synthetic/synthetic_smoke.package
-```
-
-Mở app, load package đó, và xác nhận bảng chỉ có hai dòng unique: `Hello` và
-`World`. Sau đó export các định dạng STBL/XML/XML-DP/JSON/Binary/CSV, rồi thử
-Save As hoặc Finalize As.
-
-Sau khi click-through thủ công, chạy verifier:
-
-```powershell
-python scripts\verify_synthetic_smoke.py --directory build\synthetic --require-gui-outputs
-```
-
-Verifier kiểm tra export chỉ có hai chuỗi unique, duplicate không quay lại, không
-còn file tạm `.tmp`, và package vẫn load qua storage layer bình thường với dedupe bật.
-
-## Kiểm Tra Khi Phát Triển
-
-Chạy toàn bộ regression tests:
+Chạy các lệnh kiểm tra:
 
 ```powershell
 python -m unittest discover -s tests -v
+python -m compileall -q models packer singletons storages themes utils widgets windows tests scripts main.py
+python scripts\create_synthetic_package.py
+python scripts\verify_synthetic_smoke.py --directory build\synthetic --require-gui-outputs
+git diff --check
 ```
 
-Chạy compile checks:
+## Build Windows
+
+Script build tạo venv tạm trong `%TEMP%`, cài PyInstaller ở đó, chạy kiểm tra,
+rồi build app Windows:
 
 ```powershell
-python -m compileall -q models packer singletons storages themes utils widgets windows tests scripts
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build_windows.ps1
 ```
 
-## Đóng Góp
+PyInstaller chỉ là dependency phục vụ build, không phải runtime dependency và
+không nằm trong `requirements.txt`.
 
-Xem [CONTRIBUTING.md](CONTRIBUTING.md) để biết workflow phát triển, kỳ vọng test,
-và checklist release.
+Không commit các output local:
 
-## License Và Credits
+- `build/`
+- `dist/`
+- file `.spec` sinh ra
+- file `.package` sinh ra
+- dictionary local
+- `prefs/config.xml`
 
-Fork này được phân phối theo MIT License. Xem [LICENSE](LICENSE) và
-[NOTICE.md](NOTICE.md).
+## Checklist phát hành
 
-Dự án gốc: [voky1/sims4-translator](https://github.com/voky1/sims4-translator)
+Xem [docs/release-checklist.md](docs/release-checklist.md) để biết workflow
+Việt hóa, checklist QA package lớn, ghi chú DeepL, và quy tắc release hygiene.
+
+## License và credit
+
+Fork này phát hành theo MIT License. Xem [LICENSE](LICENSE) và [NOTICE.md](NOTICE.md).
+
+Dự án gốc:
+[voky1/sims4-translator](https://github.com/voky1/sims4-translator)
 
 Ý tưởng ban đầu được credit cho
 [xTranslator](https://www.nexusmods.com/skyrimspecialedition/mods/134).
 
-Fonts:
+Font đi kèm:
 
 - [Roboto](https://fonts.google.com/specimen/Roboto), Apache License 2.0.
 - [JetBrains Mono](https://www.jetbrains.com/lp/mono/), SIL Open Font License 1.1.

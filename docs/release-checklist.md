@@ -36,6 +36,12 @@ Run `Validate Release...` before publishing and review the report.
 
 Use a real large package/DLC when available. If not available, use an ignored temporary package under `build\visual-qa`.
 
+Create the fallback package from the repo root:
+
+```powershell
+python scripts\create_visual_qa_package.py --records 100000 --resources 4
+```
+
 Pass criteria:
 
 - Loading a large package finishes and table rows remain visible after resize.

@@ -262,7 +262,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_export_xml.setText(interface.text('MainWindow', 'To XML...'))
         self.action_translate_from_dictionaries.setText(interface.text('MainWindow', 'Translate from dictionaries'))
         self.action_translate.setText(interface.text('MainWindow', 'Batch translate...'))
-        self.action_validate_release.setText('Validate Release...')
+        self.action_validate_release.setText(interface.text('MainWindow', 'Validate Release...'))
         self.action_finalize.setText(interface.text('MainWindow', 'Finalize package'))
         self.action_finalize_as.setText(interface.text('MainWindow', 'Finalize package as...'))
         self.action_export_xml_dp.setText(interface.text('MainWindow', 'To XML (Deaderpool\'s STBL editor)...'))
@@ -280,7 +280,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_num_source.setText(interface.text('MainWindow', 'From the source file'))
         self.action_num_xml.setText(interface.text('MainWindow', 'XML format'))
         self.action_num_xml_dp.setText(interface.text('MainWindow', 'XML format (Deaderpool\'s STBL editor)'))
-        self.action_colorbar.setText(interface.text('MainWindow', 'Color visualization'))
+        self.action_colorbar.setText(interface.text('MainWindow', 'Status Overview Bar'))
+        self.action_colorbar.setToolTip(interface.text(
+            'MainWindow',
+            'Show a thin status distribution bar above the table.'
+        ))
         self.action_activity_dock.setText('Activity Dock')
         self.menu_file.setTitle(interface.text('MainWindow', 'File'))
         self.menu_export_translation.setTitle(interface.text('MainWindow', 'Export translation'))
@@ -1181,6 +1185,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def colorbar_toggle(self):
         config.set_value('view', 'colorbar', self.action_colorbar.isChecked())
         self.colorbar.setVisible(config.value('view', 'colorbar') and app_state.packages_storage.enabled)
+        self.colorbar.resfesh()
 
     @Slot()
     def __selection_changed(self):

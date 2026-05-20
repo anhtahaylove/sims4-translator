@@ -1,50 +1,124 @@
 # The Sims 4 Translator Plus
 
-**The Sims 4 Translator Plus** is a community-maintained fork of
-[voky1/sims4-translator](https://github.com/voky1/sims4-translator), a desktop
-tool for translating The Sims 4 mod package strings.
+**The Sims 4 Translator Plus** is a community-maintained Windows desktop app for
+translating The Sims 4 mod and package strings. It is based on
+[voky1/sims4-translator](https://github.com/voky1/sims4-translator) and keeps the
+same package/export workflow while adding a rebranded Life Studio Green interface,
+Vietnamese localization support, release validation, safer background jobs, and
+repeatable Windows builds.
 
-This fork keeps the original app's package formats and translation workflow,
-then adds stability, async job handling, dedupe hardening, synthetic smoke tests,
-and a cleaner public release path.
+[README tiếng Việt](README.vi.md)
 
 > This project is not affiliated with Electronic Arts, Maxis, The Sims, or the
-> upstream maintainer. The Sims 4 is a trademark of its respective owners.
+> upstream maintainer. The Sims 4 is a trademark of its respective owner. This
+> fork uses original community assets and does not ship official EA, Maxis, or
+> The Sims artwork, logos, fonts, or UI assets.
 
-[Vietnamese README](README.vi.md)
+## Highlights
 
-## Status
+- Table-first translation workspace designed for large packages.
+- Community Vietnamese destination locale: `VI_VN`.
+- Default localization workflow: `ENG_US -> VI_VN`.
+- Hybrid search across ID, original text, and translated text.
+- Selection Preview for reading long strings without opening the editor.
+- Focus Studio editor with token highlighting and soft-confirm token warnings.
+- Batch translate with DeepL cost guard and API usage diagnostics.
+- Pre-release Validation Report with Soft and Strict release profiles.
+- Save as package, Finalize, and export flows preserve existing file formats.
+- Life Studio Green visual system with a single rebranded resource set.
+- Windows build script using PyInstaller as a build-only dependency.
 
-This fork is being prepared as a public open-source release. The current focus is
-stabilization and rebrand hygiene before wider distribution.
+## Supported Inputs And Outputs
 
-## What This Tool Does
+The app can open and work with:
 
-- Opens The Sims 4 `.package`, `.stbl`, `.xml`, `.json`, and `.binary` translation sources.
-- Displays source and translated strings in a desktop workspace.
-- Translates from dictionaries and supported online translation engines.
-- Saves dictionaries for reuse across mod updates.
-- Exports translations as STBL, XML, XML-DP, JSON, Binary, or Translation Hub CSV.
-- Saves translated strings as a separate package or finalizes them into a package copy.
+- `.package`
+- `.stbl`
+- `.xml`
+- `.json`
+- `.binary`
 
-## Improvements In This Fork
+The app can export or save translations as:
 
-- Async package loading, dictionary loading, export, save, and finalize workflows.
-- UI remains responsive while background jobs run.
-- Exact duplicate package strings are skipped instead of imported into the workspace.
-- Export/save/finalize paths preserve existing output formats while avoiding duplicate output rows.
-- Non-modal job drawer logs for load/import/export/save summaries.
-- Synthetic package generator and verifier for GUI smoke testing without real mod files.
-- Community Vietnamese destination locale `VI_VN` for Vietnamese fan localization workflows.
-- One balanced TS4 Plus desktop theme instead of a split light/dark visual system.
-- Regression tests for dedupe, import, translation cancellation, export, save, finalize, and smoke artifacts.
+- STBL
+- XML
+- XML-DP for Deaderpool's STBL editor
+- JSON
+- Binary
+- Translation Hub CSV
+- A translated `.package`
 
-## Install And Run From Source
+## Download And Run
+
+For normal users, download the Windows ZIP from the
+[Releases](https://github.com/anhtahaylove/sims4-translator/releases) page,
+extract it, and run:
+
+```text
+The Sims 4 Translator Plus.exe
+```
+
+The app stores local preferences in `prefs/config.xml` beside the app when run
+from source or from the extracted build. That local config is intentionally not
+tracked by git.
+
+## Vietnamese Workflow
+
+Recommended settings for Vietnamese localization:
+
+- Source: `ENG_US`
+- Destination: `VI_VN`
+- Interface Language: `Vietnamese` or `English`
+- Create backup before Finalize: enabled
+- Use conflict-free save mode: disabled unless you are testing a copied package
+
+Recommended release path:
+
+1. Open or add one or more `.package` files.
+2. Search, filter, edit, translate, and approve strings.
+3. Run `Validate Release...`.
+4. Use `Save as package` for a Mods-folder release.
+5. Test the generated package in `Documents\Electronic Arts\The Sims 4\Mods`.
+6. Use `Finalize` only when you deliberately want to rewrite a package copy.
+
+`VI_VN` is a community/fan locale for Vietnamese localization workflows. It is
+not presented as an official EA locale.
+
+## DeepL Setup
+
+DeepL is optional. To use it:
+
+1. Open `Options`.
+2. Paste your DeepL API key.
+3. Use `Test key` to verify the key without spending translation characters.
+4. Use `Check usage` before large batch jobs.
+5. Choose DeepL in the editor or Batch Translate dialog.
+
+The optional DeepL glossary ID is only needed if you already created a glossary
+in DeepL and want terms such as `Trait`, `Lot`, or `Moodlet` translated
+consistently. Batch Translate estimates source characters before sending a DeepL
+job so you can avoid spending quota accidentally.
+
+## Pre-release Validation
+
+Use `Validate Release...` before publishing a translation package.
+
+- **Soft release**: good during normal work. Untranslated, Draft, and Needs
+  review records are warnings.
+- **Strict release**: good before public release. Untranslated, Draft, and Needs
+  review records are critical.
+
+The report checks for blank-text risks, missing Sims tokens, line-break/tag
+issues, duplicate output conflicts, and destination locale conversion problems.
+It is a safety gate, not a destructive fixer: you can go back to fix issues or
+continue deliberately.
+
+## Run From Source
 
 Requirements:
 
+- Windows
 - Python 3.12+
-- Windows is the primary tested desktop target.
 
 Install dependencies:
 
@@ -58,73 +132,56 @@ Run the app:
 python main.py
 ```
 
-## Basic Workflow
+## Development Verification
 
-1. Select source and destination languages in Options. For Vietnamese fan localization, choose `VI_VN` as the destination.
-2. Open a mod package or supported translation file.
-3. Edit or generate translations.
-4. Validate translated rows.
-5. Export to the format you need, save a dictionary, save as a new package, or finalize into a package copy.
-
-## Synthetic GUI Smoke Test
-
-If you do not have a real mod package available, generate a deterministic test
-package:
-
-```powershell
-python scripts\create_synthetic_package.py
-```
-
-The package is written to:
-
-```text
-build/synthetic/synthetic_smoke.package
-```
-
-Open the app, load that package, and confirm the table shows two unique rows:
-`Hello` and `World`. Then export the loaded strings as STBL/XML/XML-DP/JSON/Binary/CSV,
-and try Save As or Finalize As.
-
-After the manual click-through, verify the generated artifacts:
-
-```powershell
-python scripts\verify_synthetic_smoke.py --directory build\synthetic --require-gui-outputs
-```
-
-The verifier checks that exports contain only the two unique strings, no duplicate
-rows came back, no temporary export files were left behind, and the package still
-loads through the normal storage layer with dedupe enabled.
-
-## Development Checks
-
-Run the full regression suite:
+Run the normal source checks:
 
 ```powershell
 python -m unittest discover -s tests -v
+python -m compileall -q models packer singletons storages themes utils widgets windows tests scripts main.py
+python scripts\create_synthetic_package.py
+python scripts\verify_synthetic_smoke.py --directory build\synthetic --require-gui-outputs
+git diff --check
 ```
 
-Run compile checks:
+## Windows Build
+
+The build script creates a temporary build venv under `%TEMP%`, installs
+PyInstaller there, runs verification, and builds the Windows app:
 
 ```powershell
-python -m compileall -q models packer singletons storages themes utils widgets windows tests scripts
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build_windows.ps1
 ```
 
-## Contributing
+PyInstaller is a build-only dependency. It is not required at runtime and is not
+listed in `requirements.txt`.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow, test
-expectations, and release checklist.
+Build outputs are local release artifacts and should not be committed:
+
+- `build/`
+- `dist/`
+- generated `.spec`
+- generated `.package`
+- local dictionaries
+- `prefs/config.xml`
+
+## Release Checklist
+
+See [docs/release-checklist.md](docs/release-checklist.md) for the Vietnamese
+release workflow, large-package QA checklist, DeepL notes, and release hygiene.
 
 ## License And Credits
 
 This fork is distributed under the MIT License. See [LICENSE](LICENSE) and
 [NOTICE.md](NOTICE.md).
 
-Original project: [voky1/sims4-translator](https://github.com/voky1/sims4-translator)
+Original project:
+[voky1/sims4-translator](https://github.com/voky1/sims4-translator)
 
 The original idea is credited to
 [xTranslator](https://www.nexusmods.com/skyrimspecialedition/mods/134).
 
-Fonts:
+Bundled fonts:
 
 - [Roboto](https://fonts.google.com/specimen/Roboto), Apache License 2.0.
 - [JetBrains Mono](https://www.jetbrains.com/lp/mono/), SIL Open Font License 1.1.

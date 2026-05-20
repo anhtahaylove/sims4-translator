@@ -6,10 +6,8 @@ from PySide6.QtWidgets import QWidget, QPlainTextEdit, QTextEdit, QMenu
 from PySide6.QtGui import QColor, QFont, QSyntaxHighlighter, QTextCursor, QPainter, QTextCharFormat, \
     QTextFormat, QIcon, QPen
 
-import themes.light as light
-import themes.dark as dark
+import themes.balanced as theme
 
-from singletons.config import config
 from singletons.interface import interface
 from widgets.token_highlight import (
     TOKEN_BRACE,
@@ -51,16 +49,14 @@ class QTextEditor(QPlainTextEdit):
 
         self.highlighter = BracketHighlighter(self.document())
 
-        is_dark_theme = config.is_dark_theme()
+        self.lines_color = QColor(theme.EDITOR_LINES)
+        self.lines_text = QColor(theme.EDITOR_LINES_TEXT)
 
-        self.lines_color = QColor(dark.EDITOR_LINES) if is_dark_theme else QColor(light.EDITOR_LINES)
-        self.lines_text = QColor(dark.EDITOR_LINES_TEXT) if is_dark_theme else QColor(light.EDITOR_LINES_TEXT)
-
-        lines_border = dark.EDITOR_LINES_BORDER if is_dark_theme else light.EDITOR_LINES_BORDER
+        lines_border = theme.EDITOR_LINES_BORDER
         self.lines_border = QColor(lines_border) if lines_border else None
 
-        self.line_color = QColor(dark.EDITOR_LINE) if is_dark_theme else QColor(light.EDITOR_LINE)
-        self.bracket_color = QColor(dark.EDITOR_BRACKET) if is_dark_theme else QColor(light.EDITOR_BRACKET)
+        self.line_color = QColor(theme.EDITOR_LINE)
+        self.bracket_color = QColor(theme.EDITOR_BRACKET)
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
@@ -237,7 +233,7 @@ class BracketHighlighter(QSyntaxHighlighter):
     def __init__(self, document):
         super().__init__(document)
 
-        colors = dark if config.is_dark_theme() else light
+        colors = theme
         self.__formats = {
             TOKEN_BRACE: self.getTokenFormat(colors.ACCENT, True),
             TOKEN_LINEBREAK: self.getTokenFormat(colors.TEXT_ERROR, True),

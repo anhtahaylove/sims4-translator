@@ -3,6 +3,7 @@
 from PySide6.QtCore import QObject, QThreadPool, QRunnable, Signal, Slot
 from PySide6.QtWidgets import QFrame, QHBoxLayout
 
+from singletons.interface import interface
 from singletons.state import app_state
 from singletons.signals import color_signals
 from utils.constants import *
@@ -80,6 +81,7 @@ class QColorBar(QFrame):
         self.layout.addWidget(self.validated)
         self.layout.addWidget(self.progress)
         self.layout.addWidget(self.unvalidated)
+        self.setToolTip(interface.text('MainWindow', 'Show a thin status distribution bar above the table.'))
 
         color_signals.update.connect(self.__update)
 
@@ -109,3 +111,7 @@ class QColorBar(QFrame):
         self.layout.setStretch(1, validated_count)
         self.layout.setStretch(2, progess_count)
         self.layout.setStretch(3, unvalidated_count)
+        self.setToolTip(
+            f'Approved {validated_count:,} · Needs review {progess_count:,} · '
+            f'Draft {translated_count:,} · Untranslated {unvalidated_count:,}'
+        )

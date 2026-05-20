@@ -22,6 +22,8 @@ class Interface:
 
     LEGACY_LANGUAGE_ALIASES = {
         'english': 'en_US',
+        'vietnamese': 'vi_VN',
+        'vi': 'vi_VN',
     }
 
     def __init__(self) -> None:

@@ -5,16 +5,11 @@ from PySide6.QtCore import QFile, QIODevice, QTextStream
 
 import themes.balanced as balanced
 
-from singletons.config import config
-
 
 def stylesheet():
-    theme_name = config.theme_name
     colors = balanced
 
     colors_dict = {
-        '__THEME__': theme_name,
-
         '__WINDOW__': colors.WINDOW,
         '__SURFACE__': colors.SURFACE,
         '__PANEL__': colors.PANEL,

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ts language="vi_VN" name="Vietnamese" version="1.4.1" authors="Community">
+  <context name="MainWindow">
+    <string>
+      <source>File</source>
+      <translation>Tệp</translation>
+    </string>
+    <string>
+      <source>Translation</source>
+      <translation>Dịch thuật</translation>
+    </string>
+    <string>
+      <source>View</source>
+      <translation>Hiển thị</translation>
+    </string>
+    <string>
+      <source>Options</source>
+      <translation>Tùy chọn</translation>
+    </string>
+    <string>
+      <source>Help</source>
+      <translation>Trợ giúp</translation>
+    </string>
+    <string>
+      <source>Load file...</source>
+      <translation>Mở tệp...</translation>
+    </string>
+    <string>
+      <source>Add file...</source>
+      <translation>Thêm tệp...</translation>
+    </string>
+    <string>
+      <source>Save</source>
+      <translation>Lưu</translation>
+    </string>
+    <string>
+      <source>Save as...</source>
+      <translation>Lưu thành...</translation>
+    </string>
+    <string>
+      <source>Import translation...</source>
+      <translation>Nhập bản dịch...</translation>
+    </string>
+    <string>
+      <source>Export translation</source>
+      <translation>Xuất bản dịch</translation>
+    </string>
+    <string>
+      <source>Batch translate...</source>
+      <translation>Dịch hàng loạt...</translation>
+    </string>
+    <string>
+      <source>Save dictionary</source>
+      <translation>Lưu từ điển</translation>
+    </string>
+    <string>
+      <source>Options...</source>
+      <translation>Tùy chọn...</translation>
+    </string>
+    <string>
+      <source>Validate Release...</source>
+      <translation>Kiểm tra bản phát hành...</translation>
+    </string>
+    <string>
+      <source>Status Overview Bar</source>
+      <translation>Thanh tổng quan trạng thái</translation>
+    </string>
+    <string>
+      <source>Show a thin status distribution bar above the table.</source>
+      <translation>Hiển thị thanh mỏng cho biết tỷ lệ trạng thái phía trên bảng.</translation>
+    </string>
+  </context>
+  <context name="OptionsDialog">
+    <string>
+      <source>Options and dictionaries</source>
+      <translation>Tùy chọn và từ điển</translation>
+    </string>
+    <string>
+      <source>Interface</source>
+      <translation>Giao diện</translation>
+    </string>
+    <string>
+      <source>Safety defaults</source>
+      <translation>Thiết lập an toàn</translation>
+    </string>
+    <string>
+      <source>Languages</source>
+      <translation>Ngôn ngữ</translation>
+    </string>
+    <string>
+      <source>Source</source>
+      <translation>Nguồn</translation>
+    </string>
+    <string>
+      <source>Destination</source>
+      <translation>Đích</translation>
+    </string>
+    <string>
+      <source>Language</source>
+      <translation>Ngôn ngữ giao diện</translation>
+    </string>
+    <string>
+      <source>Create backup before Finalize</source>
+      <translation>Tạo bản sao lưu trước khi Finalize</translation>
+    </string>
+    <string>
+      <source>Use conflict-free save mode (experimental)</source>
+      <translation>Dùng chế độ lưu tránh xung đột (thử nghiệm)</translation>
+    </string>
+    <string>
+      <source>Only use exact dictionary matches</source>
+      <translation>Chỉ dùng bản dịch khớp chính xác trong từ điển</translation>
+    </string>
+    <string>
+      <source>DeepL API key</source>
+      <translation>Khóa API DeepL</translation>
+    </string>
+    <string>
+      <source>Test key</source>
+      <translation>Kiểm tra khóa</translation>
+    </string>
+    <string>
+      <source>Check usage</source>
+      <translation>Kiểm tra dung lượng</translation>
+    </string>
+    <string>
+      <source>Changes are saved automatically.</source>
+      <translation>Thay đổi được lưu tự động.</translation>
+    </string>
+    <string>
+      <source>Game path</source>
+      <translation>Đường dẫn game</translation>
+    </string>
+    <string>
+      <source>Pack Manager</source>
+      <translation>Quản lý gói</translation>
+    </string>
+    <string>
+      <source>Build dictionaries</source>
+      <translation>Tạo từ điển</translation>
+    </string>
+    <string>
+      <source>General</source>
+      <translation>Chung</translation>
+    </string>
+    <string>
+      <source>Dictionaries</source>
+      <translation>Từ điển</translation>
+    </string>
+  </context>
+  <context name="EditWindow">
+    <string>
+      <source>Search and Edit</source>
+      <translation>Tìm kiếm và chỉnh sửa</translation>
+    </string>
+    <string>
+      <source>Original text</source>
+      <translation>Văn bản gốc</translation>
+    </string>
+    <string>
+      <source>Current translation</source>
+      <translation>Bản dịch hiện tại</translation>
+    </string>
+    <string>
+      <source>Translate</source>
+      <translation>Dịch</translation>
+    </string>
+    <string>
+      <source>Cancel</source>
+      <translation>Hủy</translation>
+    </string>
+  </context>
+  <context name="ExportDialog">
+    <string>
+      <source>Export translate</source>
+      <translation>Xuất bản dịch</translation>
+    </string>
+    <string>
+      <source>Export</source>
+      <translation>Xuất</translation>
+    </string>
+    <string>
+      <source>Everything</source>
+      <translation>Tất cả</translation>
+    </string>
+    <string>
+      <source>Selection only</source>
+      <translation>Chỉ mục đã chọn</translation>
+    </string>
+    <string>
+      <source>Cancel</source>
+      <translation>Hủy</translation>
+    </string>
+  </context>
+  <context name="TranslateDialog">
+    <string>
+      <source>Batch translate</source>
+      <translation>Dịch hàng loạt</translation>
+    </string>
+    <string>
+      <source>Translate</source>
+      <translation>Dịch</translation>
+    </string>
+    <string>
+      <source>Cancel</source>
+      <translation>Hủy</translation>
+    </string>
+    <string>
+      <source>Log</source>
+      <translation>Nhật ký</translation>
+    </string>
+  </context>
+  <context name="System">
+    <string>
+      <source>Loading dictionaries...</source>
+      <translation>Đang tải từ điển...</translation>
+    </string>
+    <string>
+      <source>Build dictionaries...</source>
+      <translation>Đang tạo từ điển...</translation>
+    </string>
+    <string>
+      <source>Opening file...</source>
+      <translation>Đang mở tệp...</translation>
+    </string>
+    <string>
+      <source>Opening files...</source>
+      <translation>Đang mở nhiều tệp...</translation>
+    </string>
+    <string>
+      <source>Translating...</source>
+      <translation>Đang dịch...</translation>
+    </string>
+  </context>
+  <context name="ToolBar">
+    <string>
+      <source>-- All files --</source>
+      <translation>-- Tất cả tệp --</translation>
+    </string>
+    <string>
+      <source>-- All instances --</source>
+      <translation>-- Tất cả instance --</translation>
+    </string>
+    <string>
+      <source>Search...</source>
+      <translation>Tìm kiếm...</translation>
+    </string>
+  </context>
+</ts>

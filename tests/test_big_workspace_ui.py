@@ -2,6 +2,8 @@
 
 import os
 import unittest
+import xml.etree.ElementTree as ElementTree
+from pathlib import Path
 
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
@@ -581,6 +583,41 @@ class WorkspaceProShellTests(unittest.TestCase):
                 close_widget(dialog)
             close_widget(window)
 
+    def test_single_life_asset_system_replaces_dark_light_resources(self):
+        root = Path(__file__).resolve().parents[1]
+        qrc_path = root / 'resources' / 'resource.qrc'
+        qss_path = root / 'resources' / 'theme.qss'
+
+        qrc_text = qrc_path.read_text(encoding='utf-8')
+        qss_text = qss_path.read_text(encoding='utf-8')
+
+        for forbidden in ('images/dark/', 'images/light/', '__THEME__'):
+            self.assertNotIn(forbidden, qrc_text)
+            self.assertNotIn(forbidden, qss_text)
+
+        self.assertFalse((root / 'resources' / 'images' / 'dark').exists())
+        self.assertFalse((root / 'resources' / 'images' / 'light').exists())
+
+        files = [
+            element.text
+            for element in ElementTree.parse(qrc_path).findall('.//file')
+            if element.text and element.text.startswith('images/') and element.text.endswith('.png')
+        ]
+        self.assertIn('images/life/backspace.png', files)
+        self.assertIn('images/life/checkbox_checked.png', files)
+        self.assertIn('images/life/radio_checked.png', files)
+
+        for file_path in files:
+            self.assertFalse(QIcon(f':/{file_path}').isNull(), file_path)
+
+        forbidden_imports = ('import themes.dark', 'import themes.light', 'from themes import dark',
+                             'from themes import light')
+        for source_root in ('models', 'widgets', 'windows', 'themes'):
+            for path in (root / source_root).rglob('*.py'):
+                text = path.read_text(encoding='utf-8')
+                for forbidden in forbidden_imports:
+                    self.assertNotIn(forbidden, text, str(path))
+
     def test_export_validation_cancel_does_not_start_export_task(self):
         item = record(FLAG_VALIDATED)
         storage = app_state.packages_storage
@@ -746,6 +783,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.command_translate.text(), 'Translate')
             self.assertEqual(window.command_dictionary.text(), 'Dictionary')
             self.assertEqual(window.command_validate_release.text(), 'Release QA')
+            self.assertGreaterEqual(window.command_open.iconSize().width(), 22)
+            self.assertGreaterEqual(window.command_translate.iconSize().height(), 22)
             self.assertIn('reuse', window.command_dictionary.toolTip())
             self.assertIn('Validate Release', window.command_validate_release.toolTip())
             self.assertFalse(hasattr(window, 'command_options'))
@@ -1499,6 +1538,32 @@ class WorkspaceProShellTests(unittest.TestCase):
             close_widget(dialog)
             close_widget(window)
 
+    def test_options_dialog_life_studio_sections_and_action_icons_are_legible(self):
+        window = MainWindow()
+        dialog = OptionsDialog(window)
+        try:
+            self.assertGreaterEqual(dialog.minimumWidth(), 760)
+            self.assertEqual(dialog.gb_safety.objectName(), 'optionsSection')
+            self.assertEqual(dialog.gb_pack_manager.objectName(), 'optionsSection')
+            self.assertEqual(dialog.tableview.objectName(), 'packManagerTable')
+            self.assertGreaterEqual(dialog.tableview.verticalHeader().defaultSectionSize(), 32)
+
+            for button, min_size in (
+                    (dialog.btn_path, 20),
+                    (dialog.btn_deepl_test, 20),
+                    (dialog.btn_deepl_usage, 20),
+                    (dialog.btn_build, 22),
+            ):
+                self.assertFalse(button.icon().isNull())
+                self.assertGreaterEqual(button.iconSize().width(), min_size)
+                self.assertGreaterEqual(button.iconSize().height(), min_size)
+
+            self.assertIn('·', dialog.lbl_pack_summary.text())
+            self.assertTrue(dialog.lbl_safety_hint.wordWrap())
+        finally:
+            close_widget(dialog)
+            close_widget(window)
+
     def test_options_dialog_uses_clear_safety_labels_and_dictionary_defaults(self):
         config.set_value('save', 'backup', ConfigManager.DEFAULTS['save']['backup'])
         config.set_value('save', 'experemental', ConfigManager.DEFAULTS['save']['experemental'])
@@ -1615,6 +1680,43 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(dialog.cb_language.currentText(), 'English')
         finally:
             close_widget(dialog)
+            close_widget(window)
+
+    def test_vietnamese_interface_language_is_available_with_english_fallback(self):
+        languages = {lang.code: lang.name for lang in interface.languages}
+        self.assertEqual(languages.get('vi_VN'), 'Vietnamese')
+        window = MainWindow()
+        dialog = OptionsDialog(window)
+
+        config.set_value('interface', 'language', 'vi_VN')
+        interface.reload()
+        try:
+            self.assertGreaterEqual(dialog.cb_language.findData('vi_VN'), 0)
+            self.assertEqual(interface.text('MainWindow', 'File'), 'Tệp')
+            self.assertEqual(interface.text('MainWindow', 'Status Overview Bar'), 'Thanh tổng quan trạng thái')
+            self.assertEqual(interface.text('MainWindow', 'Untranslated source fallback'), 'Untranslated source fallback')
+        finally:
+            config.set_value('interface', 'language', 'en_US')
+            interface.reload()
+            close_widget(dialog)
+            close_widget(window)
+
+    def test_status_overview_bar_replaces_color_visualization_label_and_tooltip(self):
+        window = MainWindow()
+        item = record(FLAG_UNVALIDATED)
+        before = list(item)
+        try:
+            self.assertFalse(ConfigManager.DEFAULTS['view']['colorbar'])
+            self.assertEqual(window.action_colorbar.text(), 'Status Overview Bar')
+            self.assertIn('status distribution', window.action_colorbar.toolTip())
+            self.assertNotIn('Color visualization', window.action_colorbar.text())
+
+            window.colorbar.update_colors(1, 2, 3, 4)
+            self.assertIn('Approved 2', window.colorbar.toolTip())
+            self.assertIn('Needs review 3', window.colorbar.toolTip())
+            self.assertIn('Untranslated 4', window.colorbar.toolTip())
+            self.assertEqual(list(item), before)
+        finally:
             close_widget(window)
 
 

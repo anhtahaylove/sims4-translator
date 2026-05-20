@@ -3,9 +3,7 @@
 from PySide6.QtCore import QAbstractTableModel
 from PySide6.QtGui import QColor
 
-import themes.dark as dark
-
-from singletons.config import config
+import themes.balanced as theme
 
 
 class AbstractTableModel(QAbstractTableModel):
@@ -18,9 +16,7 @@ class AbstractTableModel(QAbstractTableModel):
 
         self.addition_sort = -1
 
-        is_dark_theme = config.is_dark_theme()
-
-        self.color_null = QColor(dark.TEXT_DISABLED) if is_dark_theme else QColor(114, 114, 213)
+        self.color_null = QColor(theme.TEXT_DISABLED)
 
     def rowCount(self, parent=None):
         return len(self.filtered)

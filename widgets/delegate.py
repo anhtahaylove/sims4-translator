@@ -6,8 +6,7 @@ from PySide6.QtCore import QRect, QRectF, QSize, Qt
 from PySide6.QtGui import QColor, QIcon, QTextDocument
 from PySide6.QtWidgets import QProxyStyle, QStyle, QStyledItemDelegate, QStyleOptionHeader, QStyleOptionViewItem
 
-import themes.light as light
-import themes.dark as dark
+import themes.balanced as theme
 
 from singletons.config import config
 from singletons.state import app_state
@@ -23,11 +22,11 @@ from widgets.token_highlight import (
 
 
 STATUS_META = {
-    FLAG_UNVALIDATED: ('Untranslated', dark.UNVALIDATED_BAR),
-    FLAG_PROGRESS: ('Needs review', dark.WARNING),
-    FLAG_VALIDATED: ('Approved', dark.SUCCESS),
-    FLAG_TRANSLATED: ('Draft', dark.BORDER_FOCUS),
-    FLAG_REPLACED: ('Edited', dark.EDITOR_FEMALE),
+    FLAG_UNVALIDATED: ('Untranslated', theme.UNVALIDATED_BAR),
+    FLAG_PROGRESS: ('Needs review', theme.WARNING),
+    FLAG_VALIDATED: ('Approved', theme.SUCCESS),
+    FLAG_TRANSLATED: ('Draft', theme.BORDER_FOCUS),
+    FLAG_REPLACED: ('Edited', theme.EDITOR_FEMALE),
 }
 
 
@@ -40,7 +39,7 @@ TABLE_ROW_HEIGHTS = {
 class GridPalette:
 
     def __init__(self) -> None:
-        colors = dark if config.is_dark_theme() else light
+        colors = theme
         self.surface = QColor(colors.SURFACE)
         self.panel = QColor(colors.PANEL)
         self.panel_alt = QColor(colors.PANEL_ALT)
@@ -149,14 +148,14 @@ class MainDelegatePaint(QStyledItemDelegate):
             pill_rect = option.rect.adjusted(4, 12, -4, -12)
 
         fill = QColor(color)
-        fill.setAlpha(62 if config.is_dark_theme() else 42)
+        fill.setAlpha(62)
         border = QColor(color)
 
         painter.setPen(border)
         painter.setBrush(fill)
         painter.drawRoundedRect(pill_rect, pill_rect.height() / 2, pill_rect.height() / 2)
 
-        painter.setPen(border if config.is_dark_theme() else self.palette.text)
+        painter.setPen(border)
         painter.drawText(pill_rect, Qt.AlignmentFlag.AlignCenter, label)
 
     def __paint_rich_text(self, painter, option, index, selected: bool) -> None:
@@ -266,9 +265,7 @@ class HeaderProxy(QProxyStyle):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.theme_name = config.theme_name
-
-        self.text_color = QColor(dark.TEXT) if self.theme_name == 'dark' else QColor(light.TEXT)
+        self.text_color = QColor(theme.TEXT)
 
     def drawControl(self, element, option, painter, widget=None):
         if element == QStyle.ControlElement.CE_HeaderLabel:
@@ -285,9 +282,9 @@ class HeaderProxy(QProxyStyle):
 
             sort_icon = None
             if sort_option == QStyleOptionHeader.SortIndicator.SortDown:
-                sort_icon = QIcon(f':/images/{self.theme_name}/arrow_down.png').pixmap(10, 6)
+                sort_icon = QIcon(':/images/life/arrow_down.png').pixmap(10, 6)
             elif sort_option == QStyleOptionHeader.SortIndicator.SortUp:
-                sort_icon = QIcon(f':/images/{self.theme_name}/arrow_up.png').pixmap(10, 6)
+                sort_icon = QIcon(':/images/life/arrow_up.png').pixmap(10, 6)
 
             if sort_icon:
                 sort_rect = QRect(rect.left() + (rect.width() - sort_icon.width()) / 2,
