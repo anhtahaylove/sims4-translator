@@ -68,11 +68,19 @@ class VietnameseLocaleTests(unittest.TestCase):
         self.assertEqual(manager.value('translation', 'destination'), 'VI_VN')
         self.assertTrue(manager.value('migrations', 'translation_default_vi_vn'))
 
-    def test_user_destination_is_not_overwritten_after_default_migration_marker(self):
+    def test_v141_release_config_migrates_to_vietnamese_even_with_old_marker(self):
         manager = self.__config_from_xml('ENG_US', 'FRE_FR', migrated=True)
+
+        self.assertEqual(manager.value('translation', 'destination'), 'VI_VN')
+        self.assertTrue(manager.value('migrations', 'translation_default_vi_vn'))
+        self.assertTrue(manager.value('migrations', 'translation_release_config_1_4_2'))
+
+    def test_user_destination_is_not_overwritten_after_release_config_migration_marker(self):
+        manager = self.__config_from_xml('ENG_US', 'FRE_FR', migrated=True, release_migrated=True)
 
         self.assertEqual(manager.value('translation', 'destination'), 'FRE_FR')
         self.assertTrue(manager.value('migrations', 'translation_default_vi_vn'))
+        self.assertTrue(manager.value('migrations', 'translation_release_config_1_4_2'))
 
     def test_non_default_user_destination_sets_marker_without_overwrite(self):
         manager = self.__config_from_xml('ENG_US', 'RUS_RU')
@@ -106,16 +114,28 @@ class VietnameseLocaleTests(unittest.TestCase):
         self.assertNotIn('tag_handling', kwargs['data'])
 
     @staticmethod
-    def __config_from_xml(source: str, destination: str, migrated=None):
+    def __config_from_xml(source: str, destination: str, migrated=None, release_migrated=None):
         cwd = os.getcwd()
         with tempfile.TemporaryDirectory() as tmpdir:
             prefs = os.path.join(tmpdir, 'prefs')
             os.makedirs(prefs, exist_ok=True)
             migration_xml = ''
+            migration_entries = []
             if migrated is not None:
+                migration_entries.append(
+                    f'<translation_default_vi_vn>{str(migrated).lower()}</translation_default_vi_vn>'
+                )
+            if release_migrated is not None:
+                migration_entries.append(
+                    '<translation_release_config_1_4_2>'
+                    f'{str(release_migrated).lower()}'
+                    '</translation_release_config_1_4_2>'
+                )
+            if migration_entries:
+                migration_body = '\n    '.join(migration_entries)
                 migration_xml = f'''
   <migrations>
-    <translation_default_vi_vn>{str(migrated).lower()}</translation_default_vi_vn>
+    {migration_body}
   </migrations>'''
             with open(os.path.join(prefs, 'config.xml'), 'w', encoding='utf-8') as fp:
                 fp.write(textwrap.dedent(f'''\

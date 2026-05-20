@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.4.2 - 2026-05-21
+
+- Fixed Windows release packaging so local `prefs/config.xml` is not bundled in the downloadable ZIP.
+- Fresh release builds now create default preferences on first launch, preserving the intended `ENG_US -> VI_VN` language pair.
+
 ## Version 1.4.1 - 2026-05-21
 
 - Added the Life Studio Green rebrand with a single green asset system.

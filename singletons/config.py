@@ -64,7 +64,8 @@ class ConfigManager:
             'destination': 'VI_VN'
         },
         'migrations': {
-            'translation_default_vi_vn': False
+            'translation_default_vi_vn': False,
+            'translation_release_config_1_4_2': False
         },
         'api': {
             'engine': '',
@@ -137,15 +138,26 @@ class ConfigManager:
                 self.__config[section_name][option_name] = option_value
 
     def __normalize_translation_defaults(self) -> bool:
+        changed = False
         migrated = self.value('migrations', 'translation_default_vi_vn')
-        if migrated:
-            return False
 
-        if self.value('translation', 'source') == 'ENG_US' and self.value('translation', 'destination') == 'FRE_FR':
-            self.set_value('translation', 'destination', 'VI_VN')
+        if not migrated:
+            if self.value('translation', 'source') == 'ENG_US' and self.value('translation', 'destination') == 'FRE_FR':
+                self.set_value('translation', 'destination', 'VI_VN')
+            self.set_value('migrations', 'translation_default_vi_vn', True)
+            changed = True
 
-        self.set_value('migrations', 'translation_default_vi_vn', True)
-        return True
+        # v1.4.1 release builds accidentally bundled the maintainer's local
+        # prefs/config.xml with ENG_US -> FRE_FR. Repair that release artifact
+        # once, even if the earlier default migration marker was already set.
+        release_config_migrated = self.value('migrations', 'translation_release_config_1_4_2')
+        if not release_config_migrated:
+            if self.value('translation', 'source') == 'ENG_US' and self.value('translation', 'destination') == 'FRE_FR':
+                self.set_value('translation', 'destination', 'VI_VN')
+            self.set_value('migrations', 'translation_release_config_1_4_2', True)
+            changed = True
+
+        return changed
 
     @staticmethod
     def __convert_value(value: str) -> Union[str, int, bool, None]:

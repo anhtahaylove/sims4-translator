@@ -9,6 +9,7 @@ $ErrorActionPreference = 'Stop'
 
 $RepoRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
 $BuildVenv = Join-Path $env:TEMP 'sims4-translator-build-venv'
+$BuildPrefs = Join-Path $env:TEMP 'sims4-translator-build-prefs'
 $AppName = 'The Sims 4 Translator Plus'
 $ExePath = Join-Path $RepoRoot "dist\$AppName\$AppName.exe"
 $DistDir = Split-Path $ExePath
@@ -61,6 +62,21 @@ try {
         & $BuildPython -m pip install -r requirements.txt pyinstaller
     }
 
+    Invoke-Step 'Prepare distributable prefs without local config' {
+        if (Test-Path $BuildPrefs) {
+            Remove-Item -LiteralPath $BuildPrefs -Recurse -Force
+        }
+        New-Item -ItemType Directory -Force -Path $BuildPrefs | Out-Null
+        Get-ChildItem -LiteralPath (Join-Path $RepoRoot 'prefs') | Where-Object {
+            $_.Name -ne 'config.xml'
+        } | ForEach-Object {
+            Copy-Item -LiteralPath $_.FullName -Destination $BuildPrefs -Recurse -Force
+        }
+        if (Test-Path (Join-Path $BuildPrefs 'config.xml')) {
+            throw 'Build prefs bundle must not include local prefs\config.xml.'
+        }
+    }
+
     Invoke-Step 'Build Windows app with PyInstaller' {
         & $BuildPython -m PyInstaller `
             --noconfirm `
@@ -69,7 +85,7 @@ try {
             --contents-directory . `
             --name $AppName `
             --icon resources\logo.ico `
-            --add-data 'prefs;prefs' `
+            --add-data "$BuildPrefs;prefs" `
             --add-data 'fonts;fonts' `
             main.py
     }
@@ -87,6 +103,9 @@ try {
         }
         if (-not (Test-Path (Join-Path $DistDir 'prefs\languages.xml'))) {
             throw 'Bundled prefs\languages.xml missing beside executable.'
+        }
+        if (Test-Path (Join-Path $DistDir 'prefs\config.xml')) {
+            throw 'Bundled prefs\config.xml must not be shipped; it is a local user preference file.'
         }
         if (-not (Test-Path (Join-Path $DistDir 'fonts\RobotoRegular.ttf'))) {
             throw 'Bundled fonts\RobotoRegular.ttf missing beside executable.'
@@ -112,6 +131,10 @@ try {
             throw "Built app exited early with code $($Process.ExitCode)."
         }
         Stop-Process -Id $Process.Id -Force
+        $GeneratedConfig = Join-Path $DistDir 'prefs\config.xml'
+        if (Test-Path $GeneratedConfig) {
+            Remove-Item -LiteralPath $GeneratedConfig -Force
+        }
     }
 
     Invoke-Step 'Verify synthetic smoke after build' {

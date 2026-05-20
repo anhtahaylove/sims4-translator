@@ -12,10 +12,17 @@ class BuildWindowsScriptTests(unittest.TestCase):
 
     def test_build_script_uses_verified_pyinstaller_layout(self):
         self.assertIn('--contents-directory .', self.script)
-        self.assertIn("--add-data 'prefs;prefs'", self.script)
+        self.assertIn('sims4-translator-build-prefs', self.script)
+        self.assertIn('--add-data "$BuildPrefs;prefs"', self.script)
         self.assertIn("--add-data 'fonts;fonts'", self.script)
         self.assertIn('resources\\logo.ico', self.script)
         self.assertIn('The Sims 4 Translator Plus', self.script)
+
+    def test_build_script_excludes_local_user_config_from_release(self):
+        self.assertIn("Prepare distributable prefs without local config", self.script)
+        self.assertIn("Build prefs bundle must not include local prefs\\config.xml", self.script)
+        self.assertIn("Bundled prefs\\config.xml must not be shipped", self.script)
+        self.assertIn("Remove-Item -LiteralPath $GeneratedConfig -Force", self.script)
 
     def test_build_script_keeps_pyinstaller_build_only(self):
         self.assertIn('-r requirements.txt pyinstaller', self.script)
