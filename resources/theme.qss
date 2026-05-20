@@ -25,13 +25,13 @@ QMessageBox {
 }
 
 QTableView {
-    border: 1px solid __BORDER__;
-    border-radius: 8px;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 10px;
     background: __PLAIN_EDIT__;
     color: __TEXT__;
     selection-background-color: __SELECTION__;
     selection-color: __SELECTION_TEXT__;
-    gridline-color: __SURFACE__;
+    gridline-color: __BORDER_LIGHT__;
     alternate-background-color: __PANEL_ALT__;
 }
 
@@ -77,7 +77,7 @@ QScrollBar::sub-page {
 }
 
 QTabBar::tab:selected {
-    border-top: 1px solid __TAB_ACTIVE_BORDER__;
+    border-top: 2px solid __TAB_ACTIVE_BORDER__;
     border-left: 1px solid __BORDER_DARK__;
     border-bottom: 1px solid __TAB_ACTIVE__;
     border-radius: 0;
@@ -139,7 +139,8 @@ QToolBar::separator {
 #commandBar {
     background: __PANEL_ALT__;
     border: 1px solid __BORDER__;
-    border-radius: 12px;
+    border-top: 3px solid __ACCENT__;
+    border-radius: 16px;
 }
 
 #studioHeader[density="short"] {
@@ -187,14 +188,14 @@ QToolBar::separator {
 #commandGroup {
     background: __PANEL__;
     border: 1px solid __BORDER_LIGHT__;
-    border-radius: 10px;
+    border-radius: 14px;
 }
 
 #studioActionGroup:hover,
 #studioScopeGroup:hover,
 #commandGroup:hover {
     border-color: __ACCENT__;
-    background: __PANEL_ALT__;
+    background: __PANEL_RAISED__;
 }
 
 #studioGroupLabel,
@@ -208,7 +209,7 @@ QToolBar::separator {
 #commandButton {
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 8px;
+    border-radius: 999px;
     color: __TEXT__;
     padding: 4px 9px;
     min-height: 28px;
@@ -224,8 +225,9 @@ QToolBar::separator {
 #studioCommandButton:checked,
 #commandButton:pressed,
 #commandButton:checked {
-    background: __PANEL_RAISED__;
-    border-color: __BORDER_FOCUS__;
+    background: __BUTTON_DEFAULT__;
+    border-color: __ACCENT__;
+    color: __SURFACE__;
 }
 
 #studioCommandButton:focus,
@@ -258,7 +260,8 @@ QToolBar::separator {
 #selectionBar {
     background: __PANEL__;
     border: 1px solid __BORDER_LIGHT__;
-    border-radius: 10px;
+    border-top: 2px solid __BORDER_LIGHT__;
+    border-radius: 14px;
 }
 
 #selectionBar[density="short"] {
@@ -267,7 +270,8 @@ QToolBar::separator {
 
 #selectionBar[active="true"] {
     border-color: __ACCENT__;
-    background: __PANEL__;
+    border-top-color: __ACCENT__;
+    background: __PANEL_ALT__;
 }
 
 #selectionPreviewHeader {
@@ -288,7 +292,7 @@ QToolBar::separator {
 #selectionPreviewText {
     background: __PLAIN_EDIT__;
     border: 1px solid __BORDER_LIGHT__;
-    border-radius: 8px;
+    border-radius: 10px;
     color: __TEXT__;
     padding: 6px;
 }
@@ -356,7 +360,7 @@ QToolBar::separator {
 #workspaceOverview {
     background: __PANEL__;
     border: 1px solid __BORDER_LIGHT__;
-    border-radius: 10px;
+    border-radius: 14px;
 }
 
 #workspaceOverview[density="short"] {
@@ -371,13 +375,14 @@ QToolBar::separator {
 #workspaceSummaryBlock {
     background: __PANEL__;
     border: 1px solid __BORDER_LIGHT__;
-    border-radius: 10px;
-    padding: 6px 10px;
+    border-radius: 12px;
+    padding: 4px 8px;
 }
 
 #workspaceSummary {
     color: __TEXT__;
     font-weight: 600;
+    font-size: 12px;
 }
 
 #workspaceHint {
@@ -389,8 +394,8 @@ QToolBar::separator {
 #filterPanel {
     background: __PANEL__;
     border: 1px solid __BORDER_LIGHT__;
-    border-top: 2px solid __ACCENT__;
-    border-radius: 12px;
+    border-top: 3px solid __ACCENT__;
+    border-radius: 16px;
 }
 
 #studioFilterTray[density="short"] {
@@ -448,8 +453,9 @@ QToolBar::separator {
 
 #filterChip:checked {
     border-color: __ACCENT__;
-    background: __PANEL_ALT__;
-    color: __TEXT__;
+    background: __PANEL_RAISED__;
+    color: __ACCENT_HOVER__;
+    font-weight: 600;
 }
 
 #secondaryButton {
@@ -470,12 +476,64 @@ QToolBar::separator {
 #sheetSummary {
     background: __PANEL_ALT__;
     border: 1px solid __BORDER_LIGHT__;
-    border-radius: 10px;
+    border-radius: 14px;
 }
 
 #sheetSummary {
     color: __TEXT_MUTED__;
     padding: 10px 12px;
+}
+
+#releaseValidationHeader,
+#releaseValidationFilters {
+    background: __PANEL__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 14px;
+}
+
+#releaseValidationHeader {
+    border-top: 3px solid __ACCENT__;
+}
+
+#releaseValidationTitle {
+    color: __TEXT__;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+#releaseValidationDetail,
+#releaseValidationSummary,
+#releaseValidationResultCount {
+    color: __TEXT_MUTED__;
+}
+
+#releaseValidationCard {
+    background: __PANEL_ALT__;
+    border: 1px solid __BORDER_LIGHT__;
+    border-radius: 12px;
+}
+
+#releaseValidationCardLabel {
+    color: __TEXT_MUTED__;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+#releaseValidationCardValue {
+    color: __ACCENT__;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+#releaseValidationTabs::pane {
+    border-color: __BORDER_LIGHT__;
+}
+
+#releaseValidationTable {
+    background: __PLAIN_EDIT__;
+    border-color: __BORDER_LIGHT__;
+    gridline-color: __BORDER_LIGHT__;
+    selection-background-color: __SELECTION__;
 }
 
 #sectionLabel {
@@ -509,12 +567,13 @@ QToolBar::separator {
 #editFooter {
     background: __PANEL__;
     border: 1px solid __BORDER_LIGHT__;
-    border-radius: 12px;
+    border-radius: 14px;
 }
 
 #sheetHeader,
 #editHeader {
     background: __PANEL_RAISED__;
+    border-top: 3px solid __ACCENT__;
 }
 
 #editorMetaBadge,
@@ -601,7 +660,7 @@ QToolBar::separator {
 
 QToolButton,
 QToolButton:hover {
-    border-radius: 4px;
+    border-radius: 8px;
     text-align: center;
     text-decoration: none;
     color: __TEXT__;
@@ -628,7 +687,7 @@ QToolButton:checked {
 }
 
 QPushButton {
-    border-radius: 7px;
+    border-radius: 9px;
     text-align: center;
     text-decoration: none;
     color: __TEXT__;
@@ -798,7 +857,7 @@ QComboBox {
     min-width: 50px;
     selection-background-color: __SELECTION__;
     selection-color: __SELECTION_TEXT__;
-    border-radius: 7px;
+    border-radius: 9px;
 }
 QComboBox:focus, QComboBox:on {
     border: 1px solid __BORDER_FOCUS__;
@@ -989,7 +1048,8 @@ QProgressBar::chunk {
 #jobDrawerHeader {
     background: __PANEL__;
     border: 1px solid __BORDER__;
-    border-radius: 12px;
+    border-top: 2px solid __ACCENT__;
+    border-radius: 14px;
 }
 
 #jobDrawer[density="short"] #jobDrawerHeader {
@@ -1001,7 +1061,7 @@ QProgressBar::chunk {
     border-left: 1px solid __BORDER__;
     border-right: 1px solid __BORDER__;
     border-bottom: 1px solid __BORDER__;
-    border-radius: 12px;
+    border-radius: 14px;
 }
 
 #jobDrawer[density="short"] #jobDrawerBody {
@@ -1012,7 +1072,7 @@ QProgressBar::chunk {
     color: __TEXT__;
     background: __PANEL_RAISED__;
     border: 1px solid __BORDER__;
-    border-radius: 8px;
+    border-radius: 999px;
     padding: 4px 10px;
     min-width: 72px;
     height: 30px;
@@ -1038,13 +1098,19 @@ QProgressBar::chunk {
 #jobRow {
     background: __PANEL__;
     border: 1px solid __BORDER__;
-    border-radius: 10px;
+    border-radius: 12px;
 }
 
 #jobRow[state="done"],
 #jobRow[state="cancelled"] {
     background: __SURFACE__;
     border-color: __BORDER_LIGHT__;
+}
+
+#jobRow[state="running"],
+#jobRow[state="cancelling"] {
+    border-color: __ACCENT__;
+    background: __PANEL_ALT__;
 }
 
 #jobRow[state="error"] {

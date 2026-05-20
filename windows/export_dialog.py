@@ -2,7 +2,8 @@
 
 import operator
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QApplication, QDialog
 from typing import List
 
 from storages.package_tasks import (
@@ -16,12 +17,14 @@ from storages.package_tasks import (
 from storages.records import MainRecord
 
 from .ui.export_dialog import Ui_ExportDialog
+from .release_validation_dialog import ReleaseValidationDialog
 
 from singletons.config import config
 from singletons.interface import interface
 from singletons.signals import window_signals
 from singletons.state import app_state
 from utils.functions import opendir, save_xml, save_stbl, save_json, save_binary, savefile
+from utils.release_validation import PROFILE_SOFT, validate_release_records
 from utils.constants import *
 from utils.task_runner import TaskRunner
 
@@ -31,11 +34,13 @@ class ExportDialog(QDialog, Ui_ExportDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.setWindowIcon(QIcon(':/logo.ico'))
 
         self.__export = -1
         self.__runner = TaskRunner(max_threads=1, parent=self)
         self.__export_handle = None
         self.__export_failed = False
+        self.__validation_cancelled = False
 
         self.cb_current_instance.clicked.connect(self.current_instance_click)
         self.cb_separate_instances.clicked.connect(self.separate_instances_click)
@@ -266,11 +271,13 @@ class ExportDialog(QDialog, Ui_ExportDialog):
         return None
 
     def export_click(self):
+        self.__validation_cancelled = False
         self.__set_busy(True)
         handle = self.export()
         if handle is None:
             self.__set_busy(False)
-            self.close()
+            if not self.__validation_cancelled:
+                self.close()
 
     def cancel_click(self):
         if self.__export_handle:
@@ -283,6 +290,11 @@ class ExportDialog(QDialog, Ui_ExportDialog):
         if self.__export_handle:
             self.__export_handle.cancel()
 
+        include_untranslated = self.rb_all.isChecked()
+        if not self.__confirm_release_validation(items, include_untranslated):
+            self.__validation_cancelled = True
+            return None
+
         message = interface.text('System', 'Exporting translate...')
         self.__export_failed = False
         request = StructuredExportRequest(
@@ -290,7 +302,7 @@ class ExportDialog(QDialog, Ui_ExportDialog):
             filename=filename or '',
             directory=directory or '',
             records=self.__export_records(items),
-            include_untranslated=self.rb_all.isChecked(),
+            include_untranslated=include_untranslated,
             separate_packages=self.cb_separate_packages.isVisible() and self.cb_separate_packages.isChecked(),
             package_names=tuple((package.key, package.name) for package in app_state.packages_storage.packages),
             destination_locale=config.value('translation', 'destination'),
@@ -311,6 +323,41 @@ class ExportDialog(QDialog, Ui_ExportDialog):
             lambda cancelled, handle=self.__export_handle: self.__export_finished(cancelled, handle)
         )
         return self.__export_handle
+
+    def __confirm_release_validation(self, items: List[MainRecord], include_untranslated: bool) -> bool:
+        if not hasattr(self, '_ExportDialog__validation_cancelled'):
+            return True
+
+        qt_app = QApplication.instance()
+        if qt_app is None or not isinstance(qt_app, QApplication):
+            return True
+
+        report = validate_release_records(
+            items,
+            mode=f'Export {self.__export_name()}',
+            destination_locale=config.value('translation', 'destination'),
+            include_untranslated=include_untranslated,
+            conflict_free=False,
+            profile=PROFILE_SOFT,
+        )
+        window_signals.log.emit(report.summary())
+
+        try:
+            parent = self.parent()
+        except RuntimeError:
+            return True
+
+        open_issue = getattr(parent, '_MainWindow__open_validation_issue', None)
+        return ReleaseValidationDialog.confirm(self, report, open_issue)
+
+    def __export_name(self) -> str:
+        return {
+            EXPORT_STBL: 'STBL',
+            EXPORT_XML: 'XML',
+            EXPORT_XML_DP: 'XML (Deaderpool)',
+            EXPORT_JSON_S4S: 'JSON (Sims 4 Studio)',
+            EXPORT_BINARY_S4S: 'Binary (Sims 4 Studio)',
+        }.get(self.__export, 'translation')
 
     def export_translation_hub_csv(self, items: List[MainRecord]) -> None:
         filename = savefile('Sims 4 Translation Hub CSV (*.csv)', 'csv', 'translation_hub')

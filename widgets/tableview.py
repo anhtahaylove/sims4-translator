@@ -67,9 +67,15 @@ class QMainTableView(AbstractTableView):
 
     def set_model(self):
         self.setModel(app_state.packages_storage.proxy)
-        self.setItemDelegate(MainDelegatePaint())
+        self.set_row_density(config.value('view', 'row_density') or 'comfortable')
         self.resize_columns()
         self.hide_columns()
+
+    def set_row_density(self, row_density: str):
+        delegate = MainDelegatePaint(row_density=row_density)
+        self.setItemDelegate(delegate)
+        self.verticalHeader().setDefaultSectionSize(delegate.row_height)
+        self.setProperty('rowDensity', delegate.row_density)
 
     def resize_columns(self):
         header = self.horizontalHeader()

@@ -6,19 +6,23 @@ import unittest
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
 from PySide6.QtCore import QModelIndex, Qt, QEvent
-from PySide6.QtGui import QKeyEvent
-from PySide6.QtWidgets import QApplication, QMessageBox, QStyleOptionViewItem
+from PySide6.QtGui import QIcon, QKeyEvent
+from PySide6.QtWidgets import QApplication, QMessageBox, QHeaderView, QStyleOptionViewItem
 from unittest.mock import patch
 
+import resource_rc
 import themes.balanced as balanced
+from main import show_main_window
 from packer.resource import ResourceID
-from singletons.config import config
+from singletons.config import ConfigManager, config
 from singletons.interface import interface
 from singletons.state import app_state
+from singletons.translator import DeepLUsage
 from storages.dictionaries import DictionariesStorage
 from storages.packages import PackagesStorage
 from storages.records import MainRecord
 from utils.constants import (
+    EXPORT_JSON_S4S,
     FLAG_PROGRESS,
     FLAG_REPLACED,
     FLAG_TRANSLATED,
@@ -28,13 +32,21 @@ from utils.constants import (
     RECORD_MAIN_SOURCE,
     RECORD_MAIN_TRANSLATE,
 )
+from utils.release_validation import (
+    PROFILE_SOFT,
+    SEVERITY_CRITICAL,
+    SEVERITY_INFO,
+    ValidationIssue,
+    ValidationReport,
+)
 from windows.edit_dialog import EditDialog
 from windows.export_dialog import ExportDialog
 from windows.import_dialog import ImportDialog
 from windows.main_window import MainWindow
 from windows.options_dialog import OptionsDialog
+from windows.release_validation_dialog import ReleaseValidationDialog
 from windows.translate_dialog import TranslateDialog
-from widgets.delegate import MainDelegatePaint, STATUS_META
+from widgets.delegate import MainDelegatePaint, STATUS_META, TABLE_ROW_HEIGHTS
 
 
 def app():
@@ -69,14 +81,28 @@ def record(flag=FLAG_PROGRESS):
 
 class PackageStub:
     key = 'sample.package'
+    name = 'sample'
+    filename = 'sample.package'
     instances = []
     modified = False
+
+    def __init__(self):
+        self.saved = False
+        self.finalized = False
+        self.finalize_path = None
 
     def __len__(self):
         return 2
 
     def modify(self, state=True):
         self.modified = state
+
+    def save(self):
+        self.saved = True
+
+    def finalize(self, path=None):
+        self.finalized = True
+        self.finalize_path = path
 
 
 class FakeWheelEvent:
@@ -86,6 +112,19 @@ class FakeWheelEvent:
 
     def ignore(self):
         self.ignored = True
+
+
+class FakeStartupWindow:
+
+    def __init__(self):
+        self.maximized = False
+        self.normal_show = False
+
+    def showMaximized(self):
+        self.maximized = True
+
+    def show(self):
+        self.normal_show = True
 
 
 def hex_to_rgb(value):
@@ -119,10 +158,16 @@ class WorkspaceProShellTests(unittest.TestCase):
         interface.reload()
         config.set_value('translation', 'source', 'ENG_US')
         config.set_value('translation', 'destination', 'FRE_FR')
+        config.set_value('api', 'engine', 'Google')
+        config.set_value('api', 'deepl_key', '')
+        config.set_value('api', 'deepl_glossary_id', '')
         config.set_value('view', 'activity_visible', True)
         config.set_value('view', 'activity_expanded', True)
+        config.set_value('view', 'row_density', 'comfortable')
         app_state.set_packages_storage(PackagesStorage())
         app_state.set_dictionaries_storage(DictionariesStorage())
+        app_state.set_current_package(None)
+        app_state.set_current_instance(0)
 
     def test_main_window_creates_workspace_pro_shell_without_losing_legacy_actions(self):
         window = MainWindow()
@@ -137,6 +182,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertNotEqual(window.activity_drawer.header_layout.indexOf(window.workspace_stats_bar), -1)
             self.assertEqual(window.table_panel_layout.indexOf(window.workspace_stats_bar), -1)
             self.assertEqual(window.workspace_overview_layout.indexOf(window.workspace_summary_block), -1)
+            self.assertLessEqual(window.workspace_stats_bar.maximumWidth(), 560)
             self.assertEqual(window.selection_bar.objectName(), 'selectionBar')
             self.assertEqual(window.workspace_overview.objectName(), 'workspaceOverview')
             self.assertEqual(window.filter_search.objectName(), 'filterSearch')
@@ -147,6 +193,11 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertIs(window.activity_drawer, window.job_drawer)
             self.assertTrue(window.action_activity_dock.isCheckable())
             self.assertIn(window.action_activity_dock, window.menu_view.actions())
+            self.assertIn(window.action_validate_release, window.menu_translation.actions())
+            self.assertFalse(window.action_validate_release.isEnabled())
+            self.assertEqual(window.command_validate_release.property('commandLabel'), 'Release QA')
+            self.assertFalse(window.command_validate_release.isEnabled())
+            self.assertFalse(window.command_validate_release.icon().isNull())
             self.assertEqual(window.command_file_group.objectName(), 'studioActionGroup')
             self.assertEqual(window.command_export_group.objectName(), 'studioActionGroup')
             self.assertEqual(window.command_translation_group.objectName(), 'studioActionGroup')
@@ -173,6 +224,366 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.command_translate.property('commandLabel'), 'Translate')
             self.assertFalse(window.brand_block.isVisibleTo(window))
             self.assertFalse(window.inspector_apply.isEnabled())
+        finally:
+            close_widget(window)
+
+    def test_app_startup_opens_main_window_maximized(self):
+        window = FakeStartupWindow()
+
+        show_main_window(window)
+
+        self.assertTrue(window.maximized)
+        self.assertFalse(window.normal_show)
+
+    def test_manual_validate_release_shows_report_without_mutating_records(self):
+        item = record(FLAG_VALIDATED)
+        storage = app_state.packages_storage
+        storage.model.replace([item])
+        storage.model.filter([item])
+        storage.packages.append(PackageStub())
+        app_state.set_current_package(PackageStub.key)
+
+        window = MainWindow()
+        try:
+            original_translation = item.translate
+            with patch('windows.main_window.QInputDialog.getItem', return_value=(PROFILE_SOFT.name, True)), \
+                    patch('windows.main_window.ReleaseValidationDialog.confirm', return_value=False) as confirm:
+                window.validate_release()
+
+            self.assertTrue(confirm.called)
+            self.assertEqual(confirm.call_args.args[1].profile.name, PROFILE_SOFT.name)
+            self.assertEqual(item.translate, original_translation)
+            self.assertEqual(item.flag, FLAG_VALIDATED)
+        finally:
+            close_widget(window)
+
+    def test_save_package_validation_cancel_prevents_existing_save_path(self):
+        item = record(FLAG_VALIDATED)
+        storage = app_state.packages_storage
+        storage.model.replace([item])
+        storage.model.filter([item])
+        package = PackageStub()
+        storage.packages.append(package)
+        app_state.set_current_package(package.key)
+
+        window = MainWindow()
+        try:
+            with patch('windows.main_window.ReleaseValidationDialog.confirm', return_value=False):
+                window.save()
+
+            self.assertFalse(package.saved)
+        finally:
+            close_widget(window)
+
+    def test_finalize_validation_continue_starts_existing_finalize_path(self):
+        item = record(FLAG_VALIDATED)
+        storage = app_state.packages_storage
+        storage.model.replace([item])
+        storage.model.filter([item])
+        package = PackageStub()
+        storage.packages.append(package)
+        app_state.set_current_package(package.key)
+
+        window = MainWindow()
+        try:
+            with patch('windows.main_window.ReleaseValidationDialog.confirm', return_value=True):
+                window.finalize()
+
+            self.assertTrue(package.finalized)
+            self.assertIsNone(package.finalize_path)
+        finally:
+            close_widget(window)
+
+    def test_release_validation_dialog_defaults_to_back_for_critical_report(self):
+        report = ValidationReport(
+            mode='Export JSON',
+            profile=PROFILE_SOFT,
+            destination_locale='VI_VN',
+            include_untranslated=True,
+            conflict_free=False,
+            total_records=1,
+            written_records=1,
+            package_count=1,
+            resource_count=1,
+            status_counts=(('Approved', 1),),
+            issues=(ValidationIssue(
+                SEVERITY_CRITICAL,
+                'pkg.package',
+                '0x0000000000000001',
+                '0x0000002A',
+                'Approved',
+                'Missing source token(s): {0.SimFirstName}',
+                '{0.SimFirstName}',
+                '',
+            ),),
+        )
+
+        dialog = ReleaseValidationDialog(report)
+        try:
+            self.assertTrue(dialog.btn_back.isDefault())
+            self.assertEqual(dialog.btn_continue.text(), 'Continue anyway')
+            self.assertEqual(dialog.tabs.tabText(0), 'Critical (1)')
+        finally:
+            close_widget(dialog)
+
+    def test_release_validation_dialog_double_click_opens_existing_record_callback(self):
+        item = record(FLAG_PROGRESS)
+        opened = []
+        report = ValidationReport(
+            mode='Manual validation',
+            profile=PROFILE_SOFT,
+            destination_locale='VI_VN',
+            include_untranslated=True,
+            conflict_free=False,
+            total_records=1,
+            written_records=1,
+            package_count=1,
+            resource_count=1,
+            status_counts=(('Needs review', 1),),
+            issues=(ValidationIssue(
+                SEVERITY_INFO,
+                'pkg.package',
+                item.instance_hex,
+                item.id_hex,
+                'Needs review',
+                'Sample info',
+                item.source,
+                item.translate,
+                item,
+            ),),
+        )
+
+        dialog = ReleaseValidationDialog(report, opened.append)
+        try:
+            dialog.tabs.setCurrentIndex(2)
+            proxy_index = dialog.issue_proxy.index(0, 0)
+            dialog.issue_table.doubleClicked.emit(proxy_index)
+            self.assertEqual(opened, [item])
+        finally:
+            close_widget(dialog)
+
+    def test_release_validation_dialog_category_and_search_filters_without_mutating_records(self):
+        item = record(FLAG_PROGRESS)
+        before = list(item)
+        report = ValidationReport(
+            mode='Manual validation',
+            profile=PROFILE_SOFT,
+            destination_locale='VI_VN',
+            include_untranslated=True,
+            conflict_free=False,
+            total_records=2,
+            written_records=2,
+            package_count=1,
+            resource_count=1,
+            status_counts=(('Needs review', 1),),
+            issues=(
+                ValidationIssue(
+                    SEVERITY_CRITICAL,
+                    'pkg.package',
+                    item.instance_hex,
+                    item.id_hex,
+                    'Needs review',
+                    'Missing source token(s): {0.SimFirstName}',
+                    '{0.SimFirstName}',
+                    '',
+                    item,
+                    'MISSING_TOKEN',
+                    'Token safety',
+                ),
+                ValidationIssue(
+                    SEVERITY_INFO,
+                    'pkg.package',
+                    item.instance_hex,
+                    '0x00000007',
+                    '-',
+                    'Summary',
+                    '',
+                    '',
+                    None,
+                    'SUMMARY',
+                    'Summary',
+                ),
+            ),
+        )
+
+        dialog = ReleaseValidationDialog(report)
+        try:
+            dialog.category_filter.setCurrentText('Token safety')
+            self.assertEqual(dialog.issue_proxy.rowCount(), 1)
+            dialog.search_filter.setText(item.id_hex)
+            self.assertEqual(dialog.issue_proxy.rowCount(), 1)
+            dialog.search_filter.setText('not-found')
+            self.assertEqual(dialog.issue_proxy.rowCount(), 0)
+            self.assertEqual(list(item), before)
+        finally:
+            close_widget(dialog)
+
+    def test_release_validation_dialog_review_columns_prioritize_reason(self):
+        report = ValidationReport(
+            mode='Manual validation',
+            profile=PROFILE_SOFT,
+            destination_locale='VI_VN',
+            include_untranslated=True,
+            conflict_free=False,
+            total_records=1,
+            written_records=1,
+            package_count=1,
+            resource_count=1,
+            status_counts=(('Approved', 1),),
+            issues=(ValidationIssue(
+                SEVERITY_CRITICAL,
+                'very-long-package-name.package',
+                '0x0000000000000001',
+                '0x0000002A',
+                'Approved',
+                'Missing source token(s): {0.SimFirstName}; this reason must remain readable.',
+                '{0.SimFirstName} says hello',
+                'Xin chao',
+                None,
+                'MISSING_TOKEN',
+                'Token safety',
+            ),),
+        )
+
+        dialog = ReleaseValidationDialog(report)
+        try:
+            dialog.show()
+            app().processEvents()
+
+            self.assertTrue(dialog.issue_table.isColumnHidden(1))
+            self.assertTrue(dialog.issue_table.isColumnHidden(2))
+            self.assertEqual(
+                dialog.issue_table.horizontalHeader().sectionResizeMode(7),
+                QHeaderView.ResizeMode.Stretch,
+            )
+            self.assertGreater(dialog.issue_table.columnWidth(7), dialog.issue_table.columnWidth(0))
+            self.assertGreater(dialog.issue_table.columnWidth(7), dialog.issue_table.columnWidth(5))
+            self.assertGreaterEqual(dialog.issue_table.columnWidth(8), 300)
+            self.assertGreaterEqual(dialog.issue_table.columnWidth(9), 300)
+        finally:
+            close_widget(dialog)
+
+    def test_release_validation_dialog_copies_selected_issue_details(self):
+        report = ValidationReport(
+            mode='Manual validation',
+            profile=PROFILE_SOFT,
+            destination_locale='VI_VN',
+            include_untranslated=True,
+            conflict_free=False,
+            total_records=1,
+            written_records=1,
+            package_count=1,
+            resource_count=1,
+            status_counts=(('Approved', 1),),
+            issues=(ValidationIssue(
+                SEVERITY_CRITICAL,
+                'pkg.package',
+                '0x0000000000000001',
+                '0x0000002A',
+                'Approved',
+                'Missing source token(s): {0.SimFirstName}',
+                '{0.SimFirstName}',
+                '',
+                None,
+                'MISSING_TOKEN',
+                'Token safety',
+            ),),
+        )
+
+        dialog = ReleaseValidationDialog(report)
+        try:
+            dialog.show()
+            app().processEvents()
+            dialog.issue_table.selectRow(0)
+            dialog.copy_selected_issue()
+
+            copied = QApplication.clipboard().text()
+            self.assertIn('Critical', copied)
+            self.assertIn('MISSING_TOKEN', copied)
+            self.assertIn('Token safety', copied)
+            self.assertIn('0x0000002A', copied)
+            self.assertIn('Missing source token', copied)
+        finally:
+            close_widget(dialog)
+
+    def test_rebranded_icon_resource_and_dialog_window_icons_load(self):
+        self.assertFalse(QIcon(':/logo.ico').isNull())
+        self.assertFalse(QIcon(':/images/life_status.png').isNull())
+        self.assertFalse(QIcon(':/images/life_scope.png').isNull())
+        self.assertFalse(QIcon(':/images/life_validate.png').isNull())
+
+        window = MainWindow()
+        report = ValidationReport(
+            mode='Manual validation',
+            profile=PROFILE_SOFT,
+            destination_locale='VI_VN',
+            include_untranslated=True,
+            conflict_free=False,
+            total_records=0,
+            written_records=0,
+            package_count=0,
+            resource_count=0,
+            status_counts=(),
+            issues=(),
+        )
+        dialogs = [
+            ReleaseValidationDialog(report),
+            TranslateDialog(window),
+            EditDialog(window),
+            ImportDialog(window),
+            ExportDialog(window),
+            OptionsDialog(window),
+        ]
+        try:
+            self.assertFalse(window.windowIcon().isNull())
+            for dialog in dialogs:
+                self.assertFalse(dialog.windowIcon().isNull(), dialog.windowTitle())
+        finally:
+            for dialog in dialogs:
+                close_widget(dialog)
+            close_widget(window)
+
+    def test_export_validation_cancel_does_not_start_export_task(self):
+        item = record(FLAG_VALIDATED)
+        storage = app_state.packages_storage
+        storage.model.replace([item])
+        storage.model.filter([item])
+        storage.packages.append(PackageStub())
+
+        dialog = ExportDialog()
+        try:
+            dialog._ExportDialog__export = EXPORT_JSON_S4S
+            dialog.rb_all.setChecked(True)
+
+            with patch('windows.export_dialog.ReleaseValidationDialog.confirm', return_value=False), \
+                    patch.object(dialog._ExportDialog__runner, 'start') as start:
+                handle = dialog.export_structured([item], filename='release.json')
+
+            self.assertIsNone(handle)
+            self.assertFalse(start.called)
+            self.assertTrue(dialog._ExportDialog__validation_cancelled)
+        finally:
+            close_widget(dialog)
+
+    def test_open_command_loads_first_file_then_adds_next_file(self):
+        window = MainWindow()
+        try:
+            with patch('windows.main_window.open_supported', return_value='first.package'), \
+                    patch.object(window, 'load') as load_mock:
+                window.open_hybrid_file()
+
+            load_mock.assert_called_once_with('first.package', False)
+
+            app_state.packages_storage.packages.append(PackageStub())
+            window.set_state_menu()
+
+            with patch('windows.main_window.open_supported', return_value='second.package'), \
+                    patch.object(window, 'load') as load_mock:
+                window.open_hybrid_file()
+
+            load_mock.assert_called_once_with('second.package', True)
+            self.assertEqual(window.command_open.text(), 'Open')
+            self.assertIn('Add file', window.command_open.toolTip())
         finally:
             close_widget(window)
 
@@ -273,8 +684,10 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.command_open.text(), 'Open')
             self.assertEqual(window.command_import.text(), 'Import')
             self.assertEqual(window.command_translate.text(), 'Translate')
-            self.assertEqual(window.command_dictionary.text(), 'Save Dictionary')
+            self.assertEqual(window.command_dictionary.text(), 'Dictionary')
+            self.assertEqual(window.command_validate_release.text(), 'Release QA')
             self.assertIn('reuse', window.command_dictionary.toolTip())
+            self.assertIn('Validate Release', window.command_validate_release.toolTip())
             self.assertFalse(hasattr(window, 'command_options'))
 
             self.assertFalse(window.brand_block.isVisibleTo(window))
@@ -289,24 +702,56 @@ class WorkspaceProShellTests(unittest.TestCase):
                 Qt.ToolButtonStyle.ToolButtonTextBesideIcon
             )
             self.assertFalse(window.brand_block.isVisibleTo(window))
-            self.assertEqual(window.command_dictionary.text(), 'Save Dictionary')
+            self.assertEqual(window.command_dictionary.text(), 'Dictionary')
             self.assertTrue(window.command_file_label.isVisibleTo(window))
         finally:
             close_widget(window)
 
-    def test_table_delegate_uses_dense_professional_row_height(self):
+    def test_table_delegate_supports_comfortable_and_compact_row_density(self):
         window = MainWindow()
         try:
             delegate = MainDelegatePaint(window.tableview)
-            self.assertEqual(delegate.sizeHint(QStyleOptionViewItem(), QModelIndex()).height(), 38)
+            self.assertEqual(delegate.row_density, 'comfortable')
+            self.assertEqual(
+                delegate.sizeHint(QStyleOptionViewItem(), QModelIndex()).height(),
+                TABLE_ROW_HEIGHTS['comfortable'],
+            )
+
+            compact = MainDelegatePaint(window.tableview, row_density='compact')
+            self.assertEqual(compact.row_density, 'compact')
+            self.assertEqual(
+                compact.sizeHint(QStyleOptionViewItem(), QModelIndex()).height(),
+                TABLE_ROW_HEIGHTS['compact'],
+            )
+        finally:
+            close_widget(window)
+
+    def test_main_table_applies_configured_row_density_without_mutating_records(self):
+        config.set_value('view', 'row_density', 'compact')
+        window = MainWindow()
+        item = record(FLAG_UNVALIDATED)
+        before = list(item)
+        try:
+            storage = app_state.packages_storage
+            storage.packages.append(PackageStub())
+            storage.model.replace([item])
+            storage.proxy.process_filter()
+            window.tableview.set_model()
+
+            self.assertEqual(window.tableview.property('rowDensity'), 'compact')
+            self.assertEqual(
+                window.tableview.verticalHeader().defaultSectionSize(),
+                TABLE_ROW_HEIGHTS['compact'],
+            )
+            self.assertEqual(list(item), before)
         finally:
             close_widget(window)
 
     def test_sims_inspired_theme_tokens_keep_readable_contrast(self):
-        self.assertEqual(balanced.ACCENT, '#6ef56a')
-        self.assertEqual(balanced.BORDER_FOCUS, '#3ddcff')
-        self.assertEqual(balanced.BUTTON_DEFAULT, '#18b9f2')
-        self.assertEqual(balanced.UNVALIDATED_BAR, '#d6c76a')
+        self.assertEqual(balanced.ACCENT, '#a9f76b')
+        self.assertEqual(balanced.BORDER_FOCUS, '#72f4d8')
+        self.assertEqual(balanced.BUTTON_DEFAULT, '#9bf26a')
+        self.assertEqual(balanced.UNVALIDATED_BAR, '#d8d66a')
 
         self.assertGreaterEqual(contrast_ratio(balanced.TEXT, balanced.SURFACE), 4.5)
         self.assertGreaterEqual(contrast_ratio(balanced.TEXT_MUTED, balanced.SURFACE), 4.5)
@@ -338,6 +783,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.filter_original.text(), 'Untranslated 1.2k')
             self.assertEqual(window.filter_translated.text(), 'Draft 0')
             self.assertFalse(window.filter_translated.isVisibleTo(window))
+            self.assertEqual(window.filter_layout.indexOf(window.filter_translated), -1)
             self.assertEqual(window._MainWindow__format_filter_count(162527), '162.5k')
             self.assertLessEqual(
                 window.filter_all.fontMetrics().horizontalAdvance(window.filter_all.text()) + 10,
@@ -346,7 +792,7 @@ class WorkspaceProShellTests(unittest.TestCase):
         finally:
             close_widget(window)
 
-    def test_draft_status_chip_only_appears_when_draft_rows_exist(self):
+    def test_draft_status_is_display_only_not_a_primary_filter_chip(self):
         window = MainWindow()
         try:
             window.resize(window.minimumSize())
@@ -357,11 +803,13 @@ class WorkspaceProShellTests(unittest.TestCase):
             app().processEvents()
 
             self.assertFalse(window.filter_translated.isVisibleTo(window))
+            self.assertEqual(window.filter_layout.indexOf(window.filter_translated), -1)
 
             window._MainWindow__update_filter_counts([record(FLAG_TRANSLATED)])
             app().processEvents()
 
-            self.assertTrue(window.filter_translated.isVisibleTo(window))
+            self.assertFalse(window.filter_translated.isVisibleTo(window))
+            self.assertEqual(window.filter_layout.indexOf(window.filter_translated), -1)
             self.assertEqual(window.filter_translated.text(), 'Draft 1')
         finally:
             close_widget(window)
@@ -450,6 +898,37 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.filter_all.text(), 'All 162.5k')
             self.assertEqual(window.filter_original.text(), 'Untranslated 162.5k')
             self.assertEqual(window.filter_original.toolTip(), 'Untranslated: 162,527')
+        finally:
+            close_widget(window)
+
+    def test_workspace_stats_skip_zero_draft_and_spell_out_package(self):
+        window = MainWindow()
+        original = record(FLAG_UNVALIDATED)
+        approved = record(FLAG_VALIDATED)
+        approved[RECORD_MAIN_ID] = 7
+        draft = record(FLAG_TRANSLATED)
+        draft[RECORD_MAIN_ID] = 9
+        try:
+            storage = app_state.packages_storage
+            storage.packages.append(PackageStub())
+            storage.model.replace([original, approved])
+            storage.proxy.process_filter()
+
+            window.update_workspace_summary()
+
+            self.assertIn('1 package', window.workspace_summary.text())
+            self.assertIn(' · ', window.workspace_summary.text())
+            self.assertNotIn('|', window.workspace_summary.text())
+            self.assertNotIn('pkg', window.workspace_summary.text())
+            self.assertNotIn('draft', window.workspace_summary.text().lower())
+            self.assertNotIn('draft', window.workspace_summary.toolTip().lower())
+
+            storage.model.replace([original, approved, draft])
+            storage.proxy.process_filter()
+            window.update_workspace_summary()
+
+            self.assertIn('1 draft', window.workspace_summary.text())
+            self.assertIn('1 draft', window.workspace_summary.toolTip())
         finally:
             close_widget(window)
 
@@ -643,6 +1122,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.selection_original_text.toPlainText(), long_text)
             self.assertEqual(window.selection_translation_text.toPlainText(), long_text)
             self.assertTrue(window.selection_preview.isVisibleTo(window))
+            self.assertGreaterEqual(window.selection_original_text.height(), 64)
+            self.assertGreaterEqual(window.selection_translation_text.height(), 64)
         finally:
             close_widget(window)
 
@@ -810,7 +1291,7 @@ class WorkspaceProShellTests(unittest.TestCase):
         finally:
             close_widget(approve_dialog)
 
-    def test_edit_dialog_blocks_approve_until_token_warning_is_confirmed(self):
+    def test_edit_dialog_approve_uses_soft_confirm_for_token_warning(self):
         storage = app_state.packages_storage
         storage.packages.append(PackageStub())
         item = record(FLAG_PROGRESS)
@@ -820,22 +1301,35 @@ class WorkspaceProShellTests(unittest.TestCase):
         try:
             dialog.prepare(item)
 
-            with patch.object(QMessageBox, 'question', return_value=QMessageBox.StandardButton.No) as question:
+            with patch('PySide6.QtWidgets.QMessageBox.question') as question, \
+                    patch('PySide6.QtWidgets.QMessageBox.exec',
+                          return_value=QMessageBox.StandardButton.No) as warning:
                 dialog.ok_click()
 
-            question.assert_called_once()
+            question.assert_not_called()
+            warning.assert_called_once()
             self.assertEqual(item.flag, FLAG_PROGRESS)
             self.assertIn('Missing', dialog.token_status.text())
+            self.assertIn('Continue as Approved', dialog.token_detail.text())
 
-            with patch.object(QMessageBox, 'question', return_value=QMessageBox.StandardButton.Yes):
+            box = dialog._EditDialog__build_token_warning_box('Approved', 'Missing tokens')
+            try:
+                self.assertEqual(box.button(QMessageBox.StandardButton.Yes).text(), 'Continue and Approve')
+                self.assertEqual(box.button(QMessageBox.StandardButton.No).text(), 'Back to Edit')
+            finally:
+                close_widget(box)
+
+            with patch('PySide6.QtWidgets.QMessageBox.exec',
+                       return_value=QMessageBox.StandardButton.Yes) as warning:
                 dialog.ok_click()
 
+            warning.assert_called_once()
             self.assertEqual(item.flag, FLAG_VALIDATED)
             self.assertEqual(item.translate, 'Bonjour')
         finally:
             close_widget(dialog)
 
-    def test_edit_dialog_needs_review_saves_even_with_token_warnings(self):
+    def test_edit_dialog_needs_review_uses_soft_confirm_for_token_warning(self):
         storage = app_state.packages_storage
         storage.packages.append(PackageStub())
         item = record(FLAG_UNVALIDATED)
@@ -845,14 +1339,33 @@ class WorkspaceProShellTests(unittest.TestCase):
         try:
             dialog.prepare(item)
 
-            with patch.object(QMessageBox, 'question') as question, \
-                    patch.object(QMessageBox, 'warning', return_value=QMessageBox.StandardButton.Ok) as warning:
+            with patch('PySide6.QtWidgets.QMessageBox.question') as question, \
+                    patch('PySide6.QtWidgets.QMessageBox.exec',
+                          return_value=QMessageBox.StandardButton.No) as warning:
                 dialog.needs_review_click()
 
             question.assert_not_called()
             warning.assert_called_once()
-            self.assertEqual(item.flag, FLAG_PROGRESS)
+            self.assertEqual(item.flag, FLAG_UNVALIDATED)
             self.assertIn('Missing', dialog.token_status.text())
+            self.assertIn('Continue as Needs Review', dialog.token_detail.text())
+
+            box = dialog._EditDialog__build_token_warning_box('Needs Review', 'Missing tokens')
+            try:
+                self.assertEqual(
+                    box.button(QMessageBox.StandardButton.Yes).text(),
+                    'Continue and Mark Needs Review',
+                )
+                self.assertEqual(box.button(QMessageBox.StandardButton.No).text(), 'Back to Edit')
+            finally:
+                close_widget(box)
+
+            with patch('PySide6.QtWidgets.QMessageBox.exec',
+                       return_value=QMessageBox.StandardButton.Yes) as warning:
+                dialog.needs_review_click()
+
+            warning.assert_called_once()
+            self.assertEqual(item.flag, FLAG_PROGRESS)
         finally:
             close_widget(dialog)
 
@@ -917,9 +1430,119 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertTrue(hasattr(dialog, 'cb_language'))
             self.assertTrue(hasattr(dialog, 'cb_source'))
             self.assertTrue(hasattr(dialog, 'cb_dest'))
+            self.assertTrue(hasattr(dialog, 'lbl_deepl_hint'))
+            self.assertTrue(hasattr(dialog, 'txt_deepl_glossary_id'))
+            self.assertTrue(hasattr(dialog, 'btn_deepl_test'))
+            self.assertTrue(hasattr(dialog, 'btn_deepl_usage'))
+            self.assertFalse(hasattr(dialog, 'btn_save'))
         finally:
             close_widget(dialog)
             close_widget(window)
+
+    def test_options_dialog_uses_clear_safety_labels_and_dictionary_defaults(self):
+        config.set_value('save', 'backup', ConfigManager.DEFAULTS['save']['backup'])
+        config.set_value('save', 'experemental', ConfigManager.DEFAULTS['save']['experemental'])
+        config.set_value('dictionaries', 'strong', ConfigManager.DEFAULTS['dictionaries']['strong'])
+
+        window = MainWindow()
+        dialog = OptionsDialog(window)
+        try:
+            self.assertTrue(ConfigManager.DEFAULTS['save']['backup'])
+            self.assertFalse(ConfigManager.DEFAULTS['save']['experemental'])
+            self.assertFalse(ConfigManager.DEFAULTS['dictionaries']['strong'])
+            self.assertEqual(dialog.cb_backup.text(), 'Create backup before Finalize')
+            self.assertEqual(dialog.cb_experemental.text(), 'Use conflict-free save mode (experimental)')
+            self.assertEqual(dialog.cb_strong.text(), 'Only use exact dictionary matches')
+            self.assertTrue(dialog.cb_backup.isChecked())
+            self.assertFalse(dialog.cb_experemental.isChecked())
+            self.assertFalse(dialog.cb_strong.isChecked())
+            self.assertIn('.package.backup', dialog.cb_backup.toolTip())
+            self.assertIn('fallback matches', dialog.cb_strong.toolTip())
+        finally:
+            close_widget(dialog)
+            close_widget(window)
+
+    def test_options_dialog_persists_language_pair_and_deepl_key_on_change(self):
+        window = MainWindow()
+        dialog = OptionsDialog(window)
+        try:
+            with patch.object(config, 'save') as save_mock:
+                dialog.cb_dest.setCurrentText('VI_VN')
+                dialog.language_change()
+                dialog.txt_deepl_key.setText('sample:fx')
+                dialog.change_deepl_key()
+                dialog.txt_deepl_glossary_id.setText('glossary-123')
+                dialog.change_deepl_glossary_id()
+                dialog.cb_backup.setChecked(True)
+                dialog.checkbox_click()
+
+            self.assertEqual(config.value('translation', 'source'), 'ENG_US')
+            self.assertEqual(config.value('translation', 'destination'), 'VI_VN')
+            self.assertEqual(config.value('api', 'deepl_key'), 'sample:fx')
+            self.assertEqual(config.value('api', 'deepl_glossary_id'), 'glossary-123')
+            self.assertEqual(config.value('api', 'engine'), 'DeepL')
+            self.assertTrue(config.value('save', 'backup'))
+            self.assertGreaterEqual(save_mock.call_count, 5)
+        finally:
+            close_widget(dialog)
+            close_widget(window)
+
+    def test_options_dialog_deepl_test_and_usage_render_usage_status(self):
+        window = MainWindow()
+        dialog = OptionsDialog(window)
+        try:
+            dialog.txt_deepl_key.setText('sample:fx')
+            with patch('windows.options_dialog.deepl_usage',
+                       return_value=DeepLUsage(200, 2500, 10000, '')) as usage:
+                dialog.test_deepl_key()
+                usage.assert_called_with('sample:fx')
+                self.assertIn('Valid key', dialog.lbl_deepl_status.text())
+                self.assertIn('2,500 / 10,000', dialog.lbl_deepl_status.text())
+
+                dialog.check_deepl_usage()
+                self.assertIn('DeepL usage', dialog.lbl_deepl_status.text())
+
+            with patch('windows.options_dialog.deepl_usage',
+                       return_value=DeepLUsage(403, 0, 0, 'Invalid API key.')):
+                dialog.test_deepl_key()
+                self.assertIn('Invalid API key', dialog.lbl_deepl_status.text())
+        finally:
+            close_widget(dialog)
+            close_widget(window)
+
+    def test_batch_translate_deepl_cost_guard_shows_estimate_and_cancel_stops_jobs(self):
+        config.set_value('api', 'deepl_key', 'sample:fx')
+        config.set_value('api', 'engine', 'DeepL')
+        config.set_value('translation', 'source', 'ENG_US')
+        config.set_value('translation', 'destination', 'VI_VN')
+
+        storage = app_state.packages_storage
+        item = record(FLAG_UNVALIDATED)
+        storage.model.items = [item]
+
+        dialog = TranslateDialog()
+        try:
+            dialog.refresh_api_list()
+            dialog.rb_all.setChecked(True)
+
+            with patch.object(dialog, '_TranslateDialog__confirm_deepl_cost', return_value=False) as confirm, \
+                    patch.object(dialog._TranslateDialog__runner, 'start') as start:
+                dialog.translate()
+
+            confirm.assert_called_once()
+            start.assert_not_called()
+            self.assertFalse(dialog._TranslateDialog__translating)
+
+            with patch('windows.translate_dialog.deepl_usage',
+                       return_value=DeepLUsage(200, 10, 1000, '')), \
+                    patch('PySide6.QtWidgets.QMessageBox.exec',
+                          return_value=QMessageBox.StandardButton.Yes) as exec_mock:
+                accepted = dialog._TranslateDialog__confirm_deepl_cost([item])
+
+            exec_mock.assert_called_once()
+            self.assertTrue(accepted)
+        finally:
+            close_widget(dialog)
 
     def test_options_dialog_defaults_legacy_english_config_to_english_locale(self):
         config.set_value('interface', 'language', 'english')

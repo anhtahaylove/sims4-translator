@@ -23,11 +23,17 @@ from widgets.token_highlight import (
 
 
 STATUS_META = {
-    FLAG_UNVALIDATED: ('Untranslated', '#d6c76a'),
-    FLAG_PROGRESS: ('Needs review', '#ffd45a'),
-    FLAG_VALIDATED: ('Approved', '#6ef56a'),
-    FLAG_TRANSLATED: ('Draft', '#3ddcff'),
-    FLAG_REPLACED: ('Edited', '#f4a7df'),
+    FLAG_UNVALIDATED: ('Untranslated', dark.UNVALIDATED_BAR),
+    FLAG_PROGRESS: ('Needs review', dark.WARNING),
+    FLAG_VALIDATED: ('Approved', dark.SUCCESS),
+    FLAG_TRANSLATED: ('Draft', dark.BORDER_FOCUS),
+    FLAG_REPLACED: ('Edited', dark.EDITOR_FEMALE),
+}
+
+
+TABLE_ROW_HEIGHTS = {
+    'compact': 38,
+    'comfortable': 44,
 }
 
 
@@ -62,12 +68,19 @@ class GridPalette:
 
 class MainDelegatePaint(QStyledItemDelegate):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, row_density: str = None):
         super().__init__(parent)
 
         self.model = app_state.packages_storage.model
         self.proxy = app_state.packages_storage.proxy
         self.palette = GridPalette()
+        self.row_density = self.__normalize_row_density(
+            row_density or config.value('view', 'row_density') or 'comfortable'
+        )
+
+    @property
+    def row_height(self) -> int:
+        return TABLE_ROW_HEIGHTS[self.row_density]
 
     def paint(self, painter, option, index):
         item = self.__item(index)
@@ -99,7 +112,11 @@ class MainDelegatePaint(QStyledItemDelegate):
         painter.restore()
 
     def sizeHint(self, option, index):
-        return QSize(super().sizeHint(option, index).width(), 38)
+        return QSize(super().sizeHint(option, index).width(), self.row_height)
+
+    @staticmethod
+    def __normalize_row_density(row_density: str) -> str:
+        return row_density if row_density in TABLE_ROW_HEIGHTS else 'comfortable'
 
     def __item(self, index):
         try:

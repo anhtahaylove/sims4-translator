@@ -3,7 +3,7 @@
 from PySide6.QtCore import Qt, QCoreApplication, QObject, QTimer, QAbstractTableModel, \
     Signal, Slot, QThreadPool, QRunnable
 from PySide6.QtWidgets import QHeaderView, QStyledItemDelegate, QDialog
-from PySide6.QtGui import QColor, QFont, QPainter
+from PySide6.QtGui import QColor, QFont, QIcon, QPainter
 
 from windows.ui.options_dialog import Ui_OptionsDialog
 
@@ -21,6 +21,7 @@ from singletons.interface import interface
 from singletons.languages import languages
 from singletons.signals import progress_signals
 from singletons.state import app_state
+from singletons.translator import deepl_usage
 from utils.functions import opendir
 from utils.constants import *
 
@@ -202,6 +203,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
     def __init__(self, parent):
         super().__init__(parent)
         self.setupUi(self)
+        self.setWindowIcon(QIcon(':/logo.ico'))
 
         self.main_window = parent
 
@@ -227,6 +229,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
 
         self.txt_path.setText(config.value('dictionaries', 'gamepath'))
         self.txt_deepl_key.setText(config.value('api', 'deepl_key'))
+        self.txt_deepl_glossary_id.setText(config.value('api', 'deepl_glossary_id') or '')
 
         self.cb_language.currentIndexChanged.connect(self.interface_change)
         self.cb_source.currentIndexChanged.connect(self.language_change)
@@ -238,6 +241,9 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.cb_pack_category.currentIndexChanged.connect(self.refresh)
 
         self.txt_deepl_key.textChanged.connect(self.change_deepl_key)
+        self.txt_deepl_glossary_id.textChanged.connect(self.change_deepl_glossary_id)
+        self.btn_deepl_test.clicked.connect(self.test_deepl_key)
+        self.btn_deepl_usage.clicked.connect(self.check_deepl_usage)
 
         self.btn_build.clicked.connect(self.build_click)
 
@@ -271,11 +277,25 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
     def retranslate(self):
         self.setWindowTitle(interface.text('OptionsDialog', 'Options and dictionaries'))
         self.gb_interface.setTitle(interface.text('OptionsDialog', 'Interface'))
-        self.cb_backup.setText(interface.text('OptionsDialog', 'Create backup package before finalization'))
+        self.cb_backup.setText(interface.text('OptionsDialog', 'Create backup before Finalize'))
+        self.cb_backup.setToolTip(interface.text(
+            'OptionsDialog',
+            'Recommended. When Finalize writes over a source package, keep a .package.backup copy first.'
+        ))
         self.cb_experemental.setText(interface.text('OptionsDialog',
-                                                    'Saving translation without conflicts (experemental)'))
+                                                    'Use conflict-free save mode (experimental)'))
+        self.cb_experemental.setToolTip(interface.text(
+            'OptionsDialog',
+            'Creates separate hashed STBL resources instead of touching the original STBL resources. '
+            'Use only when testing conflict avoidance with a package copy.'
+        ))
         self.cb_strong.setText(interface.text('OptionsDialog',
-                                              'Do not use automatic translation from other dictionaries'))
+                                              'Only use exact dictionary matches'))
+        self.cb_strong.setToolTip(interface.text(
+            'OptionsDialog',
+            'When enabled, dictionary auto-fill is stricter and avoids fallback matches from the same source text. '
+            'Leave disabled to reuse more dictionary translations, then review context-sensitive strings manually.'
+        ))
         self.gb_path.setTitle(interface.text('OptionsDialog', 'Game path'))
         self.gb_lang.setTitle(interface.text('OptionsDialog', 'Languages'))
         self.label_source.setText(interface.text('OptionsDialog', 'Source'))
@@ -295,6 +315,16 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.tabs.setTabText(self.tabs.indexOf(self.tab_general), interface.text('OptionsDialog', 'General'))
         self.tabs.setTabText(self.tabs.indexOf(self.tab_dictionaries), interface.text('OptionsDialog', 'Dictionaries'))
         self.gb_deepl.setTitle(interface.text('OptionsDialog', 'DeepL API key'))
+        self.btn_deepl_test.setText(interface.text('OptionsDialog', 'Test key'))
+        self.btn_deepl_usage.setText(interface.text('OptionsDialog', 'Check usage'))
+        self.lbl_deepl_hint.setText(interface.text(
+            'OptionsDialog',
+            'Paste a DeepL API key here, then choose DeepL in Search and Edit or Batch translate. '
+            'DeepL appears only when the selected source and destination languages are supported. '
+            'Glossary ID is optional and must match the selected DeepL language pair. '
+            'Do not share or commit your API key.'
+        ))
+        self.lbl_deepl_autosave.setText(interface.text('OptionsDialog', 'Changes are saved automatically.'))
 
         self.lbl_language.setText(interface.text('OptionsDialog', 'Language'))
 
@@ -351,7 +381,38 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.btn_build.setEnabled(len(expansions.exists()) > 0)
 
     def change_deepl_key(self):
-        config.set_value('api', 'deepl_key', self.txt_deepl_key.text())
+        config.set_value('api', 'deepl_key', self.txt_deepl_key.text().strip())
+        self.__sync_deepl_engine_preference()
+        config.save()
+
+    def change_deepl_glossary_id(self):
+        config.set_value('api', 'deepl_glossary_id', self.txt_deepl_glossary_id.text().strip())
+        config.save()
+
+    def test_deepl_key(self):
+        usage = deepl_usage(self.txt_deepl_key.text().strip())
+        self.__set_deepl_usage_status(usage, validation_only=True)
+
+    def check_deepl_usage(self):
+        usage = deepl_usage(self.txt_deepl_key.text().strip())
+        self.__set_deepl_usage_status(usage, validation_only=False)
+
+    def __set_deepl_usage_status(self, usage, validation_only: bool = False):
+        if usage.status_code == 200:
+            if usage.character_limit:
+                percent = usage.character_count / usage.character_limit * 100
+                usage_text = f'{usage.character_count:,} / {usage.character_limit:,} characters ({percent:.1f}%)'
+            else:
+                usage_text = f'{usage.character_count:,} characters used'
+            prefix = 'Valid key.' if validation_only else 'DeepL usage:'
+            self.lbl_deepl_status.setProperty('state', 'ok')
+            self.lbl_deepl_status.setText(f'{prefix} {usage_text}')
+        else:
+            self.lbl_deepl_status.setProperty('state', 'warning')
+            self.lbl_deepl_status.setText(usage.message)
+
+        self.lbl_deepl_status.style().unpolish(self.lbl_deepl_status)
+        self.lbl_deepl_status.style().polish(self.lbl_deepl_status)
 
     def change_path(self):
         config.set_value('dictionaries', 'gamepath', self.txt_path.text())
@@ -365,10 +426,24 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
     def language_change(self):
         config.set_value('translation', 'source', self.cb_source.currentText())
         config.set_value('translation', 'destination', self.cb_dest.currentText())
+        self.__sync_deepl_engine_preference()
+        config.save()
         self.start_culling_timer()
+
+    @staticmethod
+    def __sync_deepl_engine_preference():
+        api_key = config.value('api', 'deepl_key')
+        src = languages.source
+        dst = languages.destination
+        deepl_available = bool(api_key and src and src.deepl and dst and dst.deepl)
+        if deepl_available:
+            config.set_value('api', 'engine', 'DeepL')
+        elif config.value('api', 'engine') == 'DeepL':
+            config.set_value('api', 'engine', 'Google')
 
     def interface_change(self):
         config.set_value('interface', 'language', self.cb_language.currentData())
+        config.save()
         interface.reload()
         self.retranslate()
         self.refresh()
@@ -385,6 +460,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         config.set_value('save', 'backup', self.cb_backup.isChecked())
         config.set_value('save', 'experemental', self.cb_experemental.isChecked())
         config.set_value('dictionaries', 'strong', self.cb_strong.isChecked())
+        config.save()
 
     def build_click(self):
         exists = expansions.exists()

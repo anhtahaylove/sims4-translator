@@ -6,6 +6,7 @@ import unittest
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
 from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QTextOption
 
 from singletons.state import app_state
 from storages.packages import PackagesStorage
@@ -112,6 +113,16 @@ class TokenHighlightTests(unittest.TestCase):
                 '{1.Money}',
             ])
             self.assertGreaterEqual(len({item[2] for item in highlighted}), 3)
+        finally:
+            editor.close()
+
+    def test_editor_does_not_render_normal_spaces_as_middle_dots(self):
+        editor = QTextEditor()
+        try:
+            flags = editor.document().defaultTextOption().flags()
+
+            self.assertFalse(flags & QTextOption.Flag.ShowTabsAndSpaces)
+            self.assertFalse(flags & QTextOption.Flag.AddSpaceForLineAndParagraphSeparators)
         finally:
             editor.close()
 

@@ -28,6 +28,8 @@ from widgets.delegate import STATUS_META
 class EditTranslationRequest:
     engine: str
     source: str
+    context: str = ''
+    glossary_id: str = ''
 
 
 @dataclass(frozen=True)
@@ -42,7 +44,12 @@ def edit_translation_task(
         request: EditTranslationRequest
 ) -> EditTranslationResult:
     token.raise_if_cancelled()
-    response = translator.translate(request.engine, request.source)
+    response = translator.translate(
+        request.engine,
+        request.source,
+        context=request.context,
+        glossary_id=request.glossary_id
+    )
     token.raise_if_cancelled()
 
     if response.status_code == 200:
@@ -57,6 +64,7 @@ class EditDialog(QDialog, Ui_EditDialog):
         super().__init__(parent)
         self.setupUi(self)
 
+        self.setWindowIcon(QIcon(':/logo.ico'))
         self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowMaximizeButtonHint)
 
         self.item = None
@@ -226,14 +234,14 @@ class EditDialog(QDialog, Ui_EditDialog):
 
     def ok_click(self):
         self.__refresh_token_state()
-        if not self.__token_result.ok and not self.__confirm_token_override():
+        if not self.__confirm_token_warning('Approved'):
             return
         self.__save(FLAG_VALIDATED)
 
     def needs_review_click(self):
         self.__refresh_token_state()
-        if not self.__token_result.ok:
-            self.__show_needs_review_warning()
+        if not self.__confirm_token_warning('Needs Review'):
+            return
         self.__save(FLAG_PROGRESS)
 
     def __save(self, flag):
@@ -260,7 +268,12 @@ class EditDialog(QDialog, Ui_EditDialog):
         if self.__translate_handle:
             self.__translate_handle.cancel()
 
-        request = EditTranslationRequest(self.cb_api.currentText(), self.item.source)
+        request = EditTranslationRequest(
+            self.cb_api.currentText(),
+            self.item.source,
+            context=self.__deepl_context_for_item(),
+            glossary_id=config.value('api', 'deepl_glossary_id') or ''
+        )
         self.__translate_handle = self.__runner.start(
             edit_translation_task,
             request,
@@ -346,31 +359,60 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.token_detail.setText(detail)
         self.text_metrics.setText(f'Original {len(source):,} chars | Draft {len(translation):,} chars')
 
-    def __confirm_token_override(self) -> bool:
-        self.token_detail.setText(self.__token_result.details() + ' Approving now may break in-game placeholders or formatting.')
-        answer = QMessageBox.question(
-            self,
-            'Approve with token warnings?',
-            self.__token_result.details() + '\n\nApprove anyway?',
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No,
-        )
-        return answer == QMessageBox.StandardButton.Yes
+    def __confirm_token_warning(self, outcome: str) -> bool:
+        if self.__token_result.ok:
+            return True
 
-    def __show_needs_review_warning(self):
-        self.token_detail.setText(self.__token_result.details() + ' This string will be marked as Needs Review.')
-        QMessageBox.warning(
-            self,
-            'Token warnings saved for review',
-            self.__token_result.details() + '\n\nThe string will be marked as Needs Review so it can be fixed later.',
-            QMessageBox.StandardButton.Ok,
-            QMessageBox.StandardButton.Ok,
+        details = self.__token_result.details()
+        self.token_detail.setText(
+            details
+            + f' Continue as {outcome} only if these token differences are intentional.'
         )
+        message_box = self.__build_token_warning_box(outcome, details)
+        answer = message_box.exec()
+        message_box.deleteLater()
+
+        yes = QMessageBox.StandardButton.Yes
+        return answer == yes or answer == yes.value
+
+    def __build_token_warning_box(self, outcome: str, details: str) -> QMessageBox:
+        message_box = QMessageBox(self)
+        message_box.setIcon(QMessageBox.Icon.Warning)
+        message_box.setWindowTitle(f'{outcome} with token warnings')
+        message_box.setText(details)
+        message_box.setInformativeText('Token differences can break in-game placeholders or formatting.')
+        message_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        message_box.setDefaultButton(QMessageBox.StandardButton.No)
+        message_box.setEscapeButton(QMessageBox.StandardButton.No)
+
+        continue_button = message_box.button(QMessageBox.StandardButton.Yes)
+        continue_button.setText(self.__token_continue_label(outcome))
+        back_button = message_box.button(QMessageBox.StandardButton.No)
+        back_button.setText('Back to Edit')
+        return message_box
+
+    @staticmethod
+    def __token_continue_label(outcome: str) -> str:
+        if outcome == 'Needs Review':
+            return 'Continue and Mark Needs Review'
+        return 'Continue and Approve'
 
     def __set_translate_busy(self, busy: bool):
         self.btn_translate.setEnabled(not busy)
         self.cb_api.setEnabled(not busy)
         self.btn_translate.setText(interface.text('EditWindow', 'Loading...') if busy else interface.text('EditWindow', 'Translate'))
+
+    def __deepl_context_for_item(self) -> str:
+        if not self.item:
+            return ''
+
+        parts = []
+        if self.item.package:
+            parts.append(f'Package: {self.item.package}')
+        parts.append(f'String ID: {self.item.id_hex}')
+        if self.item.comment:
+            parts.append(f'Translator comment: {self.item.comment}')
+        return '\n'.join(parts)
 
     def generate_item_context_menu(self, position):
         index = self.sender().indexAt(position)

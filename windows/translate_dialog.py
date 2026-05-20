@@ -4,7 +4,8 @@ from dataclasses import dataclass
 from typing import List, Tuple
 
 from PySide6.QtCore import Qt, QTimer, Slot
-from PySide6.QtWidgets import QDialog
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QDialog, QMessageBox
 
 from windows.ui.translate_dialog import Ui_TranslateDialog
 
@@ -17,7 +18,7 @@ from singletons.config import config
 from singletons.interface import interface
 from singletons.signals import progress_signals, color_signals
 from singletons.state import app_state
-from singletons.translator import translator
+from singletons.translator import deepl_usage, estimate_deepl_characters, translator
 from singletons.undo import undo
 from utils.task_runner import CancellationToken, TaskReporter, TaskRunner
 from utils.functions import text_to_stbl, text_to_edit
@@ -50,6 +51,10 @@ def split_by_char_limit(items: List[MainRecord], char_limit: int = 256) -> list:
 class TranslationItemSnapshot:
     index: int
     source: str
+    package: str = ''
+    comment: str = ''
+    record_id: int = 0
+    instance: int = 0
 
 
 @dataclass(frozen=True)
@@ -57,6 +62,8 @@ class TranslationChunkRequest:
     engine: str
     items: Tuple[TranslationItemSnapshot, ...]
     fast: bool = False
+    context: str = ''
+    glossary_id: str = ''
 
 
 @dataclass(frozen=True)
@@ -94,7 +101,13 @@ def translate_chunk_task(
     else:
         combined_text = text_to_edit(request.items[0].source)
 
-    response = translator.translate(request.engine, combined_text)
+    response = translator.translate(
+        request.engine,
+        combined_text,
+        context=request.context,
+        glossary_id=request.glossary_id,
+        preserve_newlines=request.fast,
+    )
     token.raise_if_cancelled()
 
     if response.status_code != 200:
@@ -131,6 +144,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.setWindowIcon(QIcon(':/logo.ico'))
 
         self.cb_api.currentTextChanged.connect(self.change_api)
 
@@ -203,8 +217,6 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             self.rb_slow.setChecked(True)
 
     def translate(self):
-        progress_signals.initiate.emit(interface.text('System', 'Translating...'), 0)
-
         if self.rb_selection.isChecked():
             items = app_state.tableview.selected_items()
         else:
@@ -217,7 +229,9 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
                 items = [i for i in items if i.flag in (FLAG_PROGRESS, FLAG_REPLACED)]
 
         if not items:
-            progress_signals.finished.emit()
+            return
+
+        if self.cb_api.currentText().lower() == 'deepl' and not self.__confirm_deepl_cost(items):
             return
 
         self.__items = items
@@ -246,7 +260,9 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
                 request = TranslationChunkRequest(
                     engine=self.cb_api.currentText(),
                     items=snapshots,
-                    fast=self.rb_fast.isChecked()
+                    fast=self.rb_fast.isChecked(),
+                    context=self.__deepl_context_for_items([item for _index, item in chunk]),
+                    glossary_id=config.value('api', 'deepl_glossary_id') or ''
                 )
                 handle = self.__runner.start(
                     translate_chunk_task,
@@ -363,6 +379,64 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         self.rb_selection.setChecked(True)
         self.show()
         self.translate()
+
+    def __confirm_deepl_cost(self, items: List[MainRecord]) -> bool:
+        character_count = estimate_deepl_characters(items)
+        usage = deepl_usage()
+        if usage.status_code == 200 and usage.character_limit:
+            after_count = usage.character_count + character_count
+            percent = after_count / usage.character_limit * 100
+            usage_text = (
+                f'Current usage: {usage.character_count:,} / {usage.character_limit:,} characters.\n'
+                f'After this batch: about {after_count:,} characters ({percent:.1f}%).'
+            )
+        elif usage.status_code == 200:
+            usage_text = f'Current usage: {usage.character_count:,} characters.'
+        else:
+            usage_text = f'Usage unavailable: {usage.message}'
+
+        message_box = QMessageBox(self)
+        message_box.setIcon(QMessageBox.Icon.Information)
+        message_box.setWindowTitle('DeepL batch translation')
+        message_box.setText(
+            f'DeepL will translate {len(items):,} records, about {character_count:,} source characters.'
+        )
+        message_box.setInformativeText(usage_text)
+        message_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel)
+        message_box.setDefaultButton(QMessageBox.StandardButton.Cancel)
+        message_box.setEscapeButton(QMessageBox.StandardButton.Cancel)
+        continue_button = message_box.button(QMessageBox.StandardButton.Yes)
+        continue_button.setText('Continue with DeepL')
+        cancel_button = message_box.button(QMessageBox.StandardButton.Cancel)
+        cancel_button.setText('Cancel')
+
+        answer = message_box.exec()
+        message_box.deleteLater()
+        yes = QMessageBox.StandardButton.Yes
+        return answer == yes or answer == yes.value
+
+    @staticmethod
+    def __deepl_context_for_items(items: List[MainRecord]) -> str:
+        packages = []
+        comments = []
+        ids = []
+
+        for item in items[:8]:
+            if item.package and item.package not in packages:
+                packages.append(item.package)
+            if item.comment and item.comment not in comments:
+                comments.append(item.comment)
+            ids.append(item.id_hex)
+
+        parts = []
+        if packages:
+            parts.append('Package: ' + ', '.join(packages[:3]))
+        if ids:
+            parts.append('String IDs: ' + ', '.join(ids[:8]))
+        if comments:
+            parts.append('Translator comments: ' + ' | '.join(comments[:3]))
+
+        return '\n'.join(parts)
 
     def __set_busy(self, busy: bool, stopping: bool = False) -> None:
         controls = (

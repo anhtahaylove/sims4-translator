@@ -100,6 +100,10 @@ class Ui_MainWindow(object):
         self.action_translate.setEnabled(False)
         self.action_translate.setIcon(QIcon(':/images/api.png'))
 
+        self.action_validate_release = QAction(MainWindow)
+        self.action_validate_release.setEnabled(False)
+        self.action_validate_release.setIcon(QIcon(':/images/life_validate.png'))
+
         self.action_import_translation = QAction(MainWindow)
         self.action_import_translation.setEnabled(False)
         self.action_import_translation.setIcon(QIcon(':/images/import.png'))
@@ -213,6 +217,7 @@ class Ui_MainWindow(object):
         self.menu_translation.addAction(self.action_reset_all_translations)
         self.menu_translation.addSeparator()
         self.menu_translation.addAction(self.action_translate)
+        self.menu_translation.addAction(self.action_validate_release)
         self.menu_translation.addSeparator()
         self.menu_translation.addAction(self.action_undo)
         self.menu_view.addAction(self.action_insert)
@@ -273,6 +278,7 @@ class Ui_MainWindow(object):
 
         self.command_translate = self.__command_button(self.action_translate)
         self.command_dictionary = self.__command_button(self.action_save_dictionary)
+        self.command_validate_release = self.__command_button(self.action_validate_release)
 
         self.command_file_group, self.command_file_label = self.__command_group(
             'File',
@@ -284,7 +290,7 @@ class Ui_MainWindow(object):
         )
         self.command_translation_group, self.command_translation_label = self.__command_group(
             'Translation',
-            (self.command_translate, self.command_dictionary),
+            (self.command_translate, self.command_dictionary, self.command_validate_release),
         )
 
         self.action_hub = QFrame(self.command_bar)
@@ -416,7 +422,9 @@ class Ui_MainWindow(object):
         self.workspace_stats_layout = QHBoxLayout(self.workspace_stats_bar)
         self.workspace_stats_layout.setContentsMargins(0, 0, 0, 0)
         self.workspace_stats_layout.setSpacing(0)
-        self.workspace_stats_bar.setMinimumWidth(360)
+        self.workspace_stats_bar.setMinimumWidth(320)
+        self.workspace_stats_bar.setMaximumWidth(560)
+        self.workspace_stats_bar.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
 
         self.workspace_summary_block = QFrame(self.workspace_stats_bar)
         self.workspace_summary_block.setObjectName('workspaceSummaryBlock')
@@ -426,12 +434,13 @@ class Ui_MainWindow(object):
 
         self.workspace_summary = QLabel('No package loaded', self.workspace_summary_block)
         self.workspace_summary.setObjectName('workspaceSummary')
-        self.workspace_summary.setWordWrap(True)
+        self.workspace_summary.setWordWrap(False)
         self.workspace_summary.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
 
         self.workspace_hint = QLabel('Table-first workspace', self.workspace_summary_block)
         self.workspace_hint.setObjectName('workspaceHint')
         self.workspace_hint.setWordWrap(True)
+        self.workspace_hint.setVisible(False)
 
         self.workspace_summary_block_layout.addWidget(self.workspace_summary)
         self.workspace_summary_block_layout.addWidget(self.workspace_hint)
@@ -542,6 +551,7 @@ class Ui_MainWindow(object):
         text.setObjectName('selectionPreviewText')
         text.setReadOnly(True)
         text.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
+        text.setMinimumHeight(64)
         text.setMaximumHeight(92)
         text.setPlaceholderText('Select a string to preview full text.')
         text.highlighter = BracketHighlighter(text.document())
@@ -588,6 +598,7 @@ class Ui_MainWindow(object):
         self.filter_all = self.__filter_chip('All')
         self.filter_original = self.__filter_chip('Untranslated')
         self.filter_translated = self.__filter_chip('Draft')
+        self.filter_translated.setVisible(False)
         self.filter_validated = self.__filter_chip('Approved')
         self.filter_progress = self.__filter_chip('Needs review')
         self.filter_different = self.__filter_chip('Modified only')
@@ -611,8 +622,7 @@ class Ui_MainWindow(object):
         self.filter_layout.addWidget(self.filter_status_label, 1, 0)
         self.filter_layout.addWidget(self.filter_all, 1, 1)
         self.filter_layout.addWidget(self.filter_original, 1, 2)
-        self.filter_layout.addWidget(self.filter_translated, 1, 3)
-        self.filter_layout.addWidget(self.filter_validated, 1, 4)
+        self.filter_layout.addWidget(self.filter_validated, 1, 3, 1, 2)
         self.filter_layout.addWidget(self.filter_progress, 1, 5, 1, 2)
 
         return board

@@ -4,7 +4,7 @@ import re
 from PySide6.QtCore import Qt, QRect, QSize, QObject, Signal
 from PySide6.QtWidgets import QWidget, QPlainTextEdit, QTextEdit, QMenu
 from PySide6.QtGui import QColor, QFont, QSyntaxHighlighter, QTextCursor, QPainter, QTextCharFormat, \
-    QTextFormat, QTextOption, QIcon, QPen
+    QTextFormat, QIcon, QPen
 
 import themes.light as light
 import themes.dark as dark
@@ -48,10 +48,6 @@ class QTextEditor(QPlainTextEdit):
         self.cursorPositionChanged.connect(self.highlightMatchingBracket)
 
         self.updateLineNumberAreaWidth(0)
-
-        option = QTextOption()
-        option.setFlags(QTextOption.Flag.ShowTabsAndSpaces | QTextOption.Flag.AddSpaceForLineAndParagraphSeparators)
-        self.document().setDefaultTextOption(option)
 
         self.highlighter = BracketHighlighter(self.document())
 

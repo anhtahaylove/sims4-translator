@@ -43,7 +43,7 @@ class ConfigManager:
         'dictionaries': {
             'gamepath': '',
             'dictpath': '',
-            'strong': True
+            'strong': False
         },
         'save': {
             'backup': True,
@@ -60,11 +60,12 @@ class ConfigManager:
         },
         'translation': {
             'source': 'ENG_US',
-            'destination': 'RUS_RU'
+            'destination': 'VI_VN'
         },
         'api': {
             'engine': '',
-            'deepl_key': ''
+            'deepl_key': '',
+            'deepl_glossary_id': ''
         },
         'view': {
             'id': True,
@@ -75,6 +76,7 @@ class ConfigManager:
             'colorbar': False,
             'activity_visible': True,
             'activity_expanded': True,
+            'row_density': 'comfortable',
             'numeration': NUMERATION_STANDART
         },
         'temporary': {

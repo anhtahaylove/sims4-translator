@@ -105,11 +105,36 @@ class Ui_OptionsDialog(object):
 
         self.gb_deepl = QGroupBox(self.tab_general)
 
-        layout_deepl = QHBoxLayout(self.gb_deepl)
+        layout_deepl = QVBoxLayout(self.gb_deepl)
 
         self.txt_deepl_key = QLineEdit(self.gb_deepl)
+        self.txt_deepl_key.setEchoMode(QLineEdit.EchoMode.Password)
+        self.txt_deepl_key.setPlaceholderText('DeepL API key')
+        self.txt_deepl_glossary_id = QLineEdit(self.gb_deepl)
+        self.txt_deepl_glossary_id.setPlaceholderText('Optional glossary ID')
+        layout_deepl_actions = QHBoxLayout()
+        self.btn_deepl_test = QPushButton(self.gb_deepl)
+        self.btn_deepl_usage = QPushButton(self.gb_deepl)
+        self.btn_deepl_test.setAutoDefault(False)
+        self.btn_deepl_usage.setAutoDefault(False)
+        layout_deepl_actions.addWidget(self.btn_deepl_test)
+        layout_deepl_actions.addWidget(self.btn_deepl_usage)
+        layout_deepl_actions.addStretch()
+        self.lbl_deepl_hint = QLabel(self.gb_deepl)
+        self.lbl_deepl_hint.setObjectName('muted')
+        self.lbl_deepl_hint.setWordWrap(True)
+        self.lbl_deepl_autosave = QLabel(self.gb_deepl)
+        self.lbl_deepl_autosave.setObjectName('muted')
+        self.lbl_deepl_status = QLabel(self.gb_deepl)
+        self.lbl_deepl_status.setObjectName('muted')
+        self.lbl_deepl_status.setWordWrap(True)
 
         layout_deepl.addWidget(self.txt_deepl_key)
+        layout_deepl.addWidget(self.txt_deepl_glossary_id)
+        layout_deepl.addLayout(layout_deepl_actions)
+        layout_deepl.addWidget(self.lbl_deepl_hint)
+        layout_deepl.addWidget(self.lbl_deepl_autosave)
+        layout_deepl.addWidget(self.lbl_deepl_status)
 
         vlayout.addWidget(self.gb_deepl)
 

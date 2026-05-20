@@ -3,7 +3,7 @@
 import sys
 import pyperclip
 from PySide6.QtCore import Qt, QTimer, Slot
-from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QMessageBox
+from PySide6.QtWidgets import QApplication, QInputDialog, QMainWindow, QMenu, QMessageBox
 from PySide6.QtGui import QAction, QIcon
 
 from .ui.main_window import Ui_MainWindow
@@ -14,12 +14,14 @@ from .replace_dialog import ReplaceDialog
 from .export_dialog import ExportDialog
 from .import_dialog import ImportDialog
 from .translate_dialog import TranslateDialog
+from .release_validation_dialog import ReleaseValidationDialog
 
 from singletons.config import config
 from singletons.interface import interface
 from singletons.signals import progress_signals, window_signals
 from singletons.state import app_state
 from singletons.undo import undo
+from utils.release_validation import PROFILE_SOFT, PROFILE_STRICT, validate_release_records
 from utils.functions import open_supported, open_xml, save_package, save_xml
 from utils.constants import *
 
@@ -94,7 +96,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tableview.doubleClicked.connect(self.edit_string)
         self.tableview.customContextMenuRequested.connect(self.generate_item_context_menu)
 
-        self.action_load_file.triggered.connect(self.load_file)
+        self.action_load_file.triggered.connect(self.open_hybrid_file)
         self.action_add_file.triggered.connect(self.add_file)
         self.action_save.triggered.connect(self.save)
         self.action_save_as.triggered.connect(self.save_as)
@@ -118,6 +120,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_validate_all_translations.triggered.connect(self.validate_2_all)
         self.action_reset_all_translations.triggered.connect(self.validate_0_all)
         self.action_translate.triggered.connect(self.batch_translate)
+        self.action_validate_release.triggered.connect(self.validate_release)
         self.action_undo.triggered.connect(self.undo_restore)
 
         self.action_colorbar.triggered.connect(self.colorbar_toggle)
@@ -249,6 +252,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_export_xml.setText(interface.text('MainWindow', 'To XML...'))
         self.action_translate_from_dictionaries.setText(interface.text('MainWindow', 'Translate from dictionaries'))
         self.action_translate.setText(interface.text('MainWindow', 'Batch translate...'))
+        self.action_validate_release.setText('Validate Release...')
         self.action_finalize.setText(interface.text('MainWindow', 'Finalize package'))
         self.action_finalize_as.setText(interface.text('MainWindow', 'Finalize package as...'))
         self.action_export_xml_dp.setText(interface.text('MainWindow', 'To XML (Deaderpool\'s STBL editor)...'))
@@ -341,6 +345,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.command_export,
                 self.command_translate,
                 self.command_dictionary,
+                self.command_validate_release,
         ):
             button.setToolButtonStyle(style)
 
@@ -355,14 +360,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             label.setVisible(True)
 
     def __set_command_button_texts(self):
-        dictionary_label = 'Save Dictionary'
+        dictionary_label = 'Dictionary'
         dictionary_tooltip = 'Save translated strings to dictionary for reuse'
+        validate_release_label = 'Release QA'
+        open_tooltip = (
+            self.action_add_file.text()
+            if app_state.packages_storage.enabled
+            else self.action_load_file.text()
+        )
         labels = (
-            (self.command_open, 'Open', self.action_load_file.text()),
+            (self.command_open, 'Open', open_tooltip),
             (self.command_save, 'Save', self.action_save.text()),
             (self.command_import, 'Import', self.action_import_translation.text()),
             (self.command_translate, 'Translate', self.action_translate.text()),
             (self.command_dictionary, dictionary_label, dictionary_tooltip),
+            (self.command_validate_release, validate_release_label, self.action_validate_release.text()),
         )
         for button, label, tooltip in labels:
             button.setProperty('commandLabel', label)
@@ -491,6 +503,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         ):
             widget.setVisible(has_selection)
         self.selection_preview.setVisible(has_selection and self.__selection_preview_expanded)
+        if has_selection and self.__selection_preview_expanded:
+            self.selection_preview.setMinimumHeight(88)
+            self.selection_bar.setMinimumHeight(150)
+        else:
+            self.selection_preview.setMinimumHeight(0)
+            self.selection_bar.setMinimumHeight(0)
         self.selection_preview_toggle.setText(
             'Collapse preview' if self.__selection_preview_expanded else 'Expand preview'
         )
@@ -572,7 +590,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.edit_string()
 
         elif event.key() == Qt.Key.Key_O and event.modifiers() and Qt.KeyboardModifier.ControlModifier:
-            self.open_file()
+            self.open_hybrid_file()
 
         elif event.key() == Qt.Key.Key_S and event.modifiers() and Qt.KeyboardModifier.ControlModifier:
             self.save()
@@ -754,6 +772,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_validate_all_translations.setEnabled(state)
         self.action_reset_all_translations.setEnabled(state)
         self.action_translate.setEnabled(state)
+        self.action_validate_release.setEnabled(state)
 
         self.action_finalize.setEnabled(state and not app_state.packages_storage.multiplied)
         self.action_finalize_as.setEnabled(state and not app_state.packages_storage.multiplied)
@@ -762,6 +781,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.colorbar.setVisible(config.value('view', 'colorbar') and state)
         self.empty_state.setVisible(not state)
         self.update_workspace_summary()
+        self.__set_command_button_texts()
         if not state:
             self.update_inspector_item(None)
 
@@ -802,6 +822,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def load_file(self):
         self.open_file()
+
+    def open_hybrid_file(self):
+        self.open_file(added=app_state.packages_storage.enabled)
 
     def add_file(self):
         self.open_file(True)
@@ -872,34 +895,108 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def save_dictionary():
         app_state.dictionaries_storage.save(force=True)
 
+    def validate_release(self):
+        profile_name, accepted = QInputDialog.getItem(
+            self,
+            'Validate Release',
+            'Validation preset:',
+            (PROFILE_SOFT.name, PROFILE_STRICT.name),
+            0,
+            False,
+        )
+        if not accepted:
+            return
+
+        items = tuple(app_state.packages_storage.model.items)
+        self.__confirm_release_validation(
+            items,
+            mode='Manual validation',
+            include_untranslated=True,
+            conflict_free=config.value('save', 'experemental'),
+            profile=profile_name,
+        )
+
+    def __confirm_release_validation(
+            self,
+            items,
+            mode: str,
+            include_untranslated: bool = True,
+            conflict_free: bool = False,
+            profile=PROFILE_SOFT,
+    ) -> bool:
+        report = validate_release_records(
+            items,
+            mode=mode,
+            destination_locale=config.value('translation', 'destination'),
+            include_untranslated=include_untranslated,
+            conflict_free=conflict_free,
+            profile=profile,
+        )
+        window_signals.log.emit(report.summary())
+        return ReleaseValidationDialog.confirm(self, report, self.__open_validation_issue)
+
+    def __open_validation_issue(self, item):
+        if not item:
+            return
+        self.edit_dialog.prepare(item)
+        self.edit_dialog.exec()
+        self.tableview.refresh()
+        self.update_workspace_summary()
+        self.update_inspector_item(item)
+
     def save(self):
         package = app_state.packages_storage.current_package
         if package:
+            if not self.__confirm_release_validation(
+                    app_state.packages_storage.primary_items(package.key),
+                    mode='Save as package',
+                    include_untranslated=True,
+                    conflict_free=config.value('save', 'experemental'),
+            ):
+                return
             package.save()
         else:
             self.save_as()
 
-    @staticmethod
-    def save_as():
+    def save_as(self):
         package = app_state.packages_storage.current_package
         filename = save_package(
             package.filename if package else 'translate_merged_' + config.value('translation',
                                                                                 'destination'))
         if filename:
+            if not self.__confirm_release_validation(
+                    app_state.packages_storage.model.items,
+                    mode='Save as package',
+                    include_untranslated=True,
+                    conflict_free=config.value('save', 'experemental'),
+            ):
+                return
             app_state.packages_storage.save(filename)
 
-    @staticmethod
-    def finalize():
+    def finalize(self):
         package = app_state.packages_storage.current_package
         if package:
+            if not self.__confirm_release_validation(
+                    app_state.packages_storage.primary_items(package.key),
+                    mode='Finalize package',
+                    include_untranslated=True,
+                    conflict_free=False,
+            ):
+                return
             package.finalize()
 
-    @staticmethod
-    def finalize_as():
+    def finalize_as(self):
         package = app_state.packages_storage.current_package
         if package:
             filename = save_package(package.name)
             if filename:
+                if not self.__confirm_release_validation(
+                        app_state.packages_storage.primary_items(package.key),
+                        mode='Finalize package',
+                        include_untranslated=True,
+                        conflict_free=False,
+                ):
+                    return
                 package.finalize(filename)
 
     @staticmethod
@@ -1030,7 +1127,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not storage or not storage.enabled:
             self.workspace_summary.setText('No package loaded')
             self.workspace_summary.setToolTip('')
-            self.workspace_hint.setText('Open or drop a package to begin')
+            self.workspace_hint.setText('Workspace stats')
             self.__update_filter_counts(())
             return
 
@@ -1043,23 +1140,55 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         original = sum(1 for item in items if item.flag == FLAG_UNVALIDATED)
         package_count = len(getattr(storage, 'packages', []))
 
-        self.workspace_summary.setText(
-            f'{self.__format_filter_count(visible, compact=True)}/{self.__format_filter_count(total, compact=True)} shown | '
-            f'{package_count} pkg | {self.__format_filter_count(validated, compact=True)} approved | '
-            f'{self.__format_filter_count(translated, compact=True)} draft | '
-            f'{self.__format_filter_count(progress, compact=True)} review | '
-            f'{self.__format_filter_count(original, compact=True)} untranslated'
+        summary_parts, tooltip_parts = self.__workspace_stats_parts(
+            visible,
+            total,
+            package_count,
+            validated,
+            translated,
+            progress,
+            original,
         )
-        self.workspace_summary.setToolTip(
-            f'{visible:,}/{total:,} shown\n'
-            f'{package_count:,} package(s)\n'
-            f'{validated:,} approved\n'
-            f'{translated:,} draft\n'
-            f'{progress:,} needs review\n'
-            f'{original:,} untranslated'
-        )
+
+        self.workspace_summary.setText(' · '.join(summary_parts))
+        self.workspace_summary.setToolTip('\n'.join(tooltip_parts))
         self.workspace_hint.setText('Workspace stats')
         self.__update_filter_counts(items)
+
+    def __workspace_stats_parts(
+            self,
+            visible: int,
+            total: int,
+            package_count: int,
+            approved: int,
+            draft: int,
+            review: int,
+            untranslated: int,
+    ):
+        summary_parts = [
+            f'{self.__format_filter_count(visible, compact=True)}/{self.__format_filter_count(total, compact=True)} shown',
+            self.__format_package_count(package_count),
+            f'{self.__format_filter_count(approved, compact=True)} approved',
+        ]
+        tooltip_parts = [
+            f'{visible:,}/{total:,} shown',
+            self.__format_package_count(package_count, compact=False),
+            f'{approved:,} approved',
+        ]
+
+        if draft:
+            summary_parts.append(f'{self.__format_filter_count(draft, compact=True)} draft')
+            tooltip_parts.append(f'{draft:,} draft')
+
+        summary_parts.extend((
+            f'{self.__format_filter_count(review, compact=True)} needs review',
+            f'{self.__format_filter_count(untranslated, compact=True)} untranslated',
+        ))
+        tooltip_parts.extend((
+            f'{review:,} needs review',
+            f'{untranslated:,} untranslated',
+        ))
+        return summary_parts, tooltip_parts
 
     def __update_filter_counts(self, items):
         items = tuple(items)
@@ -1082,10 +1211,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for button, label, value in labels:
             button.setText(f'{label} {self.__format_filter_count(value, compact=True)}')
             button.setToolTip(f'{label}: {value:,}')
-        self.__sync_status_chip_layout(show_draft=counts['translated'] > 0)
+        self.__sync_status_chip_layout()
 
-    def __sync_status_chip_layout(self, show_draft: bool):
-        self.filter_translated.setVisible(show_draft)
+    def __sync_status_chip_layout(self):
+        self.filter_translated.setVisible(False)
         self.filter_layout.removeWidget(self.filter_all)
         self.filter_layout.removeWidget(self.filter_original)
         self.filter_layout.removeWidget(self.filter_translated)
@@ -1094,13 +1223,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.filter_layout.addWidget(self.filter_all, 1, 1)
         self.filter_layout.addWidget(self.filter_original, 1, 2)
-        if show_draft:
-            self.filter_layout.addWidget(self.filter_translated, 1, 3)
-            self.filter_layout.addWidget(self.filter_validated, 1, 4)
-            self.filter_layout.addWidget(self.filter_progress, 1, 5, 1, 2)
-        else:
-            self.filter_layout.addWidget(self.filter_validated, 1, 3)
-            self.filter_layout.addWidget(self.filter_progress, 1, 4, 1, 3)
+        self.filter_layout.addWidget(self.filter_validated, 1, 3, 1, 2)
+        self.filter_layout.addWidget(self.filter_progress, 1, 5, 1, 2)
 
     @staticmethod
     def __format_filter_count(value, compact=False):
@@ -1111,6 +1235,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if value >= 10000:
             return f'{value // 1000}k'
         return f'{value:,}'
+
+    @staticmethod
+    def __format_package_count(value, compact=True):
+        count = str(value) if compact else f'{value:,}'
+        noun = 'package' if value == 1 else 'packages'
+        return f'{count} {noun}'
 
     def update_inspector_item(self, item):
         self.__inspector_item = item

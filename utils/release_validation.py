@@ -1,0 +1,456 @@
+# -*- coding: utf-8 -*-
+
+import csv
+import os
+from collections import Counter
+from dataclasses import dataclass
+from typing import Iterable, Tuple
+
+from packer.resource import ResourceID
+from storages.records import MainRecord
+from utils.constants import (
+    FLAG_PROGRESS,
+    FLAG_REPLACED,
+    FLAG_TRANSLATED,
+    FLAG_UNVALIDATED,
+    FLAG_VALIDATED,
+)
+from utils.functions import compare, fnv64, text_to_table, text_to_stbl
+from widgets.token_highlight import validate_translation_tokens
+
+
+SEVERITY_CRITICAL = 'Critical'
+SEVERITY_WARNING = 'Warning'
+SEVERITY_INFO = 'Info'
+
+CATEGORY_BLANK = 'Blank risk'
+CATEGORY_TOKEN = 'Token safety'
+CATEGORY_STATUS = 'Status'
+CATEGORY_DUPLICATE = 'Duplicate output'
+CATEGORY_RESOURCE = 'Resource'
+CATEGORY_SOURCE_CHANGED = 'Source changed'
+CATEGORY_SUMMARY = 'Summary'
+
+VALIDATION_CATEGORIES = (
+    CATEGORY_BLANK,
+    CATEGORY_TOKEN,
+    CATEGORY_STATUS,
+    CATEGORY_DUPLICATE,
+    CATEGORY_RESOURCE,
+    CATEGORY_SOURCE_CHANGED,
+    CATEGORY_SUMMARY,
+)
+
+
+STATUS_LABELS = {
+    FLAG_UNVALIDATED: 'Untranslated',
+    FLAG_PROGRESS: 'Needs review',
+    FLAG_VALIDATED: 'Approved',
+    FLAG_TRANSLATED: 'Draft',
+    FLAG_REPLACED: 'Edited',
+}
+
+
+@dataclass(frozen=True)
+class ValidationProfile:
+    name: str
+    strict_status: bool = False
+    identical_original_severity: str = SEVERITY_WARNING
+
+
+PROFILE_SOFT = ValidationProfile('Soft release')
+PROFILE_STRICT = ValidationProfile(
+    'Strict release',
+    strict_status=True,
+    identical_original_severity=SEVERITY_CRITICAL,
+)
+
+VALIDATION_PROFILES = (PROFILE_SOFT, PROFILE_STRICT)
+
+
+@dataclass(frozen=True)
+class ValidationIssue:
+    severity: str
+    package: str
+    instance: str
+    string_id: str
+    status: str
+    reason: str
+    original: str = ''
+    translation: str = ''
+    record: MainRecord = None
+    code: str = ''
+    category: str = ''
+
+
+@dataclass(frozen=True)
+class ValidationReport:
+    mode: str
+    profile: ValidationProfile
+    destination_locale: str
+    include_untranslated: bool
+    conflict_free: bool
+    total_records: int
+    written_records: int
+    package_count: int
+    resource_count: int
+    status_counts: Tuple[Tuple[str, int], ...]
+    issues: Tuple[ValidationIssue, ...]
+
+    @property
+    def critical_count(self) -> int:
+        return self.count(SEVERITY_CRITICAL)
+
+    @property
+    def warning_count(self) -> int:
+        return self.count(SEVERITY_WARNING)
+
+    @property
+    def info_count(self) -> int:
+        return self.count(SEVERITY_INFO)
+
+    def count(self, severity: str) -> int:
+        return sum(1 for issue in self.issues if issue.severity == severity)
+
+    def summary(self) -> str:
+        return (
+            f'Pre-release validation ({self.profile.name}): {self.critical_count} critical, '
+            f'{self.warning_count} warning, {self.info_count} info '
+            f'for {self.written_records:,}/{self.total_records:,} record(s).'
+        )
+
+    def filtered(self, severity: str = None, category: str = None, query: str = '') -> Tuple[ValidationIssue, ...]:
+        query = (query or '').strip().lower()
+        issues = self.issues
+        if severity and severity != 'All':
+            issues = tuple(issue for issue in issues if issue.severity == severity)
+        if category and category != 'All':
+            issues = tuple(issue for issue in issues if issue.category == category)
+        if query:
+            issues = tuple(issue for issue in issues if query in _issue_search_text(issue))
+        return tuple(issues)
+
+    def to_text(self) -> str:
+        lines = [
+            'Pre-release Validation Report',
+            self.summary(),
+            f'Mode: {self.mode}',
+            f'Preset: {self.profile.name}',
+            f'Destination: {self.destination_locale}',
+            f'Conflict-free save mode: {"on" if self.conflict_free else "off"}',
+            f'Packages: {self.package_count:,}',
+            f'STBL resources: {self.resource_count:,}',
+            '',
+            'Status counts:',
+        ]
+        for status, count in self.status_counts:
+            lines.append(f'  {status}: {count:,}')
+        lines.extend(('', 'Issues:'))
+        for issue in self.issues:
+            lines.append(
+                '\t'.join((
+                    issue.severity,
+                    issue.code,
+                    issue.category,
+                    issue.package,
+                    issue.instance,
+                    issue.string_id,
+                    issue.status,
+                    issue.reason,
+                    text_to_table(issue.original),
+                    text_to_table(issue.translation),
+                ))
+            )
+        return '\n'.join(lines)
+
+    def write_text(self, path: str) -> None:
+        with open(path, 'w', encoding='utf-8') as fp:
+            fp.write(self.to_text())
+
+    def write_csv(self, path: str) -> None:
+        with open(path, 'w', encoding='utf-8-sig', newline='') as fp:
+            writer = csv.writer(fp)
+            writer.writerow(('Severity', 'Code', 'Category', 'Package', 'Instance', 'String ID', 'Status', 'Reason',
+                             'Original', 'Translation'))
+            for issue in self.issues:
+                writer.writerow((
+                    issue.severity,
+                    issue.code,
+                    issue.category,
+                    issue.package,
+                    issue.instance,
+                    issue.string_id,
+                    issue.status,
+                    issue.reason,
+                    text_to_table(issue.original),
+                    text_to_table(issue.translation),
+                ))
+
+
+def validate_release_records(
+        items: Iterable[MainRecord],
+        mode: str,
+        destination_locale: str,
+        include_untranslated: bool = True,
+        conflict_free: bool = False,
+        profile: ValidationProfile = PROFILE_SOFT,
+) -> ValidationReport:
+    profile = validation_profile(profile)
+    source_items = tuple(items or ())
+    written = tuple(_written_items(source_items, include_untranslated, conflict_free))
+    issues = []
+    resources = {}
+    output_texts = {}
+    status_counter = Counter(STATUS_LABELS.get(item.flag, 'Unknown') for item in source_items)
+
+    for item in written:
+        rid = _output_resource(item, destination_locale, conflict_free)
+        if rid is None:
+            issues.append(_issue(
+                SEVERITY_CRITICAL,
+                item,
+                'Output resource cannot be converted to destination locale.',
+                code='RESOURCE_CONVERSION_FAILED',
+                category=CATEGORY_RESOURCE,
+            ))
+            continue
+
+        resources[rid] = True
+        output_key = (rid, item.id)
+        translated_text = text_to_stbl(item.translate)
+        previous = output_texts.get(output_key)
+        if previous is not None and previous != translated_text:
+            issues.append(_issue(
+                SEVERITY_CRITICAL,
+                item,
+                'Duplicate output resource/string ID has different translated text. '
+                f'Previous: {text_to_table(previous)} | Current: {text_to_table(translated_text)}',
+                rid=rid,
+                code='DUPLICATE_OUTPUT_TEXT',
+                category=CATEGORY_DUPLICATE,
+            ))
+        else:
+            output_texts[output_key] = translated_text
+
+        issues.extend(_record_issues(item, include_untranslated, rid, profile))
+
+    issues.append(ValidationIssue(
+        SEVERITY_INFO,
+        '-',
+        '-',
+        '-',
+        '-',
+        (
+            f'{len(written):,}/{len(source_items):,} record(s), {len(resources):,} STBL resource(s), '
+            f'{len({item.package for item in written if item.package}):,} package(s), '
+            f'destination {destination_locale}, preset {profile.name}.'
+        ),
+        code='SUMMARY',
+        category=CATEGORY_SUMMARY,
+    ))
+
+    return ValidationReport(
+        mode=mode,
+        profile=profile,
+        destination_locale=destination_locale,
+        include_untranslated=include_untranslated,
+        conflict_free=conflict_free,
+        total_records=len(source_items),
+        written_records=len(written),
+        package_count=len({item.package for item in written if item.package}),
+        resource_count=len(resources),
+        status_counts=tuple((label, status_counter.get(label, 0)) for label in (
+            'Approved',
+            'Draft',
+            'Needs review',
+            'Edited',
+            'Untranslated',
+        )),
+        issues=tuple(issues),
+    )
+
+
+def validation_profile(profile) -> ValidationProfile:
+    if isinstance(profile, ValidationProfile):
+        return profile
+    for candidate in VALIDATION_PROFILES:
+        if candidate.name == profile:
+            return candidate
+    return PROFILE_SOFT
+
+
+def _written_items(items: Tuple[MainRecord, ...], include_untranslated: bool, conflict_free: bool):
+    for item in items:
+        if item.flag == FLAG_UNVALIDATED and (not include_untranslated or conflict_free):
+            continue
+        yield item
+
+
+def _output_resource(item: MainRecord, destination_locale: str, conflict_free: bool):
+    try:
+        rid = item.resource
+        if conflict_free:
+            rid = ResourceID(
+                group=rid.group,
+                type=rid.type,
+                instance=fnv64('translator:' + os.path.abspath('.') + rid.str_instance)
+            )
+        return rid.convert_instance(destination_locale)
+    except Exception:
+        return None
+
+
+def _record_issues(item: MainRecord, include_untranslated: bool, rid=None, profile: ValidationProfile = PROFILE_SOFT) -> list:
+    issues = []
+    source = text_to_stbl(item.source)
+    translation = text_to_stbl(item.translate)
+
+    if item.flag in (FLAG_PROGRESS, FLAG_TRANSLATED, FLAG_VALIDATED, FLAG_REPLACED) \
+            and source.strip() and not translation.strip():
+        issues.append(_issue(
+            SEVERITY_CRITICAL,
+            item,
+            'Release record has an empty translation.',
+            rid=rid,
+            code='EMPTY_TRANSLATION',
+            category=CATEGORY_BLANK,
+        ))
+
+    if item.flag == FLAG_VALIDATED and source.strip() and compare(source, translation):
+        issues.append(_issue(
+            profile.identical_original_severity,
+            item,
+            'Approved translation is identical to the original text.',
+            rid=rid,
+            code='IDENTICAL_APPROVED',
+            category=CATEGORY_BLANK,
+        ))
+
+    token_result = validate_translation_tokens(source, translation)
+    if token_result.missing:
+        issues.append(_issue(
+            SEVERITY_CRITICAL,
+            item,
+            'Missing source token(s): ' + ', '.join(token_result.missing),
+            rid=rid,
+            code='MISSING_TOKEN',
+            category=CATEGORY_TOKEN,
+        ))
+    if token_result.extra:
+        issues.append(_issue(
+            SEVERITY_WARNING,
+            item,
+            'Extra translation token(s): ' + ', '.join(token_result.extra),
+            rid=rid,
+            code='EXTRA_TOKEN',
+            category=CATEGORY_TOKEN,
+        ))
+    if token_result.order_mismatch:
+        issues.append(_issue(
+            SEVERITY_WARNING,
+            item,
+            'Token order differs from the original text.',
+            rid=rid,
+            code='TOKEN_ORDER_MISMATCH',
+            category=CATEGORY_TOKEN,
+        ))
+    if token_result.linebreak_mismatch and not _has_linebreak_token(token_result.missing + token_result.extra):
+        issues.append(_issue(
+            SEVERITY_WARNING,
+            item,
+            'Line-break count differs from the original text.',
+            rid=rid,
+            code='LINEBREAK_COUNT_MISMATCH',
+            category=CATEGORY_TOKEN,
+        ))
+
+    status_severity = SEVERITY_CRITICAL if profile.strict_status else SEVERITY_WARNING
+    if item.flag == FLAG_PROGRESS:
+        issues.append(_issue(
+            status_severity,
+            item,
+            'Needs review record is included in release output.',
+            rid=rid,
+            code='NEEDS_REVIEW_INCLUDED',
+            category=CATEGORY_STATUS,
+        ))
+    if item.flag == FLAG_TRANSLATED:
+        issues.append(_issue(
+            status_severity,
+            item,
+            'Draft record is included in release output.',
+            rid=rid,
+            code='DRAFT_INCLUDED',
+            category=CATEGORY_STATUS,
+        ))
+    if item.flag == FLAG_UNVALIDATED and include_untranslated:
+        issues.append(_issue(
+            status_severity,
+            item,
+            'Untranslated record is included in release output.',
+            rid=rid,
+            code='UNTRANSLATED_INCLUDED',
+            category=CATEGORY_STATUS,
+        ))
+    if item.source_old:
+        issues.append(_issue(
+            SEVERITY_WARNING,
+            item,
+            'Original text changed since import/dictionary match.',
+            rid=rid,
+            code='SOURCE_CHANGED',
+            category=CATEGORY_SOURCE_CHANGED,
+        ))
+
+    return issues
+
+
+def _issue(
+        severity: str,
+        item: MainRecord,
+        reason: str,
+        rid=None,
+        code: str = '',
+        category: str = '',
+) -> ValidationIssue:
+    display_rid = rid or item.resource
+    return ValidationIssue(
+        severity=severity,
+        package=item.package or '-',
+        instance=_resource_instance_hex(display_rid, item),
+        string_id=item.id_hex,
+        status=STATUS_LABELS.get(item.flag, 'Unknown'),
+        reason=reason,
+        original=item.source or '',
+        translation=item.translate or '',
+        record=item,
+        code=code,
+        category=category,
+    )
+
+
+def _resource_instance_hex(rid, item: MainRecord) -> str:
+    if hasattr(rid, 'hex_instance'):
+        return rid.hex_instance
+    if hasattr(rid, 'instance_hex'):
+        return rid.instance_hex
+    return item.instance_hex
+
+
+def _has_linebreak_token(tokens) -> bool:
+    return any(str(token).startswith('\\n') for token in tokens)
+
+
+def _issue_search_text(issue: ValidationIssue) -> str:
+    return ' '.join((
+        issue.severity,
+        issue.code,
+        issue.category,
+        issue.package,
+        issue.instance,
+        issue.string_id,
+        issue.status,
+        issue.reason,
+        text_to_table(issue.original),
+        text_to_table(issue.translation),
+    )).lower()

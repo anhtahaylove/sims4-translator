@@ -18,6 +18,10 @@ from themes.stylesheet import stylesheet
 import resource_rc
 
 
+def show_main_window(window: MainWindow) -> None:
+    window.showMaximized()
+
+
 def main():
     sys.argv += ['-style', 'windows']
 
@@ -35,7 +39,7 @@ def main():
     app.setStyleSheet(stylesheet())
 
     window = MainWindow()
-    window.show()
+    show_main_window(window)
 
     exit_status = app.exec()
 
