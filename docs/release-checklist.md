@@ -1,47 +1,76 @@
-# Release Checklist
+# Vietnamese Release Checklist
 
-Use this checklist before publishing a public fork release.
+Use this checklist before publishing a Vietnamese package or a public app build.
 
-## Repository
+## Recommended VI_VN Workflow
 
-- Repo name: `sims4-translator`
-- Public display name: `The Sims 4 Translator Plus`
-- Suggested description: `Community-maintained desktop translator for The Sims 4 mod package strings.`
-- Suggested topics: `sims4`, `the-sims-4`, `modding`, `translation`, `localization`, `pyside6`, `stbl`, `desktop-app`
-- Confirm `origin` points to upstream and `fork` points to `anhtahaylove/sims4-translator`.
+- Keep source language as `ENG_US` and destination as `VI_VN`.
+- Work from copied packages or workspace files. Do not write directly into the game/DLC install folders.
+- For a Mods-folder release, prefer `Save as package` and place the generated package in `Documents\Electronic Arts\The Sims 4\Mods` for in-game testing.
+- Use `Finalize` only when you deliberately want to rewrite a package with destination STBL resources. Keep `Create backup before Finalize` enabled.
 
-## Legal And Attribution
+## Conflict-Free Save Mode
 
-- Keep `LICENSE`.
-- Keep `NOTICE.md`.
-- Verify README non-affiliation disclaimer is visible near the top.
-- Verify font license files are included.
-- Do not use official EA, Maxis, or The Sims artwork in generated assets.
+Leave `Use conflict-free save mode (experimental)` off by default for full game/DLC Vietnamese releases.
 
-## Verification
+That mode creates alternate output resources to avoid collisions. It can be useful for isolated compatibility testing, but a full translation release usually needs predictable destination STBL resources. With millions of strings and instances, alternate resources can make it harder to reason about load order and blank-text failures.
 
-Run:
+## DeepL Setup
+
+- Add the DeepL API key in Options.
+- Use `Test key` before translating. It calls DeepL usage/quota and does not spend translation characters.
+- Use `Check usage` before large batch jobs.
+- Optional glossary ID is only needed if you created a glossary in DeepL and want terms such as `Trait`, `Lot`, or `Moodlet` translated consistently.
+- Batch Translate with DeepL should show the estimated character count before starting.
+
+## Pre-release Validation Report
+
+Run `Validate Release...` before publishing and review the report.
+
+- `Soft release`: good for normal workflow checks. Untranslated, Draft, and Needs review records are warnings.
+- `Strict release`: good for public release checks. Untranslated, Draft, and Needs review records are critical.
+- Critical token issues can still be continued deliberately, but should normally be fixed before publishing.
+- Export the report as `.txt` or `.csv` if the release needs a QA record.
+
+## Large Package Manual QA
+
+Use a real large package/DLC when available. If not available, use an ignored temporary package under `build\visual-qa`.
+
+Pass criteria:
+
+- Loading a large package finishes and table rows remain visible after resize.
+- Hybrid `Open` adds a second package when one is already loaded.
+- Search finds records by ID, Original, or Translated text.
+- Filters show correct counts for `All`, `Untranslated`, `Approved`, and `Needs review`.
+- `Package`, `Instance`, `Modified only`, and `Clear filters` do not reset unexpectedly.
+- Selection Preview shows long Vietnamese text and Sims tokens without overlapping controls.
+- Editor token highlighting and soft-confirm warning work for Approve and Needs Review.
+- Batch Translate shows the DeepL cost guard before sending a large job.
+- Pre-release Validation Report remains readable and does not freeze the app for large inputs.
+- Activity Dock visible/hidden/expanded state persists after restart.
+- Export, Save as package, and Finalize still run the validation gate before writing.
+
+Fail criteria:
+
+- Blank table after load or resize.
+- Lost selection/filter state after resize.
+- Clipped primary buttons or unreadable contrast.
+- Validation cancellation still opens a report or starts a write.
+- Export/Save/Finalize writes files before validation completes.
+
+## Build Verification
+
+Run the release build script from the repo root:
 
 ```powershell
-python -m unittest discover -s tests -v
-python -m compileall -q models packer singletons storages themes utils widgets windows tests scripts
-python scripts\create_synthetic_package.py
-python scripts\verify_synthetic_smoke.py --directory build\synthetic --require-gui-outputs
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build_windows.ps1
 ```
 
-Manual GUI smoke:
+The script should verify tests, compileall, synthetic smoke, PyInstaller output layout, startup smoke, and generated package outputs. Do not commit `build/`, `dist/`, generated `.package` files, local dictionaries, or generated `.spec` files.
 
-- Load `build/synthetic/synthetic_smoke.package`.
-- Confirm only `Hello` and `World` appear as unique rows.
-- Export STBL, XML, XML-DP, JSON, Binary, and Translation Hub CSV.
-- Test Save As and Finalize As.
-- Cancel a long-running translation/export where possible.
-- Check the TS4 Plus Balanced theme in the main workspace, dialogs, and dictionaries view.
-- Check focus rings, disabled buttons, table readability, and Job Drawer logs.
+## Repository Release Hygiene
 
-## Release Artifact Hygiene
-
-- Do not track `build/`, `.package`, `.tmp`, `.backup`, or local dictionary files.
-- Include `README.md`, `README.vi.md`, `LICENSE`, `NOTICE.md`, and font licenses in binary archives.
-- Draft release notes with user-facing changes and known limitations.
-- Do not publish until the release branch has been reviewed.
+- Keep `LICENSE`, `NOTICE.md`, font licenses, and non-affiliation disclaimer.
+- Do not use official EA, Maxis, or The Sims artwork, logos, fonts, or copied UI assets.
+- Commit only reviewed source, resource, docs, and test changes.
+- Exclude `.understand-anything/*`, `graphify-out/*`, `build/*`, and `dist/*` from release commits unless a future batch explicitly scopes those artifacts.

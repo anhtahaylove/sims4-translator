@@ -21,9 +21,15 @@ from singletons.interface import interface
 from singletons.signals import progress_signals, window_signals
 from singletons.state import app_state
 from singletons.undo import undo
-from utils.release_validation import PROFILE_SOFT, PROFILE_STRICT, validate_release_records
+from utils.release_validation import (
+    PROFILE_SOFT,
+    PROFILE_STRICT,
+    ValidationRequest,
+    validate_release_task,
+)
 from utils.functions import open_supported, open_xml, save_package, save_xml
 from utils.constants import *
+from utils.task_runner import TaskRunner
 
 
 INSPECTOR_STATUS = {
@@ -92,6 +98,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__workspace_density_current = None
         self.__filter_density_current = None
         self.__selection_preview_expanded = True
+        self.__validation_runner = TaskRunner(max_threads=1, parent=self)
+        self.__validation_handle = None
+        self.__validation_continue = None
+        self.__validation_action = None
 
         self.tableview.doubleClicked.connect(self.edit_string)
         self.tableview.customContextMenuRequested.connect(self.generate_item_context_menu)
@@ -908,32 +918,86 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         items = tuple(app_state.packages_storage.model.items)
-        self.__confirm_release_validation(
+        self.__start_release_validation(
             items,
             mode='Manual validation',
             include_untranslated=True,
             conflict_free=config.value('save', 'experemental'),
             profile=profile_name,
+            action=self.action_validate_release,
         )
 
-    def __confirm_release_validation(
+    def __start_release_validation(
             self,
             items,
             mode: str,
             include_untranslated: bool = True,
             conflict_free: bool = False,
             profile=PROFILE_SOFT,
-    ) -> bool:
-        report = validate_release_records(
-            items,
+            on_continue=None,
+            action=None,
+    ):
+        if self.__validation_handle:
+            self.__validation_handle.cancel()
+
+        request = ValidationRequest(
+            tuple(items or ()),
             mode=mode,
             destination_locale=config.value('translation', 'destination'),
             include_untranslated=include_untranslated,
             conflict_free=conflict_free,
             profile=profile,
         )
+        self.__validation_continue = on_continue
+        self.__validation_action = action
+        if action:
+            action.setEnabled(False)
+
+        self.__validation_handle = self.__validation_runner.start(
+            validate_release_task,
+            request,
+            job_name=f'Validating release: {mode}'
+        )
+        self.__validation_handle.result.connect(
+            lambda report, handle=self.__validation_handle: self.__validation_result(report, handle)
+        )
+        self.__validation_handle.error.connect(
+            lambda error, handle=self.__validation_handle: self.__validation_error(error, handle)
+        )
+        self.__validation_handle.finished.connect(
+            lambda cancelled, handle=self.__validation_handle: self.__validation_finished(cancelled, handle)
+        )
+        return self.__validation_handle
+
+    def __validation_result(self, report, handle):
+        if self.__validation_handle is not handle:
+            return
+
         window_signals.log.emit(report.summary())
-        return ReleaseValidationDialog.confirm(self, report, self.__open_validation_issue)
+        should_continue = ReleaseValidationDialog.confirm(self, report, self.__open_validation_issue)
+        continuation = self.__validation_continue
+        self.__validation_continue = None
+        if should_continue and continuation:
+            continuation()
+
+    def __validation_error(self, error, handle):
+        if self.__validation_handle is not handle:
+            return
+        message = getattr(error, 'message', str(error))
+        window_signals.log.emit(message)
+        window_signals.message.emit(message)
+        self.__validation_continue = None
+
+    def __validation_finished(self, cancelled: bool, handle):
+        if self.__validation_handle is not handle:
+            return
+        if cancelled:
+            window_signals.log.emit('Validation cancelled')
+            self.__validation_continue = None
+        self.__validation_handle = None
+        if self.__validation_action:
+            self.set_state_menu()
+            self.__validation_action = None
 
     def __open_validation_issue(self, item):
         if not item:
@@ -947,14 +1011,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def save(self):
         package = app_state.packages_storage.current_package
         if package:
-            if not self.__confirm_release_validation(
-                    app_state.packages_storage.primary_items(package.key),
-                    mode='Save as package',
-                    include_untranslated=True,
-                    conflict_free=config.value('save', 'experemental'),
-            ):
-                return
-            package.save()
+            self.__start_release_validation(
+                app_state.packages_storage.primary_items(package.key),
+                mode='Save as package',
+                include_untranslated=True,
+                conflict_free=config.value('save', 'experemental'),
+                on_continue=package.save,
+                action=self.action_save,
+            )
         else:
             self.save_as()
 
@@ -964,40 +1028,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             package.filename if package else 'translate_merged_' + config.value('translation',
                                                                                 'destination'))
         if filename:
-            if not self.__confirm_release_validation(
-                    app_state.packages_storage.model.items,
-                    mode='Save as package',
-                    include_untranslated=True,
-                    conflict_free=config.value('save', 'experemental'),
-            ):
-                return
-            app_state.packages_storage.save(filename)
+            self.__start_release_validation(
+                app_state.packages_storage.model.items,
+                mode='Save as package',
+                include_untranslated=True,
+                conflict_free=config.value('save', 'experemental'),
+                on_continue=lambda filename=filename: app_state.packages_storage.save(filename),
+                action=self.action_save_as,
+            )
 
     def finalize(self):
         package = app_state.packages_storage.current_package
         if package:
-            if not self.__confirm_release_validation(
-                    app_state.packages_storage.primary_items(package.key),
-                    mode='Finalize package',
-                    include_untranslated=True,
-                    conflict_free=False,
-            ):
-                return
-            package.finalize()
+            self.__start_release_validation(
+                app_state.packages_storage.primary_items(package.key),
+                mode='Finalize package',
+                include_untranslated=True,
+                conflict_free=False,
+                on_continue=package.finalize,
+                action=self.action_finalize,
+            )
 
     def finalize_as(self):
         package = app_state.packages_storage.current_package
         if package:
             filename = save_package(package.name)
             if filename:
-                if not self.__confirm_release_validation(
-                        app_state.packages_storage.primary_items(package.key),
-                        mode='Finalize package',
-                        include_untranslated=True,
-                        conflict_free=False,
-                ):
-                    return
-                package.finalize(filename)
+                self.__start_release_validation(
+                    app_state.packages_storage.primary_items(package.key),
+                    mode='Finalize package',
+                    include_untranslated=True,
+                    conflict_free=False,
+                    on_continue=lambda filename=filename: package.finalize(filename),
+                    action=self.action_finalize_as,
+                )
 
     @staticmethod
     def load_bundle():

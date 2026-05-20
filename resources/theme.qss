@@ -495,6 +495,21 @@ QToolBar::separator {
     border-top: 3px solid __ACCENT__;
 }
 
+#releaseValidationFilters {
+    background: __PANEL_ALT__;
+    border-color: __BORDER_FOCUS__;
+}
+
+#releaseValidationFilters QLabel {
+    color: __TEXT__;
+    font-weight: 600;
+}
+
+#releaseValidationFilters QLineEdit,
+#releaseValidationFilters QComboBox {
+    min-height: 28px;
+}
+
 #releaseValidationTitle {
     color: __TEXT__;
     font-size: 15px;
@@ -734,7 +749,8 @@ QGroupBox {
 QGroupBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top left;
-    color: __TEXT__;
+    color: __ACCENT__;
+    font-weight: 600;
     left: 7px;
     top: 1px;
     margin: 0 3px;

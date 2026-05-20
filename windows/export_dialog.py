@@ -24,7 +24,7 @@ from singletons.interface import interface
 from singletons.signals import window_signals
 from singletons.state import app_state
 from utils.functions import opendir, save_xml, save_stbl, save_json, save_binary, savefile
-from utils.release_validation import PROFILE_SOFT, validate_release_records
+from utils.release_validation import PROFILE_SOFT, ValidationRequest, validate_release_task
 from utils.constants import *
 from utils.task_runner import TaskRunner
 
@@ -39,6 +39,8 @@ class ExportDialog(QDialog, Ui_ExportDialog):
         self.__export = -1
         self.__runner = TaskRunner(max_threads=1, parent=self)
         self.__export_handle = None
+        self.__validation_handle = None
+        self.__validation_continue = None
         self.__export_failed = False
         self.__validation_cancelled = False
 
@@ -77,6 +79,8 @@ class ExportDialog(QDialog, Ui_ExportDialog):
     def closeEvent(self, event):
         if self.__export_handle:
             self.__export_handle.cancel()
+        if self.__validation_handle:
+            self.__validation_handle.cancel()
         self.__export = -1
 
     def current_instance_click(self):
@@ -280,7 +284,10 @@ class ExportDialog(QDialog, Ui_ExportDialog):
                 self.close()
 
     def cancel_click(self):
-        if self.__export_handle:
+        if self.__validation_handle:
+            self.__validation_handle.cancel()
+            self.__set_busy(True, interface.text('System', 'Cancelling...'), cancelling=True)
+        elif self.__export_handle:
             self.__export_handle.cancel()
             self.__set_busy(True, interface.text('System', 'Cancelling...'), cancelling=True)
         else:
@@ -291,10 +298,19 @@ class ExportDialog(QDialog, Ui_ExportDialog):
             self.__export_handle.cancel()
 
         include_untranslated = self.rb_all.isChecked()
-        if not self.__confirm_release_validation(items, include_untranslated):
-            self.__validation_cancelled = True
-            return None
+        return self.__start_release_validation(
+            items,
+            include_untranslated,
+            lambda: self.__start_structured_export(items, include_untranslated, directory, filename),
+        )
 
+    def __start_structured_export(
+            self,
+            items: List[MainRecord],
+            include_untranslated: bool,
+            directory: str = None,
+            filename: str = None,
+    ):
         message = interface.text('System', 'Exporting translate...')
         self.__export_failed = False
         request = StructuredExportRequest(
@@ -324,31 +340,80 @@ class ExportDialog(QDialog, Ui_ExportDialog):
         )
         return self.__export_handle
 
-    def __confirm_release_validation(self, items: List[MainRecord], include_untranslated: bool) -> bool:
+    def __start_release_validation(self, items: List[MainRecord], include_untranslated: bool, on_continue):
         if not hasattr(self, '_ExportDialog__validation_cancelled'):
-            return True
+            return on_continue()
 
         qt_app = QApplication.instance()
         if qt_app is None or not isinstance(qt_app, QApplication):
-            return True
+            return on_continue()
 
-        report = validate_release_records(
-            items,
+        request = ValidationRequest(
+            tuple(items or ()),
             mode=f'Export {self.__export_name()}',
             destination_locale=config.value('translation', 'destination'),
             include_untranslated=include_untranslated,
             conflict_free=False,
             profile=PROFILE_SOFT,
         )
+        self.__validation_continue = on_continue
+        self.__validation_handle = self.__runner.start(
+            validate_release_task,
+            request,
+            job_name=f'Validating release: Export {self.__export_name()}'
+        )
+        self.__set_busy(True, 'Validating release...')
+        self.__validation_handle.result.connect(
+            lambda report, handle=self.__validation_handle: self.__validation_result(report, handle)
+        )
+        self.__validation_handle.error.connect(
+            lambda error, handle=self.__validation_handle: self.__validation_error(error, handle)
+        )
+        self.__validation_handle.finished.connect(
+            lambda cancelled, handle=self.__validation_handle: self.__validation_finished(cancelled, handle)
+        )
+        return self.__validation_handle
+
+    def __validation_result(self, report, handle):
+        if self.__validation_handle is not handle:
+            return
+
         window_signals.log.emit(report.summary())
 
         try:
             parent = self.parent()
         except RuntimeError:
-            return True
+            parent = None
 
-        open_issue = getattr(parent, '_MainWindow__open_validation_issue', None)
-        return ReleaseValidationDialog.confirm(self, report, open_issue)
+        open_issue = getattr(parent, '_MainWindow__open_validation_issue', None) if parent else None
+        continuation = self.__validation_continue
+        self.__validation_continue = None
+        if ReleaseValidationDialog.confirm(self, report, open_issue):
+            if continuation:
+                continuation()
+        else:
+            self.__validation_cancelled = True
+            self.__set_busy(False)
+
+    def __validation_error(self, error, handle):
+        if self.__validation_handle is not handle:
+            return
+        self.__validation_cancelled = True
+        self.__validation_continue = None
+        message = getattr(error, 'message', str(error))
+        window_signals.log.emit(message)
+        window_signals.message.emit(message)
+        self.__set_busy(False)
+
+    def __validation_finished(self, cancelled: bool, handle):
+        if self.__validation_handle is not handle:
+            return
+        self.__validation_handle = None
+        if cancelled:
+            self.__validation_cancelled = True
+            self.__validation_continue = None
+            window_signals.log.emit('Validation cancelled')
+            self.__set_busy(False)
 
     def __export_name(self) -> str:
         return {

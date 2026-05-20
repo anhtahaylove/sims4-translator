@@ -84,6 +84,16 @@ class ValidationIssue:
 
 
 @dataclass(frozen=True)
+class ValidationRequest:
+    items: Tuple[MainRecord, ...]
+    mode: str
+    destination_locale: str
+    include_untranslated: bool = True
+    conflict_free: bool = False
+    profile: ValidationProfile = PROFILE_SOFT
+
+
+@dataclass(frozen=True)
 class ValidationReport:
     mode: str
     profile: ValidationProfile
@@ -195,15 +205,55 @@ def validate_release_records(
         conflict_free: bool = False,
         profile: ValidationProfile = PROFILE_SOFT,
 ) -> ValidationReport:
+    return _validate_release_records(
+        items,
+        mode,
+        destination_locale,
+        include_untranslated,
+        conflict_free,
+        profile,
+    )
+
+
+def validate_release_task(token, reporter, request: ValidationRequest) -> ValidationReport:
+    return _validate_release_records(
+        request.items,
+        request.mode,
+        request.destination_locale,
+        request.include_untranslated,
+        request.conflict_free,
+        request.profile,
+        token=token,
+        reporter=reporter,
+    )
+
+
+def _validate_release_records(
+        items: Iterable[MainRecord],
+        mode: str,
+        destination_locale: str,
+        include_untranslated: bool = True,
+        conflict_free: bool = False,
+        profile: ValidationProfile = PROFILE_SOFT,
+        token=None,
+        reporter=None,
+) -> ValidationReport:
     profile = validation_profile(profile)
     source_items = tuple(items or ())
+    if token:
+        token.raise_if_cancelled()
+    if reporter:
+        reporter.progress(0, len(source_items), 'Scanning records...')
     written = tuple(_written_items(source_items, include_untranslated, conflict_free))
     issues = []
     resources = {}
     output_texts = {}
     status_counter = Counter(STATUS_LABELS.get(item.flag, 'Unknown') for item in source_items)
+    progress_step = max(1000, len(written) // 100 or 1)
 
-    for item in written:
+    for index, item in enumerate(written, start=1):
+        if token and (index == 1 or index % progress_step == 0):
+            token.raise_if_cancelled()
         rid = _output_resource(item, destination_locale, conflict_free)
         if rid is None:
             issues.append(_issue(
@@ -233,6 +283,13 @@ def validate_release_records(
             output_texts[output_key] = translated_text
 
         issues.extend(_record_issues(item, include_untranslated, rid, profile))
+        if reporter and (index == len(written) or index % progress_step == 0):
+            reporter.progress(index, len(written), 'Checking tokens...')
+
+    if token:
+        token.raise_if_cancelled()
+    if reporter:
+        reporter.progress(len(written), len(written), 'Building report...')
 
     issues.append(ValidationIssue(
         SEVERITY_INFO,

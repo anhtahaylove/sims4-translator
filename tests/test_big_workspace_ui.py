@@ -5,7 +5,7 @@ import unittest
 
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
-from PySide6.QtCore import QModelIndex, Qt, QEvent
+from PySide6.QtCore import QModelIndex, Qt, QEvent, QEventLoop, QThread, QTimer
 from PySide6.QtGui import QIcon, QKeyEvent
 from PySide6.QtWidgets import QApplication, QMessageBox, QHeaderView, QStyleOptionViewItem
 from unittest.mock import patch
@@ -56,6 +56,14 @@ def app():
 def close_widget(widget):
     widget.close()
     widget.deleteLater()
+    app().processEvents()
+
+
+def wait_for_handle(handle, timeout=3000):
+    loop = QEventLoop()
+    handle.finished.connect(lambda _cancelled: loop.quit())
+    QTimer.singleShot(timeout, loop.quit)
+    loop.exec()
     app().processEvents()
 
 
@@ -249,6 +257,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             with patch('windows.main_window.QInputDialog.getItem', return_value=(PROFILE_SOFT.name, True)), \
                     patch('windows.main_window.ReleaseValidationDialog.confirm', return_value=False) as confirm:
                 window.validate_release()
+                wait_for_handle(window._MainWindow__validation_handle)
 
             self.assertTrue(confirm.called)
             self.assertEqual(confirm.call_args.args[1].profile.name, PROFILE_SOFT.name)
@@ -270,8 +279,36 @@ class WorkspaceProShellTests(unittest.TestCase):
         try:
             with patch('windows.main_window.ReleaseValidationDialog.confirm', return_value=False):
                 window.save()
+                wait_for_handle(window._MainWindow__validation_handle)
 
             self.assertFalse(package.saved)
+        finally:
+            close_widget(window)
+
+    def test_manual_validate_release_cancellation_does_not_open_report(self):
+        item = record(FLAG_VALIDATED)
+        storage = app_state.packages_storage
+        storage.model.replace([item])
+        storage.model.filter([item])
+        storage.packages.append(PackageStub())
+
+        def slow_validation(token, _reporter, _request):
+            for _index in range(100):
+                token.raise_if_cancelled()
+                QThread.msleep(1)
+            return None
+
+        window = MainWindow()
+        try:
+            with patch('windows.main_window.QInputDialog.getItem', return_value=(PROFILE_SOFT.name, True)), \
+                    patch('windows.main_window.validate_release_task', slow_validation), \
+                    patch('windows.main_window.ReleaseValidationDialog.confirm') as confirm:
+                window.validate_release()
+                handle = window._MainWindow__validation_handle
+                handle.cancel()
+                wait_for_handle(handle)
+
+            confirm.assert_not_called()
         finally:
             close_widget(window)
 
@@ -288,6 +325,7 @@ class WorkspaceProShellTests(unittest.TestCase):
         try:
             with patch('windows.main_window.ReleaseValidationDialog.confirm', return_value=True):
                 window.finalize()
+                wait_for_handle(window._MainWindow__validation_handle)
 
             self.assertTrue(package.finalized)
             self.assertIsNone(package.finalize_path)
@@ -555,13 +593,35 @@ class WorkspaceProShellTests(unittest.TestCase):
             dialog._ExportDialog__export = EXPORT_JSON_S4S
             dialog.rb_all.setChecked(True)
 
-            with patch('windows.export_dialog.ReleaseValidationDialog.confirm', return_value=False), \
-                    patch.object(dialog._ExportDialog__runner, 'start') as start:
+            with patch('windows.export_dialog.ReleaseValidationDialog.confirm', return_value=False):
                 handle = dialog.export_structured([item], filename='release.json')
+                wait_for_handle(handle)
 
-            self.assertIsNone(handle)
-            self.assertFalse(start.called)
+            self.assertIsNotNone(handle)
+            self.assertIsNone(dialog._ExportDialog__export_handle)
             self.assertTrue(dialog._ExportDialog__validation_cancelled)
+        finally:
+            close_widget(dialog)
+
+    def test_export_validation_continue_starts_existing_export_path(self):
+        item = record(FLAG_VALIDATED)
+        storage = app_state.packages_storage
+        storage.model.replace([item])
+        storage.model.filter([item])
+        storage.packages.append(PackageStub())
+
+        dialog = ExportDialog()
+        try:
+            dialog._ExportDialog__export = EXPORT_JSON_S4S
+            dialog.rb_all.setChecked(True)
+
+            with patch('windows.export_dialog.ReleaseValidationDialog.confirm', return_value=True), \
+                    patch.object(dialog, '_ExportDialog__start_structured_export', return_value=None) as start:
+                handle = dialog.export_structured([item], filename='release.json')
+                wait_for_handle(handle)
+
+            start.assert_called_once()
+            self.assertFalse(dialog._ExportDialog__validation_cancelled)
         finally:
             close_widget(dialog)
 

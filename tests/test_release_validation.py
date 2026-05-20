@@ -18,8 +18,11 @@ from utils.release_validation import (
     PROFILE_STRICT,
     SEVERITY_CRITICAL,
     SEVERITY_WARNING,
+    ValidationRequest,
+    validate_release_task,
     validate_release_records,
 )
+from utils.task_runner import CancelledTask
 
 
 def make_record(
@@ -203,6 +206,41 @@ class ReleaseValidationTests(unittest.TestCase):
         self.assertIn('Missing source token', text_content)
         self.assertIn('Severity,Code,Category,Package,Instance,String ID,Status,Reason', csv_content)
         self.assertIn('MISSING_TOKEN,Token safety', csv_content)
+
+    def test_validation_task_reports_progress_and_returns_report(self):
+        records = tuple(make_record(idx=index, sid=index, flag=FLAG_VALIDATED) for index in range(1, 5))
+        request = ValidationRequest(records, 'Manual validation', 'VI_VN')
+        progress = []
+
+        class Token:
+            def raise_if_cancelled(self):
+                return None
+
+        class Reporter:
+            def progress(self, current=0, total=0, message=''):
+                progress.append((current, total, message))
+
+        report = validate_release_task(Token(), Reporter(), request)
+
+        self.assertEqual(report.total_records, 4)
+        self.assertTrue(any(message == 'Scanning records...' for _current, _total, message in progress))
+        self.assertTrue(any(message == 'Checking tokens...' for _current, _total, message in progress))
+        self.assertTrue(any(message == 'Building report...' for _current, _total, message in progress))
+
+    def test_validation_task_respects_cancellation(self):
+        records = tuple(make_record(idx=index, sid=index, flag=FLAG_VALIDATED) for index in range(1, 5))
+        request = ValidationRequest(records, 'Manual validation', 'VI_VN')
+
+        class Token:
+            def raise_if_cancelled(self):
+                raise CancelledTask()
+
+        class Reporter:
+            def progress(self, current=0, total=0, message=''):
+                return None
+
+        with self.assertRaises(CancelledTask):
+            validate_release_task(Token(), Reporter(), request)
 
 
 if __name__ == '__main__':
