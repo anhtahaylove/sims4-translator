@@ -1,19 +1,16 @@
 # Changelog
 
-## Version 1.4.2 - 2026-05-21
+## Version 2.0.0 - 2026-05-21
 
-- Fixed Windows release packaging so local `prefs/config.xml` is not bundled in the downloadable ZIP.
-- Fresh release builds now create default preferences on first launch, preserving the intended `ENG_US -> VI_VN` language pair.
-
-## Version 1.4.1 - 2026-05-21
-
-- Added the Life Studio Green rebrand with a single green asset system.
-- Added community Vietnamese destination locale `VI_VN` and default `ENG_US -> VI_VN` workflow.
+- Rebuilt the public app as a Vietnamese-first Translation Studio for package and STBL localization.
+- Added community Vietnamese destination locale `VI_VN` and first-run `ENG_US -> VI_VN` defaults.
 - Added a partial Vietnamese interface language with English fallback for untranslated strings.
+- Added token highlighting, token safety warnings, and a Token Assistant in the editor.
 - Added Pre-release Validation Report with Soft and Strict release profiles.
+- Added Workspace Warnings for day-to-day issue scanning.
 - Added DeepL key diagnostics, usage checks, batch cost guard, context, glossary ID support, and safer placeholder handling.
 - Added a Windows build script for repeatable PyInstaller builds.
-- Improved the table-first workspace, Selection Preview, Editor token highlighting, Options, Pack Manager, and release QA documentation.
+- Improved the table-first workspace, Selection Preview, Options, Pack Manager, and release QA documentation.
 
 ## Version 1.4 - 2025-08-05
 

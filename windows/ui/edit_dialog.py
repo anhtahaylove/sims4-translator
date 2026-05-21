@@ -6,6 +6,7 @@ from PySide6.QtGui import QIcon
 
 from widgets.tableview import QDictionaryTableView
 from widgets.editor import QTextEditor
+from widgets.token_assistant import TokenAssistantWidget
 
 
 class Ui_EditDialog(object):
@@ -62,9 +63,14 @@ class Ui_EditDialog(object):
         self.btn_suggestions.setObjectName('secondaryButton')
         self.btn_suggestions.setCheckable(True)
         self.btn_suggestions.setAutoDefault(False)
+        self.btn_tokens = QPushButton('Tokens', self.edit_header)
+        self.btn_tokens.setObjectName('secondaryButton')
+        self.btn_tokens.setCheckable(True)
+        self.btn_tokens.setAutoDefault(False)
         header_title_layout.addWidget(self.edit_title, 1)
         header_title_layout.addWidget(self.record_status)
         header_title_layout.addWidget(self.token_status)
+        header_title_layout.addWidget(self.btn_tokens)
         header_title_layout.addWidget(self.btn_suggestions)
 
         self.edit_detail = QLabel('Review suggestions, refine the draft, then approve it or mark it for review.', self.edit_header)
@@ -83,6 +89,10 @@ class Ui_EditDialog(object):
         header_layout.addWidget(self.token_detail)
 
         layout.addWidget(self.edit_header)
+
+        self.token_assistant = TokenAssistantWidget(EditDialog)
+        self.token_assistant.setVisible(False)
+        layout.addWidget(self.token_assistant)
 
         left_widget = QWidget(EditDialog)
         right_widget = QWidget(EditDialog)

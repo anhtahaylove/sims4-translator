@@ -27,6 +27,7 @@ from utils.release_validation import (
     ValidationRequest,
     validate_release_task,
 )
+from utils.workspace_warnings import workspace_warnings_report
 from utils.functions import open_supported, open_xml, save_package, save_xml
 from utils.constants import *
 from utils.task_runner import TaskRunner
@@ -130,6 +131,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_validate_all_translations.triggered.connect(self.validate_2_all)
         self.action_reset_all_translations.triggered.connect(self.validate_0_all)
         self.action_translate.triggered.connect(self.batch_translate)
+        self.action_workspace_warnings.triggered.connect(self.workspace_warnings)
         self.action_validate_release.triggered.connect(self.validate_release)
         self.action_undo.triggered.connect(self.undo_restore)
 
@@ -183,6 +185,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             lambda checked: self.__filter_chip_toggled(self.toolbar.filter_validate_4, checked)
         )
         self.filter_clear.clicked.connect(lambda _checked=False: self.clear_filters())
+        self.__setup_advanced_search_modes()
+        self.filter_advanced_toggle.toggled.connect(self.__toggle_advanced_search)
+        self.advanced_search_mode.currentIndexChanged.connect(self.__advanced_search_mode_changed)
         self.selection_preview_toggle.clicked.connect(lambda _checked=False: self.toggle_selection_preview())
         self.activity_drawer.expanded_changed.connect(self.__activity_expanded_changed)
         self.activity_drawer.set_expanded(config.value('view', 'activity_expanded') is not False)
@@ -251,7 +256,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_save.setText(interface.text('MainWindow', 'Save'))
         self.action_save_dictionary.setText(interface.text('MainWindow', 'Save dictionary'))
         self.action_replace.setText(interface.text('MainWindow', 'Search and replace...'))
-        self.action_validate_all_translations.setText('Approve all translations')
+        self.action_validate_all_translations.setText(interface.text('MainWindow', 'Approve all translations'))
         self.action_reset_all_translations.setText(interface.text('MainWindow', 'Reset all translations'))
         self.action_exit.setText(interface.text('MainWindow', 'Exit'))
         self.action_add_file.setText(interface.text('MainWindow', 'Add file...'))
@@ -262,6 +267,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_export_xml.setText(interface.text('MainWindow', 'To XML...'))
         self.action_translate_from_dictionaries.setText(interface.text('MainWindow', 'Translate from dictionaries'))
         self.action_translate.setText(interface.text('MainWindow', 'Batch translate...'))
+        self.action_workspace_warnings.setText(interface.text('MainWindow', 'Workspace Warnings...'))
         self.action_validate_release.setText(interface.text('MainWindow', 'Validate Release...'))
         self.action_finalize.setText(interface.text('MainWindow', 'Finalize package'))
         self.action_finalize_as.setText(interface.text('MainWindow', 'Finalize package as...'))
@@ -285,7 +291,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             'MainWindow',
             'Show a thin status distribution bar above the table.'
         ))
-        self.action_activity_dock.setText('Activity Dock')
+        self.action_activity_dock.setText(interface.text('MainWindow', 'Activity Dock'))
         self.menu_file.setTitle(interface.text('MainWindow', 'File'))
         self.menu_export_translation.setTitle(interface.text('MainWindow', 'Export translation'))
         self.command_export.setText(interface.text('MainWindow', 'Export'))
@@ -296,27 +302,46 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_options.setTitle(interface.text('MainWindow', 'Options'))
         self.menu_group.setTitle(interface.text('MainWindow', 'Group'))
         self.menu_help.setTitle(interface.text('MainWindow', 'Help'))
-        self.filter_title.setText('Studio Filters')
-        self.filter_hint.setText('Search, status and scope stay close to the table.')
-        self.filter_search_label.setText('Search')
-        self.filter_search.setPlaceholderText('Search ID, Original, or Translation...')
-        self.filter_search.setToolTip('Search ID, original text, and translation text at the same time.')
-        self.filter_status_label.setText('Status')
-        self.filter_scope_label.setText('Scope')
-        self.command_scope_label.setText('Scope')
-        self.filter_file_label.setText('Package')
-        self.filter_instance_label.setText('Instance')
-        self.filter_clear.setText('Clear filters')
-        self.workspace_hint.setText('Translation table')
-        self.empty_title.setText('Ready for a package')
-        self.empty_detail.setText('Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.')
-        self.inspector_apply.setText('Approve')
-        self.inspector_reset.setText('Reset')
-        self.inspector_edit.setText('Open Editor')
-        self.selection_preview_toggle.setText('Collapse preview' if self.__selection_preview_expanded else 'Expand preview')
-        self.command_file_label.setText('File')
-        self.command_export_label.setText('Export')
-        self.command_translation_label.setText('Translation')
+        self.filter_title.setText(interface.text('MainWindow', 'Studio Filters'))
+        self.filter_hint.setText(interface.text('MainWindow', 'Search, status and scope stay close to the table.'))
+        self.filter_search_label.setText(interface.text('MainWindow', 'Search'))
+        self.filter_search.setPlaceholderText(interface.text('MainWindow', 'Search ID, Original, or Translation...'))
+        self.filter_search.setToolTip(interface.text(
+            'MainWindow',
+            'Search ID, original text, and translation text at the same time.'
+        ))
+        self.filter_advanced_toggle.setText(interface.text('MainWindow', 'Advanced Search'))
+        self.advanced_search_mode_label.setText(interface.text('MainWindow', 'Mode'))
+        self.filter_status_label.setText(interface.text('MainWindow', 'Status'))
+        self.filter_scope_label.setText(interface.text('MainWindow', 'Scope'))
+        self.command_scope_label.setText(interface.text('MainWindow', 'Scope'))
+        self.filter_file_label.setText(interface.text('MainWindow', 'Package'))
+        self.filter_instance_label.setText(interface.text('MainWindow', 'Instance'))
+        self.filter_clear.setText(interface.text('MainWindow', 'Clear filters'))
+        self.workspace_hint.setText(interface.text('MainWindow', 'Translation table'))
+        self.empty_title.setText(interface.text('MainWindow', 'Ready for a package'))
+        self.empty_detail.setText(interface.text(
+            'MainWindow',
+            'Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.'
+        ))
+        self.inspector_apply.setText(interface.text('MainWindow', 'Approve'))
+        self.inspector_reset.setText(interface.text('MainWindow', 'Reset'))
+        self.inspector_edit.setText(interface.text('MainWindow', 'Open Editor'))
+        if hasattr(self, 'selection_original_label'):
+            self.selection_original_label.setText(interface.text('MainTableView', 'Original'))
+        if hasattr(self, 'selection_translation_label'):
+            self.selection_translation_label.setText(interface.text('MainTableView', 'Translated'))
+        self.selection_original_text.setPlaceholderText(interface.text('MainWindow', 'Select a string to preview full text.'))
+        self.selection_translation_text.setPlaceholderText(interface.text('MainWindow', 'Select a string to preview full text.'))
+        self.selection_preview_toggle.setText(interface.text(
+            'MainWindow',
+            'Collapse preview' if self.__selection_preview_expanded else 'Expand preview'
+        ))
+        self.command_file_label.setText(interface.text('MainWindow', 'File'))
+        self.command_export_label.setText(interface.text('MainWindow', 'Export'))
+        self.command_translation_label.setText(interface.text('MainWindow', 'Translation'))
+        if hasattr(self.job_drawer, 'retranslate'):
+            self.job_drawer.retranslate()
         self.__set_command_button_texts()
 
         for col in self.action_column:
@@ -327,6 +352,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__filter_density_current = None
         self.__update_command_bar_density()
         self.__apply_workspace_density(force=True)
+
+    def __setup_advanced_search_modes(self):
+        if self.advanced_search_mode.count():
+            return
+
+        for label, mode in (
+                ('Hybrid', SEARCH_IN_ALL),
+                ('Contains', SEARCH_CONTAINS),
+                ('Exact', SEARCH_EXACT),
+                ('Begins with', SEARCH_BEGINS_WITH),
+                ('Ends with', SEARCH_ENDS_WITH),
+                ('Regex', SEARCH_REGEX),
+                ('ID equals', SEARCH_IN_ID),
+        ):
+            self.advanced_search_mode.addItem(interface.text('SearchMode', label), mode)
+
+    def __toggle_advanced_search(self, checked: bool):
+        self.advanced_search_panel.setVisible(checked)
+
+    def __advanced_search_mode_changed(self, _index=None):
+        self.__search_flag = self.advanced_search_mode.currentData() or SEARCH_IN_ALL
+        self.__sync_search_mode_label()
+        if self.toolbar.edt_search.text():
+            self.filter_timer_trigger()
 
     def __set_window_title(self):
         title = f'{APP_NAME} {APP_VERSION}'
@@ -374,19 +423,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             label.setVisible(True)
 
     def __set_command_button_texts(self):
-        dictionary_label = 'Dictionary'
-        dictionary_tooltip = 'Save translated strings to dictionary for reuse'
-        validate_release_label = 'Release QA'
+        dictionary_label = interface.text('MainWindow', 'Dictionary')
+        dictionary_tooltip = interface.text('MainWindow', 'Save translated strings to dictionary for reuse')
+        validate_release_label = interface.text('MainWindow', 'Release QA')
         open_tooltip = (
             self.action_add_file.text()
             if app_state.packages_storage.enabled
             else self.action_load_file.text()
         )
         labels = (
-            (self.command_open, 'Open', open_tooltip),
-            (self.command_save, 'Save', self.action_save.text()),
-            (self.command_import, 'Import', self.action_import_translation.text()),
-            (self.command_translate, 'Translate', self.action_translate.text()),
+            (self.command_open, interface.text('MainWindow', 'Open'), open_tooltip),
+            (self.command_save, interface.text('MainWindow', 'Save'), self.action_save.text()),
+            (self.command_import, interface.text('MainWindow', 'Import'), self.action_import_translation.text()),
+            (self.command_translate, interface.text('MainWindow', 'Translate'), self.action_translate.text()),
             (self.command_dictionary, dictionary_label, dictionary_tooltip),
             (self.command_validate_release, validate_release_label, self.action_validate_release.text()),
         )
@@ -395,9 +444,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             button.setText(label)
             button.setToolTip(tooltip)
             button.setMinimumWidth(max(82, button.fontMetrics().horizontalAdvance(label) + 34))
-        self.command_export.setText('Export')
+        self.command_export.setText(interface.text('MainWindow', 'Export'))
         self.command_export.setToolTip(interface.text('MainWindow', 'Export translation'))
-        self.command_export.setMinimumWidth(max(94, self.command_export.fontMetrics().horizontalAdvance('Export') + 44))
+        self.command_export.setMinimumWidth(max(94, self.command_export.fontMetrics().horizontalAdvance(self.command_export.text()) + 44))
 
     def __apply_workspace_density(self, force=False):
         if not hasattr(self, 'action_activity_dock'):
@@ -498,8 +547,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         ):
             widget.setVisible(True)
         self.filter_scope_label.setVisible(False)
-        self.filter_file_label.setText('Package')
-        self.filter_instance_label.setText('Instance')
+        self.filter_file_label.setText(interface.text('MainWindow', 'Package'))
+        self.filter_instance_label.setText(interface.text('MainWindow', 'Instance'))
         self.command_scope_label.setVisible(True)
         self.filter_search_mode.setVisible(False)
 
@@ -523,9 +572,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.selection_preview.setMinimumHeight(0)
             self.selection_bar.setMinimumHeight(0)
-        self.selection_preview_toggle.setText(
+        self.selection_preview_toggle.setText(interface.text(
+            'MainWindow',
             'Collapse preview' if self.__selection_preview_expanded else 'Expand preview'
-        )
+        ))
 
     def toggle_selection_preview(self):
         self.__selection_preview_expanded = not self.__selection_preview_expanded
@@ -623,18 +673,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def search_toggle(self):
         self.__search_flag = SEARCH_IN_ALL
+        if hasattr(self, 'advanced_search_mode'):
+            index = self.advanced_search_mode.findData(SEARCH_IN_ALL)
+            if index >= 0:
+                self.advanced_search_mode.setCurrentIndex(index)
         self.toolbar.search_toggle.setIcon(QIcon(':/images/search_source.png'))
-        self.toolbar.search_toggle.setToolTip('Search ID, original and translation')
+        self.toolbar.search_toggle.setToolTip(interface.text('MainWindow', 'Search ID, original and translation'))
         if self.toolbar.edt_search.text():
             self.filter_timer_trigger()
         self.__sync_search_mode_label()
 
     def __sync_search_mode_label(self):
-        self.__search_flag = SEARCH_IN_ALL
-        tooltip = 'Search ID, original and translation'
+        mode = getattr(self, '_MainWindow__search_flag', SEARCH_IN_ALL)
+        if hasattr(self, 'advanced_search_mode'):
+            current = self.advanced_search_mode.currentData()
+            if current is not None:
+                mode = current
+                self.__search_flag = current
+
+        tooltip = self.__search_tooltip(mode)
         self.filter_search_mode.setText('')
         self.filter_search_mode.setToolTip(tooltip)
         self.filter_search.setToolTip(tooltip)
+
+    @staticmethod
+    def __search_tooltip(mode):
+        tooltips = {
+            SEARCH_IN_ALL: 'Search ID, original text, and translation text at the same time.',
+            SEARCH_CONTAINS: 'Search original and translation text that contains the query.',
+            SEARCH_EXACT: 'Search original and translation text that exactly matches the query.',
+            SEARCH_BEGINS_WITH: 'Search original and translation text that begins with the query.',
+            SEARCH_ENDS_WITH: 'Search original and translation text that ends with the query.',
+            SEARCH_REGEX: 'Search original, translation, and ID with a regular expression.',
+            SEARCH_IN_ID: 'Search exact string ID. Hex values like 0x0000002A are supported.',
+        }
+        return interface.text('MainWindow', tooltips.get(mode, tooltips[SEARCH_IN_ALL]))
 
     def update_current_file(self):
         key = None
@@ -696,6 +769,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.toolbar.edt_search.clear()
         self.toolbar.cb_files.setCurrentIndex(0)
         self.toolbar.cb_instances.setCurrentIndex(0)
+        index = self.advanced_search_mode.findData(SEARCH_IN_ALL)
+        if index >= 0:
+            self.advanced_search_mode.setCurrentIndex(index)
+        self.advanced_search_warning.setText('')
+        self.advanced_search_warning.setVisible(False)
         self.clear_status_filters()
 
     def __filter_chip_toggled(self, action, checked):
@@ -744,8 +822,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                              mode=self.__search_flag,
                              flags=flags,
                              different=self.toolbar.filter_validate_4.isChecked())
+        self.__sync_advanced_search_warning()
         self.__restore_table_selection(selected_items)
         self.update_workspace_summary()
+
+    def __sync_advanced_search_warning(self):
+        error = getattr(app_state.packages_storage.proxy, 'search_error', '')
+        self.advanced_search_warning.setText(error)
+        self.advanced_search_warning.setVisible(bool(error))
 
     def __restore_table_selection(self, selected_items):
         if not selected_items:
@@ -786,6 +870,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_validate_all_translations.setEnabled(state)
         self.action_reset_all_translations.setEnabled(state)
         self.action_translate.setEnabled(state)
+        self.action_workspace_warnings.setEnabled(state)
         self.action_validate_release.setEnabled(state)
 
         self.action_finalize.setEnabled(state and not app_state.packages_storage.multiplied)
@@ -912,8 +997,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def validate_release(self):
         profile_name, accepted = QInputDialog.getItem(
             self,
-            'Validate Release',
-            'Validation preset:',
+            interface.text('MainWindow', 'Validate Release'),
+            interface.text('MainWindow', 'Validation preset:'),
             (PROFILE_SOFT.name, PROFILE_STRICT.name),
             0,
             False,
@@ -930,6 +1015,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             profile=profile_name,
             action=self.action_validate_release,
         )
+
+    def workspace_warnings(self):
+        report = workspace_warnings_report(
+            app_state.packages_storage.model.items,
+            config.value('translation', 'destination'),
+        )
+        window_signals.log.emit(report.summary())
+        ReleaseValidationDialog.confirm(self, report, self.__open_validation_issue)
 
     def __start_release_validation(
             self,
@@ -960,7 +1053,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__validation_handle = self.__validation_runner.start(
             validate_release_task,
             request,
-            job_name=f'Validating release: {mode}'
+            job_name=f'{interface.text("MainWindow", "Validating release")}: {interface.text("MainWindow", mode)}'
         )
         self.__validation_handle.result.connect(
             lambda report, handle=self.__validation_handle: self.__validation_result(report, handle)
@@ -996,7 +1089,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.__validation_handle is not handle:
             return
         if cancelled:
-            window_signals.log.emit('Validation cancelled')
+            window_signals.log.emit(interface.text('MainWindow', 'Validation cancelled'))
             self.__validation_continue = None
         self.__validation_handle = None
         if self.__validation_action:
@@ -1194,9 +1287,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def update_workspace_summary(self):
         storage = app_state.packages_storage
         if not storage or not storage.enabled:
-            self.workspace_summary.setText('No package loaded')
+            self.workspace_summary.setText(interface.text('MainWindow', 'No package loaded'))
             self.workspace_summary.setToolTip('')
-            self.workspace_hint.setText('Workspace stats')
+            self.workspace_hint.setText(interface.text('MainWindow', 'Workspace stats'))
             self.__update_filter_counts(())
             return
 
@@ -1221,7 +1314,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.workspace_summary.setText(' · '.join(summary_parts))
         self.workspace_summary.setToolTip('\n'.join(tooltip_parts))
-        self.workspace_hint.setText('Workspace stats')
+        self.workspace_hint.setText(interface.text('MainWindow', 'Workspace stats'))
         self.__update_filter_counts(items)
 
     def __workspace_stats_parts(
@@ -1235,27 +1328,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             untranslated: int,
     ):
         summary_parts = [
-            f'{self.__format_filter_count(visible, compact=True)}/{self.__format_filter_count(total, compact=True)} shown',
+            f'{self.__format_filter_count(visible, compact=True)}/{self.__format_filter_count(total, compact=True)} '
+            f'{interface.text("MainWindow", "shown")}',
             self.__format_package_count(package_count),
-            f'{self.__format_filter_count(approved, compact=True)} approved',
+            f'{self.__format_filter_count(approved, compact=True)} {interface.text("MainWindow", "approved")}',
         ]
         tooltip_parts = [
-            f'{visible:,}/{total:,} shown',
+            f'{visible:,}/{total:,} {interface.text("MainWindow", "shown")}',
             self.__format_package_count(package_count, compact=False),
-            f'{approved:,} approved',
+            f'{approved:,} {interface.text("MainWindow", "approved")}',
         ]
 
         if draft:
-            summary_parts.append(f'{self.__format_filter_count(draft, compact=True)} draft')
-            tooltip_parts.append(f'{draft:,} draft')
+            summary_parts.append(f'{self.__format_filter_count(draft, compact=True)} {interface.text("MainWindow", "draft")}')
+            tooltip_parts.append(f'{draft:,} {interface.text("MainWindow", "draft")}')
 
         summary_parts.extend((
-            f'{self.__format_filter_count(review, compact=True)} needs review',
-            f'{self.__format_filter_count(untranslated, compact=True)} untranslated',
+            f'{self.__format_filter_count(review, compact=True)} {interface.text("MainWindow", "needs review")}',
+            f'{self.__format_filter_count(untranslated, compact=True)} {interface.text("MainWindow", "untranslated")}',
         ))
         tooltip_parts.extend((
-            f'{review:,} needs review',
-            f'{untranslated:,} untranslated',
+            f'{review:,} {interface.text("MainWindow", "needs review")}',
+            f'{untranslated:,} {interface.text("MainWindow", "untranslated")}',
         ))
         return summary_parts, tooltip_parts
 
@@ -1278,8 +1372,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             (self.filter_different, 'Modified only', counts['different']),
         )
         for button, label, value in labels:
-            button.setText(f'{label} {self.__format_filter_count(value, compact=True)}')
-            button.setToolTip(f'{label}: {value:,}')
+            translated_label = interface.text('MainWindow', label)
+            button.setText(f'{translated_label} {self.__format_filter_count(value, compact=True)}')
+            button.setToolTip(f'{translated_label}: {value:,}')
         self.__sync_status_chip_layout()
 
     def __sync_status_chip_layout(self):
@@ -1308,7 +1403,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @staticmethod
     def __format_package_count(value, compact=True):
         count = str(value) if compact else f'{value:,}'
-        noun = 'package' if value == 1 else 'packages'
+        noun = interface.text('MainWindow', 'package' if value == 1 else 'packages')
         return f'{count} {noun}'
 
     def update_inspector_item(self, item):
@@ -1321,8 +1416,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.inspector_edit.setEnabled(enabled)
 
         if not enabled:
-            self.inspector_meta.setText('No string selected')
-            self.inspector_status.setText('Idle')
+            self.inspector_meta.setText(interface.text('MainWindow', 'No string selected'))
+            self.inspector_status.setText(interface.text('MainWindow', 'Idle'))
             self.inspector_status.setProperty('state', 'idle')
             self.selection_original_text.clear()
             self.selection_translation_text.clear()
@@ -1330,8 +1425,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.__refresh_inspector_status_style()
             return
 
-        self.inspector_meta.setText(f'Selected string: {item.id_hex} | {item.instance_hex}')
-        self.inspector_status.setText(INSPECTOR_STATUS.get(item.flag, 'Unknown'))
+        self.inspector_meta.setText(
+            f'{interface.text("MainWindow", "Selected string")}: {item.id_hex} | {item.instance_hex}'
+        )
+        self.inspector_status.setText(interface.text('Status', INSPECTOR_STATUS.get(item.flag, 'Unknown')))
         self.inspector_status.setProperty('state', str(item.flag))
         self.selection_original_text.setPlainText(item.source)
         self.selection_translation_text.setPlainText(item.translate)
@@ -1476,10 +1573,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         context_menu.addSeparator()
 
-        validate_2_action = context_menu.addAction(QIcon(':/images/validate_2.png'), 'Approve')
+        validate_2_action = context_menu.addAction(QIcon(':/images/validate_2.png'), interface.text('MainWindow', 'Approve'))
         validate_2_action.setShortcut('F1')
 
-        validate_1_action = context_menu.addAction(QIcon(':/images/validate_1.png'), 'Mark as needs review')
+        validate_1_action = context_menu.addAction(QIcon(':/images/validate_1.png'), interface.text('MainWindow', 'Mark as needs review'))
         validate_1_action.setShortcut('F2')
 
         validate_0_action = context_menu.addAction(QIcon(':/images/validate_0.png'),

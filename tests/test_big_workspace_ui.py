@@ -38,9 +38,11 @@ from utils.release_validation import (
     PROFILE_SOFT,
     SEVERITY_CRITICAL,
     SEVERITY_INFO,
+    SEVERITY_WARNING,
     ValidationIssue,
     ValidationReport,
 )
+from utils.workspace_warnings import workspace_warnings_report
 from windows.edit_dialog import EditDialog
 from windows.export_dialog import ExportDialog
 from windows.import_dialog import ImportDialog
@@ -363,8 +365,66 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertTrue(dialog.btn_back.isDefault())
             self.assertEqual(dialog.btn_continue.text(), 'Continue anyway')
             self.assertEqual(dialog.tabs.tabText(0), 'Critical (1)')
+            self.assertIsNotNone(dialog.issue_model.data(
+                dialog.issue_model.index(0, 0),
+                Qt.ItemDataRole.ForegroundRole,
+            ))
+            self.assertTrue(dialog.issue_model.data(
+                dialog.issue_model.index(0, 0),
+                Qt.ItemDataRole.FontRole,
+            ).bold())
         finally:
             close_widget(dialog)
+
+    def test_release_validation_dialog_uses_vietnamese_interface_labels(self):
+        report = ValidationReport(
+            mode='Export JSON',
+            profile=PROFILE_SOFT,
+            destination_locale='VI_VN',
+            include_untranslated=True,
+            conflict_free=False,
+            total_records=1,
+            written_records=1,
+            package_count=1,
+            resource_count=1,
+            status_counts=(('Approved', 1),),
+            issues=(ValidationIssue(
+                SEVERITY_CRITICAL,
+                'pkg.package',
+                '0x0000000000000001',
+                '0x0000002A',
+                'Approved',
+                'Missing source token(s): {0.SimFirstName}',
+                '{0.SimFirstName}',
+                '',
+                None,
+                'MISSING_TOKEN',
+                'Token safety',
+            ),),
+        )
+
+        config.set_value('interface', 'language', 'vi_VN')
+        interface.reload()
+        dialog = ReleaseValidationDialog(report)
+        try:
+            self.assertEqual(dialog.windowTitle(), 'Báo cáo kiểm tra trước khi phát hành')
+            self.assertEqual(dialog.btn_back.text(), 'Quay lại sửa')
+            self.assertEqual(dialog.btn_continue.text(), 'Vẫn tiếp tục')
+            self.assertIn('Nghiêm trọng', dialog.tabs.tabText(0))
+            self.assertEqual(
+                dialog.issue_model.headerData(
+                    7,
+                    Qt.Orientation.Horizontal,
+                    Qt.ItemDataRole.DisplayRole,
+                ),
+                'Lý do',
+            )
+            self.assertEqual(dialog.issue_model.data(dialog.issue_model.index(0, 0)), 'Nghiêm trọng')
+            self.assertEqual(dialog.issue_model.data(dialog.issue_model.index(0, 2)), 'An toàn token')
+        finally:
+            close_widget(dialog)
+            config.set_value('interface', 'language', 'en_US')
+            interface.reload()
 
     def test_release_validation_dialog_double_click_opens_existing_record_callback(self):
         item = record(FLAG_PROGRESS)
@@ -545,6 +605,61 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertIn('Missing source token', copied)
         finally:
             close_widget(dialog)
+
+    def test_workspace_warnings_report_detects_token_empty_duplicate_and_modified_records(self):
+        first = record(FLAG_VALIDATED)
+        first[RECORD_MAIN_ID] = 0x100
+        first[RECORD_MAIN_SOURCE] = '{0.SimFirstName} says hello'
+        first[RECORD_MAIN_TRANSLATE] = ''
+        second = record(FLAG_PROGRESS)
+        second[RECORD_MAIN_ID] = 0x100
+        second[RECORD_MAIN_SOURCE] = 'Duplicate key'
+        second[RECORD_MAIN_TRANSLATE] = 'Different translation'
+        third = record(FLAG_TRANSLATED)
+        third[RECORD_MAIN_ID] = 0x300
+        third[RECORD_MAIN_SOURCE] = 'Changed source'
+        third[RECORD_MAIN_TRANSLATE] = 'Repeated text'
+        third.source_old = 'Old source'
+        fourth = record(FLAG_TRANSLATED)
+        fourth[RECORD_MAIN_ID] = 0x301
+        fourth[RECORD_MAIN_TRANSLATE] = 'Repeated text'
+
+        report = workspace_warnings_report((first, second, third, fourth), 'VI_VN')
+        codes = {issue.code for issue in report.issues}
+
+        self.assertIn('WORKSPACE_EMPTY_TRANSLATION', codes)
+        self.assertIn('WORKSPACE_TOKEN_MISMATCH', codes)
+        self.assertIn('WORKSPACE_DUPLICATE_OUTPUT_TEXT', codes)
+        self.assertIn('WORKSPACE_MODIFIED_RECORD', codes)
+        self.assertIn('WORKSPACE_REPEATED_TRANSLATION', codes)
+        self.assertGreaterEqual(report.count(SEVERITY_WARNING), 1)
+
+    def test_workspace_warnings_action_uses_report_dialog_without_mutating_records(self):
+        window = MainWindow()
+        item = record(FLAG_VALIDATED)
+        item[RECORD_MAIN_SOURCE] = '{0.SimFirstName} arrives'
+        item.translate = 'arrives'
+        try:
+            storage = app_state.packages_storage
+            storage.packages.append(PackageStub())
+            storage.model.replace([item])
+            window.set_state_menu()
+
+            opened = []
+
+            def fake_confirm(_parent, report, _open_issue=None):
+                opened.append(report)
+                return False
+
+            with patch.object(ReleaseValidationDialog, 'confirm', side_effect=fake_confirm):
+                window.workspace_warnings()
+
+            self.assertEqual(len(opened), 1)
+            self.assertEqual(opened[0].mode, 'Workspace Warnings')
+            self.assertEqual(item.translate, 'arrives')
+            self.assertEqual(item.flag, FLAG_VALIDATED)
+        finally:
+            close_widget(window)
 
     def test_rebranded_icon_resource_and_dialog_window_icons_load(self):
         self.assertFalse(QIcon(':/logo.ico').isNull())
@@ -1161,6 +1276,73 @@ class WorkspaceProShellTests(unittest.TestCase):
         finally:
             close_widget(window)
 
+    def test_advanced_search_modes_filter_without_mutating_records(self):
+        window = MainWindow()
+        starts = record(FLAG_UNVALIDATED)
+        starts[RECORD_MAIN_ID] = 0x11111111
+        starts[RECORD_MAIN_SOURCE] = 'Alpha begins here'
+        starts[RECORD_MAIN_TRANSLATE] = 'Draft one'
+        exact = record(FLAG_UNVALIDATED)
+        exact[RECORD_MAIN_ID] = 0x22222222
+        exact[RECORD_MAIN_SOURCE] = 'Middle text'
+        exact[RECORD_MAIN_TRANSLATE] = 'Exact target'
+        ends = record(FLAG_UNVALIDATED)
+        ends[RECORD_MAIN_ID] = 0x33333333
+        ends[RECORD_MAIN_SOURCE] = 'Line ends with Omega'
+        ends[RECORD_MAIN_TRANSLATE] = 'Draft three'
+        try:
+            storage = app_state.packages_storage
+            storage.packages.append(PackageStub())
+            storage.model.replace([starts, exact, ends])
+            storage.proxy.process_filter()
+            window.set_state_menu()
+
+            window.filter_advanced_toggle.setChecked(True)
+            self.assertFalse(window.advanced_search_panel.isHidden())
+
+            window.advanced_search_mode.setCurrentText('Exact')
+            window.filter_search.setText('Exact target')
+            window.update_proxy()
+            self.assertEqual([item.id for item in storage.model.filtered], [0x22222222])
+
+            window.advanced_search_mode.setCurrentText('Begins with')
+            window.filter_search.setText('alpha')
+            window.update_proxy()
+            self.assertEqual([item.id for item in storage.model.filtered], [0x11111111])
+
+            window.advanced_search_mode.setCurrentText('Ends with')
+            window.filter_search.setText('omega')
+            window.update_proxy()
+            self.assertEqual([item.id for item in storage.model.filtered], [0x33333333])
+
+            window.advanced_search_mode.setCurrentText('ID equals')
+            window.filter_search.setText('0x22222222')
+            window.update_proxy()
+            self.assertEqual([item.id for item in storage.model.filtered], [0x22222222])
+            self.assertEqual(exact.translate, 'Exact target')
+        finally:
+            close_widget(window)
+
+    def test_advanced_regex_search_reports_invalid_pattern_without_crashing(self):
+        window = MainWindow()
+        item = record(FLAG_UNVALIDATED)
+        try:
+            storage = app_state.packages_storage
+            storage.packages.append(PackageStub())
+            storage.model.replace([item])
+            storage.proxy.process_filter()
+            window.set_state_menu()
+
+            window.filter_advanced_toggle.setChecked(True)
+            window.advanced_search_mode.setCurrentText('Regex')
+            window.filter_search.setText('[')
+            window.update_proxy()
+
+            self.assertEqual(storage.model.filtered, [])
+            self.assertIn('Invalid regex', window.advanced_search_warning.text())
+        finally:
+            close_widget(window)
+
     def test_package_dropdown_popup_expands_to_show_long_names(self):
         window = MainWindow()
         long_name = '[f3f983e9] very_long_mod_package_name_for_vietnamese_localization_RU.package'
@@ -1303,11 +1485,39 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(dialog.token_detail.objectName(), 'tokenDetail')
             self.assertEqual(dialog.btn_ok.text(), 'Approve (Ctrl+Enter)')
             self.assertEqual(dialog.btn_review.text(), 'Needs Review')
+            self.assertEqual(dialog.btn_tokens.text(), 'Tokens')
+            self.assertEqual(dialog.token_assistant.objectName(), 'tokenAssistantPanel')
+            self.assertFalse(dialog.token_assistant.isVisibleTo(dialog))
             self.assertTrue(dialog.btn_suggestions.isCheckable())
             self.assertTrue(dialog.btn_ok.isDefault())
             self.assertFalse(dialog.btn_review.autoDefault())
             self.assertFalse(dialog.btn_translate.autoDefault())
             self.assertFalse(dialog.btn_cancel.autoDefault())
+        finally:
+            close_widget(dialog)
+
+    def test_edit_dialog_token_assistant_inserts_into_translation_only_and_refreshes_check(self):
+        dialog = EditDialog()
+        item = record(FLAG_PROGRESS)
+        item[RECORD_MAIN_SOURCE] = '{0.SimFirstName} arrived'
+        item.translate = 'arrived'
+        try:
+            dialog.prepare(item)
+            original = dialog.txt_original.toPlainText()
+
+            dialog.btn_tokens.setChecked(True)
+            dialog.token_assistant.index.setValue(0)
+            dialog.insert_token(dialog.token_assistant.current_token())
+
+            self.assertEqual(dialog.txt_original.toPlainText(), original)
+            self.assertIn('{0.SimFirstName}', dialog.txt_translate.toPlainText())
+            self.assertIn('Token check: OK', dialog.token_status.text())
+
+            dialog.token_assistant.male.setText('he')
+            dialog.token_assistant.female.setText('she')
+            self.assertEqual(dialog.token_assistant.current_token(), '{M0.he}{F0.she}')
+            dialog.copy_token(dialog.token_assistant.current_token())
+            self.assertEqual(QApplication.clipboard().text(), '{M0.he}{F0.she}')
         finally:
             close_widget(dialog)
 
@@ -1409,7 +1619,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             warning.assert_called_once()
             self.assertEqual(item.flag, FLAG_PROGRESS)
             self.assertIn('Missing', dialog.token_status.text())
-            self.assertIn('Continue as Approved', dialog.token_detail.text())
+            self.assertIn('Continue only if', dialog.token_detail.text())
 
             box = dialog._EditDialog__build_token_warning_box('Approved', 'Missing tokens')
             try:
@@ -1447,7 +1657,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             warning.assert_called_once()
             self.assertEqual(item.flag, FLAG_UNVALIDATED)
             self.assertIn('Missing', dialog.token_status.text())
-            self.assertIn('Continue as Needs Review', dialog.token_detail.text())
+            self.assertIn('Continue only if', dialog.token_detail.text())
 
             box = dialog._EditDialog__build_token_warning_box('Needs Review', 'Missing tokens')
             try:
@@ -1691,9 +1901,15 @@ class WorkspaceProShellTests(unittest.TestCase):
         config.set_value('interface', 'language', 'vi_VN')
         interface.reload()
         try:
+            window.retranslate()
             self.assertGreaterEqual(dialog.cb_language.findData('vi_VN'), 0)
             self.assertEqual(interface.text('MainWindow', 'File'), 'Tệp')
             self.assertEqual(interface.text('MainWindow', 'Status Overview Bar'), 'Thanh tổng quan trạng thái')
+            self.assertEqual(window.command_open.text(), 'Mở')
+            self.assertEqual(window.command_dictionary.text(), 'Từ điển')
+            self.assertEqual(window.filter_title.text(), 'Bộ lọc Studio')
+            self.assertEqual(window.inspector_apply.text(), 'Phê duyệt')
+            self.assertEqual(interface.text('TokenValidation', 'Token check:'), 'Kiểm tra token:')
             self.assertEqual(interface.text('MainWindow', 'Untranslated source fallback'), 'Untranslated source fallback')
         finally:
             config.set_value('interface', 'language', 'en_US')

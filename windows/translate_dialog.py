@@ -384,29 +384,42 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         if usage.status_code == 200 and usage.character_limit:
             after_count = usage.character_count + character_count
             percent = after_count / usage.character_limit * 100
-            usage_text = (
-                f'Current usage: {usage.character_count:,} / {usage.character_limit:,} characters.\n'
-                f'After this batch: about {after_count:,} characters ({percent:.1f}%).'
+            usage_text = interface.text(
+                'TranslateDialog',
+                'Current usage: {used:,} / {limit:,} characters.\n'
+                'After this batch: about {after:,} characters ({percent:.1f}%).',
+            ).format(
+                used=usage.character_count,
+                limit=usage.character_limit,
+                after=after_count,
+                percent=percent,
             )
         elif usage.status_code == 200:
-            usage_text = f'Current usage: {usage.character_count:,} characters.'
+            usage_text = interface.text(
+                'TranslateDialog',
+                'Current usage: {used:,} characters.',
+            ).format(used=usage.character_count)
         else:
-            usage_text = f'Usage unavailable: {usage.message}'
+            usage_text = interface.text(
+                'TranslateDialog',
+                'Usage unavailable: {message}',
+            ).format(message=usage.message)
 
         message_box = QMessageBox(self)
         message_box.setIcon(QMessageBox.Icon.Information)
-        message_box.setWindowTitle('DeepL batch translation')
-        message_box.setText(
-            f'DeepL will translate {len(items):,} records, about {character_count:,} source characters.'
-        )
+        message_box.setWindowTitle(interface.text('TranslateDialog', 'DeepL batch translation'))
+        message_box.setText(interface.text(
+            'TranslateDialog',
+            'DeepL will translate {records:,} records, about {characters:,} source characters.',
+        ).format(records=len(items), characters=character_count))
         message_box.setInformativeText(usage_text)
         message_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel)
         message_box.setDefaultButton(QMessageBox.StandardButton.Cancel)
         message_box.setEscapeButton(QMessageBox.StandardButton.Cancel)
         continue_button = message_box.button(QMessageBox.StandardButton.Yes)
-        continue_button.setText('Continue with DeepL')
+        continue_button.setText(interface.text('TranslateDialog', 'Continue with DeepL'))
         cancel_button = message_box.button(QMessageBox.StandardButton.Cancel)
-        cancel_button.setText('Cancel')
+        cancel_button.setText(interface.text('TranslateDialog', 'Cancel'))
 
         answer = message_box.exec()
         message_box.deleteLater()

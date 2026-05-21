@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from singletons.interface import interface
 from utils.task_runner import TaskProgress, task_runner_signals
 
 
@@ -51,12 +52,12 @@ class JobRow(QFrame):
         self.progress_bar.setMaximum(0)
         self.progress_bar.setValue(-1)
 
-        self.percent_label = QLabel('Queued', self)
+        self.percent_label = QLabel(interface.text('JobDrawer', 'Queued'), self)
         self.percent_label.setObjectName('jobPercent')
         self.percent_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self.percent_label.setMinimumWidth(56)
 
-        self.cancel_button = QPushButton('Cancel', self)
+        self.cancel_button = QPushButton(interface.text('JobDrawer', 'Cancel'), self)
         self.cancel_button.setObjectName('jobCancelButton')
         self.cancel_button.setEnabled(handle is not None)
         self.cancel_button.setVisible(handle is not None)
@@ -70,7 +71,7 @@ class JobRow(QFrame):
     def cancel(self) -> None:
         if self.handle:
             self.handle.cancel()
-            self.detail_label.setText('Cancelling...')
+            self.detail_label.setText(interface.text('JobDrawer', 'Cancelling...'))
             self.cancel_button.setEnabled(False)
             self.set_state('cancelling')
 
@@ -100,19 +101,19 @@ class JobRow(QFrame):
         if error:
             self.set_state('error')
             self.detail_label.setText(error)
-            self.percent_label.setText('Error')
+            self.percent_label.setText(interface.text('JobDrawer', 'Error'))
             return
 
         if cancelled:
             self.set_state('cancelled')
-            self.detail_label.setText('Cancelled')
-            self.percent_label.setText('Cancelled')
+            self.detail_label.setText(interface.text('JobDrawer', 'Cancelled'))
+            self.percent_label.setText(interface.text('JobDrawer', 'Cancelled'))
             return
 
         self.set_state('done')
         self.progress_bar.setMaximum(1)
         self.progress_bar.setValue(1)
-        self.percent_label.setText('Done')
+        self.percent_label.setText(interface.text('JobDrawer', 'Done'))
 
     def set_state(self, state: str) -> None:
         self.setProperty('state', state)
@@ -124,7 +125,7 @@ class JobRow(QFrame):
         if self.total > 0:
             percent = int(min(self.current, self.total) / self.total * 100)
             return f'{percent}%'
-        return 'Running'
+        return interface.text('JobDrawer', 'Running')
 
 
 class QJobStatusDrawer(QWidget):
@@ -153,15 +154,15 @@ class QJobStatusDrawer(QWidget):
 
         self.toggle_button = QToolButton(self.header)
         self.toggle_button.setObjectName('jobDrawerToggle')
-        self.toggle_button.setText('Jobs')
+        self.toggle_button.setText(interface.text('JobDrawer', 'Jobs'))
         self.toggle_button.setCheckable(True)
         self.toggle_button.setChecked(False)
         self.toggle_button.clicked.connect(self.__user_toggled)
 
-        self.status_label = QLabel('Idle', self.header)
+        self.status_label = QLabel(interface.text('JobDrawer', 'Idle'), self.header)
         self.status_label.setObjectName('jobStatusLabel')
 
-        self.clear_button = QPushButton('Clear', self.header)
+        self.clear_button = QPushButton(interface.text('JobDrawer', 'Clear'), self.header)
         self.clear_button.setObjectName('jobClearButton')
         self.clear_button.clicked.connect(self.clear_finished)
 
@@ -180,7 +181,7 @@ class QJobStatusDrawer(QWidget):
         self.jobs_layout.setContentsMargins(0, 0, 0, 0)
         self.jobs_layout.setSpacing(6)
 
-        self.empty_label = QLabel('No active background jobs.', self.body)
+        self.empty_label = QLabel(interface.text('JobDrawer', 'No active background jobs.'), self.body)
         self.empty_label.setObjectName('jobEmptyLabel')
         self.empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -203,6 +204,12 @@ class QJobStatusDrawer(QWidget):
         task_runner_signals.error.connect(self.task_error)
         task_runner_signals.finished.connect(self.task_finished)
 
+        self.refresh_state()
+
+    def retranslate(self) -> None:
+        self.toggle_button.setText(interface.text('JobDrawer', 'Hide jobs') if self.toggle_button.isChecked() else interface.text('JobDrawer', 'Show jobs'))
+        self.clear_button.setText(interface.text('JobDrawer', 'Clear'))
+        self.empty_label.setText(interface.text('JobDrawer', 'No active background jobs.'))
         self.refresh_state()
 
     @property
@@ -230,7 +237,7 @@ class QJobStatusDrawer(QWidget):
         self.toggle_button.blockSignals(True)
         self.toggle_button.setChecked(expanded)
         self.toggle_button.blockSignals(False)
-        self.toggle_button.setText('Hide jobs' if expanded else 'Show jobs')
+        self.toggle_button.setText(interface.text('JobDrawer', 'Hide jobs' if expanded else 'Show jobs'))
 
     def task_started(self, handle) -> None:
         self.finish_legacy(cancelled=True, silent=True)
@@ -238,7 +245,7 @@ class QJobStatusDrawer(QWidget):
         row = JobRow(handle.name, handle, self.jobs_widget)
         self.__rows[handle.job_id] = row
         self.jobs_layout.addWidget(row)
-        self.log_message(f'Started: {handle.name}')
+        self.log_message(f'{interface.text("JobDrawer", "Started")}: {handle.name}')
         self.refresh_state()
 
     def task_progress(self, handle, progress: TaskProgress) -> None:
@@ -251,14 +258,15 @@ class QJobStatusDrawer(QWidget):
         row = self.__rows.get(handle.job_id)
         if row:
             row.finish(error=error.message)
-        self.log_message(f'Error: {handle.name}: {error.message}')
+        self.log_message(f'{interface.text("JobDrawer", "Error")}: {handle.name}: {error.message}')
         self.refresh_state()
 
     def task_finished(self, handle, cancelled: bool) -> None:
         row = self.__rows.get(handle.job_id)
         if row:
             row.finish(cancelled=cancelled)
-        self.log_message(f'{"Cancelled" if cancelled else "Finished"}: {handle.name}')
+        state = interface.text('JobDrawer', 'Cancelled' if cancelled else 'Finished')
+        self.log_message(f'{state}: {handle.name}')
         self.refresh_state()
 
     def start_legacy(self, message: str, total: int) -> None:
@@ -266,11 +274,11 @@ class QJobStatusDrawer(QWidget):
             return
 
         if self.__legacy_row is None:
-            self.__legacy_row = JobRow(message or 'Working', None, self.jobs_widget, active=True)
+            self.__legacy_row = JobRow(message or interface.text('JobDrawer', 'Working'), None, self.jobs_widget, active=True)
             self.jobs_layout.addWidget(self.__legacy_row)
-            self.log_message(f'Started: {message or "Working"}')
+            self.log_message(f'{interface.text("JobDrawer", "Started")}: {message or interface.text("JobDrawer", "Working")}')
         else:
-            self.__legacy_row.title_label.setText(message or 'Working')
+            self.__legacy_row.title_label.setText(message or interface.text('JobDrawer', 'Working'))
 
         self.__legacy_done = 0
         self.__legacy_total = total
@@ -294,7 +302,7 @@ class QJobStatusDrawer(QWidget):
             return
         self.__legacy_row.finish(cancelled=cancelled)
         if not silent:
-            self.log_message('Finished: foreground job')
+            self.log_message(interface.text('JobDrawer', 'Finished: foreground job'))
         self.refresh_state()
 
     def log_message(self, message: str) -> None:
@@ -325,8 +333,8 @@ class QJobStatusDrawer(QWidget):
         self.clear_button.setEnabled(visible_rows > running)
 
         if running:
-            self.status_label.setText(f'{running} active background job(s)')
+            self.status_label.setText(f'{running} {interface.text("JobDrawer", "active background job(s)")}')
         elif visible_rows:
-            self.status_label.setText('Recent jobs')
+            self.status_label.setText(interface.text('JobDrawer', 'Recent jobs'))
         else:
-            self.status_label.setText('Idle')
+            self.status_label.setText(interface.text('JobDrawer', 'Idle'))

@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 
 from PySide6.QtCore import Qt, QObject, Slot
-from PySide6.QtWidgets import QDialog, QMenu, QMessageBox
+from PySide6.QtWidgets import QApplication, QDialog, QMenu, QMessageBox
 from PySide6.QtGui import QGuiApplication, QIcon
 
 from .ui.edit_dialog import Ui_EditDialog
@@ -83,6 +83,9 @@ class EditDialog(QDialog, Ui_EditDialog):
 
         self.btn_translate.clicked.connect(self.translate_click)
         self.btn_suggestions.toggled.connect(self.toggle_suggestions)
+        self.btn_tokens.toggled.connect(self.toggle_tokens)
+        self.token_assistant.insert_requested.connect(self.insert_token)
+        self.token_assistant.copy_requested.connect(self.copy_token)
         self.txt_translate.textChanged.connect(self.__refresh_token_state)
 
         self.txt_original.selected.connect(self.selection_change)
@@ -96,20 +99,25 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.retranslate()
 
     def retranslate(self):
-        self.setWindowTitle('Translation Studio')
-        self.edit_title.setText('Translation Studio')
-        self.edit_detail.setText('Review token safety, refine the draft, then approve it or mark it for review.')
-        self.dictionary_title.setText('Dictionary suggestions')
-        self.search_title.setText('Selected suggestion')
+        self.setWindowTitle(interface.text('EditWindow', 'Translation Studio'))
+        self.edit_title.setText(interface.text('EditWindow', 'Translation Studio'))
+        self.edit_detail.setText(interface.text(
+            'EditWindow',
+            'Review token safety, refine the draft, then approve it or mark it for review.'
+        ))
+        self.dictionary_title.setText(interface.text('EditWindow', 'Dictionary suggestions'))
+        self.search_title.setText(interface.text('EditWindow', 'Selected suggestion'))
+        self.btn_tokens.setText(interface.text('EditWindow', 'Tokens'))
         self.btn_translate.setText(interface.text('EditWindow', 'Translate'))
-        self.btn_ok.setText('Approve (Ctrl+Enter)')
-        self.btn_review.setText('Needs Review')
+        self.btn_ok.setText(interface.text('EditWindow', 'Approve (Ctrl+Enter)'))
+        self.btn_review.setText(interface.text('EditWindow', 'Needs Review'))
         self.lbl_original.setText(interface.text('EditWindow', 'Original text'))
         self.lbl_original_diff.setText(interface.text('EditWindow', 'Different original'))
-        self.lbl_translate.setText('Translation draft')
+        self.lbl_translate.setText(interface.text('EditWindow', 'Translation draft'))
         self.lbl_translate_diff.setText(interface.text('EditWindow', 'Different translation'))
         self.btn_cancel.setText(interface.text('EditWindow', 'Cancel'))
         self.txt_comment.setPlaceholderText(interface.text('EditWindow', 'Comment...'))
+        self.token_assistant.retranslate()
 
     def showEvent(self, event):
         if not self.__focus_sized:
@@ -206,7 +214,8 @@ class EditDialog(QDialog, Ui_EditDialog):
         model = self.tableview.model()
         has_suggestions = bool(model and model.rowCount() > 0)
         self.btn_suggestions.setEnabled(has_suggestions)
-        self.btn_suggestions.setText(f'Suggestions {model.rowCount()}' if has_suggestions else 'Suggestions 0')
+        label = interface.text('EditWindow', 'Suggestions')
+        self.btn_suggestions.setText(f'{label} {model.rowCount()}' if has_suggestions else f'{label} 0')
 
         if not has_suggestions:
             self.btn_suggestions.setChecked(False)
@@ -230,6 +239,22 @@ class EditDialog(QDialog, Ui_EditDialog):
             self.edit_splitter.setSizes([620, 190])
         else:
             self.edit_splitter.setSizes([1, 0])
+
+    def toggle_tokens(self, checked: bool):
+        self.token_assistant.setVisible(checked)
+
+    @Slot(str)
+    def insert_token(self, token: str):
+        if not token:
+            return
+        self.txt_translate.insertPlainText(token)
+        self.txt_translate.setFocus()
+        self.__refresh_token_state()
+
+    @Slot(str)
+    def copy_token(self, token: str):
+        if token:
+            QApplication.clipboard().setText(token)
 
     def ok_click(self):
         self.__refresh_token_state()
@@ -327,13 +352,13 @@ class EditDialog(QDialog, Ui_EditDialog):
 
     def __refresh_record_meta(self):
         if not self.item:
-            self.record_status.setText('Status: -')
+            self.record_status.setText(f'{interface.text("EditWindow", "Status")}: -')
             self.record_status.setProperty('state', '')
             self.text_metrics.setText('')
             return
 
         label, _color = STATUS_META.get(self.item.flag, ('Unknown', None))
-        self.record_status.setText(f'Status: {label}')
+        self.record_status.setText(f'{interface.text("EditWindow", "Status")}: {interface.text("Status", label)}')
         self.record_status.setProperty('state', str(self.item.flag))
         self.record_status.style().unpolish(self.record_status)
         self.record_status.style().polish(self.record_status)
@@ -344,27 +369,77 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.__token_result = validate_translation_tokens(source, translation)
 
         state = 'ok' if self.__token_result.ok else 'warning'
-        self.token_status.setText(self.__token_result.summary())
+        self.token_status.setText(self.__token_summary())
         self.token_status.setProperty('state', state)
         self.token_status.style().unpolish(self.token_status)
         self.token_status.style().polish(self.token_status)
 
-        detail = self.__token_result.details()
+        self.token_detail.setProperty('state', state)
+        self.token_detail.style().unpolish(self.token_detail)
+        self.token_detail.style().polish(self.token_detail)
+
+        detail = self.__token_details()
         if self.__token_result.ok:
-            detail += ' Suggested outcome: Approved.'
+            detail += ' ' + interface.text('TokenValidation', 'Suggested outcome: Approved.')
         else:
-            detail += ' Suggested outcome: Needs Review until the token differences are intentional.'
+            detail += ' ' + interface.text(
+                'TokenValidation',
+                'Suggested outcome: Needs Review until the token differences are intentional.'
+            )
         self.token_detail.setText(detail)
-        self.text_metrics.setText(f'Original {len(source):,} chars | Draft {len(translation):,} chars')
+        self.text_metrics.setText(
+            f'{interface.text("EditWindow", "Original")} {len(source):,} '
+            f'{interface.text("EditWindow", "chars")} | '
+            f'{interface.text("EditWindow", "Draft")} {len(translation):,} '
+            f'{interface.text("EditWindow", "chars")}'
+        )
+
+    def __token_summary(self) -> str:
+        prefix = interface.text('TokenValidation', 'Token check:')
+        if self.__token_result.ok:
+            return f'{prefix} {interface.text("TokenValidation", "OK")}'
+
+        parts = []
+        if self.__token_result.missing:
+            parts.append(f'{interface.text("TokenValidation", "Missing")} {len(self.__token_result.missing)}')
+        if self.__token_result.extra:
+            parts.append(f'{interface.text("TokenValidation", "Extra")} {len(self.__token_result.extra)}')
+        if self.__token_result.linebreak_mismatch:
+            parts.append(interface.text('TokenValidation', 'Line breaks differ'))
+        if self.__token_result.order_mismatch:
+            parts.append(interface.text('TokenValidation', 'Order differs'))
+        return f'{prefix} {" | ".join(parts)}'
+
+    def __token_details(self) -> str:
+        if self.__token_result.ok:
+            return interface.text('TokenValidation', 'All source tokens are preserved in the translation draft.')
+
+        parts = []
+        if self.__token_result.missing:
+            parts.append(
+                f'{interface.text("TokenValidation", "Missing")}: ' + ', '.join(self.__token_result.missing)
+            )
+        if self.__token_result.extra:
+            parts.append(
+                f'{interface.text("TokenValidation", "Extra")}: ' + ', '.join(self.__token_result.extra)
+            )
+        if self.__token_result.linebreak_mismatch:
+            parts.append(interface.text('TokenValidation', 'Line-break count differs'))
+        if self.__token_result.order_mismatch:
+            parts.append(interface.text('TokenValidation', 'Token order differs'))
+        return '; '.join(parts)
 
     def __confirm_token_warning(self, outcome: str) -> bool:
         if self.__token_result.ok:
             return True
 
-        details = self.__token_result.details()
+        details = self.__token_details()
         self.token_detail.setText(
             details
-            + f' Continue as {outcome} only if these token differences are intentional.'
+            + ' ' + interface.text(
+                'TokenValidation',
+                'Continue only if these token differences are intentional.'
+            )
         )
         message_box = self.__build_token_warning_box(outcome, details)
         answer = message_box.exec()
@@ -376,9 +451,15 @@ class EditDialog(QDialog, Ui_EditDialog):
     def __build_token_warning_box(self, outcome: str, details: str) -> QMessageBox:
         message_box = QMessageBox(self)
         message_box.setIcon(QMessageBox.Icon.Warning)
-        message_box.setWindowTitle(f'{outcome} with token warnings')
+        translated_outcome = interface.text('Status', 'Approved' if outcome == 'Approved' else 'Needs review')
+        message_box.setWindowTitle(interface.text('TokenValidation', '{outcome} with token warnings').format(
+            outcome=translated_outcome
+        ))
         message_box.setText(details)
-        message_box.setInformativeText('Token differences can break in-game placeholders or formatting.')
+        message_box.setInformativeText(interface.text(
+            'TokenValidation',
+            'Token differences can break in-game placeholders or formatting.'
+        ))
         message_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         message_box.setDefaultButton(QMessageBox.StandardButton.No)
         message_box.setEscapeButton(QMessageBox.StandardButton.No)
@@ -386,14 +467,14 @@ class EditDialog(QDialog, Ui_EditDialog):
         continue_button = message_box.button(QMessageBox.StandardButton.Yes)
         continue_button.setText(self.__token_continue_label(outcome))
         back_button = message_box.button(QMessageBox.StandardButton.No)
-        back_button.setText('Back to Edit')
+        back_button.setText(interface.text('TokenValidation', 'Back to Edit'))
         return message_box
 
     @staticmethod
     def __token_continue_label(outcome: str) -> str:
         if outcome == 'Needs Review':
-            return 'Continue and Mark Needs Review'
-        return 'Continue and Approve'
+            return interface.text('TokenValidation', 'Continue and Mark Needs Review')
+        return interface.text('TokenValidation', 'Continue and Approve')
 
     def __set_translate_busy(self, busy: bool):
         self.btn_translate.setEnabled(not busy)

@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QPlainTextEdit,
     QWidget,
     QLineEdit,
+    QComboBox,
     QSizePolicy,
 )
 from PySide6.QtGui import QAction, QIcon
@@ -103,6 +104,10 @@ class Ui_MainWindow(object):
         self.action_validate_release = QAction(MainWindow)
         self.action_validate_release.setEnabled(False)
         self.action_validate_release.setIcon(QIcon(':/images/life_validate.png'))
+
+        self.action_workspace_warnings = QAction(MainWindow)
+        self.action_workspace_warnings.setEnabled(False)
+        self.action_workspace_warnings.setIcon(QIcon(':/images/life_status.png'))
 
         self.action_import_translation = QAction(MainWindow)
         self.action_import_translation.setEnabled(False)
@@ -217,6 +222,7 @@ class Ui_MainWindow(object):
         self.menu_translation.addAction(self.action_reset_all_translations)
         self.menu_translation.addSeparator()
         self.menu_translation.addAction(self.action_translate)
+        self.menu_translation.addAction(self.action_workspace_warnings)
         self.menu_translation.addAction(self.action_validate_release)
         self.menu_translation.addSeparator()
         self.menu_translation.addAction(self.action_undo)
@@ -561,8 +567,10 @@ class Ui_MainWindow(object):
         layout.addWidget(text)
 
         if title == 'Original':
+            self.selection_original_label = label
             self.selection_original_text = text
         else:
+            self.selection_translation_label = label
             self.selection_translation_text = text
 
         return panel
@@ -593,6 +601,27 @@ class Ui_MainWindow(object):
         self.filter_search_mode.setObjectName('filterModeButton')
         self.filter_search_mode.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.filter_search_mode.setVisible(False)
+        self.filter_advanced_toggle = QPushButton('Advanced Search', board)
+        self.filter_advanced_toggle.setObjectName('secondaryButton')
+        self.filter_advanced_toggle.setCheckable(True)
+        self.filter_advanced_toggle.setAutoDefault(False)
+
+        self.advanced_search_panel = QFrame(board)
+        self.advanced_search_panel.setObjectName('advancedSearchPanel')
+        self.advanced_search_layout = QHBoxLayout(self.advanced_search_panel)
+        self.advanced_search_layout.setContentsMargins(0, 0, 0, 0)
+        self.advanced_search_layout.setSpacing(8)
+        self.advanced_search_mode_label = QLabel('Mode', self.advanced_search_panel)
+        self.advanced_search_mode_label.setObjectName('fieldLabel')
+        self.advanced_search_mode = QComboBox(self.advanced_search_panel)
+        self.advanced_search_mode.setObjectName('advancedSearchMode')
+        self.advanced_search_warning = QLabel('', self.advanced_search_panel)
+        self.advanced_search_warning.setObjectName('tokenDetail')
+        self.advanced_search_warning.setVisible(False)
+        self.advanced_search_layout.addWidget(self.advanced_search_mode_label)
+        self.advanced_search_layout.addWidget(self.advanced_search_mode)
+        self.advanced_search_layout.addWidget(self.advanced_search_warning, 1)
+        self.advanced_search_panel.setVisible(False)
 
         self.filter_status_label = QLabel('Status', board)
         self.filter_status_label.setObjectName('sectionLabel')
@@ -619,7 +648,9 @@ class Ui_MainWindow(object):
 
         self.filter_layout.addWidget(self.filter_title, 0, 0)
         self.filter_layout.addWidget(self.filter_search_label, 0, 1)
-        self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 5)
+        self.filter_layout.addWidget(self.filter_search, 0, 2, 1, 4)
+        self.filter_layout.addWidget(self.filter_advanced_toggle, 0, 6)
+        self.filter_layout.addWidget(self.advanced_search_panel, 2, 1, 1, 6)
         self.filter_layout.addWidget(self.filter_status_label, 1, 0)
         self.filter_layout.addWidget(self.filter_all, 1, 1)
         self.filter_layout.addWidget(self.filter_original, 1, 2)

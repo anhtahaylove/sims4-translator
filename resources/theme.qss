@@ -528,6 +528,18 @@ QToolBar::separator {
     border-radius: 12px;
 }
 
+#releaseValidationCard[severity="critical"] {
+    border-color: __TEXT_ERROR__;
+}
+
+#releaseValidationCard[severity="warning"] {
+    border-color: __WARNING__;
+}
+
+#releaseValidationCard[severity="info"] {
+    border-color: __BORDER_FOCUS__;
+}
+
 #releaseValidationCardLabel {
     color: __TEXT_MUTED__;
     font-size: 11px;
@@ -619,6 +631,20 @@ QToolBar::separator {
     border: 1px solid __BORDER_LIGHT__;
     border-radius: 8px;
     padding: 6px 8px;
+}
+
+#tokenDetail[state="warning"] {
+    color: __WARNING__;
+    background: __PANEL_ALT__;
+    border: 1px solid __WARNING__;
+    font-weight: 700;
+}
+
+#tokenDetail[state="ok"] {
+    color: __TEXT_MUTED__;
+    background: __SURFACE__;
+    border: 1px solid __BORDER_LIGHT__;
+    font-weight: 500;
 }
 
 #suggestionsDock {

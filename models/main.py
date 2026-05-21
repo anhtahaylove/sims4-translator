@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import operator
+import re
 from PySide6.QtCore import Qt, QSortFilterProxyModel
 from typing import Union, List
 
@@ -108,7 +109,7 @@ class Model(AbstractTableModel):
                 return item.comment
 
             elif column == COLUMN_MAIN_FLAG:
-                return STATUS_LABELS.get(item.flag, '')
+                return interface.text('Status', STATUS_LABELS.get(item.flag, ''))
 
         elif role == Qt.ItemDataRole.ToolTipRole:
             if column == COLUMN_MAIN_SOURCE:
@@ -116,7 +117,7 @@ class Model(AbstractTableModel):
             elif column == COLUMN_MAIN_TRANSLATE:
                 return text_to_table(item.translate) if item.translate else '[NULL]'
             elif column == COLUMN_MAIN_FLAG:
-                return STATUS_LABELS.get(item.flag, '')
+                return interface.text('Status', STATUS_LABELS.get(item.flag, ''))
 
         return None
 
@@ -142,6 +143,8 @@ class ProxyModel(QSortFilterProxyModel):
         self.__mode = SEARCH_IN_ALL
         self.__flags = []
         self.__different = False
+        self.__search_error = ''
+        self.__regex = None
 
         self.__column = COLUMN_MAIN_INDEX
         self.__order = Qt.SortOrder.AscendingOrder
@@ -151,6 +154,8 @@ class ProxyModel(QSortFilterProxyModel):
         self.__mode = mode
         self.__flags = flags if flags else []
         self.__different = different
+        self.__search_error = ''
+        self.__regex = None
 
         if text:
             text = text.strip()
@@ -161,12 +166,25 @@ class ProxyModel(QSortFilterProxyModel):
                     self.__text = int(text, 16)
                 except ValueError:
                     self.__text = -1
+            elif mode == SEARCH_REGEX:
+                self.__text = text
+                self.__text_id = None
+                try:
+                    self.__regex = re.compile(text, re.IGNORECASE)
+                    self.__search_error = ''
+                except re.error as exc:
+                    self.__regex = None
+                    self.__search_error = f'Invalid regex: {exc}'
             else:
                 self.__text = text.lower()
                 self.__text_id = self.__parse_search_id(self.__text)
+                self.__regex = None
+                self.__search_error = ''
         else:
             self.__text = None
             self.__text_id = None
+            self.__regex = None
+            self.__search_error = ''
 
         if instance:
             try:
@@ -205,10 +223,28 @@ class ProxyModel(QSortFilterProxyModel):
                 return self.__text in item[RECORD_MAIN_TRANSLATE].lower()
             elif self.__mode == SEARCH_IN_ALL:
                 return self.__matches_hybrid_search(item)
+            elif self.__mode == SEARCH_CONTAINS:
+                return self.__matches_text(item, lambda value: self.__text in value)
+            elif self.__mode == SEARCH_EXACT:
+                return self.__matches_text(item, lambda value: self.__text == value)
+            elif self.__mode == SEARCH_BEGINS_WITH:
+                return self.__matches_text(item, lambda value: value.startswith(self.__text))
+            elif self.__mode == SEARCH_ENDS_WITH:
+                return self.__matches_text(item, lambda value: value.endswith(self.__text))
+            elif self.__mode == SEARCH_REGEX:
+                if self.__regex is None:
+                    return False
+                return bool(self.__regex.search(item.id_hex) or
+                            self.__regex.search(str(item[RECORD_MAIN_SOURCE])) or
+                            self.__regex.search(str(item[RECORD_MAIN_TRANSLATE])))
             else:
                 return False
 
         return True
+
+    @property
+    def search_error(self) -> str:
+        return self.__search_error
 
     @staticmethod
     def __parse_search_id(text):
@@ -231,6 +267,16 @@ class ProxyModel(QSortFilterProxyModel):
 
         return self.__text in str(item[RECORD_MAIN_SOURCE]).lower() \
             or self.__text in str(item[RECORD_MAIN_TRANSLATE]).lower()
+
+    @staticmethod
+    def __text_values(item):
+        return (
+            str(item[RECORD_MAIN_SOURCE]).lower(),
+            str(item[RECORD_MAIN_TRANSLATE]).lower(),
+        )
+
+    def __matches_text(self, item, predicate):
+        return any(predicate(value) for value in self.__text_values(item))
 
     def headerData(self, section, orientation, role=None):
         if role == Qt.ItemDataRole.DisplayRole and orientation == Qt.Orientation.Horizontal:

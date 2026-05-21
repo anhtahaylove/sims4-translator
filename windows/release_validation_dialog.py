@@ -3,7 +3,7 @@
 from typing import Callable
 
 from PySide6.QtCore import QAbstractTableModel, QModelIndex, QSortFilterProxyModel, Qt
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QBrush, QColor, QFont, QIcon
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QApplication,
@@ -23,6 +23,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from singletons.interface import interface
+from themes import balanced as theme
 from utils.functions import text_to_table
 from utils.release_validation import (
     SEVERITY_CRITICAL,
@@ -48,6 +50,26 @@ ISSUE_COLUMNS = (
 )
 
 
+def _display_text(context: str, text: str) -> str:
+    return interface.text(context, text)
+
+
+def _display_severity(severity: str) -> str:
+    return _display_text('ValidationSeverity', severity)
+
+
+def _display_category(category: str) -> str:
+    return _display_text('ValidationCategory', category)
+
+
+def _display_status(status: str) -> str:
+    return _display_text('Status', status)
+
+
+def _display_profile(profile_name: str) -> str:
+    return _display_text('ValidationProfile', profile_name)
+
+
 class ReleaseIssueModel(QAbstractTableModel):
 
     def __init__(self, issues: tuple[ValidationIssue, ...], parent=None):
@@ -66,13 +88,23 @@ class ReleaseIssueModel(QAbstractTableModel):
 
         issue = self.issues[index.row()]
         value = self.__value(issue, index.column())
-        if role in (Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.ToolTipRole):
+        if role == Qt.ItemDataRole.DisplayRole:
+            return self.__display_value(issue, index.column(), value)
+        if role == Qt.ItemDataRole.ToolTipRole:
             return value
+        if role == Qt.ItemDataRole.ForegroundRole:
+            color = self.__severity_color(issue.severity)
+            if color and index.column() in (0, 7):
+                return QBrush(QColor(color))
+        if role == Qt.ItemDataRole.FontRole and index.column() in (0, 7):
+            font = QFont()
+            font.setBold(issue.severity in (SEVERITY_CRITICAL, SEVERITY_WARNING))
+            return font
         return None
 
     def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
         if role == Qt.ItemDataRole.DisplayRole and orientation == Qt.Orientation.Horizontal:
-            return ISSUE_COLUMNS[section]
+            return _display_text('ReleaseValidationDialog', ISSUE_COLUMNS[section])
         return None
 
     def issue_at(self, row: int) -> ValidationIssue:
@@ -93,6 +125,26 @@ class ReleaseIssueModel(QAbstractTableModel):
             text_to_table(issue.translation),
         )
         return values[column]
+
+    @staticmethod
+    def __display_value(issue: ValidationIssue, column: int, value: str) -> str:
+        if column == 0:
+            return _display_severity(issue.severity)
+        if column == 2:
+            return _display_category(issue.category)
+        if column == 6:
+            return _display_status(issue.status)
+        return value
+
+    @staticmethod
+    def __severity_color(severity: str) -> str | None:
+        if severity == SEVERITY_CRITICAL:
+            return theme.TEXT_ERROR
+        if severity == SEVERITY_WARNING:
+            return theme.WARNING
+        if severity == SEVERITY_INFO:
+            return theme.BORDER_FOCUS
+        return None
 
 
 class ReleaseIssueFilterProxy(QSortFilterProxyModel):
@@ -144,8 +196,13 @@ class ReleaseValidationDialog(QDialog):
         super().__init__(parent)
         self.report = report
         self.__open_issue = open_issue
+        self.__read_only = report.mode == 'Workspace Warnings'
 
-        self.setWindowTitle('Pre-release Validation Report')
+        self.setWindowTitle(
+            _display_text('ReleaseValidationDialog', 'Workspace Warnings')
+            if self.__read_only else
+            _display_text('ReleaseValidationDialog', 'Pre-release Validation Report')
+        )
         self.setWindowIcon(QIcon(':/logo.ico'))
         self.setMinimumSize(1040, 660)
         self.resize(1280, 760)
@@ -178,7 +235,10 @@ class ReleaseValidationDialog(QDialog):
                 ('Info', SEVERITY_INFO),
                 ('All', None),
         ):
-            self.tabs.addTab(QWidget(self.tabs), f'{label} ({len(self.report.filtered(severity))})')
+            self.tabs.addTab(
+                QWidget(self.tabs),
+                f'{_display_severity(label)} ({len(self.report.filtered(severity))})',
+            )
         self.tabs.currentChanged.connect(lambda _index: self.__apply_filters())
         layout.addWidget(self.tabs)
 
@@ -209,14 +269,27 @@ class ReleaseValidationDialog(QDialog):
         header_layout.setContentsMargins(14, 12, 14, 12)
         header_layout.setSpacing(10)
 
-        title = QLabel('Pre-release Validation Report', header)
+        title = QLabel(
+            _display_text('ReleaseValidationDialog', 'Workspace Warnings')
+            if self.__read_only else
+            _display_text('ReleaseValidationDialog', 'Pre-release Validation Report'),
+            header,
+        )
         title.setObjectName('releaseValidationTitle')
         detail = QLabel(
-            'Review potential blank-text and token issues before writing release files.',
+            _display_text(
+                'ReleaseValidationDialog',
+                'Review day-to-day workspace issues without starting a save or export.',
+            )
+            if self.__read_only else
+            _display_text(
+                'ReleaseValidationDialog',
+                'Review potential blank-text and token issues before writing release files.',
+            ),
             header,
         )
         detail.setObjectName('releaseValidationDetail')
-        summary = QLabel(self.report.summary(), header)
+        summary = QLabel(self.__summary_text(), header)
         summary.setObjectName('releaseValidationSummary')
 
         cards = QGridLayout()
@@ -231,9 +304,18 @@ class ReleaseValidationDialog(QDialog):
                 ('Packages', f'{self.report.package_count:,}'),
                 ('STBL resources', f'{self.report.resource_count:,}'),
                 ('Destination', self.report.destination_locale),
-                ('Preset', self.report.profile.name),
+                ('Preset', _display_profile(self.report.profile.name)),
         )):
-            cards.addWidget(self.__summary_card(label, value, header), index // 4, index % 4)
+            cards.addWidget(
+                self.__summary_card(
+                    _display_text('ReleaseValidationDialog', label),
+                    value,
+                    header,
+                    label,
+                ),
+                index // 4,
+                index % 4,
+            )
 
         header_layout.addWidget(title)
         header_layout.addWidget(detail)
@@ -242,9 +324,11 @@ class ReleaseValidationDialog(QDialog):
         return header
 
     @staticmethod
-    def __summary_card(label: str, value: str, parent) -> QFrame:
+    def __summary_card(label: str, value: str, parent, raw_label: str = '') -> QFrame:
         card = QFrame(parent)
         card.setObjectName('releaseValidationCard')
+        if raw_label in ('Critical', 'Warning', 'Info'):
+            card.setProperty('severity', raw_label.lower())
         layout = QVBoxLayout(card)
         layout.setContentsMargins(10, 8, 10, 8)
         layout.setSpacing(2)
@@ -263,16 +347,19 @@ class ReleaseValidationDialog(QDialog):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(8)
 
-        category_label = QLabel('Category', filters)
+        category_label = QLabel(_display_text('ReleaseValidationDialog', 'Category'), filters)
         self.category_filter = QComboBox(filters)
-        self.category_filter.addItem('All')
+        self.category_filter.addItem(_display_text('ReleaseValidationDialog', 'All'), 'All')
         for category in VALIDATION_CATEGORIES:
-            self.category_filter.addItem(category)
-        self.category_filter.currentTextChanged.connect(lambda _text: self.__apply_filters())
+            self.category_filter.addItem(_display_category(category), category)
+        self.category_filter.currentIndexChanged.connect(lambda _index: self.__apply_filters())
 
-        search_label = QLabel('Search', filters)
+        search_label = QLabel(_display_text('ReleaseValidationDialog', 'Search'), filters)
         self.search_filter = QLineEdit(filters)
-        self.search_filter.setPlaceholderText('Search package, instance, ID, reason, original, or translation...')
+        self.search_filter.setPlaceholderText(_display_text(
+            'ReleaseValidationDialog',
+            'Search package, instance, ID, reason, original, or translation...',
+        ))
         self.search_filter.textChanged.connect(lambda _text: self.__apply_filters())
 
         layout.addWidget(category_label)
@@ -286,12 +373,14 @@ class ReleaseValidationDialog(QDialog):
         footer = QHBoxLayout()
         footer.setContentsMargins(0, 0, 0, 0)
         footer.setSpacing(8)
-        self.btn_export = QPushButton('Export report', self)
-        self.btn_copy_issue = QPushButton('Copy selected issue', self)
-        self.btn_copy_summary = QPushButton('Copy summary', self)
-        self.btn_back = QPushButton('Back to Fix', self)
+        self.btn_export = QPushButton(_display_text('ReleaseValidationDialog', 'Export report'), self)
+        self.btn_copy_issue = QPushButton(_display_text('ReleaseValidationDialog', 'Copy selected issue'), self)
+        self.btn_copy_summary = QPushButton(_display_text('ReleaseValidationDialog', 'Copy summary'), self)
+        self.btn_back = QPushButton(_display_text('ReleaseValidationDialog', 'Back to Fix'), self)
         self.btn_continue = QPushButton(
-            'Continue anyway' if self.report.critical_count else 'Continue',
+            _display_text('ReleaseValidationDialog', 'Continue anyway')
+            if self.report.critical_count else
+            _display_text('ReleaseValidationDialog', 'Continue'),
             self,
         )
 
@@ -307,6 +396,11 @@ class ReleaseValidationDialog(QDialog):
         else:
             self.btn_continue.setDefault(True)
             self.btn_continue.setAutoDefault(True)
+
+        if self.__read_only:
+            self.btn_back.setText(_display_text('ReleaseValidationDialog', 'Close'))
+            self.btn_continue.setVisible(False)
+            self.btn_back.setDefault(True)
 
         footer.addWidget(self.btn_export)
         footer.addWidget(self.btn_copy_issue)
@@ -350,12 +444,15 @@ class ReleaseValidationDialog(QDialog):
     def __apply_filters(self) -> None:
         self.issue_proxy.set_filters(
             self.__current_severity(),
-            self.category_filter.currentText() if hasattr(self, 'category_filter') else 'All',
+            self.category_filter.currentData() if hasattr(self, 'category_filter') else 'All',
             self.search_filter.text() if hasattr(self, 'search_filter') else '',
         )
         if hasattr(self, 'result_count'):
             self.result_count.setText(
-                f'{self.issue_proxy.rowCount():,} issue(s) shown from {len(self.report.issues):,}.'
+                _display_text(
+                    'ReleaseValidationDialog',
+                    '{shown:,} issue(s) shown from {total:,}.',
+                ).format(shown=self.issue_proxy.rowCount(), total=len(self.report.issues))
             )
 
     def __issue_double_clicked(self, proxy_index: QModelIndex) -> None:
@@ -407,9 +504,15 @@ class ReleaseValidationDialog(QDialog):
         return self.issue_model.issue_at(source_index.row())
 
     def export_report(self) -> None:
-        dialog = QFileDialog(self, 'Export Pre-release Validation Report')
+        dialog = QFileDialog(
+            self,
+            _display_text('ReleaseValidationDialog', 'Export Pre-release Validation Report'),
+        )
         dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
-        dialog.setNameFilters(('Text report (*.txt)', 'CSV report (*.csv)'))
+        dialog.setNameFilters((
+            _display_text('ReleaseValidationDialog', 'Text report (*.txt)'),
+            _display_text('ReleaseValidationDialog', 'CSV report (*.csv)'),
+        ))
         dialog.setDefaultSuffix('txt')
 
         if dialog.exec() != QFileDialog.DialogCode.Accepted:
@@ -417,7 +520,21 @@ class ReleaseValidationDialog(QDialog):
 
         path = dialog.selectedFiles()[0]
         selected_filter = dialog.selectedNameFilter()
-        if path.lower().endswith('.csv') or selected_filter.startswith('CSV'):
+        if path.lower().endswith('.csv') or 'csv' in selected_filter.lower():
             self.report.write_csv(path)
         else:
             self.report.write_text(path)
+
+    def __summary_text(self) -> str:
+        return _display_text(
+            'ReleaseValidationDialog',
+            'Pre-release validation ({profile}): {critical} critical, {warning} warning, {info} info '
+            'for {written:,}/{total:,} record(s).',
+        ).format(
+            profile=_display_profile(self.report.profile.name),
+            critical=self.report.critical_count,
+            warning=self.report.warning_count,
+            info=self.report.info_count,
+            written=self.report.written_records,
+            total=self.report.total_records,
+        )
