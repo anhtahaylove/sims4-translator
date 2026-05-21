@@ -1,123 +1,153 @@
 # The Sims 4 Translator Plus
 
-[![Release](https://img.shields.io/github/v/release/anhtahaylove/sims4-translator?sort=semver)](https://github.com/anhtahaylove/sims4-translator/releases)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Windows](https://img.shields.io/badge/Windows-10%2B-32c36c)](https://github.com/anhtahaylove/sims4-translator/releases)
+[![Latest release](https://img.shields.io/github/v/release/anhtahaylove/sims4-translator?sort=semver&label=Download)](https://github.com/anhtahaylove/sims4-translator/releases/latest)
+[![Windows](https://img.shields.io/badge/Windows-10%2B-6ee85c)](https://github.com/anhtahaylove/sims4-translator/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-2f855a.svg)](LICENSE)
 
-**A Vietnamese-first Translation Studio for The Sims 4 package and STBL localization.**
+**Vietnamese-first translation studio for Sims 4 mods and packages.**
 
-[Tiếng Việt](README.vi.md) · [Release checklist](docs/release-checklist.md) · [Latest Windows download](https://github.com/anhtahaylove/sims4-translator/releases/latest)
+Open a package, translate the strings, keep Sims tokens safe, validate your release, and export a clean package for testing in Mods.
 
-> Community tool notice: this project is not affiliated with Electronic Arts, Maxis, The Sims, or the original upstream maintainer. It does not include official game artwork, logos, fonts, or assets.
+[Tiếng Việt](README.vi.md) · [Download for Windows](https://github.com/anhtahaylove/sims4-translator/releases/latest) · [Docs](docs/README.md) · [Release checklist](docs/release-checklist.md)
 
-## What This App Does
+> Community project notice: this app is not affiliated with Electronic Arts, Maxis, The Sims, or the original upstream maintainer. It does not include official game artwork, logos, fonts, or assets.
 
-The Sims 4 Translator Plus helps mod translators inspect, translate, validate, and export Sims 4 strings without editing package internals by hand.
+![The Sims 4 Translator Plus banner](docs/assets/readme/hero.png)
 
-- **Vietnamese-first defaults**: first run defaults to `ENG_US -> VI_VN`.
-- **Table-first workspace**: built for packages with thousands or hundreds of thousands of strings.
-- **Hybrid search**: search by string ID, original text, or translation in one field.
-- **Selection Preview**: read long selected strings without opening a separate editor.
-- **Translation Studio editor**: edit one string with token highlight, token safety checks, and optional token insertion helpers.
-- **DeepL support**: API key diagnostics, usage check, glossary ID, context, and batch cost guard.
-- **Validate Release**: scan release output for blank text, token mismatches, duplicates, and risky statuses before writing files.
-- **Windows build script**: repeatable PyInstaller packaging for local release builds.
+## Download In 3 Steps
 
-## Download And Run
-
-1. Open the [latest release](https://github.com/anhtahaylove/sims4-translator/releases/latest).
+1. Go to the [latest release](https://github.com/anhtahaylove/sims4-translator/releases/latest).
 2. Download `The-Sims-4-Translator-Plus-v2.0.0-windows.zip`.
-3. Extract the ZIP to a normal folder such as `D:\Tools\The Sims 4 Translator Plus`.
-4. Run `The Sims 4 Translator Plus.exe`.
+3. Extract the ZIP, then run `The Sims 4 Translator Plus.exe`.
 
-Do not run the app directly from inside the ZIP archive. Extract it first so bundled `prefs` and `fonts` are available beside the executable.
+Do not run the app from inside the ZIP. Extract it first so the app can read its bundled `prefs` and `fonts` folders.
 
-## Recommended Vietnamese Workflow
+## What Can I Do With It?
 
-For full-game or DLC localization, use this safer path:
+| You want to... | The app helps you... |
+| --- | --- |
+| Translate packages | Open `.package` or `.stbl` files and edit strings in a table-first workspace. |
+| Work faster | Search by ID, original text, or translated text from one hybrid search box. |
+| Read long strings | Use Selection Preview to see the full selected string without opening the editor. |
+| Avoid broken text | Highlight Sims tokens like `{0.SimFirstName}`, `\n`, `<b>`, and `<i>`. |
+| Use machine translation | Connect DeepL, Google, or MyMemory, with DeepL usage checks and batch cost warnings. |
+| Release more safely | Run Validate Release before Save as package, Export, or Finalize. |
 
-1. Open **Options**.
-2. Confirm **Source** is `ENG_US`.
-3. Confirm **Destination** is `VI_VN`.
-4. Load one or more `.package` or `.stbl` files.
-5. Translate and review strings in the table and Translation Studio editor.
-6. Run **Validate Release** before writing release files.
-7. Prefer **Save as package** for a Mods-folder release.
-8. Test the generated package in:
+## A Quick Look
+
+### Table-first workspace
+
+Search, filter, preview, and review large packages without leaving the main window.
+
+![Workspace screenshot](docs/assets/readme/workspace.png)
+
+### Translation Studio editor
+
+Edit one string in a focused editor with token highlighting, token safety, comments, and quick approve or needs-review actions.
+
+![Translation Studio screenshot](docs/assets/readme/editor.png)
+
+### Validate before you publish
+
+The validation report catches blank translations, missing tokens, risky statuses, duplicate output, and resource issues before files are written.
+
+![Validate Release screenshot](docs/assets/readme/validate-release.png)
+
+## Typical Vietnamese Workflow
+
+The first-run defaults are set for Vietnamese localization:
+
+```text
+Source: ENG_US
+Destination: VI_VN
+```
+
+![Vietnamese workflow overview](docs/assets/readme/workflow.png)
+
+Recommended flow:
+
+1. Open one or more `.package` or `.stbl` files.
+2. Translate and review strings in the table.
+3. Use the editor for long text, token-heavy text, or strings that need careful review.
+4. Run **Validate Release**.
+5. Use **Save as package** to create a Mods-folder package.
+6. Test the output in:
 
 ```text
 Documents\Electronic Arts\The Sims 4\Mods
 ```
 
-Use **Finalize** only when you deliberately want to rewrite a package with destination STBL resources. Keep **Create backup before Finalize** enabled if you use that workflow.
+Use **Finalize** only when you deliberately want to rewrite or finalize package resources. Keep backups if you use that workflow.
 
-## Supported Formats
+For a deeper publish checklist, see [docs/release-checklist.md](docs/release-checklist.md).
 
-| Direction | Formats |
-| --- | --- |
-| Open / import | `.package`, `.stbl`, XML, JSON, Binary, CSV-style translation data |
-| Export | STBL package, XML, XML for Deaderpool's STBL editor, JSON, Binary, Hub CSV |
-| Release QA | Text or CSV validation reports |
-| Dictionaries | Built from installed Sims 4 pack string resources |
+## Save As Package Or Finalize?
 
-## DeepL Setup
+| Option | Best for | Notes |
+| --- | --- | --- |
+| **Save as package** | Most translators and public Mods-folder releases | Safer default. Produces a package you can put in `Documents\Electronic Arts\The Sims 4\Mods`. |
+| **Finalize** | Advanced package workflows | Writes destination resources into a package. Use it only when you know this is the output style you want. |
+| **Export** | Sharing or reviewing translation data | Useful for XML, JSON, CSV, Binary, and tool-specific workflows. |
 
-DeepL is optional. Google and MyMemory remain available, but DeepL can produce better results for large batches when configured carefully.
+For full game or DLC-sized Vietnamese releases, prefer **Save as package** first, then test in a clean Mods folder.
 
-1. Open **Options**.
-2. Paste your **DeepL API key**.
-3. Click **Test key**. This uses DeepL usage/quota and does not spend translation characters.
-4. Click **Check usage** before large batch jobs.
-5. Optionally paste a **Glossary ID** if you already created a glossary in DeepL for terms such as `Trait`, `Lot`, `Moodlet`, or pack-specific terminology.
+## Token Safety In Plain English
 
-Before a DeepL batch translate job starts, the app estimates the number of source characters that will be sent so you can avoid spending quota accidentally.
-
-## Token Safety
-
-Sims 4 strings often contain placeholders and formatting such as:
+Sims strings often contain special pieces that the game reads at runtime:
 
 ```text
 {0.SimFirstName}
 {1.Money}
 \n
-<b>...</b>
-<i>...</i>
+<b>important text</b>
 ```
 
-The editor highlights these tokens and warns when the translation is missing required tokens, adds extra tokens, changes token order, or changes line-break count. **Approve** and **Needs Review** both show a soft warning when tokens differ; you can continue deliberately if the difference is intentional.
+If a translation removes or changes those pieces, the game can show incorrect text or blank UI. The app highlights these parts and warns you when the translation no longer matches the original.
 
-## Validate Release
+![Token safety visual example](docs/assets/readme/token-safety.png)
 
-Use **Validate Release** before publishing a package.
+The important idea is simple: translate the human-readable words, but keep the runtime tokens, line breaks, and tags intentionally preserved.
 
-- **Soft release**: good during daily work. Untranslated, Draft, and Needs Review strings are warnings.
-- **Strict release**: better before public publishing. Untranslated, Draft, and Needs Review strings are treated as critical.
+## DeepL Setup
 
-The report is a safety gate, not a forced blocker. You can go back to fix issues or continue deliberately after reviewing the report.
+DeepL is optional. You can still use the app without a DeepL key.
 
-See [docs/release-checklist.md](docs/release-checklist.md) for the full Vietnamese release checklist.
+To use it:
 
-## Build From Source
+1. Open **Options**.
+2. Paste your **DeepL API key**.
+3. Click **Test key** to confirm the key works.
+4. Click **Check usage** before big batch jobs.
+5. Optional: paste a **Glossary ID** if you already created a DeepL glossary for consistent game terms.
 
-Requirements:
+Before DeepL batch translation starts, the app estimates how many source characters will be sent so you can avoid spending quota by accident.
 
-- Windows 10 or newer
-- Python 3.11 or newer
-- Git
+## Supported Formats
 
-Setup:
+| Direction | Formats |
+| --- | --- |
+| Open | `.package`, `.stbl`, XML, JSON, Binary |
+| Import translation | XML, JSON, Binary, CSV-style translation data |
+| Export translation | STBL package, XML, XML-DP, JSON, Binary, Hub CSV |
+| QA reports | Text or CSV validation reports |
+| Dictionaries | Built from installed Sims 4 pack string resources |
+
+## For Developers
+
+You only need this section if you want to run from source or build the Windows app yourself.
+
+<details>
+<summary>Run from source</summary>
 
 ```powershell
-git clone https://github.com/anhtahaylove/sims4-translator.git
-cd sims4-translator
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 python main.py
 ```
 
-Run verification:
+</details>
+
+<details>
+<summary>Verify the project</summary>
 
 ```powershell
 python -m unittest discover -s tests -v
@@ -127,32 +157,31 @@ python scripts\verify_synthetic_smoke.py --directory build\synthetic --require-g
 git diff --check
 ```
 
-## Build The Windows App
+</details>
 
-Use the reviewed build script:
+<details>
+<summary>Build the Windows executable</summary>
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build_windows.ps1
 ```
 
-The script uses PyInstaller as a build-only dependency inside a temporary virtual environment. PyInstaller is not a runtime dependency and is not required for normal source usage.
+The build script uses PyInstaller as a build-only tool in a temporary virtual environment. It does not add PyInstaller as a runtime dependency.
+
+</details>
 
 ## Troubleshooting
 
-| Problem | What to try |
+| Problem | Try this |
 | --- | --- |
-| Destination is not `VI_VN` | Open **Options** and set Destination to `VI_VN`. Public release ZIPs do not ship a local `prefs/config.xml`, so fresh installs default to `ENG_US -> VI_VN`. |
-| DeepL key works in the browser but not in the app | Check whether the key is Free or Pro, then use **Test key** in Options. Free keys usually end with `:fx`. |
-| Translated text appears blank in game | Run **Validate Release**, check missing tokens, empty translations, duplicate output, and wrong destination locale. |
-| The app cannot see Sims packs | In **Options**, set the game install folder that contains `Data`, `EP`, `GP`, `SP`, and `FP` folders. |
-| Windows blocks the executable | The release is unsigned. Extract the ZIP, keep the folder together, and use Windows security prompts only if you trust the downloaded file source. |
+| The app does not start from the ZIP | Extract the ZIP first, then run the EXE from the extracted folder. |
+| Destination is not Vietnamese | Open **Options** and set Destination to `VI_VN`. Fresh first-run installs default to `ENG_US -> VI_VN`. |
+| DeepL does not translate | Use **Test key** and **Check usage** in Options, then confirm DeepL is selected in the translate dialog. |
+| Validate Release shows critical issues | Open the issue, fix missing tokens or blank translations, then run validation again. |
+| In-game text is blank | Check token warnings, destination locale, and whether the output package was tested from the Mods folder. |
 
 ## Credits
 
-This fork is based on the original [voky1/sims4-translator](https://github.com/voky1/sims4-translator) project and remains licensed under the MIT License.
+The Sims 4 Translator Plus is a community-maintained fork of [voky1/sims4-translator](https://github.com/voky1/sims4-translator), redesigned around a Vietnamese-first translation workflow.
 
-Special thanks to the Sims modding and localization community for workflow feedback, test packages, and practical translation edge cases.
-
-## License
-
-MIT. See [LICENSE](LICENSE).
+This repository is licensed under the [MIT License](LICENSE).
