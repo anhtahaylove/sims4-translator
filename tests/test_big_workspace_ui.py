@@ -1038,7 +1038,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.command_bar.property('density'), 'spacious')
             self.assertEqual(window.filter_panel.property('density'), 'spacious')
             self.assertTrue(window.command_scope_group.isVisibleTo(window))
-            self.assertTrue(window.filter_title.isVisibleTo(window))
+            self.assertFalse(hasattr(window, 'filter_title'))
             self.assertEqual(window.filter_file_label.text(), 'Package')
             self.assertEqual(window.filter_instance_label.text(), 'Instance')
             self.assertEqual(window.filter_layout.indexOf(window.filter_file), -1)
@@ -1299,6 +1299,10 @@ class WorkspaceProShellTests(unittest.TestCase):
 
             window.filter_advanced_toggle.setChecked(True)
             self.assertFalse(window.advanced_search_panel.isHidden())
+            row, _column, _row_span, _column_span = window.filter_layout.getItemPosition(
+                window.filter_layout.indexOf(window.advanced_search_panel)
+            )
+            self.assertEqual(row, 0)
 
             window.advanced_search_mode.setCurrentText('Exact')
             window.filter_search.setText('Exact target')
@@ -1907,7 +1911,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(interface.text('MainWindow', 'Status Overview Bar'), 'Thanh tổng quan trạng thái')
             self.assertEqual(window.command_open.text(), 'Mở')
             self.assertEqual(window.command_dictionary.text(), 'Từ điển')
-            self.assertEqual(window.filter_title.text(), 'Bộ lọc Studio')
+            self.assertFalse(hasattr(window, 'filter_title'))
+            self.assertEqual(window.filter_advanced_toggle.text(), 'Nâng cao')
             self.assertEqual(window.inspector_apply.text(), 'Phê duyệt')
             self.assertEqual(interface.text('TokenValidation', 'Token check:'), 'Kiểm tra token:')
             self.assertEqual(interface.text('MainWindow', 'Untranslated source fallback'), 'Untranslated source fallback')

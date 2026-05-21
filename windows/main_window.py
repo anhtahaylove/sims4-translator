@@ -302,15 +302,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_options.setTitle(interface.text('MainWindow', 'Options'))
         self.menu_group.setTitle(interface.text('MainWindow', 'Group'))
         self.menu_help.setTitle(interface.text('MainWindow', 'Help'))
-        self.filter_title.setText(interface.text('MainWindow', 'Studio Filters'))
-        self.filter_hint.setText(interface.text('MainWindow', 'Search, status and scope stay close to the table.'))
         self.filter_search_label.setText(interface.text('MainWindow', 'Search'))
         self.filter_search.setPlaceholderText(interface.text('MainWindow', 'Search ID, Original, or Translation...'))
         self.filter_search.setToolTip(interface.text(
             'MainWindow',
             'Search ID, original text, and translation text at the same time.'
         ))
-        self.filter_advanced_toggle.setText(interface.text('MainWindow', 'Advanced Search'))
+        self.filter_advanced_toggle.setText(interface.text('MainWindow', 'Advanced'))
+        self.filter_advanced_toggle.setToolTip(interface.text('MainWindow', 'Show advanced search modes'))
         self.advanced_search_mode_label.setText(interface.text('MainWindow', 'Mode'))
         self.filter_status_label.setText(interface.text('MainWindow', 'Status'))
         self.filter_scope_label.setText(interface.text('MainWindow', 'Scope'))
@@ -523,16 +522,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.filter_layout.setVerticalSpacing(5)
         for column in range(8):
             self.filter_layout.setColumnStretch(column, 0)
+        self.filter_layout.setColumnStretch(1, 2)
         self.filter_layout.setColumnStretch(2, 2)
         self.filter_layout.setColumnStretch(3, 2)
-        self.filter_layout.setColumnStretch(4, 2)
-        self.filter_layout.setColumnStretch(5, 2)
+        self.filter_layout.setColumnStretch(6, 1)
+        self.filter_layout.setColumnStretch(7, 1)
 
         for widget in (
-                self.filter_title,
                 self.filter_search_label,
                 self.filter_status_label,
                 self.filter_search,
+                self.filter_advanced_toggle,
+                self.advanced_search_panel,
                 self.filter_all,
                 self.filter_original,
                 self.filter_translated,
@@ -546,6 +547,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.filter_clear,
         ):
             widget.setVisible(True)
+        self.advanced_search_panel.setVisible(self.filter_advanced_toggle.isChecked())
         self.filter_scope_label.setVisible(False)
         self.filter_file_label.setText(interface.text('MainWindow', 'Package'))
         self.filter_instance_label.setText(interface.text('MainWindow', 'Instance'))
@@ -1386,9 +1388,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.filter_layout.removeWidget(self.filter_progress)
 
         self.filter_layout.addWidget(self.filter_all, 1, 1)
-        self.filter_layout.addWidget(self.filter_original, 1, 2)
-        self.filter_layout.addWidget(self.filter_validated, 1, 3, 1, 2)
-        self.filter_layout.addWidget(self.filter_progress, 1, 5, 1, 2)
+        self.filter_layout.addWidget(self.filter_original, 1, 2, 1, 2)
+        self.filter_layout.addWidget(self.filter_validated, 1, 4, 1, 2)
+        self.filter_layout.addWidget(self.filter_progress, 1, 6, 1, 2)
 
     @staticmethod
     def __format_filter_count(value, compact=False):

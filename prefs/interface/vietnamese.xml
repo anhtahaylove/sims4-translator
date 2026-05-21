@@ -110,14 +110,6 @@
       <translation>Bảng hoạt động</translation>
     </string>
     <string>
-      <source>Studio Filters</source>
-      <translation>Bộ lọc Studio</translation>
-    </string>
-    <string>
-      <source>Search, status and scope stay close to the table.</source>
-      <translation>Tìm kiếm, trạng thái và phạm vi được đặt sát bảng dịch.</translation>
-    </string>
-    <string>
       <source>Search</source>
       <translation>Tìm kiếm</translation>
     </string>
@@ -160,6 +152,14 @@
     <string>
       <source>Advanced Search</source>
       <translation>Tìm kiếm nâng cao</translation>
+    </string>
+    <string>
+      <source>Advanced</source>
+      <translation>Nâng cao</translation>
+    </string>
+    <string>
+      <source>Show advanced search modes</source>
+      <translation>Hiện các chế độ tìm kiếm nâng cao</translation>
     </string>
     <string>
       <source>Mode</source>
