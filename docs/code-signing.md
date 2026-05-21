@@ -1,0 +1,32 @@
+# Code Signing Notes
+
+The Windows ZIP is currently unsigned. Windows SmartScreen may warn users when
+the project is new or when the executable has low reputation.
+
+## Current Release Model
+
+- Build the app with `scripts\build_windows.ps1`.
+- Package the ZIP and checksum with `scripts\package_release.ps1`.
+- Publish both the ZIP and `.sha256` file on GitHub Releases.
+- Users can verify the ZIP with `Get-FileHash`.
+
+## Future Signing Path
+
+Code signing needs a real certificate owned by the maintainer. Do not commit
+private keys, PFX files, passwords, timestamp credentials, or signing tokens.
+
+When a certificate is available, add signing as a separate release-only step:
+
+```powershell
+signtool sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /a "dist\The Sims 4 Translator Plus\The Sims 4 Translator Plus.exe"
+```
+
+Then rebuild the ZIP and `.sha256` after signing. The checksum must match the
+final uploaded ZIP, not a pre-signing artifact.
+
+## Safety Rules
+
+- Signing secrets must live in the local secure store or GitHub Actions secrets.
+- Never log certificate passwords.
+- Never upload signing keys to Issues, Discussions, or release assets.
+- Keep unsigned builds clearly documented until signing is available.

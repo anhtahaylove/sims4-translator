@@ -202,6 +202,8 @@ Script build dùng PyInstaller như dependency chỉ phục vụ build trong vir
 | DeepL không dịch | Dùng **Test key** và **Check usage** trong Tùy chọn, rồi kiểm tra đã chọn DeepL trong dialog dịch chưa. |
 | Validate Release báo Critical | Mở issue, sửa token bị thiếu hoặc bản dịch trống, rồi validate lại. |
 | Trong game bị trống text | Kiểm tra token warning, destination locale và test package từ thư mục Mods. |
+| Cần log để báo lỗi | Xem `%APPDATA%\The Sims 4 Translator Plus\logs\app.log`. API key sẽ được che trước khi ghi log. |
+| Windows SmartScreen cảnh báo | Bản ZIP hiện chưa code-sign. Hãy kiểm tra file `.sha256` trên GitHub Release trước khi chạy. |
 
 ## Credits
 

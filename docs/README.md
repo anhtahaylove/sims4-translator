@@ -15,6 +15,7 @@ Use this index when the README is not enough and you need the right guide quickl
 | Page | Use it for |
 | --- | --- |
 | [Release checklist](release-checklist.md) | Final QA before publishing a Vietnamese package or Windows build. |
+| [Code signing notes](code-signing.md) | Current unsigned ZIP behavior and the safe path for future certificate-based signing. |
 | [Changelog](../CHANGELOG.md) | Release history and version-specific notes. |
 | [Notices and attribution](../NOTICE.md) | Non-affiliation, licenses, fonts, and upstream credit. |
 | [Security policy](../SECURITY.md) | Reporting sensitive issues and avoiding accidental API key or private file exposure. |

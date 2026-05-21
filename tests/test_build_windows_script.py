@@ -50,6 +50,10 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', script)
         self.assertNotIn('--require-gui-outputs', script)
         self.assertIn('python scripts\\verify_version_sync.py --version 2.0.0', script)
+        self.assertIn(
+            'python scripts\\verify_interface_i18n.py --language vi_VN --version 2.0.0 --strict-empty --strict-missing',
+            script,
+        )
         self.assertIn('git diff --check', script)
 
     def test_release_check_keeps_gui_output_requirement_outside_clean_build(self):
@@ -64,6 +68,16 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('Get-FileHash', script)
         self.assertIn('.sha256', script)
         self.assertIn("Release bundle must not include prefs\\config.xml", script)
+
+    def test_release_build_workflow_uploads_zip_and_checksum_artifacts(self):
+        workflow = Path('.github/workflows/release-build.yml').read_text(encoding='utf-8')
+        self.assertIn('workflow_dispatch', workflow)
+        self.assertIn("tags:", workflow)
+        self.assertIn('scripts\\build_windows.ps1', workflow)
+        self.assertIn('scripts\\package_release.ps1', workflow)
+        self.assertIn('actions/upload-artifact@v4', workflow)
+        self.assertIn('The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip', workflow)
+        self.assertIn('The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip.sha256', workflow)
 
 
 if __name__ == '__main__':

@@ -50,6 +50,10 @@ try {
         python scripts\verify_version_sync.py --version 2.0.0
     }
 
+    Invoke-Step 'Verify Vietnamese interface coverage' {
+        python scripts\verify_interface_i18n.py --language vi_VN --version 2.0.0 --strict-empty --strict-missing
+    }
+
     Invoke-Step 'Check Markdown links and images' {
         @'
 from pathlib import Path

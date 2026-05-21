@@ -202,6 +202,8 @@ The build script uses PyInstaller as a build-only tool in a temporary virtual en
 | DeepL does not translate | Use **Test key** and **Check usage** in Options, then confirm DeepL is selected in the translate dialog. |
 | Validate Release shows critical issues | Open the issue, fix missing tokens or blank translations, then run validation again. |
 | In-game text is blank | Check token warnings, destination locale, and whether the output package was tested from the Mods folder. |
+| You need a diagnostic log | Check `%APPDATA%\The Sims 4 Translator Plus\logs\app.log`. API keys are redacted before writing. |
+| Windows SmartScreen warns about the app | The ZIP is currently unsigned. Verify the `.sha256` file from the GitHub Release before running. |
 
 ## Credits
 

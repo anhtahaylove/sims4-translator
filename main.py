@@ -14,6 +14,7 @@ from storages.packages import PackagesStorage
 from storages.dictionaries import DictionariesStorage
 
 from themes.stylesheet import stylesheet
+from utils.app_logging import setup_app_logging
 
 import resource_rc
 
@@ -24,6 +25,7 @@ def show_main_window(window: MainWindow) -> None:
 
 def main():
     sys.argv += ['-style', 'windows']
+    setup_app_logging()
 
     app = QApplication(sys.argv)
 

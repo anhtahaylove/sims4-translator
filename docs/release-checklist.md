@@ -91,6 +91,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_release.ps1 -V
 Do not commit `build/`, `dist/`, generated `.package` files, local dictionaries,
 generated `.spec` files, release ZIPs, or checksum files.
 
+GitHub Actions can also build release artifacts from a clean runner. Use the
+`Release Build` workflow manually with a version such as `2.0.0`, or push a
+`vX.Y.Z` tag. The workflow uploads the Windows ZIP and `.sha256` as workflow
+artifacts; maintainers still choose when to attach them to a GitHub Release.
+
 ## Documentation And Asset Checks
 
 - Confirm `README.md` and `README.vi.md` still describe the same core workflow.
@@ -154,9 +159,20 @@ Get-FileHash .\The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip -Algorithm SHA256
 
 Compare the displayed hash with the published `.sha256` file.
 
+## Windows Signing
+
+The executable is currently unsigned, so Windows SmartScreen may warn users on
+first run. Do not block release on signing unless a trusted certificate is
+available. When signing is added, sign the built EXE before packaging, then
+generate the final ZIP and `.sha256` after signing.
+
+See [code-signing.md](code-signing.md) for the safe signing path and secret
+handling rules.
+
 ## CI And Release Guards
 
 - Windows CI should run `scripts\check_fast.ps1` on Python 3.12.
+- The `Release Build` workflow should produce a ZIP and `.sha256` artifact from a clean runner.
 - `scripts\verify_version_sync.py --version 2.0.0` should pass before tagging.
 - `scripts\verify_interface_i18n.py --language vi_VN --version 2.0.0` should pass before release packaging.
 - GitHub release assets should include the Windows ZIP and matching `.sha256`.
@@ -169,5 +185,5 @@ Compare the displayed hash with the published `.sha256` file.
 - Commit only reviewed source, resource, docs, and test changes.
 - Exclude `.understand-anything/*`, `graphify-out/*`, `build/*`, and `dist/*` from release commits unless a future batch explicitly scopes those artifacts.
 - GitHub repository metadata should stay user-friendly:
-  - Description: `Vietnamese-first desktop translation studio for The Sims 4 package/STBL localization.`
-  - Topics: `sims4`, `sims-4`, `translation`, `localization`, `stbl`, `package`, `vietnamese`, `pyside6`.
+  - Description: `Desktop translation studio for The Sims 4 package/STBL localization.`
+  - Topics: `sims4`, `sims-4`, `the-sims-4`, `ts4`, `translation`, `localization`, `stbl`, `package`, `pyside6`, `modding`.

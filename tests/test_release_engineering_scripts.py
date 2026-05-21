@@ -14,6 +14,12 @@ class ReleaseEngineeringScriptTests(unittest.TestCase):
     def test_vietnamese_interface_health_checker_accepts_current_catalog(self):
         self.assertEqual(verify_interface_i18n('vi_VN', '2.0.0'), [])
 
+    def test_vietnamese_interface_catalog_has_full_release_coverage(self):
+        self.assertEqual(
+            verify_interface_i18n('vi_VN', '2.0.0', strict_empty=True, strict_missing=True),
+            [],
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

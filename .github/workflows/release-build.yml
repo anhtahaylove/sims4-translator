@@ -1,0 +1,64 @@
+name: Release Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version without the leading v, for example 2.0.0
+        required: true
+        default: 2.0.0
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  windows-artifact:
+    name: Build Windows release artifact
+    runs-on: windows-latest
+    env:
+      QT_QPA_PLATFORM: offscreen
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Resolve release version
+        id: version
+        shell: powershell
+        run: |
+          $Version = '${{ inputs.version }}'
+          if ('${{ github.ref_type }}' -eq 'tag') {
+            $Version = '${{ github.ref_name }}'.TrimStart('v')
+          }
+          if ($Version -notmatch '^\d+\.\d+\.\d+$') {
+            throw "Release version must be X.Y.Z, got $Version"
+          }
+          "version=$Version" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt -c constraints.txt
+
+      - name: Build Windows app
+        shell: powershell
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build_windows.ps1
+
+      - name: Package ZIP and checksum
+        shell: powershell
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\package_release.ps1 -Version '${{ steps.version.outputs.version }}' -Force
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows
+          path: |
+            The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip
+            The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip.sha256
+          if-no-files-found: error

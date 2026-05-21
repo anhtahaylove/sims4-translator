@@ -27,6 +27,7 @@ dist/
 *.package
 *.tmp
 *.backup
+*.log
 .ruff_cache/
 
 dictionary/

@@ -17,6 +17,7 @@ When sharing logs or screenshots:
 - Remove DeepL API keys and tokens.
 - Remove private Windows usernames or personal paths if they matter.
 - Share only the minimum package/export context needed to reproduce the problem.
+- App logs live under `%APPDATA%\The Sims 4 Translator Plus\logs\app.log`; API keys are redacted before writing, but review the file before posting it publicly.
 
 ## Supported Versions
 
