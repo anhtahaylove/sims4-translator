@@ -14,15 +14,23 @@ venv/
 .idea/
 .omx/
 
+# Local agent / analysis artifacts
+.understand-anything/
+graphify-out/
+
+# Build and release outputs
 build/
 dist/
+*.spec
+*.zip
+*.package
+*.tmp
+*.backup
+
 dictionary/
 prefs/config.xml
 prefs/interface/sync.py
 setup.py
-.understand-anything/dashboard.pid
-.understand-anything/tmp/
-graphify-out/cache/
 
 *.bat
 *.dct
