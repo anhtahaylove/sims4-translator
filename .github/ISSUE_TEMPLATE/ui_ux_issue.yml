@@ -1,0 +1,40 @@
+name: UI/UX issue
+description: Report clipped text, unreadable contrast, layout, or workflow friction.
+title: "[UI/UX]: "
+labels: ["ui", "ux"]
+body:
+  - type: input
+    id: app-version
+    attributes:
+      label: App version
+    validations:
+      required: true
+  - type: input
+    id: screen-size
+    attributes:
+      label: Window size or display resolution
+      placeholder: "900px wide / 1366x768 / fullscreen"
+  - type: dropdown
+    id: area
+    attributes:
+      label: App area
+      options:
+        - Main workspace
+        - Translation Studio editor
+        - Batch Translate
+        - Options
+        - Pack Manager / Dictionaries
+        - Validate Release
+        - Workspace Warnings
+        - Other
+  - type: textarea
+    id: problem
+    attributes:
+      label: What looks or feels wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Attach a screenshot if possible. Hide private paths and API keys.

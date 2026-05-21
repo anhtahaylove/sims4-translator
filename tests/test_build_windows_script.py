@@ -22,10 +22,11 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn("Prepare distributable prefs without local config", self.script)
         self.assertIn("Build prefs bundle must not include local prefs\\config.xml", self.script)
         self.assertIn("Bundled prefs\\config.xml must not be shipped", self.script)
-        self.assertIn("Remove-Item -LiteralPath $GeneratedConfig -Force", self.script)
+        self.assertIn("Built app must not write prefs\\config.xml beside the executable", self.script)
+        self.assertIn('SIMS4_TRANSLATOR_CONFIG_DIR', self.script)
 
     def test_build_script_keeps_pyinstaller_build_only(self):
-        self.assertIn('-r requirements.txt pyinstaller', self.script)
+        self.assertIn('-r requirements-dev.txt -c constraints.txt', self.script)
         forbidden_writes = (
             r'Add-Content\s+.*requirements\.txt',
             r'Set-Content\s+.*requirements\.txt',
@@ -36,11 +37,33 @@ class BuildWindowsScriptTests(unittest.TestCase):
             self.assertIsNone(re.search(pattern, self.script, re.IGNORECASE), pattern)
 
     def test_build_script_runs_release_verification_steps(self):
-        self.assertIn('python -m unittest discover -s tests -v', self.script)
-        self.assertIn('python -m compileall -q models packer singletons storages themes utils widgets windows tests scripts main.py', self.script)
-        self.assertIn('python scripts\\create_synthetic_package.py', self.script)
-        self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic --require-gui-outputs', self.script)
-        self.assertIn('git diff --check', self.script)
+        self.assertIn("Run clean-checkout fast checks", self.script)
+        self.assertIn("check_fast.ps1", self.script)
+        self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', self.script)
+        self.assertNotIn('--require-gui-outputs', self.script)
+
+    def test_fast_check_script_runs_clean_checkout_checks(self):
+        script = Path('scripts/check_fast.ps1').read_text(encoding='utf-8')
+        self.assertIn('python -m unittest discover -s tests -v', script)
+        self.assertIn('python -m compileall -q models packer singletons storages themes utils widgets windows tests scripts main.py', script)
+        self.assertIn('python scripts\\create_synthetic_package.py', script)
+        self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', script)
+        self.assertNotIn('--require-gui-outputs', script)
+        self.assertIn('python scripts\\verify_version_sync.py --version 2.0.0', script)
+        self.assertIn('git diff --check', script)
+
+    def test_release_check_keeps_gui_output_requirement_outside_clean_build(self):
+        script = Path('scripts/check_release.ps1').read_text(encoding='utf-8')
+        self.assertIn('check_fast.ps1', script)
+        self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic --require-gui-outputs', script)
+        self.assertIn('package_release.ps1', script)
+
+    def test_package_release_script_creates_zip_and_sha256(self):
+        script = Path('scripts/package_release.ps1').read_text(encoding='utf-8')
+        self.assertIn('The-Sims-4-Translator-Plus-v$Version-windows.zip', script)
+        self.assertIn('Get-FileHash', script)
+        self.assertIn('.sha256', script)
+        self.assertIn("Release bundle must not include prefs\\config.xml", script)
 
 
 if __name__ == '__main__':

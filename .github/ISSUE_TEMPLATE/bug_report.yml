@@ -1,0 +1,53 @@
+name: Bug report
+description: Report a reproducible app problem.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: input
+    id: app-version
+    attributes:
+      label: App version
+      placeholder: "2.0.0"
+    validations:
+      required: true
+  - type: input
+    id: windows-version
+    attributes:
+      label: Windows version
+      placeholder: "Windows 10 22H2 / Windows 11 23H2"
+    validations:
+      required: true
+  - type: dropdown
+    id: install-type
+    attributes:
+      label: How are you running the app?
+      options:
+        - Windows release ZIP
+        - From source
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the exact actions that trigger the problem.
+      placeholder: "1. Open...\n2. Click...\n3. See error..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Extra context
+      description: Add screenshots or logs if useful. Do not paste API keys or private package content.

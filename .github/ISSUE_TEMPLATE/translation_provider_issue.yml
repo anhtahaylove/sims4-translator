@@ -1,0 +1,43 @@
+name: Translation provider issue
+description: Report DeepL, Google, MyMemory, glossary, or quota problems.
+title: "[Translation provider]: "
+labels: ["translation-provider"]
+body:
+  - type: input
+    id: app-version
+    attributes:
+      label: App version
+    validations:
+      required: true
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Provider
+      options:
+        - DeepL
+        - Google
+        - MyMemory
+    validations:
+      required: true
+  - type: input
+    id: locales
+    attributes:
+      label: Source and destination locale
+      placeholder: "ENG_US -> VI_VN"
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: Include Test key / Check usage result if relevant. Never paste your API key.
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected translation behavior

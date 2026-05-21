@@ -6,9 +6,14 @@ import ctypes.wintypes
 import xml.etree.ElementTree as ElementTree
 from xml.dom import minidom
 from copy import deepcopy
+from pathlib import Path
 from typing import Union
 
 from utils.constants import *
+
+
+CONFIG_DIR_ENV = 'SIMS4_TRANSLATOR_CONFIG_DIR'
+CONFIG_FILE_NAME = 'config.xml'
 
 
 def is_dark_theme():
@@ -90,16 +95,30 @@ class ConfigManager:
     }
 
     def __init__(self) -> None:
-        self.__config_file = './prefs/config.xml'
+        self.__config_file = self.__resolve_config_file()
+        self.__legacy_config_file = Path('prefs') / CONFIG_FILE_NAME
         self.__config = deepcopy(self.DEFAULTS)
         self.__load()
 
     def __load(self) -> None:
-        try:
-            self.__update_defaults_from_file()
-        except (ElementTree.ParseError, FileNotFoundError) as e:
+        loaded = False
+        loaded_from_legacy = False
+        for path in (self.__config_file, self.__legacy_config_file):
+            try:
+                self.__update_defaults_from_file(path)
+                loaded = True
+                loaded_from_legacy = path == self.__legacy_config_file
+                break
+            except FileNotFoundError:
+                continue
+            except ElementTree.ParseError:
+                if path == self.__config_file:
+                    break
+                continue
+
+        if not loaded:
             self.save()
-        if self.__normalize_translation_defaults():
+        if self.__normalize_translation_defaults() or loaded_from_legacy:
             self.save()
 
     def save(self) -> None:
@@ -114,6 +133,7 @@ class ConfigManager:
         reparsed = minidom.parseString(rough)
         prettyxml = reparsed.toprettyxml(indent='  ', encoding='utf-8')
 
+        self.__config_file.parent.mkdir(parents=True, exist_ok=True)
         with open(self.__config_file, 'wb') as fp:
             fp.write(prettyxml)
 
@@ -125,8 +145,28 @@ class ConfigManager:
             self.__config[section] = {}
         self.__config[section][option] = value
 
-    def __update_defaults_from_file(self) -> None:
-        tree = ElementTree.parse(self.__config_file)
+    @property
+    def config_file(self) -> str:
+        return str(self.__config_file)
+
+    @classmethod
+    def default_config_dir(cls) -> Path:
+        override = os.environ.get(CONFIG_DIR_ENV)
+        if override:
+            return Path(override)
+
+        appdata = os.environ.get('APPDATA')
+        if appdata:
+            return Path(appdata) / APP_NAME
+
+        return Path.home() / '.config' / APP_NAME
+
+    @classmethod
+    def __resolve_config_file(cls) -> Path:
+        return cls.default_config_dir() / CONFIG_FILE_NAME
+
+    def __update_defaults_from_file(self, path: Path) -> None:
+        tree = ElementTree.parse(path)
         root = tree.getroot()
         for section in root:
             section_name = section.tag

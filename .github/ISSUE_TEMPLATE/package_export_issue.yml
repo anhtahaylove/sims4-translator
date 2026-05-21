@@ -1,0 +1,48 @@
+name: Package or export issue
+description: Report problems loading, saving, exporting, or finalizing package/STBL files.
+title: "[Package/export]: "
+labels: ["package", "export"]
+body:
+  - type: input
+    id: app-version
+    attributes:
+      label: App version
+    validations:
+      required: true
+  - type: dropdown
+    id: operation
+    attributes:
+      label: Operation
+      options:
+        - Open package
+        - Add package
+        - Save as package
+        - Export STBL
+        - Export XML/XML-DP
+        - Export JSON/Binary/CSV
+        - Finalize
+    validations:
+      required: true
+  - type: input
+    id: locales
+    attributes:
+      label: Source and destination locale
+      placeholder: "ENG_US -> VI_VN"
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validate Release result
+      description: Paste a summary only. Do not attach private package content.
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Mention whether the package is merged, large, or contains duplicate STBL resources.

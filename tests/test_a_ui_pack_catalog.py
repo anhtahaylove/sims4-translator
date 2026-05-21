@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QApplication
 
 from singletons.config import config
 from singletons.expansions import Expansion, expansions
+from singletons.interface import interface
 from windows.options_dialog import Model
 from widgets.job_drawer import JobRow, QJobStatusDrawer
 
@@ -27,6 +28,8 @@ class PackCatalogTests(unittest.TestCase):
 
     def setUp(self):
         app()
+        config.set_value('interface', 'language', 'en_US')
+        interface.reload()
         expansions.reset_cache()
         config.set_value('interface', 'language', 'en_US')
         config.set_value('translation', 'source', 'ENG_US')

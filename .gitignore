@@ -23,9 +23,11 @@ build/
 dist/
 *.spec
 *.zip
+*.sha256
 *.package
 *.tmp
 *.backup
+.ruff_cache/
 
 dictionary/
 prefs/config.xml

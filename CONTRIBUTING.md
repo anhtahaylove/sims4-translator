@@ -14,37 +14,45 @@ desktop translation workflow. Keep changes small, testable, and easy to review.
 4. Do not commit generated `.package` smoke artifacts from `build/`.
 5. Do not push release branches until the checks below pass.
 
+Use Python 3.12 for source and release-build work. Install dev/build tools with:
+
+```powershell
+python -m pip install -r requirements-dev.txt -c constraints.txt
+```
+
 ## Required Checks
 
-Run the full unit suite:
+Run the fast repository check from the repo root:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_fast.ps1
+```
+
+That script runs the unit suite, compile checks, focused lint when Ruff is
+installed, synthetic package generation, package-only smoke verification,
+version-sync checks, Markdown link/image checks, and `git diff --check`.
+
+You can also run individual checks while debugging:
 
 ```powershell
 python -m unittest discover -s tests -v
-```
-
-Run compile checks:
-
-```powershell
-python -m compileall -q models packer singletons storages themes utils widgets windows tests scripts
-```
-
-Generate and verify a synthetic package:
-
-```powershell
+python -m compileall -q models packer singletons storages themes utils widgets windows tests scripts main.py
 python scripts\create_synthetic_package.py
-python scripts\verify_synthetic_smoke.py --directory build\synthetic --require-gui-outputs
+python scripts\verify_synthetic_smoke.py --directory build\synthetic
+python scripts\verify_version_sync.py --version 2.0.0
+git diff --check
 ```
 
-The verifier requires GUI export artifacts. Run the app, load
-`build/synthetic/synthetic_smoke.package`, export the supported formats, then
-run the verifier.
+Strict GUI export verification belongs to release preparation. Run the app,
+load `build/synthetic/synthetic_smoke.package`, export the supported formats,
+then run `scripts\check_release.ps1`.
 
 ## UI Guidelines
 
 - Keep the workspace data-table-first.
 - Make loading, disabled, hover, pressed, and focus states obvious.
 - Avoid official EA, Maxis, or The Sims artwork and branding assets.
-- Keep light and dark themes readable for long translation sessions.
+- Keep the app readable for long translation sessions.
 - Preserve keyboard shortcuts and existing workflows unless a change is planned
   and tested.
 

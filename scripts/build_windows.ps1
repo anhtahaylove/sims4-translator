@@ -10,6 +10,7 @@ $ErrorActionPreference = 'Stop'
 $RepoRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
 $BuildVenv = Join-Path $env:TEMP 'sims4-translator-build-venv'
 $BuildPrefs = Join-Path $env:TEMP 'sims4-translator-build-prefs'
+$BuildUserConfig = Join-Path $env:TEMP 'sims4-translator-build-user-config'
 $AppName = 'The Sims 4 Translator Plus'
 $ExePath = Join-Path $RepoRoot "dist\$AppName\$AppName.exe"
 $DistDir = Split-Path $ExePath
@@ -27,20 +28,8 @@ function Invoke-Step {
 Push-Location $RepoRoot
 try {
     if (-not $SkipTests) {
-        Invoke-Step 'Run unit tests' {
-            python -m unittest discover -s tests -v
-        }
-        Invoke-Step 'Compile Python sources' {
-            python -m compileall -q models packer singletons storages themes utils widgets windows tests scripts main.py
-        }
-        Invoke-Step 'Create synthetic package' {
-            python scripts\create_synthetic_package.py
-        }
-        Invoke-Step 'Verify synthetic smoke outputs' {
-            python scripts\verify_synthetic_smoke.py --directory build\synthetic --require-gui-outputs
-        }
-        Invoke-Step 'Check whitespace in diff' {
-            git diff --check
+        Invoke-Step 'Run clean-checkout fast checks' {
+            & (Join-Path $PSScriptRoot 'check_fast.ps1')
         }
     }
 
@@ -59,7 +48,7 @@ try {
 
     Invoke-Step 'Install build dependencies in temporary venv' {
         & $BuildPython -m pip install --upgrade pip
-        & $BuildPython -m pip install -r requirements.txt pyinstaller
+        & $BuildPython -m pip install -r requirements-dev.txt -c constraints.txt
     }
 
     Invoke-Step 'Prepare distributable prefs without local config' {
@@ -125,20 +114,35 @@ try {
     }
 
     Invoke-Step 'Smoke start built app' {
-        $Process = Start-Process -FilePath $ExePath -WorkingDirectory $DistDir -WindowStyle Hidden -PassThru
-        Start-Sleep -Seconds $StartupSeconds
-        if ($Process.HasExited) {
-            throw "Built app exited early with code $($Process.ExitCode)."
+        if (Test-Path $BuildUserConfig) {
+            Remove-Item -LiteralPath $BuildUserConfig -Recurse -Force
         }
-        Stop-Process -Id $Process.Id -Force
-        $GeneratedConfig = Join-Path $DistDir 'prefs\config.xml'
-        if (Test-Path $GeneratedConfig) {
-            Remove-Item -LiteralPath $GeneratedConfig -Force
+        New-Item -ItemType Directory -Force -Path $BuildUserConfig | Out-Null
+
+        $OldConfigDir = $env:SIMS4_TRANSLATOR_CONFIG_DIR
+        $env:SIMS4_TRANSLATOR_CONFIG_DIR = $BuildUserConfig
+        try {
+            $Process = Start-Process -FilePath $ExePath -WorkingDirectory $DistDir -WindowStyle Hidden -PassThru
+            Start-Sleep -Seconds $StartupSeconds
+            if ($Process.HasExited) {
+                throw "Built app exited early with code $($Process.ExitCode)."
+            }
+            Stop-Process -Id $Process.Id -Force
+        } finally {
+            $env:SIMS4_TRANSLATOR_CONFIG_DIR = $OldConfigDir
+        }
+
+        if (-not (Test-Path (Join-Path $BuildUserConfig 'config.xml'))) {
+            throw 'Built app did not create a user config in the isolated build config directory.'
+        }
+
+        if (Test-Path (Join-Path $DistDir 'prefs\config.xml')) {
+            throw 'Built app must not write prefs\config.xml beside the executable.'
         }
     }
 
-    Invoke-Step 'Verify synthetic smoke after build' {
-        python scripts\verify_synthetic_smoke.py --directory build\synthetic --require-gui-outputs
+    Invoke-Step 'Verify synthetic package-only smoke after build' {
+        python scripts\verify_synthetic_smoke.py --directory build\synthetic
     }
 
     Write-Host "Build succeeded: $ExePath"

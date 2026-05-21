@@ -118,6 +118,7 @@ class VietnameseLocaleTests(unittest.TestCase):
         cwd = os.getcwd()
         with tempfile.TemporaryDirectory() as tmpdir:
             prefs = os.path.join(tmpdir, 'prefs')
+            user_config = os.path.join(tmpdir, 'user-config')
             os.makedirs(prefs, exist_ok=True)
             migration_xml = ''
             migration_entries = []
@@ -154,7 +155,8 @@ class VietnameseLocaleTests(unittest.TestCase):
                 ''').lstrip())
             try:
                 os.chdir(tmpdir)
-                return ConfigManager()
+                with patch.dict(os.environ, {'SIMS4_TRANSLATOR_CONFIG_DIR': user_config}):
+                    return ConfigManager()
             finally:
                 os.chdir(cwd)
 

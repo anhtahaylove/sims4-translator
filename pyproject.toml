@@ -1,0 +1,9 @@
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+extend-exclude = [
+    "build",
+    "dist",
+    "graphify-out",
+    ".understand-anything",
+]

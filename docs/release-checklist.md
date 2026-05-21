@@ -66,13 +66,101 @@ Fail criteria:
 
 ## Build Verification
 
-Run the release build script from the repo root:
+Run the fast clean-checkout verification from the repo root:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_fast.ps1
+```
+
+Run the release build script:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build_windows.ps1
 ```
 
-The script should verify tests, compileall, synthetic smoke, PyInstaller output layout, startup smoke, and generated package outputs. Do not commit `build/`, `dist/`, generated `.package` files, local dictionaries, or generated `.spec` files.
+The build script must work from a clean checkout. It verifies tests, compileall,
+package-only synthetic smoke, PyInstaller output layout, and startup smoke. It
+must not require GUI export artifacts before it can build.
+
+For strict release QA after manual GUI exports exist, run:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_release.ps1 -Version 2.0.0
+```
+
+Do not commit `build/`, `dist/`, generated `.package` files, local dictionaries,
+generated `.spec` files, release ZIPs, or checksum files.
+
+## Documentation And Asset Checks
+
+- Confirm `README.md` and `README.vi.md` still describe the same core workflow.
+- Check all relative Markdown links and image paths before publishing.
+- Check English/Vietnamese screenshot parity: same feature order, localized app screenshots where available, shared diagrams where language-specific diagrams would add maintenance risk.
+- Keep evergreen download instructions pointed at the latest release instead of a hard-coded ZIP version.
+- Confirm README screenshots use generated/synthetic app data only, not official game screenshots or artwork.
+- Confirm screenshots contain no private paths, API keys, real user data, or real mod/package names that should not be public.
+- Confirm generated or AI-assisted visuals are documented in `docs/assets/readme/IMAGE-SOURCES.md`.
+- Confirm README image file sizes are reasonable for GitHub rendering.
+- Confirm the release ZIP name follows `The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip`.
+
+Example image/link check:
+
+```powershell
+@'
+from pathlib import Path
+import re
+
+files = [Path("README.md"), Path("README.vi.md"), Path("docs/README.md"), Path("docs/release-checklist.md")]
+missing = []
+for md in files:
+    text = md.read_text(encoding="utf-8")
+    for target in re.findall(r'!\[[^\]]*\]\(([^)]+)\)', text):
+        if target.startswith(("http://", "https://")):
+            continue
+        if not (md.parent / target).resolve().exists():
+            missing.append(f"{md}: {target}")
+    for target in re.findall(r'(?<!!)\[[^\]]+\]\(([^)]+)\)', text):
+        if target.startswith(("http://", "https://", "#", "mailto:")):
+            continue
+        clean = target.split("#")[0]
+        if clean and not (md.parent / clean).exists():
+            missing.append(f"{md}: {target}")
+if missing:
+    raise SystemExit("\n".join(missing))
+print("Markdown links and images OK")
+'@ | python -
+```
+
+## Release ZIP Checksums
+
+Publish a SHA256 checksum beside the Windows ZIP. After building, package the
+release artifact and checksum with:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\package_release.ps1 -Version 2.0.0 -Force
+```
+
+Maintainer example:
+
+```powershell
+Get-FileHash .\The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip -Algorithm SHA256
+```
+
+User verification example after download:
+
+```powershell
+Get-FileHash .\The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip -Algorithm SHA256
+```
+
+Compare the displayed hash with the published `.sha256` file.
+
+## CI And Release Guards
+
+- Windows CI should run `scripts\check_fast.ps1` on Python 3.12.
+- `scripts\verify_version_sync.py --version 2.0.0` should pass before tagging.
+- `scripts\verify_interface_i18n.py --language vi_VN --version 2.0.0` should pass before release packaging.
+- GitHub release assets should include the Windows ZIP and matching `.sha256`.
+- GitHub issue templates and `SECURITY.md` should remain present before public release.
 
 ## Repository Release Hygiene
 
@@ -80,3 +168,6 @@ The script should verify tests, compileall, synthetic smoke, PyInstaller output 
 - Do not use official EA, Maxis, or The Sims artwork, logos, fonts, or copied UI assets.
 - Commit only reviewed source, resource, docs, and test changes.
 - Exclude `.understand-anything/*`, `graphify-out/*`, `build/*`, and `dist/*` from release commits unless a future batch explicitly scopes those artifacts.
+- GitHub repository metadata should stay user-friendly:
+  - Description: `Vietnamese-first desktop translation studio for The Sims 4 package/STBL localization.`
+  - Topics: `sims4`, `sims-4`, `translation`, `localization`, `stbl`, `package`, `vietnamese`, `pyside6`.
