@@ -12,7 +12,6 @@ jobs:
     runs-on: windows-latest
     env:
       QT_QPA_PLATFORM: offscreen
-      SIMS4_TRANSLATOR_CONFIG_DIR: ${{ runner.temp }}\sims4-translator-config
 
     steps:
       - name: Check out repository
