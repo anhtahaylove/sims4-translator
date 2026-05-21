@@ -17,10 +17,21 @@ Mở package, dịch string, giữ an toàn token của game, kiểm tra trướ
 ## Tải Và Chạy Trong 3 Bước
 
 1. Mở [trang release mới nhất](https://github.com/anhtahaylove/sims4-translator/releases/latest).
-2. Tải `The-Sims-4-Translator-Plus-v2.0.0-windows.zip`.
+2. Tải bản ZIP cho Windows. Tên file thường có dạng `The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip`.
 3. Giải nén ZIP, rồi chạy `The Sims 4 Translator Plus.exe`.
 
 Không chạy app trực tiếp bên trong file ZIP. Hãy giải nén trước để app đọc được thư mục `prefs` và `fonts` đi kèm.
+
+Bạn cần hỗ trợ? Hãy [báo lỗi hoặc góp ý](https://github.com/anhtahaylove/sims4-translator/issues), hoặc xem [hướng dẫn đóng góp](CONTRIBUTING.md).
+
+## Yêu Cầu Hệ Thống
+
+| Yêu cầu | Ghi chú |
+| --- | --- |
+| Windows | Bản exe đóng gói hướng tới Windows 10 trở lên. |
+| Internet | Không bắt buộc. Chỉ cần khi dùng dịch online như DeepL, Google hoặc MyMemory. |
+| DeepL key | Không bắt buộc. Chỉ thêm nếu bạn muốn dùng DeepL, kiểm tra usage hoặc glossary. |
+| Chạy từ source | Người dùng source cần Python và các package trong `requirements.txt`; repo chưa pin một phiên bản Python cụ thể. |
 
 ## App Này Giúp Bạn Làm Gì?
 
@@ -62,7 +73,9 @@ Source: ENG_US
 Destination: VI_VN
 ```
 
-![Tổng quan workflow Việt hóa](docs/assets/readme/vi/workflow.png)
+![Tổng quan workflow Việt hóa](docs/assets/readme/workflow.png)
+
+_Luồng khuyến nghị để tạo package an toàn hơn trước khi đưa vào thư mục Mods._
 
 Luồng làm việc nên dùng:
 
@@ -80,6 +93,13 @@ Documents\Electronic Arts\The Sims 4\Mods
 Chỉ dùng **Finalize** khi bạn thật sự muốn ghi/finalize resource vào package. Nếu dùng workflow đó, hãy giữ backup.
 
 Nếu chuẩn bị phát hành bản Việt hóa công khai, xem thêm [docs/release-checklist.md](docs/release-checklist.md).
+
+## Lưu Ý An Toàn Và Giới Hạn
+
+- Dịch máy chỉ nên xem là bản nháp. Hãy rà soát các string quan trọng trước khi phát hành.
+- Token runtime, ký hiệu xuống dòng và tag định dạng của game cần được giữ đúng.
+- Chỉ dùng **Finalize** khi bạn thật sự hiểu workflow đó và luôn giữ backup.
+- Đây là công cụ cộng đồng, không kèm file game hoặc asset chính thức.
 
 ## Save As Package Hay Finalize?
 
@@ -100,11 +120,14 @@ String của The Sims 4 thường có những đoạn đặc biệt mà game dù
 {1.Money}
 \n
 <b>important text</b>
+...
 ```
 
 Nếu bản dịch làm mất hoặc đổi sai các đoạn này, game có thể hiện sai text hoặc bị trống UI. App sẽ highlight token và cảnh báo khi bản dịch không còn khớp với text gốc.
 
-![Ví dụ Token Safety](docs/assets/readme/vi/token-safety.png)
+![Ví dụ Token Safety](docs/assets/readme/token-safety.png)
+
+_Original giữ tiếng Anh gốc. Translation có thể là tiếng Việt, nhưng token runtime vẫn phải khớp._
 
 Nói ngắn gọn: bạn có thể dịch câu chữ cho tự nhiên, nhưng token, xuống dòng và tag định dạng phải được giữ đúng ý đồ.
 

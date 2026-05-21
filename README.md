@@ -17,10 +17,21 @@ Open a package, translate the strings, keep Sims tokens safe, validate your rele
 ## Download In 3 Steps
 
 1. Go to the [latest release](https://github.com/anhtahaylove/sims4-translator/releases/latest).
-2. Download `The-Sims-4-Translator-Plus-v2.0.0-windows.zip`.
+2. Download the Windows ZIP. The filename looks like `The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip`.
 3. Extract the ZIP, then run `The Sims 4 Translator Plus.exe`.
 
 Do not run the app from inside the ZIP. Extract it first so the app can read its bundled `prefs` and `fonts` folders.
+
+Need help? [Report a problem](https://github.com/anhtahaylove/sims4-translator/issues) or read the [contributing guide](CONTRIBUTING.md).
+
+## System Requirements
+
+| Requirement | Notes |
+| --- | --- |
+| Windows | Windows 10 or newer is the supported target for the packaged app. |
+| Internet | Optional. Needed only for online translation providers such as DeepL, Google, or MyMemory. |
+| DeepL key | Optional. Add one only if you want DeepL translation, usage checks, or glossary support. |
+| Source build | Source users need Python and the packages in `requirements.txt`; the repo does not pin an exact Python version. |
 
 ## What Can I Do With It?
 
@@ -64,6 +75,8 @@ Destination: VI_VN
 
 ![Vietnamese workflow overview](docs/assets/readme/workflow.png)
 
+_Recommended flow for a safer Mods-folder release._
+
 Recommended flow:
 
 1. Open one or more `.package` or `.stbl` files.
@@ -80,6 +93,13 @@ Documents\Electronic Arts\The Sims 4\Mods
 Use **Finalize** only when you deliberately want to rewrite or finalize package resources. Keep backups if you use that workflow.
 
 For a deeper publish checklist, see [docs/release-checklist.md](docs/release-checklist.md).
+
+## Known Limitations And Safety Notes
+
+- Machine translation is a draft. Review important strings before publishing.
+- Keep Sims runtime tokens, line breaks, and formatting tags intact.
+- Use **Finalize** deliberately and keep backups, especially when working with full game or DLC-sized packages.
+- This project is a community tool and does not include official game files or assets.
 
 ## Save As Package Or Finalize?
 
@@ -100,11 +120,14 @@ Sims strings often contain special pieces that the game reads at runtime:
 {1.Money}
 \n
 <b>important text</b>
+...
 ```
 
 If a translation removes or changes those pieces, the game can show incorrect text or blank UI. The app highlights these parts and warns you when the translation no longer matches the original.
 
 ![Token safety visual example](docs/assets/readme/token-safety.png)
+
+_Original stays in English. Translation can be Vietnamese, but runtime tokens still need to match._
 
 The important idea is simple: translate the human-readable words, but keep the runtime tokens, line breaks, and tags intentionally preserved.
 
