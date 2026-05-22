@@ -49,9 +49,9 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('python scripts\\create_synthetic_package.py', script)
         self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', script)
         self.assertNotIn('--require-gui-outputs', script)
-        self.assertIn('python scripts\\verify_version_sync.py --version 2.0.1', script)
+        self.assertIn('python scripts\\verify_version_sync.py --version 2.0.2', script)
         self.assertIn(
-            'python scripts\\verify_interface_i18n.py --language vi_VN --version 2.0.1 --strict-empty --strict-missing',
+            'python scripts\\verify_interface_i18n.py --language vi_VN --version 2.0.2 --strict-empty --strict-missing',
             script,
         )
         self.assertIn('git diff --check', script)
@@ -73,11 +73,21 @@ class BuildWindowsScriptTests(unittest.TestCase):
         workflow = Path('.github/workflows/release-build.yml').read_text(encoding='utf-8')
         self.assertIn('workflow_dispatch', workflow)
         self.assertIn("tags:", workflow)
+        self.assertIn('contents: write', workflow)
+        self.assertIn('id-token: write', workflow)
+        self.assertIn('attestations: write', workflow)
+        self.assertIn('artifact-metadata: write', workflow)
         self.assertIn('scripts\\build_windows.ps1', workflow)
         self.assertIn('scripts\\package_release.ps1', workflow)
+        self.assertIn('actions/attest@v4', workflow)
+        self.assertIn('sigstore/cosign-installer@v4.1.2', workflow)
+        self.assertIn('cosign sign-blob --yes --bundle', workflow)
+        self.assertIn('cosign verify-blob', workflow)
+        self.assertIn('gh release create', workflow)
         self.assertIn('actions/upload-artifact@v4', workflow)
         self.assertIn('The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip', workflow)
         self.assertIn('The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip.sha256', workflow)
+        self.assertIn('The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip.sigstore.json', workflow)
 
     def test_release_download_verifier_checks_public_zip_layout_and_checksum(self):
         script = Path('scripts/verify_release_download.ps1').read_text(encoding='utf-8')
@@ -85,7 +95,12 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('Invoke-WebRequest', script)
         self.assertIn('Get-FileHash', script)
         self.assertIn('Expand-Archive', script)
+        self.assertIn('[switch]$VerifyProvenance', script)
         self.assertIn('The-Sims-4-Translator-Plus-v$ReleaseVersion-windows.zip', script)
+        self.assertIn('$ZipName.sigstore.json', script)
+        self.assertIn('gh attestation verify', script)
+        self.assertIn('cosign verify-blob', script)
+        self.assertIn('--certificate-oidc-issuer', script)
         self.assertIn('prefs\\languages.xml', script)
         self.assertIn('fonts\\RobotoRegular.ttf', script)
         self.assertIn('Release ZIP must not include prefs\\config.xml', script)

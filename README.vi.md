@@ -17,7 +17,7 @@ Mở package, dịch string, giữ an toàn token của game, kiểm tra trướ
 
 ## Tải An Toàn Và Tự Kiểm Chứng
 
-Chỉ tải app từ trang [GitHub Releases chính thức](https://github.com/anhtahaylove/sims4-translator/releases/latest). Source code được public, bản Windows được kiểm tra bằng GitHub Actions, và mỗi release ZIP có file `.sha256` đi kèm.
+Chỉ tải app từ trang [GitHub Releases chính thức](https://github.com/anhtahaylove/sims4-translator/releases/latest). Source code được public, bản Windows được kiểm tra bằng GitHub Actions, và mỗi release ZIP có file `.sha256` đi kèm. Các release mới cũng có bundle `.sigstore.json` để kiểm chứng provenance.
 
 Kiểm tra nhanh trên PowerShell:
 
@@ -27,7 +27,15 @@ Get-FileHash .\The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip -Algorithm SHA256
 
 So sánh hash hiển thị với file `.sha256` trong cùng release. Nếu tải source repo, bạn cũng có thể chạy `scripts\verify_release_download.ps1 -Latest` để script tự tải, kiểm checksum, giải nén và smoke-test file ZIP release.
 
-Dành cho admin group hoặc người muốn kiểm duyệt link: kiểm tra link có trỏ về `github.com/anhtahaylove/sims4-translator`, release có cả ZIP và `.sha256`, và badge CI của `main` đang pass. Xem thêm: [Trust & Safety](docs/trust-and-safety.md).
+Nếu muốn kiểm chứng sâu hơn với bản release được build bằng GitHub Actions:
+
+```powershell
+scripts\verify_release_download.ps1 -Latest -VerifyProvenance
+```
+
+Lệnh này kiểm thêm GitHub Artifact Attestations và bundle Sigstore/cosign đi kèm release. Đây là bằng chứng provenance của artifact, không thay thế Windows Authenticode code signing.
+
+Dành cho admin group hoặc người muốn kiểm duyệt link: kiểm tra link có trỏ về `github.com/anhtahaylove/sims4-translator`, release có đủ ZIP, `.sha256`, `.sigstore.json`, và badge CI của `main` đang pass. Xem thêm: [Trust & Safety](docs/trust-and-safety.md).
 
 App Windows hiện chưa code-sign nên SmartScreen có thể cảnh báo. Cảnh báo này thường do file exe chưa có reputation, không đồng nghĩa source hoặc checksum bị sai.
 

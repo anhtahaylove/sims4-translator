@@ -2,6 +2,7 @@ param(
     [ValidatePattern('^v?\d+\.\d+\.\d+$')]
     [string]$Version = '',
     [switch]$Latest,
+    [switch]$VerifyProvenance,
     [int]$StartupSeconds = 6,
     [string]$WorkDirectory = (Join-Path $env:TEMP 'sims4-translator-release-verify')
 )
@@ -31,6 +32,17 @@ function Invoke-Step {
     & $Command
 }
 
+function Assert-Command {
+    param(
+        [string]$Name,
+        [string]$InstallHint
+    )
+
+    if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
+        throw "$Name is required for provenance verification. $InstallHint"
+    }
+}
+
 function Get-Release {
     if ($Latest) {
         return Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases/latest" -Headers $Headers
@@ -57,10 +69,12 @@ $Release = Get-Release
 $ReleaseVersion = $Release.tag_name.TrimStart('v')
 $ZipName = "The-Sims-4-Translator-Plus-v$ReleaseVersion-windows.zip"
 $ChecksumName = "$ZipName.sha256"
+$SigstoreName = "$ZipName.sigstore.json"
 $RunDir = Join-Path $WorkDirectory "v$ReleaseVersion"
 $ExtractDir = Join-Path $RunDir 'app'
 $DownloadZip = Join-Path $RunDir $ZipName
 $DownloadChecksum = Join-Path $RunDir $ChecksumName
+$DownloadSigstore = Join-Path $RunDir $SigstoreName
 
 if (Test-Path $RunDir) {
     Remove-Item -LiteralPath $RunDir -Recurse -Force
@@ -70,6 +84,9 @@ New-Item -ItemType Directory -Force -Path $RunDir | Out-Null
 Invoke-Step "Download $ZipName and checksum" {
     Invoke-WebRequest -Uri (Get-AssetUrl $Release $ZipName) -OutFile $DownloadZip -Headers $Headers
     Invoke-WebRequest -Uri (Get-AssetUrl $Release $ChecksumName) -OutFile $DownloadChecksum -Headers $Headers
+    if ($VerifyProvenance) {
+        Invoke-WebRequest -Uri (Get-AssetUrl $Release $SigstoreName) -OutFile $DownloadSigstore -Headers $Headers
+    }
 }
 
 Invoke-Step 'Verify SHA256 checksum' {
@@ -84,6 +101,28 @@ Invoke-Step 'Verify SHA256 checksum' {
         throw "Checksum mismatch. Expected $ExpectedHash, got $ActualHash"
     }
     Write-Host "SHA256 OK: $ActualHash"
+}
+
+if ($VerifyProvenance) {
+    Invoke-Step 'Verify GitHub attestation and cosign signature' {
+        Assert-Command 'gh' 'Install GitHub CLI from https://cli.github.com/ and try again.'
+        Assert-Command 'cosign' 'Install cosign from https://docs.sigstore.dev/cosign/system_config/installation/ and try again.'
+
+        & gh attestation verify $DownloadZip --repo $Repo
+        if ($LASTEXITCODE -ne 0) {
+            throw 'GitHub artifact attestation verification failed.'
+        }
+
+        $IdentityRegex = "^https://github\.com/anhtahaylove/sims4-translator/\.github/workflows/release-build\.yml@refs/tags/v$([regex]::Escape($ReleaseVersion))$"
+        & cosign verify-blob `
+            --bundle $DownloadSigstore `
+            --certificate-identity-regexp $IdentityRegex `
+            --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' `
+            $DownloadZip
+        if ($LASTEXITCODE -ne 0) {
+            throw 'cosign keyless signature verification failed.'
+        }
+    }
 }
 
 Invoke-Step 'Extract release ZIP' {

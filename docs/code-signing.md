@@ -14,6 +14,10 @@ the project is new or when the executable has low reputation.
 
 Code signing needs a real certificate owned by the maintainer. Do not commit
 private keys, PFX files, passwords, timestamp credentials, or signing tokens.
+For open-source releases, SignPath Foundation is a possible free application
+path for real Windows code signing. Sigstore/cosign and GitHub Artifact
+Attestations are useful provenance checks, but they do not make Windows show a
+Verified Publisher or remove SmartScreen reputation warnings.
 
 When a certificate is available, add signing as a separate release-only step:
 

@@ -4,12 +4,18 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Release version without the leading v, for example 2.0.1
+        description: Release version without the leading v, for example 2.0.2
         required: true
-        default: 2.0.1
+        default: 2.0.2
   push:
     tags:
       - 'v*.*.*'
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+  artifact-metadata: write
 
 jobs:
   windows-artifact:
@@ -54,6 +60,39 @@ jobs:
         shell: powershell
         run: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\package_release.ps1 -Version '${{ steps.version.outputs.version }}' -Force
 
+      - name: Generate GitHub artifact attestations
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip
+            The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip.sha256
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v4.1.2
+
+      - name: Sign ZIP with cosign keyless
+        shell: powershell
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          $ZipName = "The-Sims-4-Translator-Plus-v$env:RELEASE_VERSION-windows.zip"
+          $BundleName = "$ZipName.sigstore.json"
+          cosign sign-blob --yes --bundle $BundleName $ZipName
+
+      - name: Verify cosign signature
+        shell: powershell
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_IDENTITY: https://github.com/${{ github.repository }}/.github/workflows/release-build.yml@${{ github.ref }}
+        run: |
+          $ZipName = "The-Sims-4-Translator-Plus-v$env:RELEASE_VERSION-windows.zip"
+          $BundleName = "$ZipName.sigstore.json"
+          cosign verify-blob `
+            --bundle $BundleName `
+            --certificate-identity $env:RELEASE_IDENTITY `
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" `
+            $ZipName
+
       - name: Upload release artifact
         uses: actions/upload-artifact@v4
         with:
@@ -61,4 +100,58 @@ jobs:
           path: |
             The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip
             The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip.sha256
+            The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip.sigstore.json
           if-no-files-found: error
+
+      - name: Publish GitHub Release for tags
+        if: github.ref_type == 'tag'
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          $Tag = "v$env:RELEASE_VERSION"
+          $ZipName = "The-Sims-4-Translator-Plus-v$env:RELEASE_VERSION-windows.zip"
+          $ChecksumName = "$ZipName.sha256"
+          $BundleName = "$ZipName.sigstore.json"
+          $NotesFile = Join-Path $env:RUNNER_TEMP "release-notes-$Tag.md"
+
+          $Notes = @"
+          The Sims 4 Translator Plus $Tag
+
+          This release was built by GitHub Actions from the public repository.
+
+          Verification files:
+          - Windows ZIP: ``$ZipName``
+          - SHA256 checksum: ``$ChecksumName``
+          - Sigstore/cosign bundle: ``$BundleName``
+
+          Verify the checksum:
+          ````powershell
+          Get-FileHash .\$ZipName -Algorithm SHA256
+          ````
+
+          Verify GitHub build provenance:
+          ````powershell
+          gh attestation verify .\$ZipName --repo anhtahaylove/sims4-translator
+          ````
+
+          Verify the cosign keyless signature:
+          ````powershell
+          cosign verify-blob --bundle .\$BundleName --certificate-identity "https://github.com/anhtahaylove/sims4-translator/.github/workflows/release-build.yml@refs/tags/$Tag" --certificate-oidc-issuer "https://token.actions.githubusercontent.com" .\$ZipName
+          ````
+
+          Notes:
+          - The Windows executable is not Authenticode code-signed yet, so SmartScreen may still warn on first run.
+          - Sigstore/cosign proves release provenance; it does not replace Windows code signing.
+          - This community project is not affiliated with Electronic Arts, Maxis, or The Sims.
+          "@
+          $Notes.Trim() | Set-Content -LiteralPath $NotesFile -Encoding utf8
+
+          gh release view $Tag --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release edit $Tag --repo $env:GITHUB_REPOSITORY --title "The Sims 4 Translator Plus $Tag" --notes-file $NotesFile
+            gh release upload $Tag $ZipName $ChecksumName $BundleName --repo $env:GITHUB_REPOSITORY --clobber
+          } else {
+            gh release create $Tag $ZipName $ChecksumName $BundleName --repo $env:GITHUB_REPOSITORY --title "The Sims 4 Translator Plus $Tag" --notes-file $NotesFile
+          }

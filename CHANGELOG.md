@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 2.0.2 - 2026-05-22
+
+- Added GitHub Artifact Attestations for Windows release artifacts.
+- Added Sigstore/cosign keyless signature bundles for Windows ZIP releases.
+- Added advanced release verification guidance for checksum, provenance, and cosign verification.
+- Updated the release workflow so tagged releases are built and published by GitHub Actions.
+
 ## Version 2.0.1 - 2026-05-22
 
 - Added a Trust & Safety guide for users and community moderators.

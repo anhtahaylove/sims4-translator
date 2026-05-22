@@ -29,6 +29,7 @@ Each Windows release should include:
 
 - `The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip`
 - `The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip.sha256`
+- `The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip.sigstore.json`
 
 After downloading both files, run:
 
@@ -49,13 +50,40 @@ That script downloads the release ZIP and checksum from GitHub, verifies the
 hash, extracts to a temporary folder, checks the expected release layout, and
 starts the app briefly to confirm it does not exit immediately.
 
+## Advanced Provenance Verification
+
+Release builds created by GitHub Actions also publish GitHub Artifact
+Attestations and a Sigstore/cosign keyless signature bundle. These prove that
+the ZIP is linked to this public repository and release workflow.
+
+From a source checkout, run:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\verify_release_download.ps1 -Latest -VerifyProvenance
+```
+
+Manual verification:
+
+```powershell
+gh attestation verify .\The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip --repo anhtahaylove/sims4-translator
+```
+
+```powershell
+cosign verify-blob --bundle .\The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip.sigstore.json --certificate-identity "https://github.com/anhtahaylove/sims4-translator/.github/workflows/release-build.yml@refs/tags/vX.Y.Z" --certificate-oidc-issuer "https://token.actions.githubusercontent.com" .\The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip
+```
+
+This is not the same as Windows Authenticode code signing. It improves
+transparency and supply-chain verification, but Windows SmartScreen can still
+warn until the EXE is signed with a trusted Windows code-signing certificate.
+
 ## How Admins Can Check A Link Before Approving
 
 1. Confirm the link domain is `github.com`.
 2. Confirm the repository owner/name is `anhtahaylove/sims4-translator`.
-3. Open the release and check that both ZIP and `.sha256` assets exist.
+3. Open the release and check that ZIP, `.sha256`, and `.sigstore.json` assets exist.
 4. Check the repository Actions tab or CI badge. The latest `main` CI should be passing.
-5. Check that release notes do not ask users to disable antivirus, run unknown scripts, or download from mirrors.
+5. For newer releases, run `verify_release_download.ps1 -Latest -VerifyProvenance` from a source checkout.
+6. Check that release notes do not ask users to disable antivirus, run unknown scripts, or download from mirrors.
 
 ## Windows SmartScreen
 
@@ -63,8 +91,9 @@ The Windows executable is currently unsigned. SmartScreen can warn about new or
 unsigned apps even when the source is public and the checksum is correct. This
 project documents that status instead of pretending the app is signed.
 
-Code signing is planned only when a real maintainer-owned certificate is
-available. See [code-signing.md](code-signing.md).
+Code signing is planned only when a real maintainer-owned or open-source
+certificate path is available. SignPath Foundation is a possible free option
+for eligible open-source projects. See [code-signing.md](code-signing.md).
 
 ## Privacy Notes
 

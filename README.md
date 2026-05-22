@@ -17,7 +17,7 @@ Open a package, translate the strings, keep Sims tokens safe, validate your rele
 
 ## Safe Download And Verification
 
-Only download the app from the official [GitHub Releases](https://github.com/anhtahaylove/sims4-translator/releases/latest) page. The source code is public, Windows builds are checked by GitHub Actions, and each release ZIP includes a matching `.sha256` checksum.
+Only download the app from the official [GitHub Releases](https://github.com/anhtahaylove/sims4-translator/releases/latest) page. The source code is public, Windows builds are checked by GitHub Actions, and each release ZIP includes a matching `.sha256` checksum. Newer releases also include a `.sigstore.json` bundle for provenance verification.
 
 Quick verification:
 
@@ -27,7 +27,15 @@ Get-FileHash .\The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip -Algorithm SHA256
 
 Compare the displayed hash with the `.sha256` file attached to the same release. You can also run `scripts\verify_release_download.ps1 -Latest` from the source checkout to download, verify, extract, and smoke-test the release ZIP.
 
-For group admins or cautious users: check that the link points to `github.com/anhtahaylove/sims4-translator`, the release has a ZIP plus `.sha256`, and the latest `main` CI badge is passing. More details: [Trust & Safety](docs/trust-and-safety.md).
+Advanced verification is available for release builds created by GitHub Actions:
+
+```powershell
+scripts\verify_release_download.ps1 -Latest -VerifyProvenance
+```
+
+This additionally checks GitHub Artifact Attestations and the Sigstore/cosign bundle attached to the release. These signatures prove release provenance; they do not replace Windows Authenticode code signing.
+
+For group admins or cautious users: check that the link points to `github.com/anhtahaylove/sims4-translator`, the release has ZIP, `.sha256`, and `.sigstore.json` assets, and the latest `main` CI badge is passing. More details: [Trust & Safety](docs/trust-and-safety.md).
 
 The Windows app is not code-signed yet, so SmartScreen may show a warning. That warning means the executable has low reputation, not that the source or checksum failed.
 
