@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 2.0.1 - 2026-05-22
+
+- Added a Trust & Safety guide for users and community moderators.
+- Added release download verification guidance and a PowerShell verification script.
+- Added a GitHub Actions release-artifact workflow for clean-runner Windows ZIP builds.
+- Added redacted local app logging under the user data directory.
+- Completed Vietnamese interface catalog coverage for the current UI.
+
 ## Version 2.0.0 - 2026-05-21
 
 - Rebuilt the public app as a Vietnamese-first Translation Studio for package and STBL localization.

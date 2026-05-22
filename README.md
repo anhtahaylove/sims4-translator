@@ -1,6 +1,7 @@
 # The Sims 4 Translator Plus
 
 [![Latest release](https://img.shields.io/github/v/release/anhtahaylove/sims4-translator?sort=semver&label=Download)](https://github.com/anhtahaylove/sims4-translator/releases/latest)
+[![CI](https://github.com/anhtahaylove/sims4-translator/actions/workflows/ci.yml/badge.svg)](https://github.com/anhtahaylove/sims4-translator/actions/workflows/ci.yml)
 [![Windows](https://img.shields.io/badge/Windows-10%2B-6ee85c)](https://github.com/anhtahaylove/sims4-translator/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-2f855a.svg)](LICENSE)
 
@@ -8,11 +9,27 @@
 
 Open a package, translate the strings, keep Sims tokens safe, validate your release, and export a clean package for testing in Mods.
 
-[Tiếng Việt](README.vi.md) · [Download for Windows](https://github.com/anhtahaylove/sims4-translator/releases/latest) · [Docs](docs/README.md) · [Release checklist](docs/release-checklist.md)
+[Tiếng Việt](README.vi.md) · [Download for Windows](https://github.com/anhtahaylove/sims4-translator/releases/latest) · [Trust & Safety](docs/trust-and-safety.md) · [Docs](docs/README.md) · [Release checklist](docs/release-checklist.md)
 
 > Community project notice: this app is not affiliated with Electronic Arts, Maxis, The Sims, or the original upstream maintainer. It does not include official game artwork, logos, fonts, or assets.
 
 ![The Sims 4 Translator Plus banner](docs/assets/readme/hero.png)
+
+## Safe Download And Verification
+
+Only download the app from the official [GitHub Releases](https://github.com/anhtahaylove/sims4-translator/releases/latest) page. The source code is public, Windows builds are checked by GitHub Actions, and each release ZIP includes a matching `.sha256` checksum.
+
+Quick verification:
+
+```powershell
+Get-FileHash .\The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip -Algorithm SHA256
+```
+
+Compare the displayed hash with the `.sha256` file attached to the same release. You can also run `scripts\verify_release_download.ps1 -Latest` from the source checkout to download, verify, extract, and smoke-test the release ZIP.
+
+For group admins or cautious users: check that the link points to `github.com/anhtahaylove/sims4-translator`, the release has a ZIP plus `.sha256`, and the latest `main` CI badge is passing. More details: [Trust & Safety](docs/trust-and-safety.md).
+
+The Windows app is not code-signed yet, so SmartScreen may show a warning. That warning means the executable has low reputation, not that the source or checksum failed.
 
 ## Download In 3 Steps
 

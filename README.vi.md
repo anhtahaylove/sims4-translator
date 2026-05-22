@@ -1,6 +1,7 @@
 # The Sims 4 Translator Plus
 
 [![Bản phát hành mới nhất](https://img.shields.io/github/v/release/anhtahaylove/sims4-translator?sort=semver&label=T%E1%BA%A3i%20v%E1%BB%81)](https://github.com/anhtahaylove/sims4-translator/releases/latest)
+[![CI](https://github.com/anhtahaylove/sims4-translator/actions/workflows/ci.yml/badge.svg)](https://github.com/anhtahaylove/sims4-translator/actions/workflows/ci.yml)
 [![Windows](https://img.shields.io/badge/Windows-10%2B-6ee85c)](https://github.com/anhtahaylove/sims4-translator/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-2f855a.svg)](LICENSE)
 
@@ -8,11 +9,27 @@
 
 Mở package, dịch string, giữ an toàn token của game, kiểm tra trước khi xuất bản, rồi tạo package để test trong thư mục Mods.
 
-[English](README.md) · [Tải bản Windows](https://github.com/anhtahaylove/sims4-translator/releases/latest) · [Docs](docs/README.md) · [Checklist phát hành](docs/release-checklist.md)
+[English](README.md) · [Tải bản Windows](https://github.com/anhtahaylove/sims4-translator/releases/latest) · [Trust & Safety](docs/trust-and-safety.md) · [Docs](docs/README.md) · [Checklist phát hành](docs/release-checklist.md)
 
 > Lưu ý cộng đồng: ứng dụng này không liên kết chính thức với Electronic Arts, Maxis, The Sims hoặc maintainer upstream ban đầu. Repo không chứa artwork, logo, font hoặc asset chính thức của game.
 
 ![Banner The Sims 4 Translator Plus](docs/assets/readme/hero.png)
+
+## Tải An Toàn Và Tự Kiểm Chứng
+
+Chỉ tải app từ trang [GitHub Releases chính thức](https://github.com/anhtahaylove/sims4-translator/releases/latest). Source code được public, bản Windows được kiểm tra bằng GitHub Actions, và mỗi release ZIP có file `.sha256` đi kèm.
+
+Kiểm tra nhanh trên PowerShell:
+
+```powershell
+Get-FileHash .\The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip -Algorithm SHA256
+```
+
+So sánh hash hiển thị với file `.sha256` trong cùng release. Nếu tải source repo, bạn cũng có thể chạy `scripts\verify_release_download.ps1 -Latest` để script tự tải, kiểm checksum, giải nén và smoke-test file ZIP release.
+
+Dành cho admin group hoặc người muốn kiểm duyệt link: kiểm tra link có trỏ về `github.com/anhtahaylove/sims4-translator`, release có cả ZIP và `.sha256`, và badge CI của `main` đang pass. Xem thêm: [Trust & Safety](docs/trust-and-safety.md).
+
+App Windows hiện chưa code-sign nên SmartScreen có thể cảnh báo. Cảnh báo này thường do file exe chưa có reputation, không đồng nghĩa source hoặc checksum bị sai.
 
 ## Tải Và Chạy Trong 3 Bước
 

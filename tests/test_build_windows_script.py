@@ -49,9 +49,9 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('python scripts\\create_synthetic_package.py', script)
         self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', script)
         self.assertNotIn('--require-gui-outputs', script)
-        self.assertIn('python scripts\\verify_version_sync.py --version 2.0.0', script)
+        self.assertIn('python scripts\\verify_version_sync.py --version 2.0.1', script)
         self.assertIn(
-            'python scripts\\verify_interface_i18n.py --language vi_VN --version 2.0.0 --strict-empty --strict-missing',
+            'python scripts\\verify_interface_i18n.py --language vi_VN --version 2.0.1 --strict-empty --strict-missing',
             script,
         )
         self.assertIn('git diff --check', script)
@@ -78,6 +78,18 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('actions/upload-artifact@v4', workflow)
         self.assertIn('The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip', workflow)
         self.assertIn('The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip.sha256', workflow)
+
+    def test_release_download_verifier_checks_public_zip_layout_and_checksum(self):
+        script = Path('scripts/verify_release_download.ps1').read_text(encoding='utf-8')
+        self.assertIn('Invoke-RestMethod', script)
+        self.assertIn('Invoke-WebRequest', script)
+        self.assertIn('Get-FileHash', script)
+        self.assertIn('Expand-Archive', script)
+        self.assertIn('The-Sims-4-Translator-Plus-v$ReleaseVersion-windows.zip', script)
+        self.assertIn('prefs\\languages.xml', script)
+        self.assertIn('fonts\\RobotoRegular.ttf', script)
+        self.assertIn('Release ZIP must not include prefs\\config.xml', script)
+        self.assertIn('SIMS4_TRANSLATOR_CONFIG_DIR', script)
 
 
 if __name__ == '__main__':

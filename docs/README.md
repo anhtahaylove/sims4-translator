@@ -8,6 +8,7 @@ Use this index when the README is not enough and you need the right guide quickl
 | --- | --- |
 | [English README](../README.md) | Download, screenshots, basic workflow, DeepL setup, troubleshooting. |
 | [README tiếng Việt](../README.vi.md) | Hướng dẫn sử dụng bằng tiếng Việt cho workflow `ENG_US -> VI_VN`. |
+| [Trust & Safety](trust-and-safety.md) | Verify official downloads, checksums, CI status, privacy, and SmartScreen notes. |
 | [Vietnamese release checklist](release-checklist.md) | Safe package publishing, validation, large-package QA, release checks. |
 
 ## Release Maintainers
@@ -15,6 +16,7 @@ Use this index when the README is not enough and you need the right guide quickl
 | Page | Use it for |
 | --- | --- |
 | [Release checklist](release-checklist.md) | Final QA before publishing a Vietnamese package or Windows build. |
+| [Trust & Safety](trust-and-safety.md) | Public verification steps for users and community moderators. |
 | [Code signing notes](code-signing.md) | Current unsigned ZIP behavior and the safe path for future certificate-based signing. |
 | [Changelog](../CHANGELOG.md) | Release history and version-specific notes. |
 | [Notices and attribution](../NOTICE.md) | Non-affiliation, licenses, fonts, and upstream credit. |
