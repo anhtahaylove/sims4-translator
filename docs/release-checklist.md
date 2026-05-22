@@ -175,6 +175,22 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\verify_release_downl
 For public user and moderator-facing verification guidance, keep
 [trust-and-safety.md](trust-and-safety.md) linked from the README files.
 
+## Antivirus False-Positive Review
+
+If a release is flagged by a small number of static or ML antivirus engines,
+prepare evidence before contacting vendors:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.0.2
+```
+
+Attach or paste the generated `vendor-submission-template.txt` content into
+vendor review forms. Do not upload the local evidence folder to git, and do not
+store VirusTotal API keys in the repo.
+
+See [false-positive-submissions.md](false-positive-submissions.md) for wording,
+vendor notes, and what not to claim.
+
 ## Windows Signing
 
 The executable is currently unsigned, so Windows SmartScreen may warn users on

@@ -95,6 +95,34 @@ Code signing is planned only when a real maintainer-owned or open-source
 certificate path is available. SignPath Foundation is a possible free option
 for eligible open-source projects. See [code-signing.md](code-signing.md).
 
+## Antivirus / VirusTotal Results
+
+Some antivirus engines use static ML or heuristic rules that can flag unsigned
+PyInstaller apps even when most engines report no detection. Treat those results
+as review signals, not as proof either way.
+
+The project provides evidence for users, moderators, and vendors to review:
+
+- Public source code in this repository.
+- GitHub Actions release builds.
+- SHA256 checksums for release ZIPs.
+- GitHub Artifact Attestations and Sigstore/cosign provenance bundles.
+- `collect_false_positive_evidence.ps1` for vendor review evidence.
+- `check_virustotal_release.ps1` for checking the current ZIP and extracted
+  EXE hashes without storing API keys in the repo.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.0.2
+```
+
+```powershell
+$env:VT_API_KEY = "<your VirusTotal API key>"
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.0.2
+```
+
+For vendor review templates and false-positive submission notes, see
+[false-positive-submissions.md](false-positive-submissions.md).
+
 ## Privacy Notes
 
 - DeepL keys are stored in local user config, not in the release ZIP.
@@ -111,6 +139,7 @@ lời giới thiệu.
 - Mỗi bản Windows nên có cả file ZIP và file `.sha256`.
 - Người dùng có thể kiểm checksum bằng PowerShell.
 - Source code public nên cộng đồng có thể xem app làm gì.
+- Nếu VirusTotal chỉ có một vài engine heuristic/ML báo, hãy xem [false-positive-submissions.md](false-positive-submissions.md) để lấy evidence pack và template gửi vendor.
 - App chưa code-sign, nên SmartScreen có thể cảnh báo. Đây là hạn chế minh bạch hiện tại, không phải bằng chứng rằng file có mã độc.
 
 Nếu một bài đăng dùng link rút gọn, mirror lạ, file ZIP không có checksum, hoặc

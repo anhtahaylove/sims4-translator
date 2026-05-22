@@ -38,6 +38,7 @@ Lệnh này kiểm thêm GitHub Artifact Attestations và bundle Sigstore/cosign
 Dành cho admin group hoặc người muốn kiểm duyệt link: kiểm tra link có trỏ về `github.com/anhtahaylove/sims4-translator`, release có đủ ZIP, `.sha256`, `.sigstore.json`, và badge CI của `main` đang pass. Xem thêm: [Trust & Safety](docs/trust-and-safety.md).
 
 App Windows hiện chưa code-sign nên SmartScreen có thể cảnh báo. Cảnh báo này thường do file exe chưa có reputation, không đồng nghĩa source hoặc checksum bị sai.
+Một số engine antivirus cũng có thể flag app PyInstaller chưa ký bằng heuristic hoặc ML; hãy xem source, checksum, GitHub attestation, bundle Sigstore/cosign và [ghi chú false-positive](docs/false-positive-submissions.md) trước khi quyết định chạy app.
 
 ## Tải Và Chạy Trong 3 Bước
 

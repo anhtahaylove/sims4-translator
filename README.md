@@ -38,6 +38,7 @@ This additionally checks GitHub Artifact Attestations and the Sigstore/cosign bu
 For group admins or cautious users: check that the link points to `github.com/anhtahaylove/sims4-translator`, the release has ZIP, `.sha256`, and `.sigstore.json` assets, and the latest `main` CI badge is passing. More details: [Trust & Safety](docs/trust-and-safety.md).
 
 The Windows app is not code-signed yet, so SmartScreen may show a warning. That warning means the executable has low reputation, not that the source or checksum failed.
+Some antivirus engines may also flag unsigned PyInstaller apps with static or ML heuristics; see the source, checksum, GitHub attestation, Sigstore/cosign bundle, and [false-positive review notes](docs/false-positive-submissions.md) before deciding whether to run it.
 
 ## Download In 3 Steps
 

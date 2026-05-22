@@ -17,6 +17,7 @@ Use this index when the README is not enough and you need the right guide quickl
 | --- | --- |
 | [Release checklist](release-checklist.md) | Final QA before publishing a Vietnamese package or Windows build. |
 | [Trust & Safety](trust-and-safety.md) | Public verification steps for users and community moderators. |
+| [False-positive submissions](false-positive-submissions.md) | Evidence pack and vendor templates for antivirus heuristic reviews. |
 | [Code signing notes](code-signing.md) | Current unsigned ZIP behavior and the safe path for future certificate-based signing. |
 | [Changelog](../CHANGELOG.md) | Release history and version-specific notes. |
 | [Notices and attribution](../NOTICE.md) | Non-affiliation, licenses, fonts, and upstream credit. |

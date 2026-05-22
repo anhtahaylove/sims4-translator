@@ -19,6 +19,21 @@ path for real Windows code signing. Sigstore/cosign and GitHub Artifact
 Attestations are useful provenance checks, but they do not make Windows show a
 Verified Publisher or remove SmartScreen reputation warnings.
 
+## SignPath Foundation Checklist
+
+Use this only when the project is ready to apply for real open-source Windows
+code signing:
+
+1. Confirm the repository is public and has a clear license.
+2. Confirm release builds are created by GitHub Actions from tagged source.
+3. Keep ZIP, `.sha256`, and `.sigstore.json` release assets published.
+4. Prepare maintainer identity/project information requested by SignPath.
+5. Add signing only after a certificate/signing policy is approved.
+6. Update README and release notes only after the EXE is actually Authenticode signed.
+
+Until then, describe releases as checksum-verified and provenance-verifiable,
+not as signed.
+
 When a certificate is available, add signing as a separate release-only step:
 
 ```powershell

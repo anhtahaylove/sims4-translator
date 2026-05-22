@@ -7,6 +7,7 @@ Please report security issues privately before opening a public issue.
 - Use GitHub Security Advisories if available for this repository.
 - If advisories are not available, open a minimal issue asking for a private contact path without sharing exploit details.
 - For download verification, checksum checks, privacy notes, and moderator guidance, see [docs/trust-and-safety.md](docs/trust-and-safety.md).
+- For antivirus false-positive evidence and vendor review templates, see [docs/false-positive-submissions.md](docs/false-positive-submissions.md).
 
 ## Sensitive Data
 

@@ -106,6 +106,45 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('Release ZIP must not include prefs\\config.xml', script)
         self.assertIn('SIMS4_TRANSLATOR_CONFIG_DIR', script)
 
+    def test_false_positive_evidence_script_collects_verifiable_release_data(self):
+        script = Path('scripts/collect_false_positive_evidence.ps1').read_text(encoding='utf-8')
+        self.assertIn('verify_release_download.ps1', script)
+        self.assertIn('-VerifyProvenance', script)
+        self.assertIn('Get-FileHash', script)
+        self.assertIn('vendor-submission-template.txt', script)
+        self.assertIn('GitHub Artifact Attestation', script)
+        self.assertIn('Sigstore/cosign', script)
+        self.assertIn('This pack does not upload files', script)
+        self.assertIn('false-positive-evidence', script)
+        self.assertNotIn('VT_API_KEY', script)
+        self.assertNotIn('/api/v3/files', script)
+
+    def test_virustotal_release_checker_reads_api_key_from_environment(self):
+        script = Path('scripts/check_virustotal_release.ps1').read_text(encoding='utf-8')
+        self.assertIn("[string]$ApiKeyEnvName = 'VT_API_KEY'", script)
+        self.assertIn('GetEnvironmentVariable($ApiKeyEnvName', script)
+        self.assertIn('https://www.virustotal.com/api/v3/files/$Sha256/analyse', script)
+        self.assertIn('https://www.virustotal.com/api/v3/analyses/', script)
+        self.assertIn('https://www.virustotal.com/api/v3/files/$($Target.sha256)', script)
+        self.assertIn('New-Object System.Collections.ArrayList', script)
+        self.assertIn('Continuing with the latest available report', script)
+        self.assertIn('Trim([char]0xFEFF)', script)
+        self.assertIn('virustotal-report.json', script)
+        self.assertIn('virustotal-report.txt', script)
+        self.assertNotIn('PASTE_KEY_HERE', script)
+
+    def test_false_positive_docs_are_linked_from_public_trust_surfaces(self):
+        doc = Path('docs/false-positive-submissions.md').read_text(encoding='utf-8')
+        trust = Path('docs/trust-and-safety.md').read_text(encoding='utf-8')
+        readme = Path('README.md').read_text(encoding='utf-8')
+        readme_vi = Path('README.vi.md').read_text(encoding='utf-8')
+
+        self.assertIn('VirusTotal false-positive guidance', doc)
+        self.assertIn('SecureAge false-positive form', doc)
+        self.assertIn('false-positive-submissions.md', trust)
+        self.assertIn('false-positive review notes', readme)
+        self.assertIn('ghi chú false-positive', readme_vi)
+
 
 if __name__ == '__main__':
     unittest.main()
