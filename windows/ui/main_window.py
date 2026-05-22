@@ -470,9 +470,20 @@ class Ui_MainWindow(object):
         self.empty_detail = QLabel('Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.', self.empty_state)
         self.empty_detail.setObjectName('panelHint')
         self.empty_detail.setWordWrap(True)
+        self.empty_flow = QLabel('Open package -> Translate -> Validate Release -> Save as package', self.empty_state)
+        self.empty_flow.setObjectName('emptyFlow')
+        self.empty_flow.setWordWrap(True)
+        self.empty_open_button = QPushButton('Open package', self.empty_state)
+        self.empty_open_button.setObjectName('primaryButton')
+        self.empty_open_button.setIcon(QIcon(':/images/load.png'))
+        self.empty_open_button.setIconSize(QSize(20, 20))
+        self.empty_open_button.setAutoDefault(False)
+        self.empty_open_button.setMinimumWidth(140)
 
         self.empty_layout.addWidget(self.empty_title)
         self.empty_layout.addWidget(self.empty_detail)
+        self.empty_layout.addWidget(self.empty_flow)
+        self.empty_layout.addWidget(self.empty_open_button, 0, Qt.AlignmentFlag.AlignLeft)
 
         self.selection_bar = self.__selection_bar(panel)
 

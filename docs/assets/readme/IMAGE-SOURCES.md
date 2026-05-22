@@ -16,6 +16,7 @@ These images are screenshots of The Sims 4 Translator Plus using synthetic or de
 | `vi/workspace.png` | Vietnamese README workspace section | Vietnamese UI screenshot using demo translation data. |
 | `vi/editor.png` | Vietnamese README editor section | Vietnamese UI screenshot. Original source text remains English; translation text is Vietnamese. |
 | `vi/validate-release.png` | Vietnamese README validation section | Vietnamese UI screenshot showing localized validation labels and synthetic/demo issue data. |
+| `demo-workflow.webp` | English and Vietnamese README quick demo section | Short animated WebP assembled from README screenshots and diagrams using synthetic/demo data. It is documentation media, not a game screenshot. |
 
 ## Generated Diagrams
 

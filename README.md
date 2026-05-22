@@ -50,6 +50,12 @@ Do not run the app from inside the ZIP. Extract it first so the app can read its
 
 Need help? [Report a problem](https://github.com/anhtahaylove/sims4-translator/issues) or read the [contributing guide](CONTRIBUTING.md).
 
+## 5-Step Demo
+
+Open a package, choose a string, edit it in Translation Studio, check token warnings, then validate and save a package for Mods-folder testing.
+
+![Short workflow demo](docs/assets/readme/demo-workflow.webp)
+
 ## System Requirements
 
 | Requirement | Notes |

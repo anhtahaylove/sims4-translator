@@ -139,6 +139,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_colorbar.setChecked(config.value('view', 'colorbar'))
         self.action_activity_dock.triggered.connect(self.__activity_toggled)
         self.action_activity_dock.setChecked(config.value('view', 'activity_visible') is not False)
+        self.empty_open_button.clicked.connect(self.action_load_file.trigger)
 
         self.action_options.triggered.connect(self.options)
         self.action_group_original.triggered.connect(self.group_original)
@@ -323,6 +324,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             'MainWindow',
             'Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.'
         ))
+        self.empty_flow.setText(interface.text(
+            'MainWindow',
+            'Open package -> Translate -> Validate Release -> Save as package'
+        ))
+        self.empty_open_button.setText(interface.text('MainWindow', 'Open package'))
         self.inspector_apply.setText(interface.text('MainWindow', 'Approve'))
         self.inspector_reset.setText(interface.text('MainWindow', 'Reset'))
         self.inspector_edit.setText(interface.text('MainWindow', 'Open Editor'))

@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import tempfile
 import unittest
 import textwrap
+import xml.etree.ElementTree as ElementTree
+from pathlib import Path
 from unittest.mock import patch
 
 from packer.resource import ResourceID
@@ -60,6 +63,26 @@ class VietnameseLocaleTests(unittest.TestCase):
     def test_default_translation_pair_is_english_to_vietnamese(self):
         self.assertEqual(ConfigManager.DEFAULTS['translation']['source'], 'ENG_US')
         self.assertEqual(ConfigManager.DEFAULTS['translation']['destination'], 'VI_VN')
+
+    def test_vietnamese_interface_has_no_mojibake_or_question_mark_fallbacks(self):
+        root = ElementTree.parse(Path('prefs/interface/vietnamese.xml')).getroot()
+        bad_translations = []
+        for context in root.findall('context'):
+            context_name = context.get('name') or ''
+            for item in context.findall('string'):
+                translation = item.findtext('translation') or ''
+                if '\ufffd' in translation:
+                    bad_translations.append((context_name, item.findtext('source') or '', translation))
+                    continue
+                if '?' in translation:
+                    stripped = translation.strip()
+                    if stripped.count('?') > 1 or not stripped.endswith('?'):
+                        bad_translations.append((context_name, item.findtext('source') or '', translation))
+                        continue
+                    if re.search(r'\?{2,}|[A-Za-zÀ-ỹĐđ]\?[A-Za-zÀ-ỹĐđ]', translation):
+                        bad_translations.append((context_name, item.findtext('source') or '', translation))
+
+        self.assertEqual([], bad_translations)
 
     def test_legacy_english_to_french_default_migrates_to_vietnamese_once(self):
         manager = self.__config_from_xml('ENG_US', 'FRE_FR')

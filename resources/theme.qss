@@ -350,6 +350,15 @@ QToolBar::separator {
     padding: 12px;
 }
 
+#emptyFlow {
+    color: __ACCENT_HOVER__;
+    background: __SURFACE__;
+    border: 1px solid __BORDER_FOCUS__;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-weight: 600;
+}
+
 #projectSummary {
     background: __PANEL_ALT__;
     border: 1px solid __BORDER_LIGHT__;

@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.0.3 - 2026-05-22
+
+- Added a clearer first-run onboarding flow in the empty workspace.
+- Polished Vietnamese interface wording and added a guard against mojibake regressions.
+- Added a short Vietnamese quick-start flow and README demo visual for public sharing.
+
 ## Version 2.0.2 - 2026-05-22
 
 - Added GitHub Artifact Attestations for Windows release artifacts.

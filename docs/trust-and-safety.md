@@ -112,12 +112,12 @@ The project provides evidence for users, moderators, and vendors to review:
   EXE hashes without storing API keys in the repo.
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.0.2
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Latest
 ```
 
 ```powershell
 $env:VT_API_KEY = "<your VirusTotal API key>"
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.0.2
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Latest
 ```
 
 For vendor review templates and false-positive submission notes, see

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="vi_VN" name="Vietnamese" version="2.0.2" authors="Community">
+<ts language="vi_VN" name="Vietnamese" version="2.0.3" authors="Community">
   <context name="MainWindow">
     <string>
       <source>File</source>
@@ -198,6 +198,14 @@
       <translation>Mở .package, .stbl, XML, JSON, Binary hoặc package smoke synthetic.</translation>
     </string>
     <string>
+      <source>Open package -&gt; Translate -&gt; Validate Release -&gt; Save as package</source>
+      <translation>Mở package -&gt; Dịch -&gt; Kiểm tra phát hành -&gt; Save as package</translation>
+    </string>
+    <string>
+      <source>Open package</source>
+      <translation>Mở package</translation>
+    </string>
+    <string>
       <source>Approve</source>
       <translation>Phê duyệt</translation>
     </string>
@@ -319,39 +327,39 @@
     </string>
     <string>
       <source>Close</source>
-      <translation>??ng</translation>
+      <translation>Đóng</translation>
     </string>
     <string>
       <source>Search and replace...</source>
-      <translation>T?m v? thay th?...</translation>
+      <translation>Tìm và thay thế...</translation>
     </string>
     <string>
       <source>Validate all translations</source>
-      <translation>Duy?t t?t c? b?n d?ch</translation>
+      <translation>Phê duyệt tất cả bản dịch</translation>
     </string>
     <string>
       <source>Reset all translations</source>
-      <translation>??t l?i t?t c? b?n d?ch</translation>
+      <translation>Đặt lại tất cả bản dịch</translation>
     </string>
     <string>
       <source>Exit</source>
-      <translation>Tho?t</translation>
+      <translation>Thoát</translation>
     </string>
     <string>
       <source>Undo</source>
-      <translation>Ho?n t?c</translation>
+      <translation>Hoàn tác</translation>
     </string>
     <string>
       <source>About Qt...</source>
-      <translation>Gi?i thi?u Qt...</translation>
+      <translation>Giới thiệu Qt...</translation>
     </string>
     <string>
       <source>To XML...</source>
-      <translation>Xu?t XML...</translation>
+      <translation>Xuất XML...</translation>
     </string>
     <string>
       <source>Translate from dictionaries</source>
-      <translation>D?ch t? t? ?i?n</translation>
+      <translation>Dịch từ từ điển</translation>
     </string>
     <string>
       <source>Finalize package</source>
@@ -359,95 +367,95 @@
     </string>
     <string>
       <source>Finalize package as...</source>
-      <translation>Finalize package th?nh...</translation>
+      <translation>Finalize package thành...</translation>
     </string>
     <string>
       <source>To XML (Deaderpool's STBL editor)...</source>
-      <translation>Xu?t XML (STBL Editor c?a Deaderpool)...</translation>
+      <translation>Xuất XML (STBL Editor của Deaderpool)...</translation>
     </string>
     <string>
       <source>To JSON (Sims 4 Studio format)...</source>
-      <translation>Xu?t JSON (??nh d?ng Sims 4 Studio)...</translation>
+      <translation>Xuất JSON (định dạng Sims 4 Studio)...</translation>
     </string>
     <string>
       <source>To Binary (Sims 4 Studio format)...</source>
-      <translation>Xu?t Binary (??nh d?ng Sims 4 Studio)...</translation>
+      <translation>Xuất Binary (định dạng Sims 4 Studio)...</translation>
     </string>
     <string>
       <source>Use original group</source>
-      <translation>D?ng group g?c</translation>
+      <translation>Dùng group gốc</translation>
     </string>
     <string>
       <source>Use high-bit</source>
-      <translation>D?ng high-bit</translation>
+      <translation>Dùng high-bit</translation>
     </string>
     <string>
       <source>To STBL...</source>
-      <translation>Xu?t STBL...</translation>
+      <translation>Xuất STBL...</translation>
     </string>
     <string>
       <source>Use low-bit</source>
-      <translation>D?ng low-bit</translation>
+      <translation>Dùng low-bit</translation>
     </string>
     <string>
       <source>Edit String</source>
-      <translation>S?a string</translation>
+      <translation>Sửa string</translation>
     </string>
     <string>
       <source>Validate as [translated]</source>
-      <translation>Duy?t l? [?? d?ch]</translation>
+      <translation>Đánh dấu là [đã dịch]</translation>
     </string>
     <string>
       <source>Validate as [work in progress]</source>
-      <translation>??nh d?u l? [?ang x? l?]</translation>
+      <translation>Đánh dấu là [đang xử lý]</translation>
     </string>
     <string>
       <source>Cancel translation</source>
-      <translation>H?y d?ch</translation>
+      <translation>Hủy dịch</translation>
     </string>
     <string>
       <source>Copy</source>
-      <translation>Sao ch?p</translation>
+      <translation>Sao chép</translation>
     </string>
     <string>
       <source>Paste</source>
-      <translation>D?n</translation>
+      <translation>Dán</translation>
     </string>
     <string>
       <source>Remove record</source>
-      <translation>X?a b?n ghi</translation>
+      <translation>Xóa bản ghi</translation>
     </string>
     <string>
       <source>Save bundle...</source>
-      <translation>L?u bundle...</translation>
+      <translation>Lưu bundle...</translation>
     </string>
     <string>
       <source>Load bundle...</source>
-      <translation>M? bundle...</translation>
+      <translation>Mở bundle...</translation>
     </string>
     <string>
       <source>Numeration</source>
-      <translation>??nh s?</translation>
+      <translation>Đánh số</translation>
     </string>
     <string>
       <source>Standart</source>
-      <translation>Ti?u chu?n</translation>
+      <translation>Tiêu chuẩn</translation>
     </string>
     <string>
       <source>From the source file</source>
-      <translation>Theo t?p ngu?n</translation>
+      <translation>Theo tệp nguồn</translation>
     </string>
     <string>
       <source>XML format</source>
-      <translation>??nh d?ng XML</translation>
+      <translation>Định dạng XML</translation>
     </string>
     <string>
       <source>XML format (Deaderpool's STBL editor)</source>
-      <translation>??nh d?ng XML (STBL Editor c?a Deaderpool)</translation>
+      <translation>Định dạng XML (STBL Editor của Deaderpool)</translation>
     </string>
     <string>
       <source>Color visualization</source>
-      <translation>Tr?c quan h?a m?u s?c</translation>
+      <translation>Trực quan hóa màu sắc</translation>
     </string>
   </context>
   <context name="OptionsDialog">
@@ -573,15 +581,15 @@
     </string>
     <string>
       <source>NOT FOUND</source>
-      <translation>KH?NG T?M TH?Y</translation>
+      <translation>KHÔNG TÌM THẤY</translation>
     </string>
     <string>
       <source>{} not exist</source>
-      <translation>{} kh?ng t?n t?i</translation>
+      <translation>{} không tồn tại</translation>
     </string>
     <string>
       <source>FOUND</source>
-      <translation>?? T?M TH?Y</translation>
+      <translation>ĐÃ TÌM THẤY</translation>
     </string>
     <string>
       <source>BASE GAME</source>
@@ -593,15 +601,15 @@
     </string>
     <string>
       <source>Create backup package before finalization</source>
-      <translation>T?o package backup tr??c khi Finalize</translation>
+      <translation>Tạo package backup trước khi Finalize</translation>
     </string>
     <string>
       <source>Saving translation without conflicts (experemental)</source>
-      <translation>L?u b?n d?ch tr?nh conflict (th? nghi?m)</translation>
+      <translation>Lưu bản dịch tránh conflict (thử nghiệm)</translation>
     </string>
     <string>
       <source>Do not use automatic translation from other dictionaries</source>
-      <translation>Kh?ng t? l?y b?n d?ch t? t? ?i?n kh?c</translation>
+      <translation>Không tự lấy bản dịch từ từ điển khác</translation>
     </string>
     <string>
       <source>Theme</source>
@@ -609,15 +617,15 @@
     </string>
     <string>
       <source>Light</source>
-      <translation>S?ng</translation>
+      <translation>Sáng</translation>
     </string>
     <string>
       <source>Dark</source>
-      <translation>T?i</translation>
+      <translation>Tối</translation>
     </string>
     <string>
       <source>The application needs to be restarted</source>
-      <translation>C?n kh?i ??ng l?i ?ng d?ng</translation>
+      <translation>Cần khởi động lại ứng dụng</translation>
     </string>
   </context>
   <context name="EditWindow">
@@ -715,7 +723,7 @@
     </string>
     <string>
       <source>OK (Ctrl+Enter)</source>
-      <translation>??ng ? (Ctrl+Enter)</translation>
+      <translation>Đồng ý (Ctrl+Enter)</translation>
     </string>
   </context>
   <context name="Status">
@@ -1075,23 +1083,23 @@
     </string>
     <string>
       <source>Everything but untranslated strings</source>
-      <translation>T?t c? tr? chu?i ch?a d?ch</translation>
+      <translation>Tất cả trừ chuỗi chưa dịch</translation>
     </string>
     <string>
       <source>Only selected instance</source>
-      <translation>Ch? instance ?? ch?n</translation>
+      <translation>Chỉ instance đã chọn</translation>
     </string>
     <string>
       <source>Each instance as a separate file</source>
-      <translation>M?i instance th?nh m?t t?p ri?ng</translation>
+      <translation>Mỗi instance thành một tệp riêng</translation>
     </string>
     <string>
       <source>Each package as a separate file</source>
-      <translation>M?i package th?nh m?t t?p ri?ng</translation>
+      <translation>Mỗi package thành một tệp riêng</translation>
     </string>
     <string>
       <source>Exported records</source>
-      <translation>B?n ghi xu?t</translation>
+      <translation>Bản ghi xuất</translation>
     </string>
   </context>
   <context name="TranslateDialog">
@@ -1117,15 +1125,15 @@
     </string>
     <string>
       <source>Everything but already validated strings</source>
-      <translation>Tất cả trừ chuỗi đã phê duyệt</translation>
+      <translation>Tất cả trừ string đã duyệt</translation>
     </string>
     <string>
       <source>Everything but already validated and partial strings</source>
-      <translation>Tất cả trừ chuỗi đã phê duyệt và chuỗi một phần</translation>
+      <translation>Tất cả trừ string đã duyệt và string một phần</translation>
     </string>
     <string>
       <source>Partial strings</source>
-      <translation>Chuỗi một phần</translation>
+      <translation>String một phần</translation>
     </string>
     <string>
       <source>Selection only</source>
@@ -1425,19 +1433,19 @@ Sau batch này: khoảng {after:,} ký tự ({percent:.1f}%).</translation>
     </string>
     <string>
       <source>Saving package {}...</source>
-      <translation>?ang l?u package {}...</translation>
+      <translation>Đang lưu package {}...</translation>
     </string>
     <string>
       <source>Exporting translate...</source>
-      <translation>?ang xu?t b?n d?ch...</translation>
+      <translation>Đang xuất bản dịch...</translation>
     </string>
     <string>
       <source>Importing translate...</source>
-      <translation>?ang nh?p b?n d?ch...</translation>
+      <translation>Đang nhập bản dịch...</translation>
     </string>
     <string>
       <source>All files</source>
-      <translation>T?t c? t?p</translation>
+      <translation>Tất cả tệp</translation>
     </string>
     <string>
       <source>Packages</source>
@@ -1445,27 +1453,27 @@ Sau batch này: khoảng {after:,} ký tự ({percent:.1f}%).</translation>
     </string>
     <string>
       <source>STBL files</source>
-      <translation>T?p STBL</translation>
+      <translation>Tệp STBL</translation>
     </string>
     <string>
       <source>XML files</source>
-      <translation>T?p XML</translation>
+      <translation>Tệp XML</translation>
     </string>
     <string>
       <source>JSON files</source>
-      <translation>T?p JSON</translation>
+      <translation>Tệp JSON</translation>
     </string>
     <string>
       <source>Binary files</source>
-      <translation>T?p Binary</translation>
+      <translation>Tệp Binary</translation>
     </string>
     <string>
       <source>Opening file {}...</source>
-      <translation>?ang m? t?p {}...</translation>
+      <translation>Đang mở tệp {}...</translation>
     </string>
     <string>
       <source>Stopping translate, waiting for the finish of the threads...</source>
-      <translation>?ang d?ng d?ch, ch? c?c lu?ng ho?n t?t...</translation>
+      <translation>Đang dừng dịch, chờ các luồng hoàn tất...</translation>
     </string>
   </context>
   <context name="ToolBar">
@@ -1483,35 +1491,35 @@ Sau batch này: khoảng {after:,} ký tự ({percent:.1f}%).</translation>
     </string>
     <string>
       <source>Search in translation</source>
-      <translation>T?m trong b?n d?ch</translation>
+      <translation>Tìm trong bản dịch</translation>
     </string>
     <string>
       <source>Search in ID</source>
-      <translation>T?m trong ID</translation>
+      <translation>Tìm trong ID</translation>
     </string>
     <string>
       <source>Search in original</source>
-      <translation>T?m trong b?n g?c</translation>
+      <translation>Tìm trong bản gốc</translation>
     </string>
     <string>
       <source>Translated</source>
-      <translation>?? d?ch</translation>
+      <translation>Đã dịch</translation>
     </string>
     <string>
       <source>Not translated</source>
-      <translation>Ch?a d?ch</translation>
+      <translation>Chưa dịch</translation>
     </string>
     <string>
       <source>Validated translation</source>
-      <translation>B?n d?ch ?? duy?t</translation>
+      <translation>Bản dịch đã duyệt</translation>
     </string>
     <string>
       <source>Partial translation</source>
-      <translation>B?n d?ch m?t ph?n</translation>
+      <translation>Bản dịch một phần</translation>
     </string>
     <string>
       <source>Different strings</source>
-      <translation>String kh?c nhau</translation>
+      <translation>String khác nhau</translation>
     </string>
   </context>
   <context name="MainTableView">
@@ -1533,7 +1541,7 @@ Sau batch này: khoảng {after:,} ký tự ({percent:.1f}%).</translation>
     </string>
     <string>
       <source>Translated</source>
-      <translation>Bản dịch</translation>
+      <translation>Đã dịch</translation>
     </string>
     <string>
       <source>Comment</source>
@@ -1551,93 +1559,93 @@ Sau batch này: khoảng {after:,} ký tự ({percent:.1f}%).</translation>
   <context name="Messages">
     <string>
       <source>Save dictionary for modified packages?</source>
-      <translation>L?u t? ?i?n cho c?c package ?? ch?nh s?a?</translation>
+      <translation>Lưu từ điển cho các package đã chỉnh sửa?</translation>
     </string>
     <string>
       <source>Are you sure you want to delete the selected records?</source>
-      <translation>B?n c? ch?c mu?n x?a c?c b?n ghi ?? ch?n kh?ng?</translation>
+      <translation>Bạn có chắc muốn xóa các bản ghi đã chọn?</translation>
     </string>
     <string>
       <source>Not found text records in this file!</source>
-      <translation>Kh?ng t?m th?y b?n ghi text trong t?p n?y!</translation>
+      <translation>Không tìm thấy bản ghi text trong tệp này!</translation>
     </string>
     <string>
       <source>Not found text records in this files!</source>
-      <translation>Kh?ng t?m th?y b?n ghi text trong c?c t?p n?y!</translation>
+      <translation>Không tìm thấy bản ghi text trong các tệp này!</translation>
     </string>
     <string>
       <source>Not found text records in following files:</source>
-      <translation>Kh?ng t?m th?y b?n ghi text trong c?c t?p sau:</translation>
+      <translation>Không tìm thấy bản ghi text trong các tệp sau:</translation>
     </string>
     <string>
       <source>Translation completed with {} successes.
 
 Errors:
 {}</source>
-      <translation>D?ch xong v?i {} m?c th?nh c?ng.
+      <translation>Dịch xong với {} mục thành công.
 
-L?i:
+Lỗi:
 {}</translation>
     </string>
     <string>
       <source>... and {} other errors</source>
-      <translation>... v? {} l?i kh?c</translation>
+      <translation>... và {} lỗi khác</translation>
     </string>
   </context>
   <context name="Errors">
     <string>
       <source>Language code not found!</source>
-      <translation>Kh?ng t?m th?y m? ng?n ng?!</translation>
+      <translation>Không tìm thấy mã ngôn ngữ!</translation>
     </string>
     <string>
       <source>Translation failed with error code: {}</source>
-      <translation>D?ch th?t b?i v?i m? l?i: {}</translation>
+      <translation>Dịch thất bại với mã lỗi: {}</translation>
     </string>
     <string>
       <source>Invalid API key.</source>
-      <translation>API key kh?ng h?p l?.</translation>
+      <translation>API key không hợp lệ.</translation>
     </string>
     <string>
       <source>Your quota has exceeded!</source>
-      <translation>B?n ?? v??t qu? quota!</translation>
+      <translation>Bạn đã vượt quá quota!</translation>
     </string>
     <string>
       <source>There was a temporary problem with the DeepL Service.</source>
-      <translation>DeepL ?ang g?p s? c? t?m th?i.</translation>
+      <translation>DeepL đang gặp sự cố tạm thời.</translation>
     </string>
   </context>
   <context name="ReplaceDialog">
     <string>
       <source>Search and replace</source>
-      <translation>T?m v? thay th?</translation>
+      <translation>Tìm và thay thế</translation>
     </string>
     <string>
       <source>Case sensitive</source>
-      <translation>Ph?n bi?t hoa th??ng</translation>
+      <translation>Phân biệt hoa thường</translation>
     </string>
     <string>
       <source>Search</source>
-      <translation>T?m ki?m</translation>
+      <translation>Tìm kiếm</translation>
     </string>
     <string>
       <source>Replace</source>
-      <translation>Thay th?</translation>
+      <translation>Thay thế</translation>
     </string>
     <string>
       <source>Search and replace in:</source>
-      <translation>T?m v? thay th? trong:</translation>
+      <translation>Tìm và thay thế trong:</translation>
     </string>
     <string>
       <source>All strings</source>
-      <translation>T?t c? string</translation>
+      <translation>Tất cả string</translation>
     </string>
     <string>
       <source>Not validated strings</source>
-      <translation>String ch?a duy?t</translation>
+      <translation>String chưa duyệt</translation>
     </string>
     <string>
       <source>Cancel</source>
-      <translation>H?y</translation>
+      <translation>Hủy</translation>
     </string>
     <string>
       <source>OK</source>
@@ -1647,69 +1655,69 @@ L?i:
   <context name="ImportDialog">
     <string>
       <source>Import translate</source>
-      <translation>Nh?p b?n d?ch</translation>
+      <translation>Nhập bản dịch</translation>
     </string>
     <string>
       <source>Overwrite</source>
-      <translation>Ghi ??</translation>
+      <translation>Ghi đè</translation>
     </string>
     <string>
       <source>Everything</source>
-      <translation>T?t c?</translation>
+      <translation>Tất cả</translation>
     </string>
     <string>
       <source>Everything but already validated strings</source>
-      <translation>T?t c? tr? string ?? duy?t</translation>
+      <translation>Tất cả trừ string đã duyệt</translation>
     </string>
     <string>
       <source>Everything but already validated and partial strings</source>
-      <translation>T?t c? tr? string ?? duy?t v? string m?t ph?n</translation>
+      <translation>Tất cả trừ string đã duyệt và string một phần</translation>
     </string>
     <string>
       <source>Partial strings</source>
-      <translation>String m?t ph?n</translation>
+      <translation>String một phần</translation>
     </string>
     <string>
       <source>Selection only</source>
-      <translation>Ch? m?c ?? ch?n</translation>
+      <translation>Chỉ mục đã chọn</translation>
     </string>
     <string>
       <source>Replace existing translation</source>
-      <translation>Thay b?n d?ch hi?n c?</translation>
+      <translation>Thay bản dịch hiện có</translation>
     </string>
     <string>
       <source>Import</source>
-      <translation>Nh?p</translation>
+      <translation>Nhập</translation>
     </string>
     <string>
       <source>Cancel</source>
-      <translation>H?y</translation>
+      <translation>Hủy</translation>
     </string>
   </context>
   <context name="TextEditor">
     <string>
       <source>Undo</source>
-      <translation>Ho?n t?c</translation>
+      <translation>Hoàn tác</translation>
     </string>
     <string>
       <source>Redo</source>
-      <translation>L?m l?i</translation>
+      <translation>Làm lại</translation>
     </string>
     <string>
       <source>Cut</source>
-      <translation>C?t</translation>
+      <translation>Cắt</translation>
     </string>
     <string>
       <source>Copy</source>
-      <translation>Sao ch?p</translation>
+      <translation>Sao chép</translation>
     </string>
     <string>
       <source>Paste</source>
-      <translation>D?n</translation>
+      <translation>Dán</translation>
     </string>
     <string>
       <source>Select All</source>
-      <translation>Ch?n t?t c?</translation>
+      <translation>Chọn tất cả</translation>
     </string>
   </context>
 </ts>
