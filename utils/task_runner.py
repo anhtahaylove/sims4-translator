@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from itertools import count
 from threading import Event
+import traceback
 from typing import Any, Callable
 
 from PySide6.QtCore import QCoreApplication, QObject, QRunnable, QThreadPool, QTimer, Signal
@@ -19,6 +20,7 @@ class TaskProgress:
 class TaskError:
     message: str
     exception_type: str
+    details: str = ''
 
 
 class TaskRunnerSignals(QObject):
@@ -117,7 +119,13 @@ class TaskRunnable(QRunnable):
         except CancelledTask:
             self.__handle.finished.emit(True)
         except Exception as exc:
-            self.__handle.error.emit(TaskError(str(exc), type(exc).__name__))
+            self.__handle.error.emit(
+                TaskError(
+                    str(exc),
+                    type(exc).__name__,
+                    ''.join(traceback.format_exception(type(exc), exc, exc.__traceback__)),
+                )
+            )
             self.__handle.finished.emit(False)
 
 

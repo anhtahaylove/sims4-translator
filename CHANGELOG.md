@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.0.5 - 2026-05-25
+
+- Added a user-friendly crash dialog with copyable, redacted diagnostics.
+- Added traceback details to background task errors for better bug reports.
+- Added conservative PyInstaller excludes and optional pre-commit contributor checks.
+
 ## Version 2.0.4 - 2026-05-25
 
 - Fixed startup resource lookup so bundled fonts load correctly outside the repository working directory.

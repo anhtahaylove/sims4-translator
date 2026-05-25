@@ -18,6 +18,13 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('resources\\logo.ico', self.script)
         self.assertIn('The Sims 4 Translator Plus', self.script)
 
+    def test_build_script_uses_conservative_pyinstaller_excludes_without_upx(self):
+        self.assertIn('--noupx', self.script)
+        self.assertNotIn('--upx-dir', self.script)
+        self.assertNotIn('--upx ', self.script)
+        for module in ('tkinter', 'unittest', 'pytest', 'IPython', 'notebook', 'matplotlib'):
+            self.assertIn(f'--exclude-module {module}', self.script)
+
     def test_build_script_excludes_local_user_config_from_release(self):
         self.assertIn("Prepare distributable prefs without local config", self.script)
         self.assertIn("Build prefs bundle must not include local prefs\\config.xml", self.script)
@@ -49,9 +56,9 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('python scripts\\create_synthetic_package.py', script)
         self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', script)
         self.assertNotIn('--require-gui-outputs', script)
-        self.assertIn('python scripts\\verify_version_sync.py --version 2.0.4', script)
+        self.assertIn('python scripts\\verify_version_sync.py --version 2.0.5', script)
         self.assertIn(
-            'python scripts\\verify_interface_i18n.py --language vi_VN --version 2.0.4 --strict-empty --strict-missing',
+            'python scripts\\verify_interface_i18n.py --language vi_VN --version 2.0.5 --strict-empty --strict-missing',
             script,
         )
         self.assertIn('git diff --check', script)
@@ -144,6 +151,12 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('false-positive-submissions.md', trust)
         self.assertIn('false-positive review notes', readme)
         self.assertIn('ghi chú false-positive', readme_vi)
+
+    def test_optional_pre_commit_config_runs_focused_checks(self):
+        config = Path('.pre-commit-config.yaml').read_text(encoding='utf-8')
+        self.assertIn('trailing-whitespace', config)
+        self.assertIn('end-of-file-fixer', config)
+        self.assertIn('python -m ruff check . --select E9,F63,F7,F82', config)
 
 
 if __name__ == '__main__':

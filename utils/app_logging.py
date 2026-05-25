@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import sys
+import traceback
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
@@ -23,6 +24,8 @@ API_KEY_PATTERNS = (
 
 
 _signals_attached = False
+_handling_excepthook = False
+HEADLESS_QT_PLATFORMS = {'minimal', 'offscreen'}
 
 
 class RedactingFormatter(logging.Formatter):
@@ -87,7 +90,8 @@ def setup_app_logging(log_dir: Path | str | None = None, reset: bool = False) ->
         logger.addHandler(handler)
 
     _attach_signals(logger)
-    sys.excepthook = _build_excepthook(logger, sys.excepthook)
+    previous = getattr(sys.excepthook, '_sims4_previous_excepthook', sys.excepthook)
+    sys.excepthook = _build_excepthook(logger, previous)
     logger.info('%s logging started', APP_NAME)
     return logger
 
@@ -97,23 +101,103 @@ def _attach_signals(logger: logging.Logger) -> None:
     if _signals_attached:
         return
     window_signals.log.connect(lambda message: logger.info('Activity: %s', redact_sensitive(message)))
-    task_runner_signals.error.connect(
-        lambda handle, error: logger.error(
-            'Background task failed: %s: %s: %s',
-            getattr(handle, 'name', 'Task'),
-            getattr(error, 'exception_type', 'Error'),
-            redact_sensitive(getattr(error, 'message', '')),
-        )
-    )
+    task_runner_signals.error.connect(lambda handle, error: _log_task_error(logger, handle, error))
     _signals_attached = True
+
+
+def _log_task_error(logger: logging.Logger, handle, error) -> None:
+    name = getattr(handle, 'name', 'Task')
+    exception_type = getattr(error, 'exception_type', 'Error')
+    message = getattr(error, 'message', '')
+    details = getattr(error, 'details', '')
+
+    if details:
+        logger.error(
+            'Background task failed: %s: %s: %s\n%s',
+            name,
+            exception_type,
+            message,
+            details,
+        )
+        return
+
+    logger.error(
+        'Background task failed: %s: %s: %s',
+        name,
+        exception_type,
+        message,
+    )
 
 
 def _build_excepthook(logger: logging.Logger, previous):
     def excepthook(exc_type, exc_value, exc_traceback):
-        logger.exception(
-            'Unhandled exception',
-            exc_info=(exc_type, exc_value, exc_traceback),
-        )
-        if previous and previous is not excepthook:
-            previous(exc_type, exc_value, exc_traceback)
+        global _handling_excepthook
+
+        details = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+        if _handling_excepthook:
+            _call_previous_excepthook(previous, excepthook, exc_type, exc_value, exc_traceback)
+            return
+
+        _handling_excepthook = True
+        try:
+            logger.error('Unhandled exception\n%s', details)
+            _show_crash_dialog(details)
+        except Exception:
+            logger.exception('Unhandled exception handler failed')
+        finally:
+            _handling_excepthook = False
+
+        _call_previous_excepthook(previous, excepthook, exc_type, exc_value, exc_traceback)
+
+    excepthook._sims4_previous_excepthook = previous
     return excepthook
+
+
+def _call_previous_excepthook(previous, current, exc_type, exc_value, exc_traceback) -> None:
+    if previous and previous is not current:
+        previous(exc_type, exc_value, exc_traceback)
+
+
+def _show_crash_dialog(details: str) -> None:
+    if not _crash_dialog_available():
+        return
+
+    from PySide6.QtWidgets import QApplication
+
+    redacted_details = redact_sensitive(details)
+    dialog, copy_button = _build_crash_dialog(redacted_details)
+    dialog.exec()
+
+    if dialog.clickedButton() is copy_button:
+        QApplication.clipboard().setText(redacted_details)
+
+
+def _crash_dialog_available() -> bool:
+    if os.environ.get('QT_QPA_PLATFORM', '').lower() in HEADLESS_QT_PLATFORMS:
+        return False
+
+    try:
+        from PySide6.QtWidgets import QApplication
+    except Exception:
+        return False
+
+    app = QApplication.instance()
+    return isinstance(app, QApplication)
+
+
+def _build_crash_dialog(details: str):
+    from PySide6.QtWidgets import QMessageBox
+
+    dialog = QMessageBox()
+    dialog.setIcon(QMessageBox.Icon.Critical)
+    dialog.setWindowTitle(f'{APP_NAME} Error')
+    dialog.setText('The app hit an unexpected error.')
+    dialog.setInformativeText(
+        'The details were written to the app log. Copy the error details when reporting this issue.'
+    )
+    dialog.setDetailedText(details)
+    copy_button = dialog.addButton('Copy Error', QMessageBox.ButtonRole.ActionRole)
+    dialog.addButton(QMessageBox.StandardButton.Close)
+    dialog.setDefaultButton(QMessageBox.StandardButton.Close)
+    dialog.setEscapeButton(QMessageBox.StandardButton.Close)
+    return dialog, copy_button

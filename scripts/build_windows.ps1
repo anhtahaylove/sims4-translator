@@ -71,9 +71,16 @@ try {
             --noconfirm `
             --clean `
             --windowed `
+            --noupx `
             --contents-directory . `
             --name $AppName `
             --icon resources\logo.ico `
+            --exclude-module tkinter `
+            --exclude-module unittest `
+            --exclude-module pytest `
+            --exclude-module IPython `
+            --exclude-module notebook `
+            --exclude-module matplotlib `
             --add-data "$BuildPrefs;prefs" `
             --add-data 'fonts;fonts' `
             main.py

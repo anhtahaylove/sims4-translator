@@ -95,14 +95,14 @@ must not require GUI export artifacts before it can build.
 For strict release QA after manual GUI exports exist, run:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_release.ps1 -Version 2.0.4
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_release.ps1 -Version 2.0.5
 ```
 
 Do not commit `build/`, `dist/`, generated `.package` files, local dictionaries,
 generated `.spec` files, release ZIPs, or checksum files.
 
 GitHub Actions can also build release artifacts from a clean runner. Use the
-`Release Build` workflow manually with a version such as `2.0.4`, or push a
+`Release Build` workflow manually with a version such as `2.0.5`, or push a
 `vX.Y.Z` tag. The workflow uploads the Windows ZIP, `.sha256`, and
 `.sigstore.json` as workflow artifacts. For tags, it also publishes those
 assets to the matching GitHub Release.
@@ -153,7 +153,7 @@ Publish a SHA256 checksum beside the Windows ZIP. After building, package the
 release artifact and checksum with:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\package_release.ps1 -Version 2.0.4 -Force
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\package_release.ps1 -Version 2.0.5 -Force
 ```
 
 Maintainer example:
@@ -191,7 +191,7 @@ If a release is flagged by a small number of static or ML antivirus engines,
 prepare evidence before contacting vendors:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.0.4
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.0.5
 ```
 
 Attach or paste the generated `vendor-submission-template.txt` content into
@@ -216,8 +216,8 @@ handling rules.
 - Windows CI should run `scripts\check_fast.ps1` on Python 3.12.
 - The `Release Build` workflow should produce a ZIP and `.sha256` artifact from a clean runner.
 - The `Release Build` workflow should generate GitHub Artifact Attestations and a cosign `.sigstore.json` bundle.
-- `scripts\verify_version_sync.py --version 2.0.4` should pass before tagging.
-- `scripts\verify_interface_i18n.py --language vi_VN --version 2.0.4` should pass before release packaging.
+- `scripts\verify_version_sync.py --version 2.0.5` should pass before tagging.
+- `scripts\verify_interface_i18n.py --language vi_VN --version 2.0.5` should pass before release packaging.
 - GitHub release assets should include the Windows ZIP, matching `.sha256`, and matching `.sigstore.json`.
 - GitHub issue templates and `SECURITY.md` should remain present before public release.
 

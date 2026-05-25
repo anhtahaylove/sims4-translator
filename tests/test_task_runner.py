@@ -92,6 +92,26 @@ class TaskRunnerTests(unittest.TestCase):
         self.assertEqual(results, ['fast'])
         self.assertEqual(finished, [False])
 
+    def test_error_result_includes_traceback_details_without_breaking_message_contract(self):
+        runner = TaskRunner(max_threads=1)
+        errors = []
+        finished = []
+
+        def work(_token, _reporter):
+            raise RuntimeError('disk full')
+
+        handle = runner.start(work, job_name='Failing job')
+        handle.error.connect(errors.append)
+        handle.finished.connect(finished.append)
+
+        self.wait_for(handle)
+
+        self.assertEqual(finished, [False])
+        self.assertEqual(errors[0].message, 'disk full')
+        self.assertEqual(errors[0].exception_type, 'RuntimeError')
+        self.assertIn('Traceback', errors[0].details)
+        self.assertIn('RuntimeError: disk full', errors[0].details)
+
 
 if __name__ == '__main__':
     unittest.main()

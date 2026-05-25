@@ -39,9 +39,21 @@ python -m unittest discover -s tests -v
 python -m compileall -q models packer singletons storages themes utils widgets windows tests scripts main.py
 python scripts\create_synthetic_package.py
 python scripts\verify_synthetic_smoke.py --directory build\synthetic
-python scripts\verify_version_sync.py --version 2.0.4
+python scripts\verify_version_sync.py --version 2.0.5
 git diff --check
 ```
+
+Optional local pre-commit hooks are available for contributors who want faster
+feedback before committing:
+
+```powershell
+python -m pip install pre-commit
+pre-commit install
+pre-commit run --all-files
+```
+
+These hooks are a convenience layer only. `scripts\check_fast.ps1` and the
+release checks remain the source of truth before pushing or tagging a release.
 
 Strict GUI export verification belongs to release preparation. Run the app,
 load `build/synthetic/synthetic_smoke.package`, export the supported formats,
