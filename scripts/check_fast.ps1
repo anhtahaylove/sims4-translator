@@ -47,11 +47,11 @@ try {
     }
 
     Invoke-Step 'Verify version references' {
-        python scripts\verify_version_sync.py --version 2.2.5
+        python scripts\verify_version_sync.py --version 2.2.6
     }
 
     Invoke-Step 'Verify Vietnamese interface coverage' {
-        python scripts\verify_interface_i18n.py --language vi_VN --version 2.2.5 --strict-empty --strict-missing
+        python scripts\verify_interface_i18n.py --language vi_VN --version 2.2.6 --strict-empty --strict-missing
     }
 
     Invoke-Step 'Check Markdown links and images' {

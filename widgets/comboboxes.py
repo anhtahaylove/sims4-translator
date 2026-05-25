@@ -18,6 +18,7 @@ class SearchableModelComboBox(NoWheelComboBox):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._popup_visible_before_text_click = False
         self.setEditable(True)
         self.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
         completer = QCompleter(self.model(), self)
@@ -52,11 +53,19 @@ class SearchableModelComboBox(NoWheelComboBox):
         if self.count() > 0 and not self.view().isVisible():
             self.showPopup()
 
+    def toggle_model_popup_from_text_click(self):
+        if self._popup_visible_before_text_click:
+            self.hidePopup()
+        else:
+            self.open_model_popup()
+
     def eventFilter(self, watched, event):
         if watched is self.lineEdit():
             if event.type() == QEvent.Type.FocusIn:
                 if getattr(event, 'reason', lambda: None)() != Qt.FocusReason.MouseFocusReason:
                     QTimer.singleShot(0, self.open_model_popup)
+            elif event.type() == QEvent.Type.MouseButtonPress:
+                self._popup_visible_before_text_click = self.view().isVisible()
             elif event.type() == QEvent.Type.MouseButtonRelease:
-                QTimer.singleShot(0, self.open_model_popup)
+                QTimer.singleShot(0, self.toggle_model_popup_from_text_click)
         return super().eventFilter(watched, event)

@@ -1802,6 +1802,14 @@ class WorkspaceProShellTests(unittest.TestCase):
                 open_popup.assert_not_called()
                 app().processEvents()
                 open_popup.assert_called_once()
+
+            with patch.object(model.view(), 'isVisible', return_value=True):
+                with patch.object(model, 'hidePopup') as hide_popup:
+                    self.assertFalse(model.eventFilter(model.lineEdit(), QEvent(QEvent.Type.MouseButtonPress)))
+                    self.assertFalse(model.eventFilter(model.lineEdit(), QEvent(QEvent.Type.MouseButtonRelease)))
+                    hide_popup.assert_not_called()
+                    app().processEvents()
+                    hide_popup.assert_called_once()
         finally:
             close_widget(standard)
             close_widget(model)

@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.2.6 - 2026-05-25
+
+- Made searchable model dropdown text-field clicks fully toggle the popup, matching the arrow button behavior.
+
 ## Version 2.2.5 - 2026-05-25
 
 - Fixed searchable model dropdowns closing immediately when users clicked inside the editable text field.
