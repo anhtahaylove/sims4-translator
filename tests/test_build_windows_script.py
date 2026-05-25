@@ -91,10 +91,22 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('cosign sign-blob --yes --bundle', workflow)
         self.assertIn('cosign verify-blob', workflow)
         self.assertIn('gh release create', workflow)
-        self.assertIn('actions/upload-artifact@v4', workflow)
+        self.assertIn('runs-on: windows-2025-vs2026', workflow)
+        self.assertIn('actions/checkout@v6', workflow)
+        self.assertIn('actions/setup-python@v6', workflow)
+        self.assertIn('actions/upload-artifact@v7', workflow)
         self.assertIn('The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip', workflow)
         self.assertIn('The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip.sha256', workflow)
         self.assertIn('The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip.sigstore.json', workflow)
+
+    def test_ci_workflow_uses_node24_actions_and_explicit_windows_runner(self):
+        workflow = Path('.github/workflows/ci.yml').read_text(encoding='utf-8')
+        self.assertIn('runs-on: windows-2025-vs2026', workflow)
+        self.assertIn('actions/checkout@v6', workflow)
+        self.assertIn('actions/setup-python@v6', workflow)
+        self.assertNotIn('windows-latest', workflow)
+        self.assertNotIn('actions/checkout@v4', workflow)
+        self.assertNotIn('actions/setup-python@v5', workflow)
 
     def test_release_download_verifier_checks_public_zip_layout_and_checksum(self):
         script = Path('scripts/verify_release_download.ps1').read_text(encoding='utf-8')
@@ -138,6 +150,19 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('Trim([char]0xFEFF)', script)
         self.assertIn('virustotal-report.json', script)
         self.assertIn('virustotal-report.txt', script)
+        self.assertNotIn('PASTE_KEY_HERE', script)
+
+    def test_ai_provider_smoke_script_keeps_provider_keys_local(self):
+        script = Path('scripts/check_ai_providers.ps1').read_text(encoding='utf-8')
+        self.assertIn('Import-DotEnv', script)
+        self.assertIn('GEMINI_API_KEY', script)
+        self.assertIn('GOOGLE_API_KEY', script)
+        self.assertIn('OPENAI_API_KEY', script)
+        self.assertIn('OPENAI_BASE_URL', script)
+        self.assertIn('OPENAI_MODEL', script)
+        self.assertIn('redact_sensitive', script)
+        self.assertIn('It does not save keys', script)
+        self.assertNotIn('config.save()', script)
         self.assertNotIn('PASTE_KEY_HERE', script)
 
     def test_false_positive_docs_are_linked_from_public_trust_surfaces(self):
