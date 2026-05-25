@@ -459,36 +459,9 @@ class Ui_MainWindow(object):
 
         self.workspace_overview_layout.addWidget(self.filter_panel, 1)
 
-        self.empty_state = QFrame(panel)
-        self.empty_state.setObjectName('emptyState')
-        self.empty_layout = QVBoxLayout(self.empty_state)
-        self.empty_layout.setContentsMargins(16, 14, 16, 14)
-        self.empty_layout.setSpacing(3)
-
-        self.empty_title = QLabel('Ready for a package', self.empty_state)
-        self.empty_title.setObjectName('emptyTitle')
-        self.empty_detail = QLabel('Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.', self.empty_state)
-        self.empty_detail.setObjectName('panelHint')
-        self.empty_detail.setWordWrap(True)
-        self.empty_flow = QLabel('Open package -> Translate -> Validate Release -> Save as package', self.empty_state)
-        self.empty_flow.setObjectName('emptyFlow')
-        self.empty_flow.setWordWrap(True)
-        self.empty_open_button = QPushButton('Open package', self.empty_state)
-        self.empty_open_button.setObjectName('primaryButton')
-        self.empty_open_button.setIcon(QIcon(':/images/load.png'))
-        self.empty_open_button.setIconSize(QSize(20, 20))
-        self.empty_open_button.setAutoDefault(False)
-        self.empty_open_button.setMinimumWidth(140)
-
-        self.empty_layout.addWidget(self.empty_title)
-        self.empty_layout.addWidget(self.empty_detail)
-        self.empty_layout.addWidget(self.empty_flow)
-        self.empty_layout.addWidget(self.empty_open_button, 0, Qt.AlignmentFlag.AlignLeft)
-
         self.selection_bar = self.__selection_bar(panel)
 
         self.table_panel_layout.addWidget(self.workspace_overview)
-        self.table_panel_layout.addWidget(self.empty_state)
         self.table_panel_layout.addWidget(self.selection_bar)
         self.table_panel_layout.addWidget(self.colorbar)
         self.table_panel_layout.addWidget(self.tableview, 1)

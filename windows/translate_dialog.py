@@ -21,6 +21,7 @@ from singletons.translation_cache import translation_cache
 from singletons.translator import ai_character_cap, deepl_usage, estimate_ai_characters, estimate_deepl_characters, translator
 from singletons.undo import undo
 from utils.task_runner import CancellationToken, TaskReporter, TaskRunner
+from utils.provider_engines import refresh_engine_combo
 from utils.functions import text_to_stbl, text_to_edit
 from utils.constants import *
 
@@ -192,11 +193,8 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         self.refresh_api_list()
 
     def refresh_api_list(self):
-        engine = config.value('api', 'engine')
-        self.cb_api.clear()
-        self.cb_api.addItems(translator.engines)
-        engine_index = self.cb_api.findText(engine)
-        self.cb_api.setCurrentIndex(engine_index if engine_index >= 0 else 0)
+        refresh_engine_combo(self.cb_api)
+        self.check_api()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:

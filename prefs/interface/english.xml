@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ts language="en_US" name="English" version="2.2.1" authors="">
+<ts language="en_US" name="English" version="2.2.2" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -478,6 +478,70 @@ Errors:
     </string>
     <string>
       <source>Translation providers</source>
+      <translation/>
+    </string>
+    <string>
+      <source>OpenAI-compatible</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama local</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Batch AI limits</source>
+      <translation/>
+    </string>
+    <string>
+      <source>API key</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Glossary ID</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Model</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Base URL</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Session confirm at</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Daily confirm at</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Test</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Usage</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Configured providers appear in Batch Translate and Translation Studio. Changes are saved automatically.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Checking {provider}...</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Checking DeepL...</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama is ready and enabled.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama is ready but disabled. Enable it to show Ollama in translation lists.</source>
       <translation/>
     </string>
     <string>

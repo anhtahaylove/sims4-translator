@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.2.2 - 2026-05-25
+
+- Split Options provider settings into separate DeepL, Gemini, OpenAI-compatible, Ollama, and AI limit cards.
+- Moved provider test buttons to background tasks with short Options-only timeouts so busy local providers no longer freeze the dialog.
+- Refreshed Batch Translate and Translation Studio provider lists after Options changes and removed the large empty workspace onboarding panel.
+
 ## Version 2.2.1 - 2026-05-25
 
 - Added guided Ollama setup in Options, including local executable/server/model detection.

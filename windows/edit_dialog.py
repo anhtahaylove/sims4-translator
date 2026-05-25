@@ -17,6 +17,7 @@ from singletons.state import app_state
 from singletons.translator import translator
 from singletons.undo import undo
 from utils.functions import text_to_table, text_to_stbl
+from utils.provider_engines import refresh_engine_combo
 from utils.task_runner import CancellationToken, TaskReporter, TaskRunner
 from utils.constants import *
 from widgets.token_highlight import TokenValidationResult, validate_translation_tokens
@@ -149,6 +150,9 @@ class EditDialog(QDialog, Ui_EditDialog):
     def change_api(self):
         config.set_value('api', 'engine', self.cb_api.currentText())
 
+    def refresh_api_list(self):
+        refresh_engine_combo(self.cb_api)
+
     @Slot(QObject)
     def selection_change(self, sender):
         text = sender.textCursor().selectedText()
@@ -183,11 +187,7 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.txt_comment.setText(item.comment)
         self.__refresh_record_meta()
 
-        engine = config.value('api', 'engine')
-        self.cb_api.clear()
-        self.cb_api.addItems(translator.engines)
-        engine_index = self.cb_api.findText(engine)
-        self.cb_api.setCurrentIndex(engine_index if engine_index >= 0 else 0)
+        self.refresh_api_list()
 
         if item.source_old:
             self.txt_original_diff.setPlainText(text_to_table(item.source_old))

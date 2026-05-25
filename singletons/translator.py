@@ -28,7 +28,7 @@ def deepl_endpoint(api_key: str) -> str:
     return 'https://api-free.deepl.com' if api_key and ':fx' in api_key else 'https://api.deepl.com'
 
 
-def deepl_usage(api_key: str = None) -> DeepLUsage:
+def deepl_usage(api_key: str = None, timeout: int | float = 10) -> DeepLUsage:
     api_key = (api_key if api_key is not None else config.value('api', 'deepl_key') or '').strip()
     if not api_key:
         return DeepLUsage(400, 0, 0, 'DeepL API key is empty.')
@@ -37,7 +37,7 @@ def deepl_usage(api_key: str = None) -> DeepLUsage:
         response = requests.get(
             f'{deepl_endpoint(api_key)}/v2/usage',
             headers={'Authorization': f'DeepL-Auth-Key {api_key}'},
-            timeout=10
+            timeout=timeout
         )
     except Exception as e:
         return DeepLUsage(500, 0, 0, str(e))
@@ -213,7 +213,7 @@ class Translator:
         return PlaceholderRestoreResult(text, '')
 
     def translate(self, engine: str, text: str, context: str = '', glossary_id: str = None,
-                  preserve_newlines: bool = False) -> Response:
+                  preserve_newlines: bool = False, request_timeout: int | float = None) -> Response:
         engine_name = engine.lower()
         xml_placeholders = engine_name == 'deepl'
         modified_text, placeholders = self.extract_placeholders(text, xml_safe=xml_placeholders)
@@ -236,25 +236,29 @@ class Translator:
                 modified_text,
                 context=context,
                 glossary_id=glossary_id,
-                use_xml_placeholders=bool(placeholders)
+                use_xml_placeholders=bool(placeholders),
+                request_timeout=request_timeout,
             )
         elif engine_name == 'gemini':
             response = Translator.__gemini(
                 modified_text,
                 context=context,
                 expected_lines=modified_text.count('\n') + 1,
+                request_timeout=request_timeout,
             )
         elif engine_name == 'openai-compatible':
             response = Translator.__openai_compatible(
                 modified_text,
                 context=context,
                 expected_lines=modified_text.count('\n') + 1,
+                request_timeout=request_timeout,
             )
         elif engine_name == 'ollama':
             response = Translator.__ollama(
                 modified_text,
                 context=context,
                 expected_lines=modified_text.count('\n') + 1,
+                request_timeout=request_timeout,
             )
         else:
             response = Translator.__google(modified_text)
@@ -349,7 +353,8 @@ class Translator:
         return Response(404, interface.text('Errors', 'Language code not found!'))
 
     @staticmethod
-    def __gemini(text: str, context: str = '', expected_lines: int = 1) -> Response:
+    def __gemini(text: str, context: str = '', expected_lines: int = 1,
+                 request_timeout: int | float = None) -> Response:
         api_key = (config.value('api', 'gemini_key') or '').strip()
         model = (config.value('api', 'gemini_model') or '').strip()
         if not api_key or not model:
@@ -372,7 +377,7 @@ class Translator:
                 url,
                 json=payload,
                 headers={'x-goog-api-key': api_key},
-                timeout=30,
+                timeout=request_timeout or 30,
             )
         except Exception as e:
             return Response(500, str(e))
@@ -387,7 +392,8 @@ class Translator:
         return Translator.__provider_error_response(resp.status_code, resp, 'Gemini')
 
     @staticmethod
-    def __openai_compatible(text: str, context: str = '', expected_lines: int = 1) -> Response:
+    def __openai_compatible(text: str, context: str = '', expected_lines: int = 1,
+                            request_timeout: int | float = None) -> Response:
         api_key = (config.value('api', 'openai_key') or '').strip()
         base_url = (config.value('api', 'openai_base_url') or '').strip().rstrip('/')
         model = (config.value('api', 'openai_model') or '').strip()
@@ -412,7 +418,7 @@ class Translator:
                     ],
                 },
                 headers={'Authorization': f'Bearer {api_key}'},
-                timeout=30,
+                timeout=request_timeout or 30,
             )
         except Exception as e:
             return Response(500, str(e))
@@ -426,7 +432,8 @@ class Translator:
         return Translator.__provider_error_response(resp.status_code, resp, 'OpenAI-compatible')
 
     @staticmethod
-    def __ollama(text: str, context: str = '', expected_lines: int = 1) -> Response:
+    def __ollama(text: str, context: str = '', expected_lines: int = 1,
+                 request_timeout: int | float = None) -> Response:
         base_url = ollama_base_url()
         model = (config.value('api', 'ollama_model') or '').strip()
         if not base_url or not model:
@@ -446,7 +453,7 @@ class Translator:
                         'temperature': 0.2,
                     },
                 },
-                timeout=120,
+                timeout=request_timeout or 120,
             )
         except Exception:
             return Response(503, interface.text(
@@ -541,7 +548,8 @@ class Translator:
         return Response(status_code, message)
 
     @staticmethod
-    def __deepl(text: str, context: str = '', glossary_id: str = '', use_xml_placeholders: bool = False) -> Response:
+    def __deepl(text: str, context: str = '', glossary_id: str = '', use_xml_placeholders: bool = False,
+                request_timeout: int | float = None) -> Response:
         api_key = config.value('api', 'deepl_key')
 
         src = languages.source
@@ -574,7 +582,7 @@ class Translator:
                     api_url,
                     data=payload,
                     headers={'Authorization': f'DeepL-Auth-Key {api_key}'},
-                    timeout=10
+                    timeout=request_timeout or 10
                 )
 
                 if resp.status_code == 200:

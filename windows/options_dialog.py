@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from dataclasses import dataclass
+
 from PySide6.QtCore import Qt, QCoreApplication, QObject, QTimer, QAbstractTableModel, \
     QSize, Signal, Slot, QThreadPool, QRunnable, QUrl
 from PySide6.QtWidgets import QHeaderView, QStyledItemDelegate, QDialog, QMessageBox
@@ -32,6 +34,39 @@ from utils.ollama_setup import (
 )
 from utils.task_runner import TaskRunner
 from utils.constants import *
+
+
+PROVIDER_TEST_TIMEOUT_SECONDS = 20
+
+
+@dataclass(frozen=True)
+class ProviderTestResult:
+    engine: str
+    status_code: int
+    message: str
+
+
+@dataclass(frozen=True)
+class DeepLUsageResult:
+    usage: object
+    validation_only: bool
+
+
+def provider_test_task(token, reporter, engine: str, timeout: int | float = PROVIDER_TEST_TIMEOUT_SECONDS):
+    reporter.progress(0, 0, interface.text('OptionsDialog', 'Checking {provider}...').format(provider=engine))
+    token.raise_if_cancelled()
+    response = translator.translate(engine, 'Hello', request_timeout=timeout)
+    token.raise_if_cancelled()
+    return ProviderTestResult(engine, response.status_code, response.text)
+
+
+def deepl_usage_task(token, reporter, api_key: str, validation_only: bool,
+                     timeout: int | float = PROVIDER_TEST_TIMEOUT_SECONDS):
+    reporter.progress(0, 0, interface.text('OptionsDialog', 'Checking DeepL...'))
+    token.raise_if_cancelled()
+    usage = deepl_usage(api_key, timeout=timeout)
+    token.raise_if_cancelled()
+    return DeepLUsageResult(usage, validation_only)
 
 
 class DictSignals(QObject):
@@ -214,10 +249,12 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
 
         self.main_window = parent
         self.__ollama_runner = TaskRunner(max_threads=1, parent=self)
+        self.__provider_runner = TaskRunner(max_threads=2, parent=self)
         self.__ollama_status = None
         self.__ollama_status_handle = None
         self.__ollama_pull_handle = None
         self.__ollama_pull_succeeded = False
+        self.__provider_test_handles = {}
 
         self.cb_backup.setChecked(config.value('save', 'backup'))
         self.cb_experemental.setChecked(config.value('save', 'experemental'))
@@ -367,25 +404,36 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.tabs.setTabText(self.tabs.indexOf(self.tab_general), interface.text('OptionsDialog', 'General'))
         self.tabs.setTabText(self.tabs.indexOf(self.tab_dictionaries), interface.text('OptionsDialog', 'Dictionaries'))
         self.gb_deepl.setTitle(interface.text('OptionsDialog', 'Translation providers'))
-        self.btn_deepl_test.setText(interface.text('OptionsDialog', 'Test key'))
-        self.btn_deepl_usage.setText(interface.text('OptionsDialog', 'Check usage'))
-        self.btn_gemini_test.setText(interface.text('OptionsDialog', 'Test Gemini'))
-        self.btn_openai_test.setText(interface.text('OptionsDialog', 'Test OpenAI-compatible'))
+        self.gb_provider_deepl.setTitle('DeepL')
+        self.gb_provider_gemini.setTitle('Gemini')
+        self.gb_provider_openai.setTitle(interface.text('OptionsDialog', 'OpenAI-compatible'))
+        self.gb_provider_ollama.setTitle(interface.text('OptionsDialog', 'Ollama local'))
+        self.gb_provider_limits.setTitle(interface.text('OptionsDialog', 'Batch AI limits'))
+        self.lbl_deepl_key.setText(interface.text('OptionsDialog', 'API key'))
+        self.lbl_deepl_glossary_id.setText(interface.text('OptionsDialog', 'Glossary ID'))
+        self.lbl_gemini_key.setText(interface.text('OptionsDialog', 'API key'))
+        self.lbl_gemini_model.setText(interface.text('OptionsDialog', 'Model'))
+        self.lbl_openai_key.setText(interface.text('OptionsDialog', 'API key'))
+        self.lbl_openai_base_url.setText(interface.text('OptionsDialog', 'Base URL'))
+        self.lbl_openai_model.setText(interface.text('OptionsDialog', 'Model'))
+        self.lbl_ollama_base_url.setText(interface.text('OptionsDialog', 'Base URL'))
+        self.lbl_ollama_model.setText(interface.text('OptionsDialog', 'Model'))
+        self.lbl_ai_session_cap.setText(interface.text('OptionsDialog', 'Session confirm at'))
+        self.lbl_ai_daily_cap.setText(interface.text('OptionsDialog', 'Daily confirm at'))
+        self.btn_deepl_test.setText(interface.text('OptionsDialog', 'Test'))
+        self.btn_deepl_usage.setText(interface.text('OptionsDialog', 'Usage'))
+        self.btn_gemini_test.setText(interface.text('OptionsDialog', 'Test'))
+        self.btn_openai_test.setText(interface.text('OptionsDialog', 'Test'))
         self.cb_ollama_enabled.setText(interface.text('OptionsDialog', 'Enable Ollama local provider'))
         self.btn_ollama_refresh.setText(interface.text('OptionsDialog', 'Refresh Ollama models'))
-        self.btn_ollama_test.setText(interface.text('OptionsDialog', 'Test Ollama'))
+        self.btn_ollama_test.setText(interface.text('OptionsDialog', 'Test'))
         self.btn_ollama_download.setText(interface.text('OptionsDialog', 'Download Ollama'))
-        self.btn_ollama_pull.setText(interface.text('OptionsDialog', 'Download recommended model'))
-        self.btn_ollama_cancel_pull.setText(interface.text('OptionsDialog', 'Cancel model download'))
+        self.btn_ollama_pull.setText(interface.text('OptionsDialog', 'Download model'))
+        self.btn_ollama_cancel_pull.setText(interface.text('TranslateDialog', 'Cancel'))
         self.lbl_deepl_hint.setText(interface.text(
             'OptionsDialog',
-            'Configure optional translation providers, then choose one in Search and Edit or Batch translate. '
-            'DeepL supports usage checks and glossary ID. Gemini, OpenAI-compatible, and Ollama providers use a safety '
-            'prompt that asks the model to preserve Sims tokens and line count. Options can detect local Ollama models '
-            'and download the recommended translategemma:12b model after confirmation. '
-            'Do not share or commit your API key.'
+            'Configured providers appear in Batch Translate and Translation Studio. Changes are saved automatically.'
         ))
-        self.lbl_deepl_autosave.setText(interface.text('OptionsDialog', 'Changes are saved automatically.'))
         self.gb_cache.setTitle(interface.text('OptionsDialog', 'Translation cache'))
         self.cb_translation_cache.setText(interface.text('OptionsDialog', 'Reuse exact translation matches'))
         self.lbl_translation_cache_hint.setText(interface.text(
@@ -492,6 +540,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         config.set_value('api', 'ai_daily_character_cap', self.__integer_field(self.txt_ai_daily_cap.text()))
         self.__sync_engine_preference()
         config.save()
+        self.__refresh_ollama_status_message()
 
     def refresh_ollama_models(self):
         if self.__ollama_pull_handle is not None:
@@ -619,8 +668,33 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.cb_ollama_model.addItems(models)
         self.cb_ollama_model.setCurrentText(current)
         self.cb_ollama_model.blockSignals(False)
-        self.__set_ollama_status(status.message, warning=not status.recommended_model_installed)
+        self.__refresh_ollama_status_message()
         self.__sync_ollama_buttons()
+
+    def __refresh_ollama_status_message(self):
+        status = self.__ollama_status
+        if status is None:
+            return
+
+        selected_model = self.cb_ollama_model.currentText().strip()
+        selected_model_ready = bool(selected_model and selected_model in status.models)
+        ready = status.server_reachable and (status.recommended_model_installed or selected_model_ready)
+
+        if ready and self.cb_ollama_enabled.isChecked():
+            self.__set_ollama_status(
+                interface.text('OptionsDialog', 'Ollama is ready and enabled.'),
+                warning=False,
+            )
+        elif ready:
+            self.__set_ollama_status(
+                interface.text(
+                    'OptionsDialog',
+                    'Ollama is ready but disabled. Enable it to show Ollama in translation lists.'
+                ),
+                warning=True,
+            )
+        else:
+            self.__set_ollama_status(status.message, warning=not status.recommended_model_installed)
 
     def __set_ollama_busy(self, busy: bool, pulling: bool = False):
         self.btn_ollama_refresh.setEnabled(not busy)
@@ -681,19 +755,91 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         return answer == yes or answer == yes.value
 
     def test_deepl_key(self):
-        usage = deepl_usage(self.txt_deepl_key.text().strip())
-        self.__set_deepl_usage_status(usage, validation_only=True)
+        self.__start_deepl_usage_task(validation_only=True)
 
     def check_deepl_usage(self):
-        usage = deepl_usage(self.txt_deepl_key.text().strip())
-        self.__set_deepl_usage_status(usage, validation_only=False)
+        self.__start_deepl_usage_task(validation_only=False)
 
     def test_ai_provider(self, engine: str):
-        response = translator.translate(engine, 'Hello')
-        if response.status_code == 200:
-            self.__set_provider_status(f'{engine}: OK', warning=False)
+        key = self.__provider_task_key(engine)
+        if key in self.__provider_test_handles:
+            return
+
+        self.__set_provider_test_busy(engine, True)
+        self.__set_provider_status(
+            interface.text('OptionsDialog', 'Checking {provider}...').format(provider=engine),
+            warning=False,
+            engine=engine,
+        )
+        handle = self.__provider_runner.start(
+            provider_test_task,
+            engine,
+            PROVIDER_TEST_TIMEOUT_SECONDS,
+            job_name=interface.text('OptionsDialog', 'Checking {provider}...').format(provider=engine),
+        )
+        self.__provider_test_handles[key] = handle
+        handle.result.connect(lambda result, task_handle=handle: self.__provider_test_result(result, task_handle))
+        handle.error.connect(lambda error, task_handle=handle, task_key=key: self.__provider_test_error(error, task_handle, task_key))
+        handle.finished.connect(lambda _cancelled, task_handle=handle, task_key=key: self.__provider_test_finished(task_handle, task_key))
+
+    def __start_deepl_usage_task(self, validation_only: bool):
+        key = 'DeepL validation' if validation_only else 'DeepL usage'
+        if key in self.__provider_test_handles:
+            return
+
+        button = self.btn_deepl_test if validation_only else self.btn_deepl_usage
+        button.setEnabled(False)
+        self.__set_provider_status(interface.text('OptionsDialog', 'Checking DeepL...'), warning=False, engine='DeepL')
+        handle = self.__provider_runner.start(
+            deepl_usage_task,
+            self.txt_deepl_key.text().strip(),
+            validation_only,
+            PROVIDER_TEST_TIMEOUT_SECONDS,
+            job_name=interface.text('OptionsDialog', 'Checking DeepL...'),
+        )
+        self.__provider_test_handles[key] = handle
+        handle.result.connect(lambda result, task_handle=handle: self.__deepl_usage_result(result, task_handle))
+        handle.error.connect(lambda error, task_handle=handle, task_key=key: self.__provider_test_error(error, task_handle, task_key))
+        handle.finished.connect(lambda _cancelled, task_handle=handle, task_key=key: self.__provider_test_finished(task_handle, task_key))
+
+    @Slot(object)
+    def __deepl_usage_result(self, result: DeepLUsageResult, handle):
+        if handle not in self.__provider_test_handles.values():
+            return
+        self.__set_deepl_usage_status(result.usage, validation_only=result.validation_only)
+
+    @Slot(object)
+    def __provider_test_result(self, result: ProviderTestResult, handle):
+        key = self.__provider_task_key(result.engine)
+        if self.__provider_test_handles.get(key) is not handle:
+            return
+
+        if result.status_code == 200:
+            self.__set_provider_status(f'{result.engine}: OK', warning=False, engine=result.engine)
+            if result.engine.lower() == 'ollama' and not self.cb_ollama_enabled.isChecked():
+                self.__set_ollama_status(
+                    interface.text(
+                        'OptionsDialog',
+                        'Ollama is ready but disabled. Enable it to show Ollama in translation lists.'
+                    ),
+                    warning=True,
+                )
         else:
-            self.__set_provider_status(response.text, warning=True)
+            self.__set_provider_status(result.message, warning=True, engine=result.engine)
+
+    @Slot(object)
+    def __provider_test_error(self, error, handle, key: str):
+        if self.__provider_test_handles.get(key) is not handle:
+            return
+        engine = key.replace(' validation', '').replace(' usage', '')
+        self.__set_provider_status(error.message, warning=True, engine=engine)
+
+    def __provider_test_finished(self, handle, key: str):
+        if self.__provider_test_handles.get(key) is not handle:
+            return
+        self.__provider_test_handles.pop(key, None)
+        engine = key.replace(' validation', '').replace(' usage', '')
+        self.__set_provider_test_busy(engine, False)
 
     def change_translation_cache_enabled(self):
         config.set_value('translation_cache', 'enabled', self.cb_translation_cache.isChecked())
@@ -725,13 +871,41 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             self.__set_provider_status(usage.message, warning=True)
             return
 
-        self.__set_provider_status(self.lbl_deepl_status.text(), warning=False)
+        self.__set_provider_status(self.lbl_deepl_status.text(), warning=False, engine='DeepL')
 
-    def __set_provider_status(self, text: str, warning: bool = False):
-        self.lbl_deepl_status.setProperty('state', 'warning' if warning else 'ok')
-        self.lbl_deepl_status.setText(text)
-        self.lbl_deepl_status.style().unpolish(self.lbl_deepl_status)
-        self.lbl_deepl_status.style().polish(self.lbl_deepl_status)
+    def __set_provider_status(self, text: str, warning: bool = False, engine: str = ''):
+        if engine.lower() == 'ollama':
+            self.__set_ollama_status(text, warning=warning)
+            return
+
+        label = self.__provider_status_label(engine)
+        label.setProperty('state', 'warning' if warning else 'ok')
+        label.setText(text)
+        label.style().unpolish(label)
+        label.style().polish(label)
+
+    def __provider_status_label(self, engine: str):
+        engine_name = (engine or '').lower()
+        if engine_name == 'gemini':
+            return self.lbl_gemini_status
+        if engine_name == 'openai-compatible':
+            return self.lbl_openai_status
+        return self.lbl_deepl_status
+
+    @staticmethod
+    def __provider_task_key(engine: str) -> str:
+        return (engine or '').strip() or 'Provider'
+
+    def __set_provider_test_busy(self, engine: str, busy: bool):
+        engine_name = (engine or '').lower()
+        buttons = {
+            'deepl': (self.btn_deepl_test, self.btn_deepl_usage),
+            'gemini': (self.btn_gemini_test,),
+            'openai-compatible': (self.btn_openai_test,),
+            'ollama': (self.btn_ollama_test,),
+        }.get(engine_name, ())
+        for button in buttons:
+            button.setEnabled(not busy)
 
     def change_path(self):
         config.set_value('dictionaries', 'gamepath', self.txt_path.text())

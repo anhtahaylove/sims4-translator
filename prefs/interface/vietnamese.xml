@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="vi_VN" name="Vietnamese" version="2.2.1" authors="Community">
+<ts language="vi_VN" name="Vietnamese" version="2.2.2" authors="Community">
   <context name="MainWindow">
     <string>
       <source>File</source>
@@ -506,6 +506,70 @@
     <string>
       <source>Translation providers</source>
       <translation>Nhà cung cấp dịch</translation>
+    </string>
+    <string>
+      <source>OpenAI-compatible</source>
+      <translation>Tương thích OpenAI</translation>
+    </string>
+    <string>
+      <source>Ollama local</source>
+      <translation>Ollama local</translation>
+    </string>
+    <string>
+      <source>Batch AI limits</source>
+      <translation>Giới hạn AI hàng loạt</translation>
+    </string>
+    <string>
+      <source>API key</source>
+      <translation>API key</translation>
+    </string>
+    <string>
+      <source>Glossary ID</source>
+      <translation>Glossary ID</translation>
+    </string>
+    <string>
+      <source>Model</source>
+      <translation>Model</translation>
+    </string>
+    <string>
+      <source>Base URL</source>
+      <translation>Base URL</translation>
+    </string>
+    <string>
+      <source>Session confirm at</source>
+      <translation>Xác nhận phiên khi</translation>
+    </string>
+    <string>
+      <source>Daily confirm at</source>
+      <translation>Xác nhận mỗi ngày khi</translation>
+    </string>
+    <string>
+      <source>Test</source>
+      <translation>Kiểm tra</translation>
+    </string>
+    <string>
+      <source>Usage</source>
+      <translation>Dung lượng</translation>
+    </string>
+    <string>
+      <source>Configured providers appear in Batch Translate and Translation Studio. Changes are saved automatically.</source>
+      <translation>Provider đã cấu hình sẽ xuất hiện trong Batch Translate và Translation Studio. Thay đổi được lưu tự động.</translation>
+    </string>
+    <string>
+      <source>Checking {provider}...</source>
+      <translation>Đang kiểm tra {provider}...</translation>
+    </string>
+    <string>
+      <source>Checking DeepL...</source>
+      <translation>Đang kiểm tra DeepL...</translation>
+    </string>
+    <string>
+      <source>Ollama is ready and enabled.</source>
+      <translation>Ollama đã sẵn sàng và đã được bật.</translation>
+    </string>
+    <string>
+      <source>Ollama is ready but disabled. Enable it to show Ollama in translation lists.</source>
+      <translation>Ollama đã sẵn sàng nhưng chưa bật. Hãy bật provider để Ollama xuất hiện trong danh sách dịch.</translation>
     </string>
     <string>
       <source>Test key</source>

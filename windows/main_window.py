@@ -139,7 +139,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_colorbar.setChecked(config.value('view', 'colorbar'))
         self.action_activity_dock.triggered.connect(self.__activity_toggled)
         self.action_activity_dock.setChecked(config.value('view', 'activity_visible') is not False)
-        self.empty_open_button.clicked.connect(self.action_load_file.trigger)
 
         self.action_options.triggered.connect(self.options)
         self.action_group_original.triggered.connect(self.group_original)
@@ -319,16 +318,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.filter_instance_label.setText(interface.text('MainWindow', 'Instance'))
         self.filter_clear.setText(interface.text('MainWindow', 'Clear filters'))
         self.workspace_hint.setText(interface.text('MainWindow', 'Translation table'))
-        self.empty_title.setText(interface.text('MainWindow', 'Ready for a package'))
-        self.empty_detail.setText(interface.text(
-            'MainWindow',
-            'Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.'
-        ))
-        self.empty_flow.setText(interface.text(
-            'MainWindow',
-            'Open package -> Translate -> Validate Release -> Save as package'
-        ))
-        self.empty_open_button.setText(interface.text('MainWindow', 'Open package'))
         self.inspector_apply.setText(interface.text('MainWindow', 'Approve'))
         self.inspector_reset.setText(interface.text('MainWindow', 'Reset'))
         self.inspector_edit.setText(interface.text('MainWindow', 'Open Editor'))
@@ -482,7 +471,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.table_panel_layout.setSpacing(7)
         self.workspace_overview_layout.setContentsMargins(12, 9, 12, 9)
         self.workspace_overview_layout.setSpacing(10)
-        self.empty_layout.setContentsMargins(16, 14, 16, 14)
         self.selection_layout.setContentsMargins(12, 8, 12, 8)
         self.selection_layout.setSpacing(7)
         self.selection_header_layout.setSpacing(10)
@@ -886,7 +874,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.colorbar.resfesh()
         self.colorbar.setVisible(config.value('view', 'colorbar') and state)
-        self.empty_state.setVisible(not state)
         self.update_workspace_summary()
         self.__set_command_button_texts()
         if not state:
@@ -1282,6 +1269,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dlg = OptionsDialog(self)
         dlg.exec()
         dlg.deleteLater()
+        self.edit_dialog.refresh_api_list()
+        self.translate_dialog.refresh_api_list()
 
     def colorbar_toggle(self):
         config.set_value('view', 'colorbar', self.action_colorbar.isChecked())

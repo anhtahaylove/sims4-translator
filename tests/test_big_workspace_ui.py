@@ -19,7 +19,7 @@ from packer.resource import ResourceID
 from singletons.config import ConfigManager, config
 from singletons.interface import interface
 from singletons.state import app_state
-from singletons.translator import DeepLUsage, Response
+from singletons.translator import DeepLUsage, OLLAMA_RECOMMENDED_MODEL, Response
 from storages.dictionaries import DictionariesStorage
 from storages.packages import PackagesStorage
 from storages.records import MainRecord
@@ -206,11 +206,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertLessEqual(window.workspace_stats_bar.maximumWidth(), 560)
             self.assertEqual(window.selection_bar.objectName(), 'selectionBar')
             self.assertEqual(window.workspace_overview.objectName(), 'workspaceOverview')
-            self.assertEqual(window.empty_flow.objectName(), 'emptyFlow')
-            self.assertIn('Open package', window.empty_flow.text())
-            self.assertIn('Validate Release', window.empty_flow.text())
-            self.assertEqual(window.empty_open_button.text(), 'Open package')
-            self.assertFalse(window.empty_open_button.icon().isNull())
+            self.assertFalse(hasattr(window, 'empty_state'))
+            self.assertFalse(hasattr(window, 'empty_open_button'))
             self.assertEqual(window.filter_search.objectName(), 'filterSearch')
             self.assertFalse(window.filter_search_mode.isVisibleTo(window))
             self.assertEqual(window.filter_search_mode.text(), '')
@@ -1773,6 +1770,11 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertGreaterEqual(dialog.minimumWidth(), 760)
             self.assertEqual(dialog.gb_safety.objectName(), 'optionsSection')
             self.assertEqual(dialog.gb_pack_manager.objectName(), 'optionsSection')
+            self.assertEqual(dialog.gb_provider_deepl.objectName(), 'providerCard')
+            self.assertEqual(dialog.gb_provider_gemini.objectName(), 'providerCard')
+            self.assertEqual(dialog.gb_provider_openai.objectName(), 'providerCard')
+            self.assertEqual(dialog.gb_provider_ollama.objectName(), 'providerCard')
+            self.assertEqual(dialog.gb_provider_limits.objectName(), 'providerCard')
             self.assertEqual(dialog.tableview.objectName(), 'packManagerTable')
             self.assertGreaterEqual(dialog.tableview.verticalHeader().defaultSectionSize(), 32)
 
@@ -1780,6 +1782,10 @@ class WorkspaceProShellTests(unittest.TestCase):
                     (dialog.btn_path, 20),
                     (dialog.btn_deepl_test, 20),
                     (dialog.btn_deepl_usage, 20),
+                    (dialog.btn_gemini_test, 20),
+                    (dialog.btn_openai_test, 20),
+                    (dialog.btn_ollama_refresh, 20),
+                    (dialog.btn_ollama_test, 20),
                     (dialog.btn_ollama_download, 20),
                     (dialog.btn_ollama_pull, 20),
                     (dialog.btn_ollama_cancel_pull, 20),
@@ -1863,6 +1869,63 @@ class WorkspaceProShellTests(unittest.TestCase):
         finally:
             close_widget(dialog)
             close_widget(window)
+
+    def test_main_window_options_refreshes_existing_translation_provider_lists(self):
+        class FakeOptionsDialog:
+
+            def __init__(self, _parent):
+                pass
+
+            def exec(self):
+                pass
+
+            def deleteLater(self):
+                pass
+
+        window = MainWindow()
+        try:
+            with patch('windows.main_window.OptionsDialog', FakeOptionsDialog), \
+                    patch.object(window.edit_dialog, 'refresh_api_list') as edit_refresh, \
+                    patch.object(window.translate_dialog, 'refresh_api_list') as translate_refresh:
+                window.options()
+
+            edit_refresh.assert_called_once()
+            translate_refresh.assert_called_once()
+        finally:
+            close_widget(window)
+
+    def test_configured_providers_refresh_into_batch_and_translation_studio_lists(self):
+        config.set_value('translation', 'source', 'ENG_US')
+        config.set_value('translation', 'destination', 'VI_VN')
+        config.set_value('api', 'deepl_key', 'sample:fx')
+        config.set_value('api', 'gemini_key', 'gemini-secret')
+        config.set_value('api', 'gemini_model', 'gemini-test')
+        config.set_value('api', 'openai_key', 'openai-secret')
+        config.set_value('api', 'openai_base_url', 'https://example.test')
+        config.set_value('api', 'openai_model', 'openai-test')
+        config.set_value('api', 'ollama_enabled', True)
+        config.set_value('api', 'ollama_model', OLLAMA_RECOMMENDED_MODEL)
+
+        translate_dialog = TranslateDialog()
+        edit_dialog = EditDialog()
+        try:
+            translate_dialog.refresh_api_list()
+            edit_dialog.refresh_api_list()
+            translate_engines = [
+                translate_dialog.cb_api.itemText(index)
+                for index in range(translate_dialog.cb_api.count())
+            ]
+            edit_engines = [
+                edit_dialog.cb_api.itemText(index)
+                for index in range(edit_dialog.cb_api.count())
+            ]
+
+            for engine in ('DeepL', 'Gemini', 'OpenAI-compatible', 'Ollama'):
+                self.assertIn(engine, translate_engines)
+                self.assertIn(engine, edit_engines)
+        finally:
+            close_widget(edit_dialog)
+            close_widget(translate_dialog)
 
     def test_options_dialog_refreshes_ollama_models_and_keeps_recommended_hint(self):
         window = MainWindow()
@@ -1951,15 +2014,24 @@ class WorkspaceProShellTests(unittest.TestCase):
             close_widget(dialog)
             close_widget(window)
 
-    def test_options_dialog_tests_ollama_without_api_key(self):
+    def test_options_dialog_tests_provider_in_background_without_blocking_ui(self):
         window = MainWindow()
         dialog = OptionsDialog(window)
         try:
-            with patch('windows.options_dialog.translator.translate', return_value=Response(200, 'Xin chao')) as call:
+            with patch.object(dialog._OptionsDialog__provider_runner, 'start') as start:
+                handle = type('Handle', (), {
+                    'result': type('Signal', (), {'connect': lambda self, fn: None})(),
+                    'error': type('Signal', (), {'connect': lambda self, fn: None})(),
+                    'finished': type('Signal', (), {'connect': lambda self, fn: None})(),
+                })()
+                start.return_value = handle
                 dialog.test_ai_provider('Ollama')
 
-            call.assert_called_once_with('Ollama', 'Hello')
-            self.assertIn('Ollama: OK', dialog.lbl_deepl_status.text())
+            start.assert_called_once()
+            self.assertEqual(start.call_args.args[1], 'Ollama')
+            self.assertEqual(start.call_args.args[2], 20)
+            self.assertFalse(dialog.btn_ollama_test.isEnabled())
+            self.assertIn('Checking Ollama', dialog.lbl_ollama_status.text())
         finally:
             close_widget(dialog)
             close_widget(window)
@@ -1968,21 +2040,43 @@ class WorkspaceProShellTests(unittest.TestCase):
         window = MainWindow()
         dialog = OptionsDialog(window)
         try:
-            dialog.txt_deepl_key.setText('sample:fx')
-            with patch('windows.options_dialog.deepl_usage',
-                       return_value=DeepLUsage(200, 2500, 10000, '')) as usage:
-                dialog.test_deepl_key()
-                usage.assert_called_with('sample:fx')
-                self.assertIn('Valid key', dialog.lbl_deepl_status.text())
-                self.assertIn('2,500 / 10,000', dialog.lbl_deepl_status.text())
+            usage = DeepLUsage(200, 2500, 10000, '')
+            dialog._OptionsDialog__set_deepl_usage_status(usage, validation_only=True)
+            self.assertIn('Valid key', dialog.lbl_deepl_status.text())
+            self.assertIn('2,500 / 10,000', dialog.lbl_deepl_status.text())
 
-                dialog.check_deepl_usage()
-                self.assertIn('DeepL usage', dialog.lbl_deepl_status.text())
+            dialog._OptionsDialog__set_deepl_usage_status(usage, validation_only=False)
+            self.assertIn('DeepL usage', dialog.lbl_deepl_status.text())
 
-            with patch('windows.options_dialog.deepl_usage',
-                       return_value=DeepLUsage(403, 0, 0, 'Invalid API key.')):
-                dialog.test_deepl_key()
-                self.assertIn('Invalid API key', dialog.lbl_deepl_status.text())
+            dialog._OptionsDialog__set_deepl_usage_status(
+                DeepLUsage(403, 0, 0, 'Invalid API key.'),
+                validation_only=True,
+            )
+            self.assertIn('Invalid API key', dialog.lbl_deepl_status.text())
+        finally:
+            close_widget(dialog)
+            close_widget(window)
+
+    def test_options_dialog_ollama_ready_status_distinguishes_disabled_and_enabled(self):
+        window = MainWindow()
+        dialog = OptionsDialog(window)
+        try:
+            dialog._OptionsDialog__apply_ollama_status(OllamaSetupStatus(
+                installed=True,
+                executable='C:/Program Files/Ollama/ollama.exe',
+                server_reachable=True,
+                models=(OLLAMA_RECOMMENDED_MODEL,),
+                recommended_model_installed=True,
+                message='Ready.',
+            ))
+
+            self.assertIn('disabled', dialog.lbl_ollama_status.text())
+            self.assertIn('Enable', dialog.lbl_ollama_status.text())
+
+            dialog.cb_ollama_enabled.setChecked(True)
+            dialog.change_ai_provider_settings()
+
+            self.assertIn('ready and enabled', dialog.lbl_ollama_status.text())
         finally:
             close_widget(dialog)
             close_widget(window)

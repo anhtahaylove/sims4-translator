@@ -106,6 +106,12 @@ class TranslationTaskTests(unittest.TestCase):
         api_url, kwargs = get.call_args.args[0], get.call_args.kwargs
         self.assertEqual(api_url, 'https://api-free.deepl.com/v2/usage')
         self.assertIn('DeepL-Auth-Key abc:fx', kwargs['headers']['Authorization'])
+        self.assertEqual(kwargs['timeout'], 10)
+
+        with patch('singletons.translator.requests.get', return_value=FakeResponse()) as get:
+            deepl_usage('abc:fx', timeout=3)
+
+        self.assertEqual(get.call_args.kwargs['timeout'], 3)
 
     def test_deepl_translate_sends_context_glossary_and_xml_placeholders(self):
         class FakeResponse:
@@ -246,6 +252,23 @@ class TranslationTaskTests(unittest.TestCase):
         self.assertIn('Return exactly 1 line(s).', prompt)
         self.assertIn('Package: sample.package', prompt)
         self.assertIn('(0)', prompt)
+
+    def test_provider_translate_accepts_short_request_timeout_for_options_checks(self):
+        config.set_value('api', 'ollama_enabled', True)
+        config.set_value('api', 'ollama_base_url', 'http://localhost:11434')
+        config.set_value('api', 'ollama_model', 'translategemma:12b')
+
+        class FakeOllamaResponse:
+            status_code = 200
+
+            @staticmethod
+            def json():
+                return {'message': {'content': 'Xin chao'}}
+
+        with patch('singletons.translator.requests.post', return_value=FakeOllamaResponse()) as post:
+            translator.translate('Ollama', 'Hello', request_timeout=7)
+
+        self.assertEqual(post.call_args.kwargs['timeout'], 7)
 
     def test_ollama_missing_model_error_is_actionable(self):
         config.set_value('api', 'ollama_enabled', True)
