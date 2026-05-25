@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ts language="en_US" name="English" version="2.2.0" authors="">
+<ts language="en_US" name="English" version="2.2.1" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -525,15 +525,99 @@ Errors:
       <translation/>
     </string>
     <string>
-      <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini, OpenAI-compatible, and Ollama providers use a safety prompt that asks the model to preserve Sims tokens and line count. Recommended Ollama model: translategemma:12b. Run: ollama pull translategemma:12b. Do not share or commit your API key.</source>
+      <source>Download Ollama</source>
       <translation/>
     </string>
     <string>
-      <source>Ollama models loaded. Recommended model is missing. Run: ollama pull translategemma:12b</source>
+      <source>Download recommended model</source>
       <translation/>
     </string>
     <string>
-      <source>Ollama models loaded: {count:,}.</source>
+      <source>Cancel model download</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini, OpenAI-compatible, and Ollama providers use a safety prompt that asks the model to preserve Sims tokens and line count. Options can detect local Ollama models and download the recommended translategemma:12b model after confirmation. Do not share or commit your API key.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Checking Ollama setup...</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Opened the official Ollama download page. Install Ollama, start it, then refresh models.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Recommended model download is not available until Ollama is installed and running.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Downloading Ollama model...</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Cancelling Ollama model download...</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Download recommended Ollama model</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Download {model} for local translation?</source>
+      <translation/>
+    </string>
+    <string>
+      <source>This model is about {size}. It needs internet access and disk space, and Ollama stores it outside this app.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Download model</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama was not found on this computer. Download Ollama to use local models.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama server is reachable, but the local executable was not found. You can use the server, but this app cannot download models automatically.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama is installed but the server is not reachable. Start Ollama, then refresh models.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama is installed, but the recommended model is missing. Download translategemma:12b here or choose another local model.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama is ready. Recommended model is installed.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama executable was not found. Download and start Ollama first.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Starting Ollama model download...</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama model download was cancelled.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Downloading {model}: {percent}%</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Downloaded {model}.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama model download failed with exit code {code}.</source>
       <translation/>
     </string>
     <string>

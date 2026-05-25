@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.2.1 - 2026-05-25
+
+- Added guided Ollama setup in Options, including local executable/server/model detection.
+- Added buttons to open the official Ollama download page and pull the recommended `translategemma:12b` model after an 8.1 GB size warning.
+- Moved Ollama model refresh and recommended model download to background tasks with progress/cancel feedback.
+
 ## Version 2.2.0 - 2026-05-25
 
 - Added an opt-in local Ollama translation provider with `translategemma:12b` as the recommended default model.

@@ -181,15 +181,11 @@ Cách dùng:
 
 Nếu muốn dịch local bằng Ollama:
 
-1. Cài và mở [Ollama](https://ollama.com/).
-2. Tải model khuyến nghị:
-
-```powershell
-ollama pull translategemma:12b
-```
-
-3. Trong **Tùy chọn**, bật **Ollama local provider**.
-4. Bấm **Làm mới model Ollama**, giữ `translategemma:12b` hoặc nhập model local khác, rồi bấm **Kiểm tra Ollama**.
+1. Mở **Tùy chọn** và xem dòng trạng thái Ollama.
+2. Nếu máy chưa có Ollama, bấm **Tải Ollama**. Cài Ollama, mở Ollama, rồi quay lại **Tùy chọn**.
+3. Bấm **Làm mới model Ollama**. App sẽ tự nhận diện các model local có sẵn.
+4. Nếu thiếu `translategemma:12b`, bấm **Tải model khuyến nghị**. Hộp thoại sẽ cảnh báo model khoảng 8.1 GB và được Ollama lưu bên ngoài cache của app.
+5. Bật **Ollama local provider**, giữ `translategemma:12b` hoặc nhập model local khác, rồi bấm **Kiểm tra Ollama**.
 
 Trước khi Batch Translate bằng provider có quota/chi phí, app sẽ ước tính số ký tự nguồn sắp gửi để bạn tránh tốn quota ngoài ý muốn.
 

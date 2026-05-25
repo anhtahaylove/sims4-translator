@@ -19,7 +19,7 @@ from packer.resource import ResourceID
 from singletons.config import ConfigManager, config
 from singletons.interface import interface
 from singletons.state import app_state
-from singletons.translator import DeepLUsage, OllamaModels, Response
+from singletons.translator import DeepLUsage, Response
 from storages.dictionaries import DictionariesStorage
 from storages.packages import PackagesStorage
 from storages.records import MainRecord
@@ -42,6 +42,7 @@ from utils.release_validation import (
     ValidationIssue,
     ValidationReport,
 )
+from utils.ollama_setup import OLLAMA_DOWNLOAD_URL, OllamaPullResult, OllamaSetupStatus
 from utils.workspace_warnings import workspace_warnings_report
 from windows.edit_dialog import EditDialog
 from windows.export_dialog import ExportDialog
@@ -1779,6 +1780,9 @@ class WorkspaceProShellTests(unittest.TestCase):
                     (dialog.btn_path, 20),
                     (dialog.btn_deepl_test, 20),
                     (dialog.btn_deepl_usage, 20),
+                    (dialog.btn_ollama_download, 20),
+                    (dialog.btn_ollama_pull, 20),
+                    (dialog.btn_ollama_cancel_pull, 20),
                     (dialog.btn_build, 22),
             ):
                 self.assertFalse(button.icon().isNull())
@@ -1864,20 +1868,85 @@ class WorkspaceProShellTests(unittest.TestCase):
         window = MainWindow()
         dialog = OptionsDialog(window)
         try:
+            dialog.show()
+            app().processEvents()
             dialog.txt_ollama_base_url.setText('http://localhost:11434')
             dialog.cb_ollama_model.setCurrentText('custom-model:latest')
-            with patch(
-                'windows.options_dialog.ollama_models',
-                return_value=OllamaModels(200, ('gemma4:e4b',), ''),
-            ) as models:
-                dialog.refresh_ollama_models()
+            dialog._OptionsDialog__apply_ollama_status(OllamaSetupStatus(
+                installed=True,
+                executable='C:/Program Files/Ollama/ollama.exe',
+                server_reachable=True,
+                models=('gemma4:e4b',),
+                recommended_model_installed=False,
+                message='Recommended model missing.',
+            ))
 
-            models.assert_called_with('http://localhost:11434')
             self.assertGreaterEqual(dialog.cb_ollama_model.findText('custom-model:latest'), 0)
             self.assertGreaterEqual(dialog.cb_ollama_model.findText('translategemma:12b'), 0)
             self.assertGreaterEqual(dialog.cb_ollama_model.findText('gemma4:e4b'), 0)
             self.assertEqual(dialog.cb_ollama_model.currentText(), 'custom-model:latest')
-            self.assertIn('ollama pull translategemma:12b', dialog.lbl_deepl_status.text())
+            self.assertIn('Recommended model missing', dialog.lbl_ollama_status.text())
+            self.assertFalse(dialog.btn_ollama_pull.isHidden())
+            self.assertTrue(dialog.btn_ollama_pull.isEnabled())
+            self.assertTrue(dialog.btn_ollama_download.isHidden())
+        finally:
+            close_widget(dialog)
+            close_widget(window)
+
+    def test_options_dialog_shows_download_ollama_when_executable_is_missing(self):
+        window = MainWindow()
+        dialog = OptionsDialog(window)
+        try:
+            dialog.show()
+            app().processEvents()
+            dialog._OptionsDialog__apply_ollama_status(OllamaSetupStatus(
+                installed=False,
+                executable='',
+                server_reachable=False,
+                models=(),
+                recommended_model_installed=False,
+                message='Ollama missing.',
+            ))
+
+            self.assertIn('Ollama missing', dialog.lbl_ollama_status.text())
+            self.assertFalse(dialog.btn_ollama_download.isHidden())
+            self.assertTrue(dialog.btn_ollama_pull.isHidden())
+            self.assertFalse(dialog.btn_ollama_test.isEnabled())
+        finally:
+            close_widget(dialog)
+            close_widget(window)
+
+    def test_options_dialog_download_ollama_button_opens_official_url(self):
+        window = MainWindow()
+        dialog = OptionsDialog(window)
+        try:
+            with patch('windows.options_dialog.QDesktopServices.openUrl', return_value=True) as open_url:
+                dialog.download_ollama()
+
+            open_url.assert_called_once()
+            self.assertEqual(open_url.call_args.args[0].toString(), OLLAMA_DOWNLOAD_URL)
+            self.assertIn('official Ollama download page', dialog.lbl_ollama_status.text())
+        finally:
+            close_widget(dialog)
+            close_widget(window)
+
+    def test_options_dialog_pull_success_selects_and_enables_recommended_model(self):
+        window = MainWindow()
+        dialog = OptionsDialog(window)
+        try:
+            fake_handle = object()
+            dialog.cb_ollama_enabled.setChecked(False)
+            setattr(dialog, '_OptionsDialog__ollama_pull_handle', fake_handle)
+            dialog._OptionsDialog__ollama_pull_result(
+                OllamaPullResult(True, 'translategemma:12b', 'Downloaded translategemma:12b.'),
+                fake_handle,
+            )
+
+            self.assertTrue(dialog.cb_ollama_enabled.isChecked())
+            self.assertEqual(dialog.cb_ollama_model.currentText(), 'translategemma:12b')
+            self.assertTrue(config.value('api', 'ollama_enabled'))
+            self.assertEqual(config.value('api', 'ollama_model'), 'translategemma:12b')
+            self.assertIn('Downloaded translategemma:12b', dialog.lbl_ollama_status.text())
         finally:
             close_widget(dialog)
             close_widget(window)

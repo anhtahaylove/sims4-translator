@@ -177,15 +177,11 @@ To use them:
 
 For local Ollama translation:
 
-1. Install and start [Ollama](https://ollama.com/).
-2. Pull the recommended model:
-
-```powershell
-ollama pull translategemma:12b
-```
-
-3. In **Options**, enable **Ollama local provider**.
-4. Click **Refresh Ollama models**, keep `translategemma:12b` or type another local model, then click **Test Ollama**.
+1. Open **Options** and check the Ollama status line.
+2. If Ollama is missing, click **Download Ollama**. Install it, start it, then return to **Options**.
+3. Click **Refresh Ollama models**. The app detects local models automatically.
+4. If `translategemma:12b` is missing, click **Download recommended model**. The dialog warns that the model is about 8.1 GB and stores outside the app cache.
+5. Enable **Ollama local provider**, keep `translategemma:12b` or type another local model, then click **Test Ollama**.
 
 Before paid/provider-backed batch translation starts, the app estimates how many source characters will be sent so you can avoid spending quota by accident.
 

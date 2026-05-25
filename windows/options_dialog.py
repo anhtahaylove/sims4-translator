@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtCore import Qt, QCoreApplication, QObject, QTimer, QAbstractTableModel, \
-    QSize, Signal, Slot, QThreadPool, QRunnable
-from PySide6.QtWidgets import QHeaderView, QStyledItemDelegate, QDialog
-from PySide6.QtGui import QColor, QFont, QIcon, QPainter
+    QSize, Signal, Slot, QThreadPool, QRunnable, QUrl
+from PySide6.QtWidgets import QHeaderView, QStyledItemDelegate, QDialog, QMessageBox
+from PySide6.QtGui import QColor, QDesktopServices, QFont, QIcon, QPainter
 
 from windows.ui.options_dialog import Ui_OptionsDialog
 
@@ -21,8 +21,16 @@ from singletons.languages import languages
 from singletons.signals import progress_signals
 from singletons.state import app_state
 from singletons.translation_cache import translation_cache
-from singletons.translator import OLLAMA_RECOMMENDED_MODEL, deepl_usage, ollama_models, translator
+from singletons.translator import OLLAMA_RECOMMENDED_MODEL, deepl_usage, translator
 from utils.functions import opendir
+from utils.ollama_setup import (
+    OLLAMA_DOWNLOAD_URL,
+    OLLAMA_RECOMMENDED_MODEL_SIZE,
+    OllamaSetupStatus,
+    pull_ollama_model_task,
+    refresh_ollama_status_task,
+)
+from utils.task_runner import TaskRunner
 from utils.constants import *
 
 
@@ -205,6 +213,11 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.__configure_action_icons()
 
         self.main_window = parent
+        self.__ollama_runner = TaskRunner(max_threads=1, parent=self)
+        self.__ollama_status = None
+        self.__ollama_status_handle = None
+        self.__ollama_pull_handle = None
+        self.__ollama_pull_succeeded = False
 
         self.cb_backup.setChecked(config.value('save', 'backup'))
         self.cb_experemental.setChecked(config.value('save', 'experemental'))
@@ -269,6 +282,9 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.btn_openai_test.clicked.connect(lambda: self.test_ai_provider('OpenAI-compatible'))
         self.btn_ollama_refresh.clicked.connect(self.refresh_ollama_models)
         self.btn_ollama_test.clicked.connect(lambda: self.test_ai_provider('Ollama'))
+        self.btn_ollama_download.clicked.connect(self.download_ollama)
+        self.btn_ollama_pull.clicked.connect(self.download_ollama_recommended_model)
+        self.btn_ollama_cancel_pull.clicked.connect(self.cancel_ollama_model_download)
         self.cb_translation_cache.clicked.connect(self.change_translation_cache_enabled)
         self.btn_translation_cache_clear.clicked.connect(self.clear_translation_cache)
 
@@ -301,6 +317,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
 
         self.retranslate()
         self.refresh_translation_cache_status()
+        self.refresh_ollama_models()
 
     def retranslate(self):
         self.setWindowTitle(interface.text('OptionsDialog', 'Options and dictionaries'))
@@ -357,12 +374,15 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.cb_ollama_enabled.setText(interface.text('OptionsDialog', 'Enable Ollama local provider'))
         self.btn_ollama_refresh.setText(interface.text('OptionsDialog', 'Refresh Ollama models'))
         self.btn_ollama_test.setText(interface.text('OptionsDialog', 'Test Ollama'))
+        self.btn_ollama_download.setText(interface.text('OptionsDialog', 'Download Ollama'))
+        self.btn_ollama_pull.setText(interface.text('OptionsDialog', 'Download recommended model'))
+        self.btn_ollama_cancel_pull.setText(interface.text('OptionsDialog', 'Cancel model download'))
         self.lbl_deepl_hint.setText(interface.text(
             'OptionsDialog',
             'Configure optional translation providers, then choose one in Search and Edit or Batch translate. '
             'DeepL supports usage checks and glossary ID. Gemini, OpenAI-compatible, and Ollama providers use a safety '
-            'prompt that asks the model to preserve Sims tokens and line count. '
-            'Recommended Ollama model: translategemma:12b. Run: ollama pull translategemma:12b. '
+            'prompt that asks the model to preserve Sims tokens and line count. Options can detect local Ollama models '
+            'and download the recommended translategemma:12b model after confirmation. '
             'Do not share or commit your API key.'
         ))
         self.lbl_deepl_autosave.setText(interface.text('OptionsDialog', 'Changes are saved automatically.'))
@@ -414,6 +434,9 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             (self.btn_openai_test, ':/images/api.png', QSize(20, 20)),
             (self.btn_ollama_refresh, ':/images/api.png', QSize(20, 20)),
             (self.btn_ollama_test, ':/images/api.png', QSize(20, 20)),
+            (self.btn_ollama_download, ':/images/load.png', QSize(20, 20)),
+            (self.btn_ollama_pull, ':/images/load.png', QSize(20, 20)),
+            (self.btn_ollama_cancel_pull, ':/images/validate_0.png', QSize(20, 20)),
             (self.btn_translation_cache_clear, ':/images/validate_0.png', QSize(20, 20)),
             (self.btn_build, ':/images/dict.png', QSize(22, 22)),
         )
@@ -471,14 +494,121 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         config.save()
 
     def refresh_ollama_models(self):
-        current = self.cb_ollama_model.currentText().strip() or OLLAMA_RECOMMENDED_MODEL
-        result = ollama_models(self.txt_ollama_base_url.text().strip())
-
-        if result.status_code != 200:
-            self.__set_provider_status(result.message, warning=True)
+        if self.__ollama_pull_handle is not None:
             return
 
-        models = list(result.models)
+        if self.__ollama_status_handle is not None:
+            self.__ollama_status_handle.cancel()
+
+        self.__set_ollama_busy(True)
+        self.__set_ollama_status(
+            interface.text('OptionsDialog', 'Checking Ollama setup...'),
+            warning=False,
+        )
+        handle = self.__ollama_runner.start(
+            refresh_ollama_status_task,
+            self.txt_ollama_base_url.text().strip(),
+            job_name=interface.text('OptionsDialog', 'Checking Ollama setup...'),
+        )
+        self.__ollama_status_handle = handle
+        handle.result.connect(lambda status, task_handle=handle: self.__ollama_status_result(status, task_handle))
+        handle.error.connect(lambda error, task_handle=handle: self.__ollama_task_error(error, task_handle))
+        handle.finished.connect(lambda cancelled, task_handle=handle: self.__ollama_status_finished(cancelled, task_handle))
+
+    def download_ollama(self):
+        QDesktopServices.openUrl(QUrl(OLLAMA_DOWNLOAD_URL))
+        self.__set_ollama_status(
+            interface.text('OptionsDialog', 'Opened the official Ollama download page. Install Ollama, start it, then refresh models.'),
+            warning=False,
+        )
+
+    def download_ollama_recommended_model(self):
+        if not self.__ollama_status or not self.__ollama_status.can_pull_recommended_model:
+            self.__set_ollama_status(
+                interface.text('OptionsDialog', 'Recommended model download is not available until Ollama is installed and running.'),
+                warning=True,
+            )
+            return
+
+        if not self.__confirm_ollama_model_download():
+            return
+
+        self.__ollama_pull_succeeded = False
+        self.__set_ollama_busy(True, pulling=True)
+        handle = self.__ollama_runner.start(
+            pull_ollama_model_task,
+            self.__ollama_status.executable,
+            OLLAMA_RECOMMENDED_MODEL,
+            job_name=interface.text('OptionsDialog', 'Downloading Ollama model...'),
+        )
+        self.__ollama_pull_handle = handle
+        handle.progress.connect(self.__ollama_pull_progress)
+        handle.result.connect(lambda result, task_handle=handle: self.__ollama_pull_result(result, task_handle))
+        handle.error.connect(lambda error, task_handle=handle: self.__ollama_task_error(error, task_handle))
+        handle.finished.connect(lambda cancelled, task_handle=handle: self.__ollama_pull_finished(cancelled, task_handle))
+
+    def cancel_ollama_model_download(self):
+        if self.__ollama_pull_handle is not None:
+            self.__ollama_pull_handle.cancel()
+            self.__set_ollama_status(interface.text('OptionsDialog', 'Cancelling Ollama model download...'), warning=True)
+            self.btn_ollama_cancel_pull.setEnabled(False)
+
+    @Slot(object)
+    def __ollama_status_result(self, status: OllamaSetupStatus, handle):
+        if handle is not self.__ollama_status_handle:
+            return
+        self.__ollama_status = status
+        self.__apply_ollama_status(status)
+
+    @Slot(object)
+    def __ollama_pull_result(self, result, handle):
+        if handle is not self.__ollama_pull_handle:
+            return
+        if result.success:
+            self.__ollama_pull_succeeded = True
+            self.cb_ollama_model.setCurrentText(result.model)
+            self.cb_ollama_enabled.setChecked(True)
+            self.change_ai_provider_settings()
+            self.__set_ollama_status(result.message, warning=False)
+        else:
+            self.__set_ollama_status(result.message, warning=True)
+
+    @Slot(object)
+    def __ollama_pull_progress(self, progress):
+        if progress.message:
+            self.__set_ollama_status(progress.message, warning=False)
+
+    @Slot(object)
+    def __ollama_task_error(self, error, handle):
+        if handle is self.__ollama_status_handle:
+            self.__ollama_status_handle = None
+        if handle is self.__ollama_pull_handle:
+            self.__ollama_pull_handle = None
+        self.__set_ollama_busy(False)
+        self.__set_ollama_status(error.message, warning=True)
+
+    @Slot(bool)
+    def __ollama_status_finished(self, _cancelled: bool, handle):
+        if handle is not self.__ollama_status_handle:
+            return
+        self.__ollama_status_handle = None
+        self.__set_ollama_busy(False)
+
+    @Slot(bool)
+    def __ollama_pull_finished(self, _cancelled: bool, handle):
+        if handle is not self.__ollama_pull_handle:
+            return
+        succeeded = self.__ollama_pull_succeeded
+        self.__ollama_pull_handle = None
+        self.__ollama_pull_succeeded = False
+        self.__set_ollama_busy(False)
+        if succeeded:
+            self.refresh_ollama_models()
+
+    def __apply_ollama_status(self, status: OllamaSetupStatus):
+        self.__ollama_status = status
+        current = self.cb_ollama_model.currentText().strip() or OLLAMA_RECOMMENDED_MODEL
+        models = list(status.models)
         if current and current not in models:
             models.insert(0, current)
         if OLLAMA_RECOMMENDED_MODEL not in models:
@@ -489,20 +619,66 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.cb_ollama_model.addItems(models)
         self.cb_ollama_model.setCurrentText(current)
         self.cb_ollama_model.blockSignals(False)
+        self.__set_ollama_status(status.message, warning=not status.recommended_model_installed)
+        self.__sync_ollama_buttons()
 
-        if OLLAMA_RECOMMENDED_MODEL not in result.models:
-            self.__set_provider_status(
-                interface.text(
-                    'OptionsDialog',
-                    'Ollama models loaded. Recommended model is missing. Run: ollama pull translategemma:12b'
-                ),
-                warning=True,
-            )
-        else:
-            self.__set_provider_status(
-                interface.text('OptionsDialog', 'Ollama models loaded: {count:,}.').format(count=len(result.models)),
-                warning=False,
-            )
+    def __set_ollama_busy(self, busy: bool, pulling: bool = False):
+        self.btn_ollama_refresh.setEnabled(not busy)
+        self.btn_ollama_test.setEnabled(not busy)
+        self.btn_ollama_download.setEnabled(not busy)
+        self.btn_ollama_pull.setEnabled(not busy)
+        self.btn_ollama_cancel_pull.setVisible(pulling)
+        self.btn_ollama_cancel_pull.setEnabled(pulling)
+        if busy and self.__ollama_status is None and not pulling:
+            self.btn_ollama_download.setVisible(False)
+            self.btn_ollama_pull.setVisible(False)
+        if not busy:
+            self.__sync_ollama_buttons()
+
+    def __sync_ollama_buttons(self):
+        status = self.__ollama_status
+        if status is None:
+            self.btn_ollama_download.setVisible(False)
+            self.btn_ollama_pull.setVisible(False)
+            self.btn_ollama_cancel_pull.setVisible(False)
+            return
+
+        self.btn_ollama_download.setVisible(not status.installed)
+        self.btn_ollama_pull.setVisible(status.can_pull_recommended_model)
+        self.btn_ollama_pull.setEnabled(status.can_pull_recommended_model and self.__ollama_pull_handle is None)
+        self.btn_ollama_test.setEnabled(status.server_reachable and self.__ollama_pull_handle is None)
+        self.btn_ollama_cancel_pull.setVisible(self.__ollama_pull_handle is not None)
+
+    def __set_ollama_status(self, text: str, warning: bool = False):
+        self.lbl_ollama_status.setProperty('state', 'warning' if warning else 'ok')
+        self.lbl_ollama_status.setText(text)
+        self.lbl_ollama_status.style().unpolish(self.lbl_ollama_status)
+        self.lbl_ollama_status.style().polish(self.lbl_ollama_status)
+
+    def __confirm_ollama_model_download(self) -> bool:
+        message_box = QMessageBox(self)
+        message_box.setIcon(QMessageBox.Icon.Warning)
+        message_box.setWindowTitle(interface.text('OptionsDialog', 'Download recommended Ollama model'))
+        message_box.setText(interface.text(
+            'OptionsDialog',
+            'Download {model} for local translation?'
+        ).format(model=OLLAMA_RECOMMENDED_MODEL))
+        message_box.setInformativeText(interface.text(
+            'OptionsDialog',
+            'This model is about {size}. It needs internet access and disk space, and Ollama stores it outside this app.'
+        ).format(size=OLLAMA_RECOMMENDED_MODEL_SIZE))
+        message_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel)
+        message_box.setDefaultButton(QMessageBox.StandardButton.Cancel)
+        message_box.setEscapeButton(QMessageBox.StandardButton.Cancel)
+        continue_button = message_box.button(QMessageBox.StandardButton.Yes)
+        continue_button.setText(interface.text('OptionsDialog', 'Download model'))
+        cancel_button = message_box.button(QMessageBox.StandardButton.Cancel)
+        cancel_button.setText(interface.text('TranslateDialog', 'Cancel'))
+
+        answer = message_box.exec()
+        message_box.deleteLater()
+        yes = QMessageBox.StandardButton.Yes
+        return answer == yes or answer == yes.value
 
     def test_deepl_key(self):
         usage = deepl_usage(self.txt_deepl_key.text().strip())

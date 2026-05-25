@@ -104,13 +104,13 @@ def ollama_base_url(value: str = None) -> str:
     return base_url.strip().rstrip('/')
 
 
-def ollama_models(base_url: str = None) -> OllamaModels:
+def ollama_models(base_url: str = None, timeout: int | float = 5) -> OllamaModels:
     url = ollama_base_url(base_url)
     if not url:
         return OllamaModels(400, (), interface.text('Errors', 'Ollama base URL is empty.'))
 
     try:
-        response = requests.get(f'{url}/api/tags', timeout=5)
+        response = requests.get(f'{url}/api/tags', timeout=timeout)
     except Exception:
         return OllamaModels(503, (), interface.text(
             'Errors',
