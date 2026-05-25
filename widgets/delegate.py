@@ -4,7 +4,14 @@ import html
 
 from PySide6.QtCore import QRect, QRectF, QSize, Qt
 from PySide6.QtGui import QColor, QIcon, QTextDocument
-from PySide6.QtWidgets import QProxyStyle, QStyle, QStyledItemDelegate, QStyleOptionHeader, QStyleOptionViewItem
+from PySide6.QtWidgets import (
+    QProxyStyle,
+    QStyle,
+    QStyledItemDelegate,
+    QStyleOptionHeader,
+    QStyleOptionViewItem,
+    QToolTip,
+)
 
 import themes.balanced as theme
 
@@ -113,6 +120,24 @@ class MainDelegatePaint(QStyledItemDelegate):
     def sizeHint(self, option, index):
         return QSize(super().sizeHint(option, index).width(), self.row_height)
 
+    def helpEvent(self, event, view, option, index):
+        if index.column() not in (COLUMN_MAIN_SOURCE, COLUMN_MAIN_TRANSLATE):
+            return super().helpEvent(event, view, option, index)
+
+        text = index.data(Qt.ItemDataRole.DisplayRole) or ''
+        if not text:
+            QToolTip.hideText()
+            return True
+
+        QToolTip.showText(
+            event.globalPos(),
+            self.__tooltip_html(str(text)),
+            view,
+            option.rect,
+            12000,
+        )
+        return True
+
     @staticmethod
     def __normalize_row_density(row_density: str) -> str:
         return row_density if row_density in TABLE_ROW_HEIGHTS else 'comfortable'
@@ -196,6 +221,31 @@ class MainDelegatePaint(QStyledItemDelegate):
         painter.drawText(rect, alignment, elided)
 
     def __highlight_html(self, text: str, selected: bool) -> str:
+        text_color, contents = self.__highlight_fragment(text, selected)
+        return (
+            '<body style="margin:0; padding:0;">'
+            f'<span style="color: {text_color.name()}; line-height: 1.25;">'
+            f'{contents}'
+            '</span>'
+            '</body>'
+        )
+
+    def __tooltip_html(self, text: str) -> str:
+        text_color, contents = self.__highlight_fragment(text, selected=False)
+        return (
+            '<div style="'
+            'width: 680px;'
+            'margin: 0;'
+            'padding: 2px;'
+            'white-space: normal;'
+            f'color: {text_color.name()};'
+            'line-height: 1.3;'
+            '">'
+            f'{contents}'
+            '</div>'
+        )
+
+    def __highlight_fragment(self, text: str, selected: bool) -> tuple[QColor, str]:
         text_color = self.palette.selection_text if selected else self.palette.text
 
         parts = []
@@ -217,13 +267,7 @@ class MainDelegatePaint(QStyledItemDelegate):
             pos = token_match.end
         parts.append(html.escape(text[pos:]))
 
-        return (
-            '<body style="margin:0; padding:0;">'
-            f'<span style="color: {text_color.name()}; line-height: 1.25;">'
-            f'{"".join(parts)}'
-            '</span>'
-            '</body>'
-        )
+        return text_color, ''.join(parts)
 
     def __token_style(self, kind: str, selected: bool) -> tuple[QColor, QColor]:
         color_map = {

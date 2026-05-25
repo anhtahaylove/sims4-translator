@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.2.10 - 2026-05-25
+
+- Fixed main-table hover tooltips so XML-like tags and Sims tokens stay escaped, highlighted, and readable instead of being interpreted as broken tooltip HTML.
+
 ## Version 2.2.9 - 2026-05-25
 
 - Tightened the selected-string preview so it no longer crowds or overlaps the table on laptop-height windows.

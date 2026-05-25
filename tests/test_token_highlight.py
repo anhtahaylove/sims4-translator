@@ -89,6 +89,22 @@ class TokenHighlightTests(unittest.TestCase):
         self.assertIn('{0.SimFirstName}', rendered)
         self.assertGreaterEqual(rendered.count('background-color'), 6)
 
+    def test_table_delegate_tooltip_escapes_markup_and_keeps_token_highlights(self):
+        delegate = MainDelegatePaint()
+
+        rendered = delegate._MainDelegatePaint__tooltip_html(
+            'Dialog line with XML-like <font color="#1E81E6">{0.Number}</font> '
+            'and {0.SimFirstName}\\nNext paragraph.'
+        )
+
+        self.assertIn('width: 680px', rendered)
+        self.assertIn('&lt;font color=&quot;#1E81E6&quot;&gt;', rendered)
+        self.assertNotIn('<font color="#1E81E6">', rendered)
+        self.assertIn('{0.Number}', rendered)
+        self.assertIn('{0.SimFirstName}', rendered)
+        self.assertIn('\\n', rendered)
+        self.assertGreaterEqual(rendered.count('background-color'), 5)
+
     def test_editor_highlighter_uses_preview_token_groups(self):
         editor = QTextEditor()
         try:
