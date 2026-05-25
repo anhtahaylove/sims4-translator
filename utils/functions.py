@@ -5,9 +5,9 @@ import re
 import hashlib
 import tempfile
 import shutil
+from pathlib import Path
 from PySide6.QtWidgets import QFileDialog
 from xml.etree import ElementTree
-from xml.dom import minidom
 
 from singletons.config import config
 from singletons.interface import interface
@@ -96,13 +96,13 @@ def save_binary(filename: str = '') -> str:
 
 
 def create_temporary_copy(path: str) -> str:
-    temp_dir = tempfile.gettempdir()
-    temp_path = os.path.join(temp_dir, os.path.basename(path))
-    shutil.copy2(path, temp_path)
-    return temp_path
+    source_path = Path(path)
+    temp_path = Path(tempfile.gettempdir()) / source_path.name
+    shutil.copy2(source_path, temp_path)
+    return str(temp_path)
 
 
-def text_to_table(text):
+def text_to_table(text: str | None) -> str:
     if text:
         text = text.replace("\r", '')
         text = text.replace("\n", r'\n')
@@ -110,24 +110,24 @@ def text_to_table(text):
     return ''
 
 
-def text_to_edit(text):
+def text_to_edit(text: str | None) -> str:
     return re.sub(r'\\n', "\n", text) if text else ''
 
 
-def text_to_stbl(text):
+def text_to_stbl(text: str | None) -> str:
     return text.replace("\r", '').replace("\n", '\\n') if text else ''
 
 
-def compare(text1, text2):
+def compare(text1: str | None, text2: str | None) -> bool:
     return text_to_stbl(text1) == text_to_stbl(text2)
 
 
-def md5(string):
+def md5(string: str) -> str:
     hash_object = hashlib.md5(string.encode('utf-8'))
     return hash_object.hexdigest()
 
 
-def _hash(value, init, prime, mask):
+def _hash(value: str | bytes, init: int, prime: int, mask: int) -> int:
     if isinstance(value, str):
         value = value.lower().encode()
     h = init
@@ -137,19 +137,18 @@ def _hash(value, init, prime, mask):
     return h
 
 
-def fnv32(value):
+def fnv32(value: str | bytes) -> int:
     return _hash(value, 0x811c9dc5, 0x1000193, (1 << 32) - 1)
 
 
-def fnv64(value):
+def fnv64(value: str | bytes) -> int:
     return _hash(value, 0xCBF29CE484222325, 0x100000001b3, (1 << 64) - 1)
 
 
-def prettify(node):
-    rough = ElementTree.tostring(node, encoding='utf-8').decode('utf-8')
-    reparsed = minidom.parseString(rough)
-    return reparsed.toprettyxml(indent='  ', encoding='utf-8')
+def prettify(node: ElementTree.Element) -> bytes:
+    ElementTree.indent(node, space='  ', level=0)
+    return ElementTree.tostring(node, encoding='utf-8', xml_declaration=True)
 
 
-def parsexml(content):
+def parsexml(content: list[str]) -> str:
     return ''.join((re.sub(r'<(\w+)', r'<\1 DUMMY_LINE="' + str(i + 1) + '"', line) for i, line in enumerate(content)))

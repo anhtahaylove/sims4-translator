@@ -96,7 +96,7 @@ class JobDrawerStateTests(unittest.TestCase):
         self.assertTrue(row.progress_bar.isHidden())
         self.assertTrue(row.cancel_button.isHidden())
         self.assertEqual(row.property('state'), 'done')
-        self.assertEqual(row.percent_label.text(), 'Done')
+        self.assertEqual(row.percent_label.text(), interface.text('JobDrawer', 'Done'))
         close_widget(row)
 
     def test_activity_drawer_starts_collapsed_but_can_expand(self):
@@ -126,7 +126,10 @@ class JobDrawerStateTests(unittest.TestCase):
             drawer.task_started(Handle())
 
             self.assertTrue(drawer.body.isHidden())
-            self.assertIn('active background job', drawer.status_label.text())
+            self.assertEqual(
+                drawer.status_label.text(),
+                f'1 {interface.text("JobDrawer", "active background job(s)")}',
+            )
 
             drawer.set_expanded(True)
 
@@ -148,7 +151,10 @@ class JobDrawerStateTests(unittest.TestCase):
             drawer.task_started(Handle())
 
             self.assertTrue(drawer.body.isHidden())
-            self.assertIn('active background job', drawer.status_label.text())
+            self.assertEqual(
+                drawer.status_label.text(),
+                f'1 {interface.text("JobDrawer", "active background job(s)")}',
+            )
         finally:
             close_widget(drawer)
 

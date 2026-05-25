@@ -39,7 +39,7 @@ python -m unittest discover -s tests -v
 python -m compileall -q models packer singletons storages themes utils widgets windows tests scripts main.py
 python scripts\create_synthetic_package.py
 python scripts\verify_synthetic_smoke.py --directory build\synthetic
-python scripts\verify_version_sync.py --version 2.0.2
+python scripts\verify_version_sync.py --version 2.0.4
 git diff --check
 ```
 

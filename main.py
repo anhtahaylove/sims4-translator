@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import os
 import sys
-import glob
+from pathlib import Path
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QFontDatabase
 
@@ -19,12 +18,37 @@ from utils.app_logging import setup_app_logging
 import resource_rc
 
 
+def resource_base_path() -> Path:
+    frozen_base = getattr(sys, '_MEIPASS', None)
+    if frozen_base:
+        return Path(frozen_base)
+    return Path(__file__).resolve().parent
+
+
+def resource_path(relative_path: str) -> Path:
+    return resource_base_path() / relative_path
+
+
+def font_paths() -> list[Path]:
+    return sorted(resource_path('fonts').glob('*.ttf'))
+
+
+def apply_platform_style(argv: list[str], platform: str | None = None) -> None:
+    if (platform or sys.platform) == 'win32':
+        argv += ['-style', 'windows']
+
+
+def load_application_fonts() -> None:
+    for path in font_paths():
+        QFontDatabase.addApplicationFont(str(path))
+
+
 def show_main_window(window: MainWindow) -> None:
     window.showMaximized()
 
 
-def main():
-    sys.argv += ['-style', 'windows']
+def main() -> None:
+    apply_platform_style(sys.argv)
     setup_app_logging()
 
     app = QApplication(sys.argv)
@@ -35,8 +59,7 @@ def main():
     app_state.set_packages_storage(packages_storage)
     app_state.set_dictionaries_storage(dictionaries_storage)
 
-    for path in glob.glob('fonts/*.ttf'):
-        QFontDatabase.addApplicationFont(os.path.abspath(path))
+    load_application_fonts()
 
     app.setStyleSheet(stylesheet())
 

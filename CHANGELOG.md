@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.0.4 - 2026-05-25
+
+- Fixed startup resource lookup so bundled fonts load correctly outside the repository working directory.
+- Limited the Windows Qt style override to Windows hosts.
+- Modernized XML pretty-printing while preserving the existing binary writer contract.
+
 ## Version 2.0.3 - 2026-05-22
 
 - Added a clearer first-run onboarding flow in the empty workspace.
