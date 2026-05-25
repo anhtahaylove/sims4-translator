@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.2.7 - 2026-05-25
+
+- Fixed editable model dropdowns reopening when Qt auto-hid the popup during a text-field click.
+
 ## Version 2.2.6 - 2026-05-25
 
 - Made searchable model dropdown text-field clicks fully toggle the popup, matching the arrow button behavior.

@@ -18,6 +18,7 @@ class SearchableModelComboBox(NoWheelComboBox):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._popup_recently_hidden = False
         self._popup_visible_before_text_click = False
         self.setEditable(True)
         self.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
@@ -53,6 +54,16 @@ class SearchableModelComboBox(NoWheelComboBox):
         if self.count() > 0 and not self.view().isVisible():
             self.showPopup()
 
+    def hidePopup(self):
+        was_visible = self.view().isVisible()
+        super().hidePopup()
+        if was_visible:
+            self._popup_recently_hidden = True
+            QTimer.singleShot(200, self._clear_recently_hidden_popup)
+
+    def _clear_recently_hidden_popup(self):
+        self._popup_recently_hidden = False
+
     def toggle_model_popup_from_text_click(self):
         if self._popup_visible_before_text_click:
             self.hidePopup()
@@ -65,7 +76,12 @@ class SearchableModelComboBox(NoWheelComboBox):
                 if getattr(event, 'reason', lambda: None)() != Qt.FocusReason.MouseFocusReason:
                     QTimer.singleShot(0, self.open_model_popup)
             elif event.type() == QEvent.Type.MouseButtonPress:
-                self._popup_visible_before_text_click = self.view().isVisible()
+                recently_hidden = self._popup_recently_hidden
+                self._popup_visible_before_text_click = (
+                    self.view().isVisible() or recently_hidden
+                )
+                if recently_hidden:
+                    self._popup_recently_hidden = False
             elif event.type() == QEvent.Type.MouseButtonRelease:
                 QTimer.singleShot(0, self.toggle_model_popup_from_text_click)
         return super().eventFilter(watched, event)
