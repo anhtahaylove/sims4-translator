@@ -93,13 +93,6 @@ def ai_engine_available(engine: str) -> bool:
     return False
 
 
-def ai_character_cap(option: str) -> int:
-    try:
-        return max(0, int(config.value('api', option) or 0))
-    except (TypeError, ValueError):
-        return 0
-
-
 def ollama_base_url(value: str = None) -> str:
     base_url = value if value is not None else config.value('api', 'ollama_base_url') or OLLAMA_DEFAULT_BASE_URL
     return base_url.strip().rstrip('/')

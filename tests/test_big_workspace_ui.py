@@ -9,7 +9,7 @@ os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
 from PySide6.QtCore import QModelIndex, Qt, QEvent, QEventLoop, QThread, QTimer
 from PySide6.QtGui import QFocusEvent, QIcon, QKeyEvent
-from PySide6.QtWidgets import QApplication, QMessageBox, QHeaderView, QStyleOptionViewItem
+from PySide6.QtWidgets import QApplication, QMessageBox, QHeaderView, QStyleOptionViewItem, QGroupBox
 from unittest.mock import patch
 
 import resource_rc
@@ -1844,7 +1844,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(dialog.gb_provider_gemini.objectName(), 'providerCard')
             self.assertEqual(dialog.gb_provider_openai.objectName(), 'providerCard')
             self.assertEqual(dialog.gb_provider_ollama.objectName(), 'providerCard')
-            self.assertEqual(dialog.gb_provider_limits.objectName(), 'providerCard')
+            provider_titles = [box.title() for box in dialog.providers_content.findChildren(QGroupBox)]
+            self.assertNotIn('Batch AI limits', provider_titles)
             self.assertIsInstance(dialog.cb_gemini_model, SearchableModelComboBox)
             self.assertIsInstance(dialog.cb_openai_model, SearchableModelComboBox)
             self.assertIsInstance(dialog.cb_ollama_model, SearchableModelComboBox)
@@ -1920,8 +1921,6 @@ class WorkspaceProShellTests(unittest.TestCase):
                 dialog.cb_ollama_enabled.setChecked(True)
                 dialog.txt_ollama_base_url.setText('http://localhost:11434')
                 dialog.cb_ollama_model.setCurrentText('translategemma:12b')
-                dialog.txt_ai_session_cap.setText('1234')
-                dialog.txt_ai_daily_cap.setText('5678')
                 dialog.change_ai_provider_settings()
                 dialog.cb_backup.setChecked(True)
                 dialog.checkbox_click()
@@ -1938,8 +1937,6 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertTrue(config.value('api', 'ollama_enabled'))
             self.assertEqual(config.value('api', 'ollama_base_url'), 'http://localhost:11434')
             self.assertEqual(config.value('api', 'ollama_model'), 'translategemma:12b')
-            self.assertEqual(config.value('api', 'ai_session_character_cap'), 1234)
-            self.assertEqual(config.value('api', 'ai_daily_character_cap'), 5678)
             self.assertEqual(config.value('api', 'engine'), 'DeepL')
             self.assertTrue(config.value('save', 'backup'))
             self.assertGreaterEqual(save_mock.call_count, 5)
@@ -2239,6 +2236,36 @@ class WorkspaceProShellTests(unittest.TestCase):
 
             exec_mock.assert_called_once()
             self.assertTrue(accepted)
+        finally:
+            close_widget(dialog)
+
+    def test_batch_translate_ai_providers_always_confirm_before_network_task(self):
+        config.set_value('api', 'gemini_key', 'gemini-secret')
+        config.set_value('api', 'gemini_model', 'gemini-2.5-flash')
+        config.set_value('api', 'engine', 'Gemini')
+        config.set_value('translation', 'source', 'ENG_US')
+        config.set_value('translation', 'destination', 'VI_VN')
+
+        storage = app_state.packages_storage
+        item = record(FLAG_UNVALIDATED)
+        storage.model.items = [item]
+
+        dialog = TranslateDialog()
+        try:
+            dialog.refresh_api_list()
+            dialog.cb_api.setCurrentText('Gemini')
+            dialog.rb_all.setChecked(True)
+
+            with patch.object(dialog, '_TranslateDialog__confirm_ai_cost', return_value=False) as confirm, \
+                    patch.object(dialog._TranslateDialog__runner, 'start') as start:
+                dialog.translate()
+
+            confirm.assert_called_once()
+            args = confirm.call_args.args
+            self.assertEqual(args[0], 'Gemini')
+            self.assertEqual(args[1], [item])
+            start.assert_not_called()
+            self.assertFalse(dialog._TranslateDialog__translating)
         finally:
             close_widget(dialog)
 

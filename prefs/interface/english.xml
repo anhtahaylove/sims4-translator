@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ts language="en_US" name="English" version="2.2.7" authors="">
+<ts language="en_US" name="English" version="2.2.8" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -493,10 +493,6 @@ Errors:
       <translation/>
     </string>
     <string>
-      <source>Batch AI limits</source>
-      <translation/>
-    </string>
-    <string>
       <source>API key</source>
       <translation/>
     </string>
@@ -510,14 +506,6 @@ Errors:
     </string>
     <string>
       <source>Base URL</source>
-      <translation/>
-    </string>
-    <string>
-      <source>Session confirm at</source>
-      <translation/>
-    </string>
-    <string>
-      <source>Daily confirm at</source>
       <translation/>
     </string>
     <string>
@@ -972,22 +960,6 @@ Errors:
     </string>
     <string>
       <source>Translation cache: {hits:,} reused, {misses:,} to translate.</source>
-      <translation/>
-    </string>
-    <string>
-      <source>Session confirmation threshold: {limit:,} characters.</source>
-      <translation/>
-    </string>
-    <string>
-      <source>Daily confirmation threshold: {limit:,} characters.</source>
-      <translation/>
-    </string>
-    <string>
-      <source>This batch is above the configured session threshold.</source>
-      <translation/>
-    </string>
-    <string>
-      <source>This batch is above the configured daily threshold.</source>
       <translation/>
     </string>
     <string>

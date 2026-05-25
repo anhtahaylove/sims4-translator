@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.2.8 - 2026-05-25
+
+- Removed configurable Batch AI limits; AI batch providers now always show a confirmation dialog before sending text.
+- Simplified Providers options by removing session and daily character threshold fields.
+
 ## Version 2.2.7 - 2026-05-25
 
 - Fixed editable model dropdowns reopening when Qt auto-hid the popup during a text-field click.

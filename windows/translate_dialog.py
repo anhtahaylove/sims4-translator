@@ -18,7 +18,7 @@ from singletons.interface import interface
 from singletons.signals import progress_signals, color_signals
 from singletons.state import app_state
 from singletons.translation_cache import translation_cache
-from singletons.translator import ai_character_cap, deepl_usage, estimate_ai_characters, estimate_deepl_characters, translator
+from singletons.translator import deepl_usage, estimate_ai_characters, estimate_deepl_characters, translator
 from singletons.undo import undo
 from utils.task_runner import CancellationToken, TaskReporter, TaskRunner
 from utils.provider_engines import refresh_engine_combo
@@ -454,29 +454,6 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
 
     def __confirm_ai_cost(self, engine: str, items: List[MainRecord]) -> bool:
         character_count = estimate_ai_characters(items)
-        session_cap = ai_character_cap('ai_session_character_cap')
-        daily_cap = ai_character_cap('ai_daily_character_cap')
-        cap_lines = []
-        if session_cap:
-            cap_lines.append(interface.text(
-                'TranslateDialog',
-                'Session confirmation threshold: {limit:,} characters.'
-            ).format(limit=session_cap))
-        if daily_cap:
-            cap_lines.append(interface.text(
-                'TranslateDialog',
-                'Daily confirmation threshold: {limit:,} characters.'
-            ).format(limit=daily_cap))
-        if session_cap and character_count > session_cap:
-            cap_lines.append(interface.text(
-                'TranslateDialog',
-                'This batch is above the configured session threshold.'
-            ))
-        if daily_cap and character_count > daily_cap:
-            cap_lines.append(interface.text(
-                'TranslateDialog',
-                'This batch is above the configured daily threshold.'
-            ))
 
         message_box = QMessageBox(self)
         message_box.setIcon(QMessageBox.Icon.Information)
@@ -485,7 +462,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             'TranslateDialog',
             '{engine} will translate {records:,} records, about {characters:,} source characters.',
         ).format(engine=engine, records=len(items), characters=character_count))
-        message_box.setInformativeText('\n'.join(cap_lines) if cap_lines else interface.text(
+        message_box.setInformativeText(interface.text(
             'TranslateDialog',
             'Review provider pricing and quota before continuing.'
         ))

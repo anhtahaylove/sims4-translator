@@ -361,8 +361,6 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.cb_ollama_enabled.setChecked(bool(config.value('api', 'ollama_enabled')))
         self.txt_ollama_base_url.setText(config.value('api', 'ollama_base_url') or '')
         self.cb_ollama_model.set_model_items((), config.value('api', 'ollama_model') or OLLAMA_RECOMMENDED_MODEL)
-        self.txt_ai_session_cap.setText(str(config.value('api', 'ai_session_character_cap') or 0))
-        self.txt_ai_daily_cap.setText(str(config.value('api', 'ai_daily_character_cap') or 0))
         self.cb_translation_cache.setChecked(bool(config.value('translation_cache', 'enabled')))
 
         self.cb_language.currentIndexChanged.connect(self.interface_change)
@@ -384,8 +382,6 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.cb_ollama_enabled.clicked.connect(self.change_ai_provider_settings)
         self.txt_ollama_base_url.textChanged.connect(self.change_ai_provider_settings)
         self.cb_ollama_model.currentTextChanged.connect(self.change_ai_provider_settings)
-        self.txt_ai_session_cap.textChanged.connect(self.change_ai_provider_settings)
-        self.txt_ai_daily_cap.textChanged.connect(self.change_ai_provider_settings)
         self.btn_deepl_test.clicked.connect(self.test_deepl_key)
         self.btn_deepl_usage.clicked.connect(self.check_deepl_usage)
         self.btn_gemini_test.clicked.connect(lambda: self.test_ai_provider('Gemini'))
@@ -482,7 +478,6 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.gb_provider_gemini.setTitle('Gemini')
         self.gb_provider_openai.setTitle(interface.text('OptionsDialog', 'OpenAI-compatible'))
         self.gb_provider_ollama.setTitle(interface.text('OptionsDialog', 'Ollama local'))
-        self.gb_provider_limits.setTitle(interface.text('OptionsDialog', 'Batch AI limits'))
         self.lbl_deepl_key.setText(interface.text('OptionsDialog', 'API key'))
         self.lbl_deepl_glossary_id.setText(interface.text('OptionsDialog', 'Glossary ID'))
         self.lbl_gemini_key.setText(interface.text('OptionsDialog', 'API key'))
@@ -492,8 +487,6 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.lbl_openai_model.setText(interface.text('OptionsDialog', 'Model'))
         self.lbl_ollama_base_url.setText(interface.text('OptionsDialog', 'Base URL'))
         self.lbl_ollama_model.setText(interface.text('OptionsDialog', 'Model'))
-        self.lbl_ai_session_cap.setText(interface.text('OptionsDialog', 'Session confirm at'))
-        self.lbl_ai_daily_cap.setText(interface.text('OptionsDialog', 'Daily confirm at'))
         self.btn_deepl_test.setText(interface.text('OptionsDialog', 'Test'))
         self.btn_deepl_usage.setText(interface.text('OptionsDialog', 'Usage'))
         self.btn_gemini_test.setText(interface.text('OptionsDialog', 'Test'))
@@ -628,8 +621,6 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         config.set_value('api', 'ollama_enabled', self.cb_ollama_enabled.isChecked())
         config.set_value('api', 'ollama_base_url', self.txt_ollama_base_url.text().strip())
         config.set_value('api', 'ollama_model', self.cb_ollama_model.currentText().strip())
-        config.set_value('api', 'ai_session_character_cap', self.__integer_field(self.txt_ai_session_cap.text()))
-        config.set_value('api', 'ai_daily_character_cap', self.__integer_field(self.txt_ai_daily_cap.text()))
         self.__sync_engine_preference()
         config.save()
         self.__refresh_ollama_status_message()
@@ -1055,13 +1046,6 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             config.set_value('api', 'engine', 'DeepL')
         elif config.value('api', 'engine') not in translator.engines:
             config.set_value('api', 'engine', 'Google')
-
-    @staticmethod
-    def __integer_field(text: str) -> int:
-        try:
-            return max(0, int((text or '').strip()))
-        except ValueError:
-            return 0
 
     def interface_change(self):
         config.set_value('interface', 'language', self.cb_language.currentData())

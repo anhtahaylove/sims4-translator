@@ -83,9 +83,7 @@ class ConfigManager:
             'openai_model': 'gpt-4o-mini',
             'ollama_enabled': False,
             'ollama_base_url': 'http://localhost:11434',
-            'ollama_model': 'translategemma:12b',
-            'ai_session_character_cap': 20000,
-            'ai_daily_character_cap': 0
+            'ollama_model': 'translategemma:12b'
         },
         'translation_cache': {
             'enabled': True
