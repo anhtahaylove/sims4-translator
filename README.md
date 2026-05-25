@@ -166,7 +166,7 @@ The important idea is simple: translate the human-readable words, but keep the r
 ## Translation Provider Setup
 
 Translation providers are optional. You can still use the app without any API key, and Ollama can run locally on your machine.
-Configured providers appear in **Batch Translate** and **Translation Studio** after they are valid; providers with an enable checkbox, such as Ollama, must be enabled first.
+Provider settings live in **Options > Providers**. Configured providers appear in **Batch Translate** and **Translation Studio** after they are valid; providers with an enable checkbox, such as Ollama, must be enabled first.
 
 To use them:
 

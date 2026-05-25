@@ -2,7 +2,7 @@
 
 from PySide6.QtCore import QMetaObject, QSize, Qt
 from PySide6.QtWidgets import QWidget, QAbstractItemView, QCheckBox, QComboBox, QGridLayout, QGroupBox, QHBoxLayout, \
-    QLabel, QLineEdit, QPushButton, QTableView, QVBoxLayout, QTabWidget, QHeaderView
+    QLabel, QLineEdit, QPushButton, QScrollArea, QTableView, QVBoxLayout, QTabWidget, QHeaderView
 
 
 class Ui_OptionsDialog(object):
@@ -17,15 +17,18 @@ class Ui_OptionsDialog(object):
         layout.setSpacing(10)
 
         self.tab_general = QWidget()
+        self.tab_providers = QWidget()
         self.tab_dictionaries = QWidget()
 
         self.tabs = QTabWidget(OptionsDialog)
         self.tabs.addTab(self.tab_general, '')
+        self.tabs.addTab(self.tab_providers, '')
         self.tabs.addTab(self.tab_dictionaries, '')
 
         layout.addWidget(self.tabs)
 
         self.build_general_tab()
+        self.build_providers_tab()
         self.build_dictionaries_tab()
 
         QMetaObject.connectSlotsByName(OptionsDialog)
@@ -118,7 +121,27 @@ class Ui_OptionsDialog(object):
 
         vlayout.addWidget(self.gb_lang)
 
-        self.gb_deepl = QGroupBox(self.tab_general)
+        vlayout.addStretch()
+
+    def build_providers_tab(self):
+        tab_layout = QVBoxLayout(self.tab_providers)
+        tab_layout.setContentsMargins(0, 0, 0, 0)
+        tab_layout.setSpacing(0)
+
+        self.providers_scroll = QScrollArea(self.tab_providers)
+        self.providers_scroll.setObjectName('providersScroll')
+        self.providers_scroll.setWidgetResizable(True)
+        self.providers_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        self.providers_content = QWidget(self.providers_scroll)
+        self.providers_content.setObjectName('providersContent')
+        self.providers_scroll.setWidget(self.providers_content)
+
+        vlayout = QVBoxLayout(self.providers_content)
+        vlayout.setContentsMargins(8, 8, 8, 8)
+        vlayout.setSpacing(10)
+
+        self.gb_deepl = QGroupBox(self.providers_content)
         self.gb_deepl.setObjectName('optionsSection')
 
         layout_deepl = QVBoxLayout(self.gb_deepl)
@@ -280,7 +303,7 @@ class Ui_OptionsDialog(object):
 
         vlayout.addWidget(self.gb_deepl)
 
-        self.gb_cache = QGroupBox(self.tab_general)
+        self.gb_cache = QGroupBox(self.providers_content)
         self.gb_cache.setObjectName('optionsSection')
 
         layout_cache = QVBoxLayout(self.gb_cache)
@@ -304,6 +327,7 @@ class Ui_OptionsDialog(object):
         vlayout.addWidget(self.gb_cache)
 
         vlayout.addStretch()
+        tab_layout.addWidget(self.providers_scroll)
 
     def build_dictionaries_tab(self):
         vlayout = QVBoxLayout(self.tab_dictionaries)

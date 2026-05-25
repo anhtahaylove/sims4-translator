@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-APP_VERSION = '2.2.2'
+APP_VERSION = '2.2.3'
 APP_RELEASE_CANDITATE = False
 DICTIONARY_VERSION = 4
 

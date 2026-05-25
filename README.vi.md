@@ -170,7 +170,7 @@ Nói ngắn gọn: bạn có thể dịch câu chữ cho tự nhiên, nhưng tok
 ## Cấu Hình Provider Dịch
 
 Provider dịch là tùy chọn. Không có API key thì bạn vẫn dùng app bình thường, và Ollama có thể chạy local trên máy bạn.
-Provider đã cấu hình hợp lệ sẽ xuất hiện trong **Batch Translate** và **Translation Studio**; provider có checkbox bật/tắt như Ollama thì cần bật trước.
+Cấu hình provider nằm trong **Tùy chọn > Provider**. Provider đã cấu hình hợp lệ sẽ xuất hiện trong **Batch Translate** và **Translation Studio**; provider có checkbox bật/tắt như Ollama thì cần bật trước.
 
 Cách dùng:
 

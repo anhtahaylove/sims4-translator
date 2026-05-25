@@ -402,6 +402,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             'No packs match the current filter. Clear the search field to see the full catalog.'
         ))
         self.tabs.setTabText(self.tabs.indexOf(self.tab_general), interface.text('OptionsDialog', 'General'))
+        self.tabs.setTabText(self.tabs.indexOf(self.tab_providers), interface.text('OptionsDialog', 'Providers'))
         self.tabs.setTabText(self.tabs.indexOf(self.tab_dictionaries), interface.text('OptionsDialog', 'Dictionaries'))
         self.gb_deepl.setTitle(interface.text('OptionsDialog', 'Translation providers'))
         self.gb_provider_deepl.setTitle('DeepL')
@@ -432,7 +433,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.btn_ollama_cancel_pull.setText(interface.text('TranslateDialog', 'Cancel'))
         self.lbl_deepl_hint.setText(interface.text(
             'OptionsDialog',
-            'Configured providers appear in Batch Translate and Translation Studio. Changes are saved automatically.'
+            'Configured and enabled providers appear in Batch Translate and Translation Studio.'
         ))
         self.gb_cache.setTitle(interface.text('OptionsDialog', 'Translation cache'))
         self.cb_translation_cache.setText(interface.text('OptionsDialog', 'Reuse exact translation matches'))

@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.2.3 - 2026-05-25
+
+- Moved translation provider settings and translation cache into a dedicated Providers tab.
+- Added scrollable provider settings so Options remains usable on smaller screens.
+- Kept provider test behavior and translation engine refresh behavior unchanged from v2.2.2.
+
 ## Version 2.2.2 - 2026-05-25
 
 - Split Options provider settings into separate DeepL, Gemini, OpenAI-compatible, Ollama, and AI limit cards.
