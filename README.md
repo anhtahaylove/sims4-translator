@@ -61,8 +61,8 @@ Open a package, choose a string, edit it in Translation Studio, check token warn
 | Requirement | Notes |
 | --- | --- |
 | Windows | Windows 10 or newer is the supported target for the packaged app. |
-| Internet | Optional. Needed only for online translation providers such as DeepL, Google, or MyMemory. |
-| DeepL key | Optional. Add one only if you want DeepL translation, usage checks, or glossary support. |
+| Internet | Optional. Needed only for online translation providers such as DeepL, Google, MyMemory, Gemini, or OpenAI-compatible endpoints. |
+| Provider keys | Optional. Add keys only for providers you want to use; the app does not require online translation. |
 | Source build | Source users need Python and the packages in `requirements.txt`; the repo does not pin an exact Python version. |
 
 ## What Can I Do With It?
@@ -73,7 +73,7 @@ Open a package, choose a string, edit it in Translation Studio, check token warn
 | Work faster | Search by ID, original text, or translated text from one hybrid search box. |
 | Read long strings | Use Selection Preview to see the full selected string without opening the editor. |
 | Avoid broken text | Highlight Sims tokens like `{0.SimFirstName}`, `\n`, `<b>`, and `<i>`. |
-| Use machine translation | Connect DeepL, Google, or MyMemory, with DeepL usage checks and batch cost warnings. |
+| Use machine translation | Connect DeepL, Google, MyMemory, Gemini, or OpenAI-compatible endpoints, with cache reuse and batch cost warnings. |
 | Release more safely | Run Validate Release before Save as package, Export, or Finalize. |
 
 ## A Quick Look
@@ -163,19 +163,19 @@ _Original stays in English. Translation can be Vietnamese, but runtime tokens st
 
 The important idea is simple: translate the human-readable words, but keep the runtime tokens, line breaks, and tags intentionally preserved.
 
-## DeepL Setup
+## Translation Provider Setup
 
-DeepL is optional. You can still use the app without a DeepL key.
+Online providers are optional. You can still use the app without any API key.
 
-To use it:
+To use them:
 
 1. Open **Options**.
-2. Paste your **DeepL API key**.
-3. Click **Test key** to confirm the key works.
-4. Click **Check usage** before big batch jobs.
-5. Optional: paste a **Glossary ID** if you already created a DeepL glossary for consistent game terms.
+2. Paste keys only for the providers you want: DeepL, Gemini, or an OpenAI-compatible endpoint.
+3. Click the provider test button to confirm the key works.
+4. Check DeepL usage or review AI character thresholds before big batch jobs.
+5. Optional: paste a DeepL **Glossary ID** if you already created one for consistent game terms.
 
-Before DeepL batch translation starts, the app estimates how many source characters will be sent so you can avoid spending quota by accident.
+Before paid/provider-backed batch translation starts, the app estimates how many source characters will be sent so you can avoid spending quota by accident.
 
 ## Supported Formats
 

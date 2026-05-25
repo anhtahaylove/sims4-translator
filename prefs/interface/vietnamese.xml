@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="vi_VN" name="Vietnamese" version="2.0.6" authors="Community">
+<ts language="vi_VN" name="Vietnamese" version="2.1.0" authors="Community">
   <context name="MainWindow">
     <string>
       <source>File</source>
@@ -504,6 +504,10 @@
       <translation>Khóa API DeepL</translation>
     </string>
     <string>
+      <source>Translation providers</source>
+      <translation>Nhà cung cấp dịch</translation>
+    </string>
+    <string>
       <source>Test key</source>
       <translation>Kiểm tra khóa</translation>
     </string>
@@ -574,6 +578,18 @@
     <string>
       <source>The translation version differs from the application version, so the interface may not be fully translated</source>
       <translation>Phiên bản file dịch khác phiên bản ứng dụng, nên giao diện có thể chưa được dịch đầy đủ</translation>
+    </string>
+    <string>
+      <source>Test Gemini</source>
+      <translation>Kiểm tra Gemini</translation>
+    </string>
+    <string>
+      <source>Test OpenAI-compatible</source>
+      <translation>Kiểm tra OpenAI-compatible</translation>
+    </string>
+    <string>
+      <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini and OpenAI-compatible providers use a safety prompt that asks the model to preserve Sims tokens and line count. Do not share or commit your API key.</source>
+      <translation>Cấu hình nhà cung cấp dịch tùy chọn, rồi chọn provider trong Search and Edit hoặc Batch translate. DeepL hỗ trợ kiểm tra usage và Glossary ID. Gemini và OpenAI-compatible dùng prompt an toàn để yêu cầu model giữ token Sims và số dòng. Không chia sẻ hoặc commit API key.</translation>
     </string>
     <string>
       <source>Translation cache</source>
@@ -1186,6 +1202,38 @@
     <string>
       <source>Translation cache: {hits:,} reused, {misses:,} to translate.</source>
       <translation>Cache bản dịch: dùng lại {hits:,}, còn {misses:,} mục cần dịch.</translation>
+    </string>
+    <string>
+      <source>Session confirmation threshold: {limit:,} characters.</source>
+      <translation>Ngưỡng xác nhận mỗi phiên: {limit:,} ký tự.</translation>
+    </string>
+    <string>
+      <source>Daily confirmation threshold: {limit:,} characters.</source>
+      <translation>Ngưỡng xác nhận mỗi ngày: {limit:,} ký tự.</translation>
+    </string>
+    <string>
+      <source>This batch is above the configured session threshold.</source>
+      <translation>Batch này vượt ngưỡng phiên đã cấu hình.</translation>
+    </string>
+    <string>
+      <source>This batch is above the configured daily threshold.</source>
+      <translation>Batch này vượt ngưỡng ngày đã cấu hình.</translation>
+    </string>
+    <string>
+      <source>AI batch translation</source>
+      <translation>Dịch hàng loạt bằng AI</translation>
+    </string>
+    <string>
+      <source>{engine} will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation>{engine} sẽ dịch {records:,} record, khoảng {characters:,} ký tự nguồn.</translation>
+    </string>
+    <string>
+      <source>Review provider pricing and quota before continuing.</source>
+      <translation>Hãy kiểm tra giá và quota của provider trước khi tiếp tục.</translation>
+    </string>
+    <string>
+      <source>Continue with AI provider</source>
+      <translation>Tiếp tục với provider AI</translation>
     </string>
     <string>
       <source>Stopping...</source>

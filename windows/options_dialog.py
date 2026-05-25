@@ -21,7 +21,7 @@ from singletons.languages import languages
 from singletons.signals import progress_signals
 from singletons.state import app_state
 from singletons.translation_cache import translation_cache
-from singletons.translator import deepl_usage
+from singletons.translator import deepl_usage, translator
 from utils.functions import opendir
 from utils.constants import *
 
@@ -229,6 +229,13 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.txt_path.setText(config.value('dictionaries', 'gamepath'))
         self.txt_deepl_key.setText(config.value('api', 'deepl_key'))
         self.txt_deepl_glossary_id.setText(config.value('api', 'deepl_glossary_id') or '')
+        self.txt_gemini_key.setText(config.value('api', 'gemini_key') or '')
+        self.txt_gemini_model.setText(config.value('api', 'gemini_model') or '')
+        self.txt_openai_key.setText(config.value('api', 'openai_key') or '')
+        self.txt_openai_base_url.setText(config.value('api', 'openai_base_url') or '')
+        self.txt_openai_model.setText(config.value('api', 'openai_model') or '')
+        self.txt_ai_session_cap.setText(str(config.value('api', 'ai_session_character_cap') or 0))
+        self.txt_ai_daily_cap.setText(str(config.value('api', 'ai_daily_character_cap') or 0))
         self.cb_translation_cache.setChecked(bool(config.value('translation_cache', 'enabled')))
 
         self.cb_language.currentIndexChanged.connect(self.interface_change)
@@ -242,8 +249,17 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
 
         self.txt_deepl_key.textChanged.connect(self.change_deepl_key)
         self.txt_deepl_glossary_id.textChanged.connect(self.change_deepl_glossary_id)
+        self.txt_gemini_key.textChanged.connect(self.change_ai_provider_settings)
+        self.txt_gemini_model.textChanged.connect(self.change_ai_provider_settings)
+        self.txt_openai_key.textChanged.connect(self.change_ai_provider_settings)
+        self.txt_openai_base_url.textChanged.connect(self.change_ai_provider_settings)
+        self.txt_openai_model.textChanged.connect(self.change_ai_provider_settings)
+        self.txt_ai_session_cap.textChanged.connect(self.change_ai_provider_settings)
+        self.txt_ai_daily_cap.textChanged.connect(self.change_ai_provider_settings)
         self.btn_deepl_test.clicked.connect(self.test_deepl_key)
         self.btn_deepl_usage.clicked.connect(self.check_deepl_usage)
+        self.btn_gemini_test.clicked.connect(lambda: self.test_ai_provider('Gemini'))
+        self.btn_openai_test.clicked.connect(lambda: self.test_ai_provider('OpenAI-compatible'))
         self.cb_translation_cache.clicked.connect(self.change_translation_cache_enabled)
         self.btn_translation_cache_clear.clicked.connect(self.clear_translation_cache)
 
@@ -324,14 +340,16 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         ))
         self.tabs.setTabText(self.tabs.indexOf(self.tab_general), interface.text('OptionsDialog', 'General'))
         self.tabs.setTabText(self.tabs.indexOf(self.tab_dictionaries), interface.text('OptionsDialog', 'Dictionaries'))
-        self.gb_deepl.setTitle(interface.text('OptionsDialog', 'DeepL API key'))
+        self.gb_deepl.setTitle(interface.text('OptionsDialog', 'Translation providers'))
         self.btn_deepl_test.setText(interface.text('OptionsDialog', 'Test key'))
         self.btn_deepl_usage.setText(interface.text('OptionsDialog', 'Check usage'))
+        self.btn_gemini_test.setText(interface.text('OptionsDialog', 'Test Gemini'))
+        self.btn_openai_test.setText(interface.text('OptionsDialog', 'Test OpenAI-compatible'))
         self.lbl_deepl_hint.setText(interface.text(
             'OptionsDialog',
-            'Paste a DeepL API key here, then choose DeepL in Search and Edit or Batch translate. '
-            'DeepL appears only when the selected source and destination languages are supported. '
-            'Glossary ID is optional and must match the selected DeepL language pair. '
+            'Configure optional translation providers, then choose one in Search and Edit or Batch translate. '
+            'DeepL supports usage checks and glossary ID. Gemini and OpenAI-compatible providers use a safety prompt '
+            'that asks the model to preserve Sims tokens and line count. '
             'Do not share or commit your API key.'
         ))
         self.lbl_deepl_autosave.setText(interface.text('OptionsDialog', 'Changes are saved automatically.'))
@@ -379,6 +397,8 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             (self.btn_path, ':/images/load.png', QSize(20, 20)),
             (self.btn_deepl_test, ':/images/life_validate.png', QSize(20, 20)),
             (self.btn_deepl_usage, ':/images/api.png', QSize(20, 20)),
+            (self.btn_gemini_test, ':/images/api.png', QSize(20, 20)),
+            (self.btn_openai_test, ':/images/api.png', QSize(20, 20)),
             (self.btn_translation_cache_clear, ':/images/validate_0.png', QSize(20, 20)),
             (self.btn_build, ':/images/dict.png', QSize(22, 22)),
         )
@@ -414,11 +434,22 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
 
     def change_deepl_key(self):
         config.set_value('api', 'deepl_key', self.txt_deepl_key.text().strip())
-        self.__sync_deepl_engine_preference()
+        self.__sync_engine_preference()
         config.save()
 
     def change_deepl_glossary_id(self):
         config.set_value('api', 'deepl_glossary_id', self.txt_deepl_glossary_id.text().strip())
+        config.save()
+
+    def change_ai_provider_settings(self):
+        config.set_value('api', 'gemini_key', self.txt_gemini_key.text().strip())
+        config.set_value('api', 'gemini_model', self.txt_gemini_model.text().strip())
+        config.set_value('api', 'openai_key', self.txt_openai_key.text().strip())
+        config.set_value('api', 'openai_base_url', self.txt_openai_base_url.text().strip())
+        config.set_value('api', 'openai_model', self.txt_openai_model.text().strip())
+        config.set_value('api', 'ai_session_character_cap', self.__integer_field(self.txt_ai_session_cap.text()))
+        config.set_value('api', 'ai_daily_character_cap', self.__integer_field(self.txt_ai_daily_cap.text()))
+        self.__sync_engine_preference()
         config.save()
 
     def test_deepl_key(self):
@@ -428,6 +459,17 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
     def check_deepl_usage(self):
         usage = deepl_usage(self.txt_deepl_key.text().strip())
         self.__set_deepl_usage_status(usage, validation_only=False)
+
+    def test_ai_provider(self, engine: str):
+        response = translator.translate(engine, 'Hello')
+        if response.status_code == 200:
+            self.lbl_deepl_status.setProperty('state', 'ok')
+            self.lbl_deepl_status.setText(f'{engine}: OK')
+        else:
+            self.lbl_deepl_status.setProperty('state', 'warning')
+            self.lbl_deepl_status.setText(response.text)
+        self.lbl_deepl_status.style().unpolish(self.lbl_deepl_status)
+        self.lbl_deepl_status.style().polish(self.lbl_deepl_status)
 
     def change_translation_cache_enabled(self):
         config.set_value('translation_cache', 'enabled', self.cb_translation_cache.isChecked())
@@ -474,20 +516,27 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
     def language_change(self):
         config.set_value('translation', 'source', self.cb_source.currentText())
         config.set_value('translation', 'destination', self.cb_dest.currentText())
-        self.__sync_deepl_engine_preference()
+        self.__sync_engine_preference()
         config.save()
         self.start_culling_timer()
 
     @staticmethod
-    def __sync_deepl_engine_preference():
-        api_key = config.value('api', 'deepl_key')
+    def __sync_engine_preference():
         src = languages.source
         dst = languages.destination
+        api_key = config.value('api', 'deepl_key')
         deepl_available = bool(api_key and src and src.deepl and dst and dst.deepl)
         if deepl_available:
             config.set_value('api', 'engine', 'DeepL')
-        elif config.value('api', 'engine') == 'DeepL':
+        elif config.value('api', 'engine') not in translator.engines:
             config.set_value('api', 'engine', 'Google')
+
+    @staticmethod
+    def __integer_field(text: str) -> int:
+        try:
+            return max(0, int((text or '').strip()))
+        except ValueError:
+            return 0
 
     def interface_change(self):
         config.set_value('interface', 'language', self.cb_language.currentData())

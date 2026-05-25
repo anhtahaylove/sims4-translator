@@ -18,8 +18,12 @@ LOGGER_NAME = 'sims4_translator'
 LOG_DIR_ENV = 'SIMS4_TRANSLATOR_LOG_DIR'
 API_KEY_PATTERNS = (
     re.compile(r'(?i)(deepl[_\-\s]*(?:api[_\-\s]*)?key\s*[:=]\s*)(\S+)'),
+    re.compile(r'(?i)(gemini[_\-\s]*(?:api[_\-\s]*)?key\s*[:=]\s*)(\S+)'),
+    re.compile(r'(?i)(openai[_\-\s]*(?:api[_\-\s]*)?key\s*[:=]\s*)(\S+)'),
     re.compile(r'(?i)(auth[_\-\s]*key\s*[:=]\s*)(\S+)'),
+    re.compile(r'(?i)(bearer\s+)([A-Za-z0-9._\-]{20,})'),
     re.compile(r'\b[A-Za-z0-9_-]{20,}:fx\b'),
+    re.compile(r'\bAIza[0-9A-Za-z_\-]{20,}\b'),
 )
 
 

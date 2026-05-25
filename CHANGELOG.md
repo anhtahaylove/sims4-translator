@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.1.0 - 2026-05-25
+
+- Added Gemini and OpenAI-compatible translation providers with token-preserving prompts and mocked tests.
+- Expanded Options into a provider settings panel for DeepL, Gemini, OpenAI-compatible endpoints, and AI character confirmation thresholds.
+- Extended translation cache variants and redaction coverage for AI provider keys.
+
 ## Version 2.0.6 - 2026-05-25
 
 - Added a persistent translation cache so interrupted or repeated batch translation can reuse exact successful results.

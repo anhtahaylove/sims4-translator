@@ -19,6 +19,7 @@ PlaceholderRestoreResult = namedtuple('PlaceholderRestoreResult', 'text warning'
 PLACEHOLDER_PATTERN = re.compile(r'(?:\\n)+|{[A-Za-z]?\d+\.[^{}]+}|<[^>]+>')
 BASE_PLACEHOLDER_PATTERN = re.compile(r'{[A-Za-z]?\d+\.[^{}]+}|<[^>]+>')
 XML_PLACEHOLDER_PATTERN = re.compile(r'<x\s+id=["\'](\d+)["\']\s*/>', re.IGNORECASE)
+AI_ENGINE_NAMES = ('gemini', 'openai-compatible')
 
 
 def deepl_endpoint(api_key: str) -> str:
@@ -70,6 +71,30 @@ def estimate_deepl_characters(items) -> int:
     return total
 
 
+def estimate_ai_characters(items) -> int:
+    return estimate_deepl_characters(items)
+
+
+def ai_engine_available(engine: str) -> bool:
+    engine_name = engine.lower()
+    if engine_name == 'gemini':
+        return bool(config.value('api', 'gemini_key') and config.value('api', 'gemini_model'))
+    if engine_name == 'openai-compatible':
+        return bool(
+            config.value('api', 'openai_key') and
+            config.value('api', 'openai_base_url') and
+            config.value('api', 'openai_model')
+        )
+    return False
+
+
+def ai_character_cap(option: str) -> int:
+    try:
+        return max(0, int(config.value('api', option) or 0))
+    except (TypeError, ValueError):
+        return 0
+
+
 class Translator:
 
     @property
@@ -77,6 +102,10 @@ class Translator:
         engines = ['Google', 'MyMemory']
         if deepl_available_for_current_languages():
             engines.append('DeepL')
+        if ai_engine_available('Gemini'):
+            engines.append('Gemini')
+        if ai_engine_available('OpenAI-compatible'):
+            engines.append('OpenAI-compatible')
         return engines
 
     @property
@@ -161,6 +190,18 @@ class Translator:
                 context=context,
                 glossary_id=glossary_id,
                 use_xml_placeholders=bool(placeholders)
+            )
+        elif engine_name == 'gemini':
+            response = Translator.__gemini(
+                modified_text,
+                context=context,
+                expected_lines=modified_text.count('\n') + 1,
+            )
+        elif engine_name == 'openai-compatible':
+            response = Translator.__openai_compatible(
+                modified_text,
+                context=context,
+                expected_lines=modified_text.count('\n') + 1,
             )
         else:
             response = Translator.__google(modified_text)
@@ -253,6 +294,124 @@ class Translator:
                 return Response(500, str(e))
 
         return Response(404, interface.text('Errors', 'Language code not found!'))
+
+    @staticmethod
+    def __gemini(text: str, context: str = '', expected_lines: int = 1) -> Response:
+        api_key = (config.value('api', 'gemini_key') or '').strip()
+        model = (config.value('api', 'gemini_model') or '').strip()
+        if not api_key or not model:
+            return Response(400, 'Gemini API key or model is empty.')
+
+        url = f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent'
+        payload = {
+            'contents': [{
+                'parts': [{
+                    'text': Translator.__ai_prompt(text, context, expected_lines)
+                }]
+            }],
+            'generationConfig': {
+                'temperature': 0.2
+            }
+        }
+
+        try:
+            resp = requests.post(
+                url,
+                json=payload,
+                headers={'x-goog-api-key': api_key},
+                timeout=30,
+            )
+        except Exception as e:
+            return Response(500, str(e))
+
+        if resp.status_code == 200:
+            try:
+                parts = resp.json()['candidates'][0]['content']['parts']
+                return Response(200, ''.join(part.get('text', '') for part in parts).strip())
+            except Exception as e:
+                return Response(500, str(e))
+
+        return Translator.__provider_error_response(resp.status_code, resp, 'Gemini')
+
+    @staticmethod
+    def __openai_compatible(text: str, context: str = '', expected_lines: int = 1) -> Response:
+        api_key = (config.value('api', 'openai_key') or '').strip()
+        base_url = (config.value('api', 'openai_base_url') or '').strip().rstrip('/')
+        model = (config.value('api', 'openai_model') or '').strip()
+        if not api_key or not base_url or not model:
+            return Response(400, 'OpenAI-compatible API key, base URL, or model is empty.')
+
+        try:
+            resp = requests.post(
+                f'{base_url}/v1/chat/completions',
+                json={
+                    'model': model,
+                    'temperature': 0.2,
+                    'messages': [
+                        {
+                            'role': 'system',
+                            'content': (
+                                'You translate The Sims 4 localization strings. Preserve placeholders, '
+                                'formatting tags, escaped line markers, and line count exactly.'
+                            ),
+                        },
+                        {'role': 'user', 'content': Translator.__ai_prompt(text, context, expected_lines)},
+                    ],
+                },
+                headers={'Authorization': f'Bearer {api_key}'},
+                timeout=30,
+            )
+        except Exception as e:
+            return Response(500, str(e))
+
+        if resp.status_code == 200:
+            try:
+                return Response(200, resp.json()['choices'][0]['message']['content'].strip())
+            except Exception as e:
+                return Response(500, str(e))
+
+        return Translator.__provider_error_response(resp.status_code, resp, 'OpenAI-compatible')
+
+    @staticmethod
+    def __ai_prompt(text: str, context: str, expected_lines: int) -> str:
+        src = languages.source
+        dst = languages.destination
+        parts = [
+            f'Source locale: {src.locale if src else config.value("translation", "source")}',
+            f'Target locale: {dst.locale if dst else config.value("translation", "destination")}',
+            f'Return exactly {expected_lines} line(s).',
+            'Do not add explanations, markdown, numbering, quotes, or extra blank lines.',
+            'Preserve placeholders like (0), {0.SimFirstName}, <b>, </b>, \\n, \\x0a, and \\x0d exactly.',
+        ]
+        if context:
+            parts.append('Context:\n' + context)
+        parts.append('Text to translate:\n' + text)
+        return '\n\n'.join(parts)
+
+    @staticmethod
+    def __provider_error_response(status_code: int, response, provider: str) -> Response:
+        detail = ''
+        try:
+            payload = response.json()
+            if isinstance(payload, dict):
+                error = payload.get('error') or payload
+                if isinstance(error, dict):
+                    detail = error.get('message') or error.get('status') or ''
+        except Exception:
+            detail = getattr(response, 'text', '') or ''
+
+        if status_code in (401, 403):
+            message = f'{provider} API key was rejected.'
+        elif status_code == 429:
+            message = f'{provider} rate limit was reached.'
+        elif status_code >= 500:
+            message = f'{provider} service had a temporary problem.'
+        else:
+            message = interface.text('Errors', 'Translation failed with error code: {}').format(status_code)
+
+        if detail:
+            message = f'{message} {detail}'
+        return Response(status_code, message)
 
     @staticmethod
     def __deepl(text: str, context: str = '', glossary_id: str = '', use_xml_placeholders: bool = False) -> Response:

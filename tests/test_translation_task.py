@@ -7,8 +7,10 @@ from singletons.config import config
 from singletons.translator import (
     DeepLUsage,
     Response,
+    ai_engine_available,
     deepl_endpoint,
     deepl_usage,
+    estimate_ai_characters,
     estimate_deepl_characters,
     translator,
 )
@@ -43,6 +45,11 @@ class TranslationTaskTests(unittest.TestCase):
         config.set_value('translation', 'destination', 'VI_VN')
         config.set_value('api', 'deepl_key', 'sample:fx')
         config.set_value('api', 'deepl_glossary_id', '')
+        config.set_value('api', 'gemini_key', '')
+        config.set_value('api', 'gemini_model', 'gemini-2.5-flash')
+        config.set_value('api', 'openai_key', '')
+        config.set_value('api', 'openai_base_url', 'https://api.openai.com')
+        config.set_value('api', 'openai_model', 'gpt-4o-mini')
 
     def test_task_returns_immutable_translation_result_without_records(self):
         request = TranslationChunkRequest(
@@ -156,6 +163,83 @@ class TranslationTaskTests(unittest.TestCase):
         )
 
         self.assertEqual(estimate_deepl_characters([item, (0, item)]), 10)
+        self.assertEqual(estimate_ai_characters([item, (0, item)]), 10)
+
+    def test_ai_engines_appear_only_when_configured(self):
+        self.assertFalse(ai_engine_available('Gemini'))
+        self.assertFalse(ai_engine_available('OpenAI-compatible'))
+
+        config.set_value('api', 'gemini_key', 'gemini-secret')
+        config.set_value('api', 'openai_key', 'openai-secret')
+
+        self.assertTrue(ai_engine_available('Gemini'))
+        self.assertTrue(ai_engine_available('OpenAI-compatible'))
+        self.assertIn('Gemini', translator.engines)
+        self.assertIn('OpenAI-compatible', translator.engines)
+
+    def test_gemini_translate_sends_prompt_and_restores_placeholders(self):
+        config.set_value('api', 'gemini_key', 'gemini-secret')
+        config.set_value('api', 'gemini_model', 'gemini-test')
+
+        class FakeResponse:
+            status_code = 200
+
+            @staticmethod
+            def json():
+                return {'candidates': [{'content': {'parts': [{'text': 'Xin chao (0)'}]}}]}
+
+        with patch('singletons.translator.requests.post', return_value=FakeResponse()) as post:
+            response = translator.translate('Gemini', 'Hello {0.SimFirstName}', context='Package: sample.package')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.text, 'Xin chao {0.SimFirstName}')
+        api_url, kwargs = post.call_args.args[0], post.call_args.kwargs
+        self.assertEqual(api_url, 'https://generativelanguage.googleapis.com/v1beta/models/gemini-test:generateContent')
+        self.assertEqual(kwargs['headers']['x-goog-api-key'], 'gemini-secret')
+        prompt = kwargs['json']['contents'][0]['parts'][0]['text']
+        self.assertIn('Package: sample.package', prompt)
+        self.assertIn('Return exactly 1 line(s).', prompt)
+        self.assertIn('(0)', prompt)
+
+    def test_openai_compatible_translate_sends_chat_completion_request(self):
+        config.set_value('api', 'openai_key', 'openai-secret')
+        config.set_value('api', 'openai_base_url', 'https://example.test/api')
+        config.set_value('api', 'openai_model', 'model-test')
+
+        class FakeResponse:
+            status_code = 200
+
+            @staticmethod
+            def json():
+                return {'choices': [{'message': {'content': 'Xin chao (0)'}}]}
+
+        with patch('singletons.translator.requests.post', return_value=FakeResponse()) as post:
+            response = translator.translate('OpenAI-compatible', 'Hello {0.SimFirstName}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.text, 'Xin chao {0.SimFirstName}')
+        api_url, kwargs = post.call_args.args[0], post.call_args.kwargs
+        self.assertEqual(api_url, 'https://example.test/api/v1/chat/completions')
+        self.assertEqual(kwargs['headers']['Authorization'], 'Bearer openai-secret')
+        self.assertEqual(kwargs['json']['model'], 'model-test')
+        self.assertIn('Preserve placeholders', kwargs['json']['messages'][1]['content'])
+
+    def test_ai_provider_rate_limit_error_is_user_friendly(self):
+        config.set_value('api', 'gemini_key', 'gemini-secret')
+
+        class FakeResponse:
+            status_code = 429
+
+            @staticmethod
+            def json():
+                return {'error': {'message': 'quota exhausted'}}
+
+        with patch('singletons.translator.requests.post', return_value=FakeResponse()):
+            response = translator.translate('Gemini', 'Hello')
+
+        self.assertEqual(response.status_code, 429)
+        self.assertIn('rate limit', response.text)
+        self.assertIn('quota exhausted', response.text)
 
     def test_translation_chunk_passes_deepl_context_glossary_and_preserves_fast_newlines(self):
         request = TranslationChunkRequest(
@@ -181,6 +265,22 @@ class TranslationTaskTests(unittest.TestCase):
         )
         self.assertEqual(result.translations[0].text, 'Xin chao')
         self.assertEqual(result.translations[1].text, 'The gioi')
+
+    def test_fast_ai_chunk_rejects_mismatched_line_count_without_auto_approving(self):
+        request = TranslationChunkRequest(
+            engine='Gemini',
+            items=(
+                TranslationItemSnapshot(index=0, source='Hello'),
+                TranslationItemSnapshot(index=1, source='World'),
+            ),
+            fast=True,
+        )
+
+        with patch('windows.translate_dialog.translator.translate', return_value=Response(200, 'Only one line')):
+            result = translate_chunk_task(CancellationToken(), NoopReporter(), request)
+
+        self.assertEqual(result.translations, ())
+        self.assertIn('Some lines could not be translated', result.warning)
 
     def test_edit_translation_task_returns_dto_without_ui_mutation(self):
         request = EditTranslationRequest(engine='Mock', source='Hello')

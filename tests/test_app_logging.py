@@ -48,12 +48,19 @@ class AppLoggingTests(unittest.TestCase):
 
     def test_redacts_deepl_keys_and_user_paths(self):
         home_path = str(Path.home() / 'secret-package.package')
-        message = f'deepl_key=abcdef1234567890abcdef1234567890:fx path={home_path}'
+        message = (
+            f'deepl_key=abcdef1234567890abcdef1234567890:fx '
+            f'gemini_key=AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ '
+            f'openai_key=sk-testabcdefghijklmnopqrstuvwxyz '
+            f'Authorization: Bearer sk-testabcdefghijklmnopqrstuvwxyz path={home_path}'
+        )
 
         redacted = redact_sensitive(message)
 
         self.assertIn('[REDACTED]', redacted)
         self.assertNotIn('abcdef1234567890abcdef1234567890:fx', redacted)
+        self.assertNotIn('AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ', redacted)
+        self.assertNotIn('sk-testabcdefghijklmnopqrstuvwxyz', redacted)
         self.assertIn('%USERPROFILE%', redacted)
         self.assertNotIn(str(Path.home()), redacted)
 

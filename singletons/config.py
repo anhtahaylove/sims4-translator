@@ -75,7 +75,14 @@ class ConfigManager:
         'api': {
             'engine': '',
             'deepl_key': '',
-            'deepl_glossary_id': ''
+            'deepl_glossary_id': '',
+            'gemini_key': '',
+            'gemini_model': 'gemini-2.5-flash',
+            'openai_key': '',
+            'openai_base_url': 'https://api.openai.com',
+            'openai_model': 'gpt-4o-mini',
+            'ai_session_character_cap': 20000,
+            'ai_daily_character_cap': 0
         },
         'translation_cache': {
             'enabled': True

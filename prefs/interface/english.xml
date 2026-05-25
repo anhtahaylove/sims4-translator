@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ts language="en_US" name="English" version="2.0.6" authors="">
+<ts language="en_US" name="English" version="2.1.0" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -461,6 +461,10 @@ Errors:
       <translation/>
     </string>
     <string>
+      <source>Translation providers</source>
+      <translation/>
+    </string>
+    <string>
       <source>Language</source>
       <translation/>
     </string>
@@ -482,6 +486,18 @@ Errors:
     </string>
     <string>
       <source>The translation version differs from the application version, so the interface may not be fully translated</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Test Gemini</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Test OpenAI-compatible</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini and OpenAI-compatible providers use a safety prompt that asks the model to preserve Sims tokens and line count. Do not share or commit your API key.</source>
       <translation/>
     </string>
     <string>
@@ -740,6 +756,38 @@ Errors:
     </string>
     <string>
       <source>Translation cache: {hits:,} reused, {misses:,} to translate.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Session confirmation threshold: {limit:,} characters.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Daily confirmation threshold: {limit:,} characters.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>This batch is above the configured session threshold.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>This batch is above the configured daily threshold.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>AI batch translation</source>
+      <translation/>
+    </string>
+    <string>
+      <source>{engine} will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Review provider pricing and quota before continuing.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Continue with AI provider</source>
       <translation/>
     </string>
   </context>
