@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="da_DK" name="Dansk (Danish)" version="2.2.11" authors="Marianne Topping">
+<ts language="da_DK" name="Dansk (Danish)" version="2.2.12" authors="Marianne Topping">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>

@@ -402,6 +402,15 @@ class ReleaseValidationDialog(QDialog):
             self.btn_continue.setVisible(False)
             self.btn_back.setDefault(True)
 
+        for button in (
+                self.btn_export,
+                self.btn_copy_issue,
+                self.btn_copy_summary,
+                self.btn_back,
+                self.btn_continue,
+        ):
+            button.setMinimumWidth(min(max(button.sizeHint().width(), 112), 300))
+
         footer.addWidget(self.btn_export)
         footer.addWidget(self.btn_copy_issue)
         footer.addWidget(self.btn_copy_summary)

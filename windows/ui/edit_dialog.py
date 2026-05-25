@@ -71,8 +71,13 @@ class Ui_EditDialog(object):
         header_title_layout.addWidget(self.edit_title, 1)
         header_title_layout.addWidget(self.record_status)
         header_title_layout.addWidget(self.token_status)
-        header_title_layout.addWidget(self.btn_tokens)
-        header_title_layout.addWidget(self.btn_suggestions)
+
+        header_action_layout = QHBoxLayout()
+        header_action_layout.setContentsMargins(0, 0, 0, 0)
+        header_action_layout.setSpacing(8)
+        header_action_layout.addStretch()
+        header_action_layout.addWidget(self.btn_tokens)
+        header_action_layout.addWidget(self.btn_suggestions)
 
         self.edit_detail = QLabel('Review suggestions, refine the draft, then approve it or mark it for review.', self.edit_header)
         self.edit_detail.setObjectName('sheetHint')
@@ -84,6 +89,7 @@ class Ui_EditDialog(object):
         self.text_metrics.setObjectName('sheetHint')
         self.text_metrics.setWordWrap(True)
         header_layout.addLayout(header_title_layout)
+        header_layout.addLayout(header_action_layout)
         header_layout.addWidget(self.edit_detail)
         header_layout.addWidget(self.txt_resource)
         header_layout.addWidget(self.text_metrics)

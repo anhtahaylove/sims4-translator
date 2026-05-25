@@ -175,12 +175,17 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             'TranslateDialog',
             'Translate the chosen records in the background and keep the workspace responsive.'
         ))
-        self.rb_all.setText(interface.text('ImportDialog', 'Everything'))
-        self.rb_validated.setText(interface.text('ImportDialog', 'Everything but already validated strings'))
-        self.rb_validated_partial.setText(interface.text('ImportDialog',
-                                                         'Everything but already validated and partial strings'))
-        self.rb_partial.setText(interface.text('ImportDialog', 'Partial strings'))
-        self.rb_selection.setText(interface.text('ImportDialog', 'Selection only'))
+        self.__set_radio_text(self.rb_all, interface.text('ImportDialog', 'Everything'))
+        self.__set_radio_text(
+            self.rb_validated,
+            interface.text('ImportDialog', 'Everything but already validated strings')
+        )
+        self.__set_radio_text(
+            self.rb_validated_partial,
+            interface.text('ImportDialog', 'Everything but already validated and partial strings')
+        )
+        self.__set_radio_text(self.rb_partial, interface.text('ImportDialog', 'Partial strings'))
+        self.__set_radio_text(self.rb_selection, interface.text('ImportDialog', 'Selection only'))
         self.btn_cancel.setText(interface.text('TranslateDialog', 'Cancel'))
         self.btn_translate.setText(interface.text('TranslateDialog', 'Translate'))
         self.rb_slow.setText(interface.text('TranslateDialog', 'Line-by-line translation'))
@@ -188,6 +193,20 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         self.lbl_slow.setText(interface.text('TranslateDialog', 'Slow but more accurate translation.'))
         self.lbl_fast.setText(interface.text('TranslateDialog', 'A faster, but perhaps less accurate translation.'))
         self.log_box.setTitle(interface.text('TranslateDialog', 'Log'))
+
+    @staticmethod
+    def __set_radio_text(button, text: str):
+        button.setToolTip(text)
+        if len(text) <= 58:
+            button.setText(text)
+            button.setMinimumHeight(button.sizeHint().height())
+            return
+        midpoint = len(text) // 2
+        split = text.rfind(' ', 0, midpoint + 10)
+        if split <= 0:
+            split = text.find(' ', max(0, midpoint - 10))
+        button.setText(f'{text[:split]}\n{text[split + 1:]}' if split > 0 else text)
+        button.setMinimumHeight(button.sizeHint().height())
 
     def showEvent(self, event):
         self.refresh_api_list()

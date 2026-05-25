@@ -119,6 +119,11 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.btn_cancel.setText(interface.text('EditWindow', 'Cancel'))
         self.txt_comment.setPlaceholderText(interface.text('EditWindow', 'Comment...'))
         self.token_assistant.retranslate()
+        self.__fit_footer_buttons()
+
+    def __fit_footer_buttons(self):
+        for button in (self.btn_cancel, self.btn_review, self.btn_ok):
+            button.setMinimumWidth(min(max(button.sizeHint().width(), 112), 260))
 
     def showEvent(self, event):
         if not self.__focus_sized:

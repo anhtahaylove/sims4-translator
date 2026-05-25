@@ -99,6 +99,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.__workspace_density_current = None
         self.__filter_density_current = None
         self.__selection_preview_expanded = True
+        self.__workspace_summary_text = ''
+        self.__workspace_summary_tooltip = ''
         self.__validation_runner = TaskRunner(max_threads=1, parent=self)
         self.__validation_handle = None
         self.__validation_continue = None
@@ -385,6 +387,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super().resizeEvent(event)
         self.__update_command_bar_density()
         self.__apply_workspace_density()
+        self.__apply_workspace_summary_text()
 
     def __workspace_density(self):
         return 'spacious'
@@ -1284,8 +1287,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def update_workspace_summary(self):
         storage = app_state.packages_storage
         if not storage or not storage.enabled:
-            self.workspace_summary.setText(interface.text('MainWindow', 'No package loaded'))
-            self.workspace_summary.setToolTip('')
+            self.__set_workspace_summary(interface.text('MainWindow', 'No package loaded'), '')
             self.workspace_hint.setText(interface.text('MainWindow', 'Workspace stats'))
             self.__update_filter_counts(())
             return
@@ -1309,10 +1311,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             original,
         )
 
-        self.workspace_summary.setText(' · '.join(summary_parts))
-        self.workspace_summary.setToolTip('\n'.join(tooltip_parts))
+        self.__set_workspace_summary(' · '.join(summary_parts), '\n'.join(tooltip_parts))
         self.workspace_hint.setText(interface.text('MainWindow', 'Workspace stats'))
         self.__update_filter_counts(items)
+
+    def __set_workspace_summary(self, text: str, tooltip: str):
+        self.__workspace_summary_text = text
+        self.__workspace_summary_tooltip = tooltip
+        self.workspace_summary.setToolTip(tooltip)
+        self.__apply_workspace_summary_text()
+
+    def __apply_workspace_summary_text(self):
+        if not hasattr(self, 'workspace_summary'):
+            return
+        text = self.__workspace_summary_text or self.workspace_summary.text()
+        available = self.workspace_summary.width()
+        if available <= 0 or not self.workspace_summary.isVisible():
+            self.workspace_summary.setText(text)
+            self.workspace_summary.setToolTip(self.__workspace_summary_tooltip)
+            return
+        available = max(available - 6, 80)
+        elided = self.workspace_summary.fontMetrics().elidedText(text, Qt.TextElideMode.ElideRight, available)
+        self.workspace_summary.setText(elided)
+        self.workspace_summary.setToolTip(self.__workspace_summary_tooltip)
 
     def __workspace_stats_parts(
             self,

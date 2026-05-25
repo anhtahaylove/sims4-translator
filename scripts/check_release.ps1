@@ -1,5 +1,5 @@
 param(
-    [string]$Version = '2.2.11',
+    [string]$Version = '2.2.12',
     [switch]$SkipBuild,
     [switch]$SkipPackage
 )
@@ -30,6 +30,10 @@ try {
 
     Invoke-Step 'Verify interface localization health' {
         python scripts\verify_interface_i18n.py --all --version $Version --strict-empty --strict-missing
+    }
+
+    Invoke-Step 'Run visual i18n layout smoke' {
+        python scripts\visual_i18n_smoke.py --languages english german russian ukrainian brasil chinese vietnamese --version $Version --strict-layout --no-screenshots
     }
 
     if (-not $SkipBuild) {

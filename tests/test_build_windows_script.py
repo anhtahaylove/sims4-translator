@@ -56,9 +56,9 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('python scripts\\create_synthetic_package.py', script)
         self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', script)
         self.assertNotIn('--require-gui-outputs', script)
-        self.assertIn('python scripts\\verify_version_sync.py --version 2.2.11', script)
+        self.assertIn('python scripts\\verify_version_sync.py --version 2.2.12', script)
         self.assertIn(
-            'python scripts\\verify_interface_i18n.py --all --version 2.2.11 --strict-empty --strict-missing',
+            'python scripts\\verify_interface_i18n.py --all --version 2.2.12 --strict-empty --strict-missing',
             script,
         )
         self.assertIn('git diff --check', script)
@@ -67,6 +67,11 @@ class BuildWindowsScriptTests(unittest.TestCase):
         script = Path('scripts/check_release.ps1').read_text(encoding='utf-8')
         self.assertIn('check_fast.ps1', script)
         self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic --require-gui-outputs', script)
+        self.assertIn(
+            'python scripts\\visual_i18n_smoke.py --languages english german russian ukrainian brasil chinese vietnamese',
+            script,
+        )
+        self.assertIn('--strict-layout --no-screenshots', script)
         self.assertIn('package_release.ps1', script)
 
     def test_package_release_script_creates_zip_and_sha256(self):

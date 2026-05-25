@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.2.12 - 2026-05-26
+
+- Added visual i18n smoke tooling with pseudo-localization stress checks for localized desktop layouts.
+- Kept workspace stats and Translation Studio action buttons readable when translated labels are longer.
+
 ## Version 2.2.11 - 2026-05-25
 
 - Completed all bundled interface language catalogs for the current UI and added strict all-language localization checks.
