@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.0.6 - 2026-05-25
+
+- Added a persistent translation cache so interrupted or repeated batch translation can reuse exact successful results.
+- Added heuristic length/layout warnings to Validate Release for translations that may overflow game UI.
+- Added research notes comparing adjacent GitHub translation tools and the ideas worth borrowing.
+
 ## Version 2.0.5 - 2026-05-25
 
 - Added a user-friendly crash dialog with copyable, redacted diagnostics.

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ts language="en_US" name="English" version="2.0.5" authors="">
+<ts language="en_US" name="English" version="2.0.6" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -484,6 +484,26 @@ Errors:
       <source>The translation version differs from the application version, so the interface may not be fully translated</source>
       <translation/>
     </string>
+    <string>
+      <source>Translation cache</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Reuse exact translation matches</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Stores successful translations by source/destination language, engine, glossary or model, and source text hash. API keys are never stored in the cache.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Clear translation cache</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Cache contains {entries:,} entry/entries, {size:,} bytes.</source>
+      <translation/>
+    </string>
   </context>
   <context name="ReplaceDialog">
     <string>
@@ -716,6 +736,10 @@ Errors:
     </string>
     <string>
       <source>Stop translate</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Translation cache: {hits:,} reused, {misses:,} to translate.</source>
       <translation/>
     </string>
   </context>

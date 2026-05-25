@@ -14,6 +14,7 @@ from utils.constants import (
 )
 from utils.release_validation import (
     CATEGORY_DUPLICATE,
+    CATEGORY_LAYOUT,
     PROFILE_SOFT,
     PROFILE_STRICT,
     SEVERITY_CRITICAL,
@@ -181,6 +182,35 @@ class ReleaseValidationTests(unittest.TestCase):
         )
 
         self.assertTrue(any('changed since import' in reason for reason in self.reasons(report, SEVERITY_WARNING)))
+
+    def test_layout_risk_warns_for_long_translation(self):
+        report = validate_release_records(
+            [make_record(
+                source='Short enough source text',
+                translation=' '.join(['translation'] * 40),
+                flag=FLAG_VALIDATED,
+            )],
+            'Save as package',
+            'VI_VN',
+        )
+
+        layout_issues = [issue for issue in report.issues if issue.category == CATEGORY_LAYOUT]
+        self.assertTrue(layout_issues)
+        self.assertTrue(any(issue.code == 'LONG_TRANSLATION_LAYOUT_RISK' for issue in layout_issues))
+        self.assertTrue(all(issue.severity == SEVERITY_WARNING for issue in layout_issues))
+
+    def test_layout_risk_warns_for_many_more_lines(self):
+        report = validate_release_records(
+            [make_record(
+                source='One line',
+                translation='One\\ntwo\\nthree\\nfour\\nfive',
+                flag=FLAG_VALIDATED,
+            )],
+            'Save as package',
+            'VI_VN',
+        )
+
+        self.assertTrue(any(issue.code == 'LINE_COUNT_LAYOUT_RISK' for issue in report.issues))
 
     def test_report_export_writes_text_and_csv(self):
         report = validate_release_records(

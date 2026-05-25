@@ -15,7 +15,7 @@ from utils.constants import (
     FLAG_UNVALIDATED,
     FLAG_VALIDATED,
 )
-from utils.functions import compare, fnv64, text_to_table, text_to_stbl
+from utils.functions import compare, fnv64, text_to_edit, text_to_table, text_to_stbl
 from widgets.token_highlight import validate_translation_tokens
 
 
@@ -30,6 +30,7 @@ CATEGORY_DUPLICATE = 'Duplicate output'
 CATEGORY_RESOURCE = 'Resource'
 CATEGORY_SOURCE_CHANGED = 'Source changed'
 CATEGORY_SUMMARY = 'Summary'
+CATEGORY_LAYOUT = 'Length / layout risk'
 
 VALIDATION_CATEGORIES = (
     CATEGORY_BLANK,
@@ -38,6 +39,7 @@ VALIDATION_CATEGORIES = (
     CATEGORY_DUPLICATE,
     CATEGORY_RESOURCE,
     CATEGORY_SOURCE_CHANGED,
+    CATEGORY_LAYOUT,
     CATEGORY_SUMMARY,
 )
 
@@ -421,6 +423,8 @@ def _record_issues(item: MainRecord, include_untranslated: bool, rid=None, profi
             category=CATEGORY_TOKEN,
         ))
 
+    issues.extend(_layout_issues(item, source, translation, rid))
+
     status_severity = SEVERITY_CRITICAL if profile.strict_status else SEVERITY_WARNING
     if item.flag == FLAG_PROGRESS:
         issues.append(_issue(
@@ -484,6 +488,56 @@ def _issue(
         code=code,
         category=category,
     )
+
+
+def _layout_issues(item: MainRecord, source: str, translation: str, rid=None) -> list:
+    source_display = text_to_edit(source)
+    translation_display = text_to_edit(translation)
+    if not translation_display.strip():
+        return []
+
+    issues = []
+    source_len = len(source_display)
+    translation_len = len(translation_display)
+    if source_len >= 20 and translation_len > max(int(source_len * 1.8), source_len + 80):
+        issues.append(_issue(
+            SEVERITY_WARNING,
+            item,
+            'Translation is much longer than the original text; review possible UI overflow.',
+            rid=rid,
+            code='LONG_TRANSLATION_LAYOUT_RISK',
+            category=CATEGORY_LAYOUT,
+        ))
+
+    source_lines = _visual_lines(source_display)
+    translation_lines = _visual_lines(translation_display)
+    if len(translation_lines) >= max(len(source_lines) + 3, len(source_lines) * 2 + 1):
+        issues.append(_issue(
+            SEVERITY_WARNING,
+            item,
+            'Translation uses many more visual lines than the original text; review possible UI overflow.',
+            rid=rid,
+            code='LINE_COUNT_LAYOUT_RISK',
+            category=CATEGORY_LAYOUT,
+        ))
+
+    source_max = max((len(line) for line in source_lines), default=0)
+    translation_max = max((len(line) for line in translation_lines), default=0)
+    if translation_max > max(160, int(source_max * 1.75)):
+        issues.append(_issue(
+            SEVERITY_WARNING,
+            item,
+            'Translation has a very long line; review possible UI overflow.',
+            rid=rid,
+            code='LONG_LINE_LAYOUT_RISK',
+            category=CATEGORY_LAYOUT,
+        ))
+
+    return issues
+
+
+def _visual_lines(text: str) -> list[str]:
+    return text.replace('\r', '').split('\n') if text else ['']
 
 
 def _resource_instance_hex(rid, item: MainRecord) -> str:

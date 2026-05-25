@@ -157,6 +157,29 @@ class Ui_OptionsDialog(object):
 
         vlayout.addWidget(self.gb_deepl)
 
+        self.gb_cache = QGroupBox(self.tab_general)
+        self.gb_cache.setObjectName('optionsSection')
+
+        layout_cache = QVBoxLayout(self.gb_cache)
+        layout_cache.setSpacing(8)
+
+        self.cb_translation_cache = QCheckBox(self.gb_cache)
+        self.lbl_translation_cache_hint = QLabel(self.gb_cache)
+        self.lbl_translation_cache_hint.setObjectName('muted')
+        self.lbl_translation_cache_hint.setWordWrap(True)
+        self.lbl_translation_cache_status = QLabel(self.gb_cache)
+        self.lbl_translation_cache_status.setObjectName('muted')
+        self.btn_translation_cache_clear = QPushButton(self.gb_cache)
+        self.btn_translation_cache_clear.setAutoDefault(False)
+        self.btn_translation_cache_clear.setIconSize(QSize(20, 20))
+
+        layout_cache.addWidget(self.cb_translation_cache)
+        layout_cache.addWidget(self.lbl_translation_cache_hint)
+        layout_cache.addWidget(self.lbl_translation_cache_status)
+        layout_cache.addWidget(self.btn_translation_cache_clear)
+
+        vlayout.addWidget(self.gb_cache)
+
         vlayout.addStretch()
 
     def build_dictionaries_tab(self):

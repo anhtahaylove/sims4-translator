@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="vi_VN" name="Vietnamese" version="2.0.5" authors="Community">
+<ts language="vi_VN" name="Vietnamese" version="2.0.6" authors="Community">
   <context name="MainWindow">
     <string>
       <source>File</source>
@@ -574,6 +574,26 @@
     <string>
       <source>The translation version differs from the application version, so the interface may not be fully translated</source>
       <translation>Phiên bản file dịch khác phiên bản ứng dụng, nên giao diện có thể chưa được dịch đầy đủ</translation>
+    </string>
+    <string>
+      <source>Translation cache</source>
+      <translation>Bộ nhớ đệm bản dịch</translation>
+    </string>
+    <string>
+      <source>Reuse exact translation matches</source>
+      <translation>Dùng lại bản dịch khớp chính xác</translation>
+    </string>
+    <string>
+      <source>Stores successful translations by source/destination language, engine, glossary or model, and source text hash. API keys are never stored in the cache.</source>
+      <translation>Lưu các bản dịch thành công theo ngôn ngữ nguồn/đích, engine, glossary hoặc model và hash của text nguồn. API key không bao giờ được lưu trong cache.</translation>
+    </string>
+    <string>
+      <source>Clear translation cache</source>
+      <translation>Xóa bộ nhớ đệm bản dịch</translation>
+    </string>
+    <string>
+      <source>Cache contains {entries:,} entry/entries, {size:,} bytes.</source>
+      <translation>Cache hiện có {entries:,} mục, {size:,} byte.</translation>
     </string>
     <string>
       <source>by {}</source>
@@ -1162,6 +1182,10 @@
     <string>
       <source>Stop translate</source>
       <translation>Dừng dịch</translation>
+    </string>
+    <string>
+      <source>Translation cache: {hits:,} reused, {misses:,} to translate.</source>
+      <translation>Cache bản dịch: dùng lại {hits:,}, còn {misses:,} mục cần dịch.</translation>
     </string>
     <string>
       <source>Stopping...</source>

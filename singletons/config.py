@@ -77,6 +77,9 @@ class ConfigManager:
             'deepl_key': '',
             'deepl_glossary_id': ''
         },
+        'translation_cache': {
+            'enabled': True
+        },
         'view': {
             'id': True,
             'instance': False,

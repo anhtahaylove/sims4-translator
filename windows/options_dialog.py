@@ -20,6 +20,7 @@ from singletons.interface import interface
 from singletons.languages import languages
 from singletons.signals import progress_signals
 from singletons.state import app_state
+from singletons.translation_cache import translation_cache
 from singletons.translator import deepl_usage
 from utils.functions import opendir
 from utils.constants import *
@@ -228,6 +229,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.txt_path.setText(config.value('dictionaries', 'gamepath'))
         self.txt_deepl_key.setText(config.value('api', 'deepl_key'))
         self.txt_deepl_glossary_id.setText(config.value('api', 'deepl_glossary_id') or '')
+        self.cb_translation_cache.setChecked(bool(config.value('translation_cache', 'enabled')))
 
         self.cb_language.currentIndexChanged.connect(self.interface_change)
         self.cb_source.currentIndexChanged.connect(self.language_change)
@@ -242,6 +244,8 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.txt_deepl_glossary_id.textChanged.connect(self.change_deepl_glossary_id)
         self.btn_deepl_test.clicked.connect(self.test_deepl_key)
         self.btn_deepl_usage.clicked.connect(self.check_deepl_usage)
+        self.cb_translation_cache.clicked.connect(self.change_translation_cache_enabled)
+        self.btn_translation_cache_clear.clicked.connect(self.clear_translation_cache)
 
         self.btn_build.clicked.connect(self.build_click)
 
@@ -271,6 +275,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.__progress = 0
 
         self.retranslate()
+        self.refresh_translation_cache_status()
 
     def retranslate(self):
         self.setWindowTitle(interface.text('OptionsDialog', 'Options and dictionaries'))
@@ -330,6 +335,14 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             'Do not share or commit your API key.'
         ))
         self.lbl_deepl_autosave.setText(interface.text('OptionsDialog', 'Changes are saved automatically.'))
+        self.gb_cache.setTitle(interface.text('OptionsDialog', 'Translation cache'))
+        self.cb_translation_cache.setText(interface.text('OptionsDialog', 'Reuse exact translation matches'))
+        self.lbl_translation_cache_hint.setText(interface.text(
+            'OptionsDialog',
+            'Stores successful translations by source/destination language, engine, glossary or model, and source text hash. '
+            'API keys are never stored in the cache.'
+        ))
+        self.btn_translation_cache_clear.setText(interface.text('OptionsDialog', 'Clear translation cache'))
 
         self.lbl_language.setText(interface.text('OptionsDialog', 'Language'))
 
@@ -366,6 +379,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             (self.btn_path, ':/images/load.png', QSize(20, 20)),
             (self.btn_deepl_test, ':/images/life_validate.png', QSize(20, 20)),
             (self.btn_deepl_usage, ':/images/api.png', QSize(20, 20)),
+            (self.btn_translation_cache_clear, ':/images/validate_0.png', QSize(20, 20)),
             (self.btn_build, ':/images/dict.png', QSize(22, 22)),
         )
         for button, icon_path, size in button_icons:
@@ -414,6 +428,22 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
     def check_deepl_usage(self):
         usage = deepl_usage(self.txt_deepl_key.text().strip())
         self.__set_deepl_usage_status(usage, validation_only=False)
+
+    def change_translation_cache_enabled(self):
+        config.set_value('translation_cache', 'enabled', self.cb_translation_cache.isChecked())
+        config.save()
+        self.refresh_translation_cache_status()
+
+    def clear_translation_cache(self):
+        translation_cache.clear()
+        self.refresh_translation_cache_status()
+
+    def refresh_translation_cache_status(self):
+        stats = translation_cache.stats()
+        self.lbl_translation_cache_status.setText(interface.text(
+            'OptionsDialog',
+            'Cache contains {entries:,} entry/entries, {size:,} bytes.'
+        ).format(entries=stats.entries, size=stats.size_bytes))
 
     def __set_deepl_usage_status(self, usage, validation_only: bool = False):
         if usage.status_code == 200:

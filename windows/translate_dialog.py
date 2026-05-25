@@ -17,6 +17,7 @@ from singletons.config import config
 from singletons.interface import interface
 from singletons.signals import progress_signals, color_signals
 from singletons.state import app_state
+from singletons.translation_cache import translation_cache
 from singletons.translator import deepl_usage, estimate_deepl_characters, translator
 from singletons.undo import undo
 from utils.task_runner import CancellationToken, TaskReporter, TaskRunner
@@ -230,12 +231,16 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         if not items:
             return
 
-        if self.cb_api.currentText().lower() == 'deepl' and not self.__confirm_deepl_cost(items):
-            return
-
         self.__items = items
 
         indexed_items = list(enumerate(items))
+        engine = self.cb_api.currentText()
+        cached_results, indexed_items = self.__cached_results(engine, indexed_items)
+
+        if engine.lower() == 'deepl' and indexed_items and not self.__confirm_deepl_cost(
+                [item for _index, item in indexed_items]
+        ):
+            return
 
         if self.rb_fast.isChecked():
             chunk_items = split_by_char_limit(indexed_items, 1024)
@@ -251,13 +256,27 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
 
         self.edt_log.clear()
 
+        if translation_cache.enabled:
+            self.__log.append(interface.text(
+                'TranslateDialog',
+                'Translation cache: {hits:,} reused, {misses:,} to translate.'
+            ).format(hits=len(cached_results), misses=len(indexed_items)))
+            self.print_log()
+
         progress_signals.initiate.emit(interface.text('System', 'Translating...'), self.__progress)
+
+        if cached_results:
+            self.__translated_chunk(TranslationChunkResult(translations=tuple(cached_results)))
+
+        if not chunk_items:
+            self.__finish_translation()
+            return
 
         for chunk in chunk_items:
             if not self.__error:
                 snapshots = tuple(TranslationItemSnapshot(index=index, source=item.source) for index, item in chunk)
                 request = TranslationChunkRequest(
-                    engine=self.cb_api.currentText(),
+                    engine=engine,
                     items=snapshots,
                     fast=self.rb_fast.isChecked(),
                     context=self.__deepl_context_for_items([item for _index, item in chunk]),
@@ -303,6 +322,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             undo.wrap(item)
             item.translate = translated.text
             item.flag = FLAG_VALIDATED
+            self.__store_cached_translation(item, translated.text)
 
         if result.translations:
             self.__refresh_timer.start(50)
@@ -322,18 +342,21 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
 
         self.__progress -= 1
         if self.__progress == 0:
-            if self.__refresh_timer.isActive():
-                self.__refresh_timer.stop()
-            self.__refresh_table()
-            undo.commit()
-            self.__progress = 0
-            self.__translating = False
-            self.__handles = []
-            self.__set_busy(False)
-            color_signals.update.emit()
-            progress_signals.finished.emit()
+            self.__finish_translation()
 
         progress_signals.increment.emit()
+
+    def __finish_translation(self) -> None:
+        if self.__refresh_timer.isActive():
+            self.__refresh_timer.stop()
+        self.__refresh_table()
+        undo.commit()
+        self.__progress = 0
+        self.__translating = False
+        self.__handles = []
+        self.__set_busy(False)
+        color_signals.update.emit()
+        progress_signals.finished.emit()
 
     @staticmethod
     def __refresh_table():
@@ -425,6 +448,45 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         message_box.deleteLater()
         yes = QMessageBox.StandardButton.Yes
         return answer == yes or answer == yes.value
+
+    def __cached_results(self, engine: str, indexed_items: list) -> tuple[list[TranslationItemResult], list]:
+        if not translation_cache.enabled:
+            return [], indexed_items
+
+        source_locale = config.value('translation', 'source')
+        destination_locale = config.value('translation', 'destination')
+        variant = self.__cache_variant(engine)
+        cached = []
+        missing = []
+
+        for index, item in indexed_items:
+            text = translation_cache.lookup(source_locale, destination_locale, engine, variant, item.source)
+            if text is None:
+                missing.append((index, item))
+            else:
+                cached.append(TranslationItemResult(index, text))
+
+        return cached, missing
+
+    def __store_cached_translation(self, item: MainRecord, translated_text: str) -> None:
+        if not translation_cache.enabled:
+            return
+
+        engine = self.cb_api.currentText()
+        translation_cache.store(
+            config.value('translation', 'source'),
+            config.value('translation', 'destination'),
+            engine,
+            self.__cache_variant(engine),
+            item.source,
+            translated_text,
+        )
+
+    @staticmethod
+    def __cache_variant(engine: str) -> str:
+        if engine.lower() == 'deepl':
+            return (config.value('api', 'deepl_glossary_id') or '').strip()
+        return ''
 
     @staticmethod
     def __deepl_context_for_items(items: List[MainRecord]) -> str:
