@@ -14,12 +14,12 @@ from PySide6.QtWidgets import (
     QPlainTextEdit,
     QWidget,
     QLineEdit,
-    QComboBox,
     QSizePolicy,
 )
 from PySide6.QtGui import QAction, QIcon
 
 from widgets.colorbar import QColorBar
+from widgets.comboboxes import NoWheelComboBox
 from widgets.editor import BracketHighlighter
 from widgets.job_drawer import QJobStatusDrawer
 from widgets.tableview import QMainTableView
@@ -591,7 +591,7 @@ class Ui_MainWindow(object):
         self.advanced_search_layout.setSpacing(8)
         self.advanced_search_mode_label = QLabel('Mode', self.advanced_search_panel)
         self.advanced_search_mode_label.setObjectName('fieldLabel')
-        self.advanced_search_mode = QComboBox(self.advanced_search_panel)
+        self.advanced_search_mode = NoWheelComboBox(self.advanced_search_panel)
         self.advanced_search_mode.setObjectName('advancedSearchMode')
         self.advanced_search_mode.setMinimumWidth(170)
         self.advanced_search_mode.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)

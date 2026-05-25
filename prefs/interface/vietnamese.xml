@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="vi_VN" name="Vietnamese" version="2.2.3" authors="Community">
+<ts language="vi_VN" name="Vietnamese" version="2.2.4" authors="Community">
   <context name="MainWindow">
     <string>
       <source>File</source>
@@ -554,6 +554,34 @@
     <string>
       <source>Configured and enabled providers appear in Batch Translate and Translation Studio.</source>
       <translation>Provider đã cấu hình và đã bật sẽ xuất hiện trong Batch Translate và Translation Studio.</translation>
+    </string>
+    <string>
+      <source>Loading models...</source>
+      <translation>Đang tải danh sách model...</translation>
+    </string>
+    <string>
+      <source>Loaded {count} models.</source>
+      <translation>Đã tải {count} model.</translation>
+    </string>
+    <string>
+      <source>API key OK, choose a model.</source>
+      <translation>API key hợp lệ, hãy chọn model.</translation>
+    </string>
+    <string>
+      <source>Model list is unavailable; typed model was kept.</source>
+      <translation>Không lấy được danh sách model; model bạn nhập vẫn được giữ.</translation>
+    </string>
+    <string>
+      <source>Click Test to validate the API key and load available models. You can also type a custom model name.</source>
+      <translation>Bấm Kiểm tra để xác thực API key và tải danh sách model khả dụng. Bạn vẫn có thể nhập tên model tùy chỉnh.</translation>
+    </string>
+    <string>
+      <source>Choose a local model from the dropdown, or type a custom Ollama model name.</source>
+      <translation>Chọn model local từ dropdown, hoặc nhập tên model Ollama tùy chỉnh.</translation>
+    </string>
+    <string>
+      <source>Test the API key and load available models.</source>
+      <translation>Kiểm tra API key và tải danh sách model khả dụng.</translation>
     </string>
     <string>
       <source>Checking {provider}...</source>

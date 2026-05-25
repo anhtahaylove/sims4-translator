@@ -7,7 +7,6 @@ from PySide6.QtGui import QBrush, QColor, QFont, QIcon
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QApplication,
-    QComboBox,
     QDialog,
     QFileDialog,
     QFrame,
@@ -25,6 +24,7 @@ from PySide6.QtWidgets import (
 
 from singletons.interface import interface
 from themes import balanced as theme
+from widgets.comboboxes import NoWheelComboBox
 from utils.functions import text_to_table
 from utils.release_validation import (
     SEVERITY_CRITICAL,
@@ -348,7 +348,7 @@ class ReleaseValidationDialog(QDialog):
         layout.setSpacing(8)
 
         category_label = QLabel(_display_text('ReleaseValidationDialog', 'Category'), filters)
-        self.category_filter = QComboBox(filters)
+        self.category_filter = NoWheelComboBox(filters)
         self.category_filter.addItem(_display_text('ReleaseValidationDialog', 'All'), 'All')
         for category in VALIDATION_CATEGORIES:
             self.category_filter.addItem(_display_category(category), category)

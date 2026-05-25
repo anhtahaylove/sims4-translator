@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtCore import QMetaObject
-from PySide6.QtWidgets import QCheckBox, QComboBox, QFormLayout, QGroupBox, QHBoxLayout, QLabel, QPushButton, \
+from PySide6.QtWidgets import QCheckBox, QFormLayout, QGroupBox, QHBoxLayout, QLabel, QPushButton, \
     QRadioButton, QVBoxLayout
+
+from widgets.comboboxes import NoWheelComboBox
 
 
 class Ui_ReplaceDialog(object):
@@ -20,10 +22,10 @@ class Ui_ReplaceDialog(object):
         layout_form.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label_search)
         layout_form.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_replace)
 
-        self.cb_search = QComboBox(ReplaceDialog)
+        self.cb_search = NoWheelComboBox(ReplaceDialog)
         self.cb_search.setEditable(True)
 
-        self.cb_replace = QComboBox(ReplaceDialog)
+        self.cb_replace = NoWheelComboBox(ReplaceDialog)
         self.cb_replace.setEditable(True)
 
         layout_form.setWidget(0, QFormLayout.ItemRole.FieldRole, self.cb_search)

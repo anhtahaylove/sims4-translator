@@ -8,14 +8,17 @@ from singletons.translator import (
     DeepLUsage,
     OLLAMA_RECOMMENDED_MODEL,
     OllamaModels,
+    ProviderModels,
     Response,
     ai_engine_available,
     deepl_endpoint,
     deepl_usage,
     estimate_ai_characters,
     estimate_deepl_characters,
+    gemini_models,
     ollama_base_url,
     ollama_models,
+    openai_compatible_models,
     translator,
 )
 from utils.task_runner import CancellationToken, TaskReporter
@@ -224,6 +227,92 @@ class TranslationTaskTests(unittest.TestCase):
 
         self.assertEqual(result.status_code, 503)
         self.assertIn('Ollama is not reachable', result.message)
+
+    def test_gemini_models_lists_generate_content_models(self):
+        class FakeResponse:
+            status_code = 200
+
+            @staticmethod
+            def json():
+                return {
+                    'models': [
+                        {
+                            'name': 'models/gemini-2.5-flash',
+                            'supportedGenerationMethods': ['generateContent'],
+                        },
+                        {
+                            'name': 'models/text-embedding',
+                            'supportedGenerationMethods': ['embedContent'],
+                        },
+                        {
+                            'name': 'models/gemini-2.5-flash',
+                            'supportedGenerationMethods': ['generateContent'],
+                        },
+                    ]
+                }
+
+        with patch('singletons.translator.requests.get', return_value=FakeResponse()) as get:
+            result = gemini_models('gemini-secret', timeout=4)
+
+        self.assertEqual(result, ProviderModels(200, ('gemini-2.5-flash',), ''))
+        self.assertEqual(get.call_args.args[0], 'https://generativelanguage.googleapis.com/v1beta/models')
+        self.assertEqual(get.call_args.kwargs['params']['key'], 'gemini-secret')
+        self.assertEqual(get.call_args.kwargs['timeout'], 4)
+
+    def test_gemini_models_reports_auth_errors(self):
+        class FakeResponse:
+            status_code = 403
+
+            @staticmethod
+            def json():
+                return {'error': {'message': 'bad key'}}
+
+        with patch('singletons.translator.requests.get', return_value=FakeResponse()):
+            result = gemini_models('bad-key')
+
+        self.assertEqual(result.status_code, 403)
+        self.assertEqual(result.models, ())
+        self.assertIn('rejected', result.message)
+        self.assertIn('bad key', result.message)
+
+    def test_openai_compatible_models_lists_ids_and_preserves_base_url_contract(self):
+        class FakeResponse:
+            status_code = 200
+
+            @staticmethod
+            def json():
+                return {
+                    'data': [
+                        {'id': 'gpt-4o-mini'},
+                        {'id': 'gpt-4.1-mini'},
+                        {'id': 'gpt-4o-mini'},
+                    ]
+                }
+
+        with patch('singletons.translator.requests.get', return_value=FakeResponse()) as get:
+            result = openai_compatible_models('openai-secret', 'https://example.test/', timeout=6)
+
+        self.assertEqual(result, ProviderModels(200, ('gpt-4o-mini', 'gpt-4.1-mini'), ''))
+        self.assertEqual(get.call_args.args[0], 'https://example.test/v1/models')
+        self.assertEqual(get.call_args.kwargs['headers']['Authorization'], 'Bearer openai-secret')
+        self.assertEqual(get.call_args.kwargs['timeout'], 6)
+
+    def test_openai_compatible_models_reports_unavailable_list_endpoint(self):
+        class FakeResponse:
+            status_code = 404
+            text = 'not found'
+
+            @staticmethod
+            def json():
+                return {'error': {'message': 'missing route'}}
+
+        with patch('singletons.translator.requests.get', return_value=FakeResponse()):
+            result = openai_compatible_models('openai-secret', 'https://example.test')
+
+        self.assertEqual(result.status_code, 404)
+        self.assertEqual(result.models, ())
+        self.assertIn('endpoint was not found', result.message)
+        self.assertIn('missing route', result.message)
 
     def test_ollama_translate_sends_chat_payload_and_restores_placeholders(self):
         config.set_value('api', 'ollama_enabled', True)

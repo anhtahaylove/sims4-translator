@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtCore import QMetaObject, QSize, Qt
-from PySide6.QtWidgets import QWidget, QAbstractItemView, QCheckBox, QComboBox, QGridLayout, QGroupBox, QHBoxLayout, \
+from PySide6.QtWidgets import QWidget, QAbstractItemView, QCheckBox, QGridLayout, QGroupBox, QHBoxLayout, \
     QLabel, QLineEdit, QPushButton, QScrollArea, QTableView, QVBoxLayout, QTabWidget, QHeaderView
+
+from widgets.comboboxes import NoWheelComboBox, SearchableModelComboBox
 
 
 class Ui_OptionsDialog(object):
@@ -48,7 +50,7 @@ class Ui_OptionsDialog(object):
         self.lbl_language = QLabel(self.gb_interface)
         self.lbl_language_authors = QLabel(self.gb_interface)
         self.lbl_language_hint = QLabel(self.gb_interface)
-        self.cb_language = QComboBox(self.gb_interface)
+        self.cb_language = NoWheelComboBox(self.gb_interface)
 
         self.lbl_language_hint.setWordWrap(True)
         self.lbl_language_hint.setObjectName('muted')
@@ -108,8 +110,8 @@ class Ui_OptionsDialog(object):
         self.label_source = QLabel(self.gb_lang)
         self.label_dest = QLabel(self.gb_lang)
 
-        self.cb_source = QComboBox(self.gb_lang)
-        self.cb_dest = QComboBox(self.gb_lang)
+        self.cb_source = NoWheelComboBox(self.gb_lang)
+        self.cb_dest = NoWheelComboBox(self.gb_lang)
 
         layout_lang.addStretch()
         layout_lang.addWidget(self.label_source)
@@ -166,21 +168,19 @@ class Ui_OptionsDialog(object):
         self.txt_gemini_key = QLineEdit(self.gb_deepl)
         self.txt_gemini_key.setEchoMode(QLineEdit.EchoMode.Password)
         self.txt_gemini_key.setPlaceholderText('Gemini API key')
-        self.txt_gemini_model = QLineEdit(self.gb_deepl)
-        self.txt_gemini_model.setPlaceholderText('Gemini model')
+        self.cb_gemini_model = SearchableModelComboBox(self.gb_deepl)
+        self.cb_gemini_model.setPlaceholderText('Gemini model')
         self.txt_openai_key = QLineEdit(self.gb_deepl)
         self.txt_openai_key.setEchoMode(QLineEdit.EchoMode.Password)
         self.txt_openai_key.setPlaceholderText('OpenAI-compatible API key')
         self.txt_openai_base_url = QLineEdit(self.gb_deepl)
         self.txt_openai_base_url.setPlaceholderText('OpenAI-compatible base URL')
-        self.txt_openai_model = QLineEdit(self.gb_deepl)
-        self.txt_openai_model.setPlaceholderText('OpenAI-compatible model')
+        self.cb_openai_model = SearchableModelComboBox(self.gb_deepl)
+        self.cb_openai_model.setPlaceholderText('OpenAI-compatible model')
         self.cb_ollama_enabled = QCheckBox(self.gb_deepl)
         self.txt_ollama_base_url = QLineEdit(self.gb_deepl)
         self.txt_ollama_base_url.setPlaceholderText('Ollama base URL')
-        self.cb_ollama_model = QComboBox(self.gb_deepl)
-        self.cb_ollama_model.setEditable(True)
-        self.cb_ollama_model.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
+        self.cb_ollama_model = SearchableModelComboBox(self.gb_deepl)
         self.cb_ollama_model.setPlaceholderText('Ollama model')
         self.txt_ai_session_cap = QLineEdit(self.gb_deepl)
         self.txt_ai_session_cap.setPlaceholderText('Session character confirmation threshold')
@@ -261,7 +261,7 @@ class Ui_OptionsDialog(object):
         layout_provider_gemini.addWidget(self.txt_gemini_key, 0, 1)
         layout_provider_gemini.addWidget(self.btn_gemini_test, 0, 2)
         layout_provider_gemini.addWidget(self.lbl_gemini_model, 1, 0)
-        layout_provider_gemini.addWidget(self.txt_gemini_model, 1, 1, 1, 2)
+        layout_provider_gemini.addWidget(self.cb_gemini_model, 1, 1, 1, 2)
         layout_provider_gemini.addWidget(self.lbl_gemini_status, 2, 0, 1, 3)
 
         layout_provider_openai = QGridLayout(self.gb_provider_openai)
@@ -272,7 +272,7 @@ class Ui_OptionsDialog(object):
         layout_provider_openai.addWidget(self.lbl_openai_base_url, 1, 0)
         layout_provider_openai.addWidget(self.txt_openai_base_url, 1, 1, 1, 2)
         layout_provider_openai.addWidget(self.lbl_openai_model, 2, 0)
-        layout_provider_openai.addWidget(self.txt_openai_model, 2, 1, 1, 2)
+        layout_provider_openai.addWidget(self.cb_openai_model, 2, 1, 1, 2)
         layout_provider_openai.addWidget(self.lbl_openai_status, 3, 0, 1, 3)
 
         layout_provider_ollama = QGridLayout(self.gb_provider_ollama)
@@ -370,7 +370,7 @@ class Ui_OptionsDialog(object):
 
         self.txt_pack_search = QLineEdit(self.gb_pack_manager)
         self.txt_pack_search.setObjectName('packSearch')
-        self.cb_pack_category = QComboBox(self.gb_pack_manager)
+        self.cb_pack_category = NoWheelComboBox(self.gb_pack_manager)
         self.cb_pack_category.setObjectName('packCategory')
 
         self.lbl_pack_summary = QLabel(self.gb_pack_manager)

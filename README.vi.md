@@ -171,6 +171,7 @@ Nói ngắn gọn: bạn có thể dịch câu chữ cho tự nhiên, nhưng tok
 
 Provider dịch là tùy chọn. Không có API key thì bạn vẫn dùng app bình thường, và Ollama có thể chạy local trên máy bạn.
 Cấu hình provider nằm trong **Tùy chọn > Provider**. Provider đã cấu hình hợp lệ sẽ xuất hiện trong **Batch Translate** và **Translation Studio**; provider có checkbox bật/tắt như Ollama thì cần bật trước.
+Với Gemini và OpenAI-compatible, bấm **Kiểm tra** sau khi nhập key/base URL để xác thực quyền truy cập và tải danh sách model vào dropdown.
 
 Cách dùng:
 

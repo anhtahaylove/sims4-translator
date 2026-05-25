@@ -14,6 +14,7 @@ from singletons.languages import languages
 Response = namedtuple('Response', 'status_code text')
 DeepLUsage = namedtuple('DeepLUsage', 'status_code character_count character_limit message')
 PlaceholderRestoreResult = namedtuple('PlaceholderRestoreResult', 'text warning')
+ProviderModels = namedtuple('ProviderModels', 'status_code models message')
 OllamaModels = namedtuple('OllamaModels', 'status_code models message')
 
 
@@ -138,6 +139,113 @@ def ollama_models(base_url: str = None, timeout: int | float = 5) -> OllamaModel
         return OllamaModels(200, tuple(names), '')
     except Exception as exc:
         return OllamaModels(500, (), str(exc))
+
+
+def gemini_models(api_key: str = None, timeout: int | float = 20) -> ProviderModels:
+    api_key = (api_key if api_key is not None else config.value('api', 'gemini_key') or '').strip()
+    if not api_key:
+        return ProviderModels(400, (), 'Gemini API key is empty.')
+
+    models = []
+    page_token = ''
+    try:
+        while True:
+            params = {'key': api_key, 'pageSize': 1000}
+            if page_token:
+                params['pageToken'] = page_token
+            response = requests.get(
+                'https://generativelanguage.googleapis.com/v1beta/models',
+                params=params,
+                timeout=timeout,
+            )
+            if response.status_code != 200:
+                return ProviderModels(
+                    response.status_code,
+                    (),
+                    _provider_http_error_message(response.status_code, response, 'Gemini'),
+                )
+
+            payload = response.json()
+            for model in payload.get('models', []):
+                methods = model.get('supportedGenerationMethods') or model.get('supported_actions') or ()
+                if 'generateContent' not in methods:
+                    continue
+                name = model.get('name') or model.get('baseModelId') or ''
+                if name.startswith('models/'):
+                    name = name[len('models/'):]
+                if name and name not in models:
+                    models.append(name)
+            page_token = payload.get('nextPageToken') or ''
+            if not page_token:
+                break
+    except Exception as exc:
+        return ProviderModels(503, (), str(exc))
+
+    return ProviderModels(200, tuple(models), '')
+
+
+def openai_compatible_models(api_key: str = None, base_url: str = None,
+                             timeout: int | float = 20) -> ProviderModels:
+    api_key = (api_key if api_key is not None else config.value('api', 'openai_key') or '').strip()
+    base_url = (base_url if base_url is not None else config.value('api', 'openai_base_url') or '').strip().rstrip('/')
+    if not api_key or not base_url:
+        return ProviderModels(400, (), 'OpenAI-compatible API key or base URL is empty.')
+
+    try:
+        response = requests.get(
+            f'{base_url}/v1/models',
+            headers={'Authorization': f'Bearer {api_key}'},
+            timeout=timeout,
+        )
+    except Exception as exc:
+        return ProviderModels(503, (), str(exc))
+
+    if response.status_code != 200:
+        return ProviderModels(
+            response.status_code,
+            (),
+            _provider_http_error_message(response.status_code, response, 'OpenAI-compatible'),
+        )
+
+    try:
+        payload = response.json()
+        models = []
+        for model in payload.get('data', []):
+            name = model.get('id') if isinstance(model, dict) else ''
+            if name and name not in models:
+                models.append(name)
+        return ProviderModels(200, tuple(models), '')
+    except Exception as exc:
+        return ProviderModels(500, (), str(exc))
+
+
+def _provider_http_error_message(status_code: int, response, provider: str) -> str:
+    detail = ''
+    try:
+        payload = response.json()
+        if isinstance(payload, dict):
+            error = payload.get('error') or payload
+            if isinstance(error, dict):
+                detail = error.get('message') or error.get('status') or ''
+            elif isinstance(error, str):
+                detail = error
+    except Exception:
+        detail = getattr(response, 'text', '') or ''
+
+    if status_code in (401, 403):
+        message = f'{provider} API key was rejected.'
+    elif status_code == 429:
+        message = f'{provider} rate limit was reached.'
+    elif status_code == 404:
+        message = f'{provider} model list endpoint was not found.'
+    elif status_code >= 500:
+        message = f'{provider} service had a temporary problem.'
+    else:
+        message = interface.text('Errors', 'Translation failed with error code: {}').format(status_code)
+
+    if detail:
+        message = f'{message} {detail}'
+    return message
 
 
 class Translator:

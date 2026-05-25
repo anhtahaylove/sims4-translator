@@ -4,7 +4,6 @@ from dataclasses import dataclass
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
-    QComboBox,
     QFrame,
     QGridLayout,
     QLabel,
@@ -13,6 +12,7 @@ from PySide6.QtWidgets import (
     QSpinBox,
 )
 
+from widgets.comboboxes import NoWheelComboBox
 from singletons.interface import interface
 
 
@@ -74,10 +74,10 @@ class TokenAssistantWidget(QFrame):
 
         self.title = QLabel(self)
         self.title.setObjectName('sectionLabel')
-        self.category = QComboBox(self)
+        self.category = NoWheelComboBox(self)
         self.category.currentTextChanged.connect(self.__refresh_tokens)
 
-        self.token = QComboBox(self)
+        self.token = NoWheelComboBox(self)
         self.token.currentIndexChanged.connect(self.__refresh_preview)
 
         self.index = QSpinBox(self)
@@ -85,7 +85,7 @@ class TokenAssistantWidget(QFrame):
         self.index.setValue(0)
         self.index.valueChanged.connect(self.__refresh_preview)
 
-        self.suffix = QComboBox(self)
+        self.suffix = NoWheelComboBox(self)
         self.suffix.addItems(('None',) + TOKEN_SUFFIXES[1:])
         self.suffix.currentIndexChanged.connect(self.__refresh_preview)
 

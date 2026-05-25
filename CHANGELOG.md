@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.2.4 - 2026-05-25
+
+- Added searchable model dropdowns for Gemini and OpenAI-compatible providers.
+- Provider tests now validate keys and load available Gemini/OpenAI-compatible models in the background.
+- Prevented combobox mouse-wheel changes while users scroll forms.
+
 ## Version 2.2.3 - 2026-05-25
 
 - Moved translation provider settings and translation cache into a dedicated Providers tab.

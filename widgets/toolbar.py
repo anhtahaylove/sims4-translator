@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtWidgets import QToolBar as ToolBar, QComboBox, QWidget, QSizePolicy
+from PySide6.QtWidgets import QToolBar as ToolBar, QWidget, QSizePolicy
 from PySide6.QtGui import QAction, QIcon
 
+from widgets.comboboxes import NoWheelComboBox
 from widgets.lineedit import QCleaningLineEdit
 
 from singletons.interface import interface
@@ -109,7 +110,7 @@ class FixedLineEdit(QCleaningLineEdit):
             self.clear()
 
 
-class ExpandingComboBox(QComboBox):
+class ExpandingComboBox(NoWheelComboBox):
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -130,9 +131,6 @@ class ExpandingComboBox(QComboBox):
     def showPopup(self):
         self.update_popup_width()
         super().showPopup()
-
-    def wheelEvent(self, event):
-        event.ignore()
 
     def addItem(self, *args, **kwargs):
         super().addItem(*args, **kwargs)

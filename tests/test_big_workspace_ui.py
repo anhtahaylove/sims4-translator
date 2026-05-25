@@ -48,10 +48,11 @@ from windows.edit_dialog import EditDialog
 from windows.export_dialog import ExportDialog
 from windows.import_dialog import ImportDialog
 from windows.main_window import MainWindow
-from windows.options_dialog import OptionsDialog
+from windows.options_dialog import OptionsDialog, ProviderTestResult
 from windows.release_validation_dialog import ReleaseValidationDialog
 from windows.translate_dialog import TranslateDialog
 from widgets.delegate import MainDelegatePaint, STATUS_META, TABLE_ROW_HEIGHTS
+from widgets.comboboxes import NoWheelComboBox, SearchableModelComboBox
 
 
 def app():
@@ -1763,6 +1764,36 @@ class WorkspaceProShellTests(unittest.TestCase):
             close_widget(dialog)
             close_widget(window)
 
+    def test_model_and_standard_combos_ignore_parent_scroll_wheel(self):
+        standard = NoWheelComboBox()
+        model = SearchableModelComboBox()
+
+        class FakeWheelEvent:
+
+            def __init__(self):
+                self.ignored = False
+
+            def ignore(self):
+                self.ignored = True
+
+        try:
+            standard.addItems(('Google', 'DeepL'))
+            standard.setCurrentText('Google')
+            event = FakeWheelEvent()
+            standard.wheelEvent(event)
+            self.assertTrue(event.ignored)
+            self.assertEqual(standard.currentText(), 'Google')
+
+            model.set_model_items(('gemini-2.5-flash',), 'custom-model')
+            self.assertEqual(model.currentText(), 'custom-model')
+            self.assertGreaterEqual(model.findText('gemini-2.5-flash'), 0)
+            with patch.object(model, 'open_model_popup') as open_popup:
+                self.assertFalse(model.eventFilter(model.lineEdit(), QEvent(QEvent.Type.FocusIn)))
+                open_popup.assert_called_once()
+        finally:
+            close_widget(standard)
+            close_widget(model)
+
     def test_options_dialog_life_studio_sections_and_action_icons_are_legible(self):
         window = MainWindow()
         dialog = OptionsDialog(window)
@@ -1784,6 +1815,13 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(dialog.gb_provider_openai.objectName(), 'providerCard')
             self.assertEqual(dialog.gb_provider_ollama.objectName(), 'providerCard')
             self.assertEqual(dialog.gb_provider_limits.objectName(), 'providerCard')
+            self.assertIsInstance(dialog.cb_gemini_model, SearchableModelComboBox)
+            self.assertIsInstance(dialog.cb_openai_model, SearchableModelComboBox)
+            self.assertIsInstance(dialog.cb_ollama_model, SearchableModelComboBox)
+            self.assertIsInstance(dialog.cb_language, NoWheelComboBox)
+            self.assertIsInstance(dialog.cb_source, NoWheelComboBox)
+            self.assertIsInstance(dialog.cb_dest, NoWheelComboBox)
+            self.assertIsInstance(dialog.cb_pack_category, NoWheelComboBox)
             self.assertEqual(dialog.tableview.objectName(), 'packManagerTable')
             self.assertGreaterEqual(dialog.tableview.verticalHeader().defaultSectionSize(), 32)
 
@@ -1845,10 +1883,10 @@ class WorkspaceProShellTests(unittest.TestCase):
                 dialog.txt_deepl_glossary_id.setText('glossary-123')
                 dialog.change_deepl_glossary_id()
                 dialog.txt_gemini_key.setText('gemini-secret')
-                dialog.txt_gemini_model.setText('gemini-test')
+                dialog.cb_gemini_model.setCurrentText('gemini-test')
                 dialog.txt_openai_key.setText('openai-secret')
                 dialog.txt_openai_base_url.setText('https://example.test')
-                dialog.txt_openai_model.setText('openai-test')
+                dialog.cb_openai_model.setCurrentText('openai-test')
                 dialog.cb_ollama_enabled.setChecked(True)
                 dialog.txt_ollama_base_url.setText('http://localhost:11434')
                 dialog.cb_ollama_model.setCurrentText('translategemma:12b')
@@ -2029,6 +2067,7 @@ class WorkspaceProShellTests(unittest.TestCase):
         try:
             with patch.object(dialog._OptionsDialog__provider_runner, 'start') as start:
                 handle = type('Handle', (), {
+                    'progress': type('Signal', (), {'connect': lambda self, fn: None})(),
                     'result': type('Signal', (), {'connect': lambda self, fn: None})(),
                     'error': type('Signal', (), {'connect': lambda self, fn: None})(),
                     'finished': type('Signal', (), {'connect': lambda self, fn: None})(),
@@ -2041,6 +2080,55 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(start.call_args.args[2], 20)
             self.assertFalse(dialog.btn_ollama_test.isEnabled())
             self.assertIn('Checking Ollama', dialog.lbl_ollama_status.text())
+        finally:
+            close_widget(dialog)
+            close_widget(window)
+
+    def test_options_dialog_populates_gemini_and_openai_model_dropdowns_after_test(self):
+        window = MainWindow()
+        dialog = OptionsDialog(window)
+        try:
+            gemini_handle = object()
+            setattr(dialog, '_OptionsDialog__provider_test_handles', {'Gemini': gemini_handle})
+            dialog.cb_gemini_model.setCurrentText('custom-gemini')
+            dialog._OptionsDialog__provider_test_result(
+                ProviderTestResult(
+                    'Gemini',
+                    200,
+                    'Xin chao',
+                    ('gemini-2.5-flash',),
+                    200,
+                    '',
+                    'custom-gemini',
+                    True,
+                ),
+                gemini_handle,
+            )
+
+            self.assertEqual(dialog.cb_gemini_model.currentText(), 'custom-gemini')
+            self.assertGreaterEqual(dialog.cb_gemini_model.findText('gemini-2.5-flash'), 0)
+            self.assertIn('Loaded 1 models', dialog.lbl_gemini_status.text())
+
+            openai_handle = object()
+            setattr(dialog, '_OptionsDialog__provider_test_handles', {'OpenAI-compatible': openai_handle})
+            dialog.cb_openai_model.setCurrentText('gpt-custom')
+            dialog._OptionsDialog__provider_test_result(
+                ProviderTestResult(
+                    'OpenAI-compatible',
+                    200,
+                    'OpenAI-compatible: OK. Model list is unavailable; typed model was kept.',
+                    (),
+                    404,
+                    'missing route',
+                    'gpt-custom',
+                    False,
+                ),
+                openai_handle,
+            )
+
+            self.assertEqual(dialog.cb_openai_model.currentText(), 'gpt-custom')
+            self.assertEqual(dialog.cb_openai_model.count(), 1)
+            self.assertIn('typed model was kept', dialog.lbl_openai_status.text())
         finally:
             close_widget(dialog)
             close_widget(window)

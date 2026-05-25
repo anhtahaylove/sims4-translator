@@ -23,7 +23,13 @@ from singletons.languages import languages
 from singletons.signals import progress_signals
 from singletons.state import app_state
 from singletons.translation_cache import translation_cache
-from singletons.translator import OLLAMA_RECOMMENDED_MODEL, deepl_usage, translator
+from singletons.translator import (
+    OLLAMA_RECOMMENDED_MODEL,
+    deepl_usage,
+    gemini_models,
+    openai_compatible_models,
+    translator,
+)
 from utils.functions import opendir
 from utils.ollama_setup import (
     OLLAMA_DOWNLOAD_URL,
@@ -44,6 +50,11 @@ class ProviderTestResult:
     engine: str
     status_code: int
     message: str
+    models: tuple[str, ...] = ()
+    model_list_status_code: int = 0
+    model_list_message: str = ''
+    selected_model: str = ''
+    model_list_loaded: bool = False
 
 
 @dataclass(frozen=True)
@@ -55,9 +66,72 @@ class DeepLUsageResult:
 def provider_test_task(token, reporter, engine: str, timeout: int | float = PROVIDER_TEST_TIMEOUT_SECONDS):
     reporter.progress(0, 0, interface.text('OptionsDialog', 'Checking {provider}...').format(provider=engine))
     token.raise_if_cancelled()
+    engine_name = engine.lower()
+    selected_model = ''
+    model_list_status_code = 0
+    model_list_message = ''
+    models = ()
+
+    if engine_name in ('gemini', 'openai-compatible'):
+        reporter.progress(0, 0, interface.text('OptionsDialog', 'Loading models...'))
+        if engine_name == 'gemini':
+            selected_model = (config.value('api', 'gemini_model') or '').strip()
+            model_result = gemini_models(timeout=timeout)
+        else:
+            selected_model = (config.value('api', 'openai_model') or '').strip()
+            model_result = openai_compatible_models(timeout=timeout)
+
+        token.raise_if_cancelled()
+        model_list_status_code = model_result.status_code
+        model_list_message = model_result.message
+        models = tuple(model_result.models)
+        if model_result.status_code == 200 and not selected_model:
+            return ProviderTestResult(
+                engine,
+                200,
+                interface.text('OptionsDialog', 'API key OK, choose a model.'),
+                models,
+                model_result.status_code,
+                model_result.message,
+                selected_model,
+                True,
+            )
+        if model_result.status_code != 200 and not selected_model:
+            return ProviderTestResult(
+                engine,
+                model_result.status_code,
+                model_result.message,
+                (),
+                model_result.status_code,
+                model_result.message,
+                selected_model,
+                False,
+            )
+
+    reporter.progress(0, 0, interface.text('OptionsDialog', 'Checking {provider}...').format(provider=engine))
     response = translator.translate(engine, 'Hello', request_timeout=timeout)
     token.raise_if_cancelled()
-    return ProviderTestResult(engine, response.status_code, response.text)
+    message = response.text
+    if (
+            engine_name in ('gemini', 'openai-compatible') and
+            model_list_status_code and
+            model_list_status_code != 200 and
+            response.status_code == 200
+    ):
+        message = '{}: OK. {}'.format(
+            engine,
+            interface.text('OptionsDialog', 'Model list is unavailable; typed model was kept.'),
+        )
+    return ProviderTestResult(
+        engine,
+        response.status_code,
+        message,
+        models,
+        model_list_status_code,
+        model_list_message,
+        selected_model,
+        model_list_status_code == 200,
+    )
 
 
 def deepl_usage_task(token, reporter, api_key: str, validation_only: bool,
@@ -280,14 +354,13 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.txt_deepl_key.setText(config.value('api', 'deepl_key'))
         self.txt_deepl_glossary_id.setText(config.value('api', 'deepl_glossary_id') or '')
         self.txt_gemini_key.setText(config.value('api', 'gemini_key') or '')
-        self.txt_gemini_model.setText(config.value('api', 'gemini_model') or '')
+        self.cb_gemini_model.set_model_items((), config.value('api', 'gemini_model') or '')
         self.txt_openai_key.setText(config.value('api', 'openai_key') or '')
         self.txt_openai_base_url.setText(config.value('api', 'openai_base_url') or '')
-        self.txt_openai_model.setText(config.value('api', 'openai_model') or '')
+        self.cb_openai_model.set_model_items((), config.value('api', 'openai_model') or '')
         self.cb_ollama_enabled.setChecked(bool(config.value('api', 'ollama_enabled')))
         self.txt_ollama_base_url.setText(config.value('api', 'ollama_base_url') or '')
-        self.cb_ollama_model.addItem(config.value('api', 'ollama_model') or OLLAMA_RECOMMENDED_MODEL)
-        self.cb_ollama_model.setCurrentText(config.value('api', 'ollama_model') or OLLAMA_RECOMMENDED_MODEL)
+        self.cb_ollama_model.set_model_items((), config.value('api', 'ollama_model') or OLLAMA_RECOMMENDED_MODEL)
         self.txt_ai_session_cap.setText(str(config.value('api', 'ai_session_character_cap') or 0))
         self.txt_ai_daily_cap.setText(str(config.value('api', 'ai_daily_character_cap') or 0))
         self.cb_translation_cache.setChecked(bool(config.value('translation_cache', 'enabled')))
@@ -304,10 +377,10 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.txt_deepl_key.textChanged.connect(self.change_deepl_key)
         self.txt_deepl_glossary_id.textChanged.connect(self.change_deepl_glossary_id)
         self.txt_gemini_key.textChanged.connect(self.change_ai_provider_settings)
-        self.txt_gemini_model.textChanged.connect(self.change_ai_provider_settings)
+        self.cb_gemini_model.currentTextChanged.connect(self.change_ai_provider_settings)
         self.txt_openai_key.textChanged.connect(self.change_ai_provider_settings)
         self.txt_openai_base_url.textChanged.connect(self.change_ai_provider_settings)
-        self.txt_openai_model.textChanged.connect(self.change_ai_provider_settings)
+        self.cb_openai_model.currentTextChanged.connect(self.change_ai_provider_settings)
         self.cb_ollama_enabled.clicked.connect(self.change_ai_provider_settings)
         self.txt_ollama_base_url.textChanged.connect(self.change_ai_provider_settings)
         self.cb_ollama_model.currentTextChanged.connect(self.change_ai_provider_settings)
@@ -425,6 +498,24 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.btn_deepl_usage.setText(interface.text('OptionsDialog', 'Usage'))
         self.btn_gemini_test.setText(interface.text('OptionsDialog', 'Test'))
         self.btn_openai_test.setText(interface.text('OptionsDialog', 'Test'))
+        model_tooltip = interface.text(
+            'OptionsDialog',
+            'Click Test to validate the API key and load available models. You can also type a custom model name.'
+        )
+        self.cb_gemini_model.setToolTip(model_tooltip)
+        self.cb_openai_model.setToolTip(model_tooltip)
+        self.cb_ollama_model.setToolTip(interface.text(
+            'OptionsDialog',
+            'Choose a local model from the dropdown, or type a custom Ollama model name.'
+        ))
+        self.btn_gemini_test.setToolTip(interface.text(
+            'OptionsDialog',
+            'Test the API key and load available models.'
+        ))
+        self.btn_openai_test.setToolTip(interface.text(
+            'OptionsDialog',
+            'Test the API key and load available models.'
+        ))
         self.cb_ollama_enabled.setText(interface.text('OptionsDialog', 'Enable Ollama local provider'))
         self.btn_ollama_refresh.setText(interface.text('OptionsDialog', 'Refresh Ollama models'))
         self.btn_ollama_test.setText(interface.text('OptionsDialog', 'Test'))
@@ -530,10 +621,10 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
 
     def change_ai_provider_settings(self):
         config.set_value('api', 'gemini_key', self.txt_gemini_key.text().strip())
-        config.set_value('api', 'gemini_model', self.txt_gemini_model.text().strip())
+        config.set_value('api', 'gemini_model', self.cb_gemini_model.currentText().strip())
         config.set_value('api', 'openai_key', self.txt_openai_key.text().strip())
         config.set_value('api', 'openai_base_url', self.txt_openai_base_url.text().strip())
-        config.set_value('api', 'openai_model', self.txt_openai_model.text().strip())
+        config.set_value('api', 'openai_model', self.cb_openai_model.currentText().strip())
         config.set_value('api', 'ollama_enabled', self.cb_ollama_enabled.isChecked())
         config.set_value('api', 'ollama_base_url', self.txt_ollama_base_url.text().strip())
         config.set_value('api', 'ollama_model', self.cb_ollama_model.currentText().strip())
@@ -664,11 +755,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         if OLLAMA_RECOMMENDED_MODEL not in models:
             models.insert(0, OLLAMA_RECOMMENDED_MODEL)
 
-        self.cb_ollama_model.blockSignals(True)
-        self.cb_ollama_model.clear()
-        self.cb_ollama_model.addItems(models)
-        self.cb_ollama_model.setCurrentText(current)
-        self.cb_ollama_model.blockSignals(False)
+        self.cb_ollama_model.set_model_items(models, current)
         self.__refresh_ollama_status_message()
         self.__sync_ollama_buttons()
 
@@ -766,9 +853,13 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         if key in self.__provider_test_handles:
             return
 
+        self.change_ai_provider_settings()
         self.__set_provider_test_busy(engine, True)
+        initial_status = interface.text('OptionsDialog', 'Checking {provider}...').format(provider=engine)
+        if engine.lower() in ('gemini', 'openai-compatible'):
+            initial_status = interface.text('OptionsDialog', 'Loading models...')
         self.__set_provider_status(
-            interface.text('OptionsDialog', 'Checking {provider}...').format(provider=engine),
+            initial_status,
             warning=False,
             engine=engine,
         )
@@ -779,9 +870,17 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             job_name=interface.text('OptionsDialog', 'Checking {provider}...').format(provider=engine),
         )
         self.__provider_test_handles[key] = handle
+        handle.progress.connect(lambda progress, task_key=key: self.__provider_test_progress(progress, task_key))
         handle.result.connect(lambda result, task_handle=handle: self.__provider_test_result(result, task_handle))
         handle.error.connect(lambda error, task_handle=handle, task_key=key: self.__provider_test_error(error, task_handle, task_key))
         handle.finished.connect(lambda _cancelled, task_handle=handle, task_key=key: self.__provider_test_finished(task_handle, task_key))
+
+    @Slot(object)
+    def __provider_test_progress(self, progress, key: str):
+        if key not in self.__provider_test_handles or not progress.message:
+            return
+        engine = key.replace(' validation', '').replace(' usage', '')
+        self.__set_provider_status(progress.message, warning=False, engine=engine)
 
     def __start_deepl_usage_task(self, validation_only: bool):
         key = 'DeepL validation' if validation_only else 'DeepL usage'
@@ -815,8 +914,23 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         if self.__provider_test_handles.get(key) is not handle:
             return
 
+        if result.model_list_loaded:
+            self.__apply_provider_models(result.engine, result.models, result.selected_model)
+
         if result.status_code == 200:
-            self.__set_provider_status(f'{result.engine}: OK', warning=False, engine=result.engine)
+            if result.model_list_loaded:
+                message = '{}: OK. {}'.format(
+                    result.engine,
+                    interface.text('OptionsDialog', 'Loaded {count} models.').format(count=len(result.models)),
+                )
+                if result.message == interface.text('OptionsDialog', 'API key OK, choose a model.'):
+                    message = '{} {}'.format(
+                        interface.text('OptionsDialog', 'Loaded {count} models.').format(count=len(result.models)),
+                        result.message,
+                    )
+            else:
+                message = result.message if result.message else f'{result.engine}: OK'
+            self.__set_provider_status(message, warning=False, engine=result.engine)
             if result.engine.lower() == 'ollama' and not self.cb_ollama_enabled.isChecked():
                 self.__set_ollama_status(
                     interface.text(
@@ -827,6 +941,13 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
                 )
         else:
             self.__set_provider_status(result.message, warning=True, engine=result.engine)
+
+    def __apply_provider_models(self, engine: str, models: tuple[str, ...], current: str):
+        engine_name = engine.lower()
+        if engine_name == 'gemini':
+            self.cb_gemini_model.set_model_items(models, current)
+        elif engine_name == 'openai-compatible':
+            self.cb_openai_model.set_model_items(models, current)
 
     @Slot(object)
     def __provider_test_error(self, error, handle, key: str):

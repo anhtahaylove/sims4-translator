@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ts language="en_US" name="English" version="2.2.3" authors="">
+<ts language="en_US" name="English" version="2.2.4" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -530,6 +530,34 @@ Errors:
     </string>
     <string>
       <source>Configured and enabled providers appear in Batch Translate and Translation Studio.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Loading models...</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Loaded {count} models.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>API key OK, choose a model.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Model list is unavailable; typed model was kept.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Click Test to validate the API key and load available models. You can also type a custom model name.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Choose a local model from the dropdown, or type a custom Ollama model name.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Test the API key and load available models.</source>
       <translation/>
     </string>
     <string>

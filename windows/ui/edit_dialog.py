@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtCore import QMetaObject, Qt
-from PySide6.QtWidgets import QComboBox, QFrame, QLabel, QLineEdit, QPushButton, QSplitter, QVBoxLayout, QHBoxLayout, QWidget
+from PySide6.QtWidgets import QFrame, QLabel, QLineEdit, QPushButton, QSplitter, QVBoxLayout, QHBoxLayout, QWidget
 from PySide6.QtGui import QIcon
 
+from widgets.comboboxes import NoWheelComboBox
 from widgets.tableview import QDictionaryTableView
 from widgets.editor import QTextEditor
 from widgets.token_assistant import TokenAssistantWidget
@@ -174,7 +175,7 @@ class Ui_EditDialog(object):
 
         self.txt_comment = QLineEdit(EditDialog)
 
-        self.cb_api = QComboBox(EditDialog)
+        self.cb_api = NoWheelComboBox(EditDialog)
 
         self.btn_translate = QPushButton(EditDialog)
         self.btn_translate.setIcon(QIcon(':/images/api.png'))

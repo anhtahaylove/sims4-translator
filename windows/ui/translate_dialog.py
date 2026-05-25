@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtCore import QMetaObject
-from PySide6.QtWidgets import QComboBox, QFrame, QGroupBox, QHBoxLayout, QPushButton, QRadioButton, QVBoxLayout, \
+from PySide6.QtWidgets import QFrame, QGroupBox, QHBoxLayout, QPushButton, QRadioButton, QVBoxLayout, \
     QLabel, QTextEdit
+
+from widgets.comboboxes import NoWheelComboBox
 
 
 class Ui_TranslateDialog(object):
@@ -103,7 +105,7 @@ class Ui_TranslateDialog(object):
         hlayout.setContentsMargins(10, 10, 10, 10)
         hlayout.setSpacing(8)
 
-        self.cb_api = QComboBox(TranslateDialog)
+        self.cb_api = NoWheelComboBox(TranslateDialog)
         self.cb_api.setObjectName('sheetCombo')
 
         self.btn_translate = QPushButton(TranslateDialog)
