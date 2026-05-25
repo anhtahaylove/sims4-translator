@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PySide6.QtCore import QEvent, Qt
+from PySide6.QtCore import QEvent, Qt, QTimer
 from PySide6.QtWidgets import QComboBox, QCompleter
 
 
@@ -53,9 +53,10 @@ class SearchableModelComboBox(NoWheelComboBox):
             self.showPopup()
 
     def eventFilter(self, watched, event):
-        if watched is self.lineEdit() and event.type() in (
-            QEvent.Type.FocusIn,
-            QEvent.Type.MouseButtonPress,
-        ):
-            self.open_model_popup()
+        if watched is self.lineEdit():
+            if event.type() == QEvent.Type.FocusIn:
+                if getattr(event, 'reason', lambda: None)() != Qt.FocusReason.MouseFocusReason:
+                    QTimer.singleShot(0, self.open_model_popup)
+            elif event.type() == QEvent.Type.MouseButtonRelease:
+                QTimer.singleShot(0, self.open_model_popup)
         return super().eventFilter(watched, event)

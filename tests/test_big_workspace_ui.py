@@ -8,7 +8,7 @@ from pathlib import Path
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
 from PySide6.QtCore import QModelIndex, Qt, QEvent, QEventLoop, QThread, QTimer
-from PySide6.QtGui import QIcon, QKeyEvent
+from PySide6.QtGui import QFocusEvent, QIcon, QKeyEvent
 from PySide6.QtWidgets import QApplication, QMessageBox, QHeaderView, QStyleOptionViewItem
 from unittest.mock import patch
 
@@ -1788,7 +1788,19 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(model.currentText(), 'custom-model')
             self.assertGreaterEqual(model.findText('gemini-2.5-flash'), 0)
             with patch.object(model, 'open_model_popup') as open_popup:
-                self.assertFalse(model.eventFilter(model.lineEdit(), QEvent(QEvent.Type.FocusIn)))
+                self.assertFalse(model.eventFilter(
+                    model.lineEdit(),
+                    QFocusEvent(QEvent.Type.FocusIn, Qt.FocusReason.TabFocusReason),
+                ))
+                app().processEvents()
+                open_popup.assert_called_once()
+
+            with patch.object(model, 'open_model_popup') as open_popup:
+                self.assertFalse(model.eventFilter(model.lineEdit(), QEvent(QEvent.Type.MouseButtonPress)))
+                open_popup.assert_not_called()
+                self.assertFalse(model.eventFilter(model.lineEdit(), QEvent(QEvent.Type.MouseButtonRelease)))
+                open_popup.assert_not_called()
+                app().processEvents()
                 open_popup.assert_called_once()
         finally:
             close_widget(standard)

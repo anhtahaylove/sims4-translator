@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.2.5 - 2026-05-25
+
+- Fixed searchable model dropdowns closing immediately when users clicked inside the editable text field.
+- Kept dropdowns opening from the arrow button and from keyboard focus while preventing accidental mouse-wheel selection changes.
+
 ## Version 2.2.4 - 2026-05-25
 
 - Added searchable model dropdowns for Gemini and OpenAI-compatible providers.
