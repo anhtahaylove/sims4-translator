@@ -1,5 +1,5 @@
 param(
-    [string]$Version = '2.2.10',
+    [string]$Version = '2.2.11',
     [switch]$SkipBuild,
     [switch]$SkipPackage
 )
@@ -29,7 +29,7 @@ try {
     }
 
     Invoke-Step 'Verify interface localization health' {
-        python scripts\verify_interface_i18n.py --language vi_VN --version $Version
+        python scripts\verify_interface_i18n.py --all --version $Version --strict-empty --strict-missing
     }
 
     if (-not $SkipBuild) {

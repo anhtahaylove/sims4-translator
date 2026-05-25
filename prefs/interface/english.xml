@@ -1,1008 +1,1743 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ts language="en_US" name="English" version="2.2.10" authors="">
+<?xml version='1.0' encoding='utf-8'?>
+<ts language="en_US" name="English" version="2.2.11" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>OK (Ctrl+Enter)</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Original text</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Different original</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Current translation</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Different translation</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Cancel</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Translate</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Use this translation</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Loading...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Comment...</source>
-      <translation/>
+      <translation />
+    </string>
+    <string>
+      <source>Approve (Ctrl+Enter)</source>
+      <translation />
+    </string>
+    <string>
+      <source>Dictionary suggestions</source>
+      <translation />
+    </string>
+    <string>
+      <source>Draft</source>
+      <translation />
+    </string>
+    <string>
+      <source>Needs Review</source>
+      <translation />
+    </string>
+    <string>
+      <source>Original</source>
+      <translation />
+    </string>
+    <string>
+      <source>Review token safety, refine the draft, then approve it or mark it for review.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Selected suggestion</source>
+      <translation />
+    </string>
+    <string>
+      <source>Status</source>
+      <translation />
+    </string>
+    <string>
+      <source>Suggestions</source>
+      <translation />
+    </string>
+    <string>
+      <source>Tokens</source>
+      <translation />
+    </string>
+    <string>
+      <source>Translation Studio</source>
+      <translation />
+    </string>
+    <string>
+      <source>Translation draft</source>
+      <translation />
+    </string>
+    <string>
+      <source>chars</source>
+      <translation />
     </string>
   </context>
   <context name="ExportDialog">
     <string>
       <source>Export translate</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Export</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Everything</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Everything but untranslated strings</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Only selected instance</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Each instance as a separate file</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Each package as a separate file</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Exported records</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Cancel</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Selection only</source>
-      <translation/>
+      <translation />
+    </string>
+    <string>
+      <source>Choose which records to write, then continue in the background.</source>
+      <translation />
     </string>
   </context>
   <context name="MainTableView">
     <string>
       <source>Original</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Translated</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>LD</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Instance</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Group</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Comment</source>
-      <translation/>
+      <translation />
+    </string>
+    <string>
+      <source>ID</source>
+      <translation />
+    </string>
+    <string>
+      <source>Status</source>
+      <translation />
     </string>
   </context>
   <context name="MainWindow">
     <string>
       <source>File</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Export translation</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Translation</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>View</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Options</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Group</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Help</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Save as...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Close</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Save</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Save dictionary</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Search and replace...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Validate all translations</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Reset all translations</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Exit</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Undo</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>About Qt...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Options...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>To XML...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Translate from dictionaries</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Finalize package</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Finalize package as...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>To XML (Deaderpool's STBL editor)...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>To JSON (Sims 4 Studio format)...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>To Binary (Sims 4 Studio format)...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Use original group</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Use high-bit</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>To STBL...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Use low-bit</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Edit String</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Validate as [translated]</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Validate as [work in progress]</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Cancel translation</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Copy</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Paste</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Load file...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Add file...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Import translation...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Remove record</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Save bundle...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Load bundle...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Numeration</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Standart</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>From the source file</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>XML format</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>XML format (Deaderpool's STBL editor)</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Batch translate...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Translate</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Color visualization</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Open package -&gt; Translate -&gt; Validate Release -&gt; Save as package</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Open package</source>
-      <translation/>
+      <translation />
+    </string>
+    <string>
+      <source>Activity Dock</source>
+      <translation />
+    </string>
+    <string>
+      <source>Advanced</source>
+      <translation />
+    </string>
+    <string>
+      <source>Approve</source>
+      <translation />
+    </string>
+    <string>
+      <source>Approve all translations</source>
+      <translation />
+    </string>
+    <string>
+      <source>Clear filters</source>
+      <translation />
+    </string>
+    <string>
+      <source>Dictionary</source>
+      <translation />
+    </string>
+    <string>
+      <source>Export</source>
+      <translation />
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation />
+    </string>
+    <string>
+      <source>Import</source>
+      <translation />
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation />
+    </string>
+    <string>
+      <source>Mark as needs review</source>
+      <translation />
+    </string>
+    <string>
+      <source>Mode</source>
+      <translation />
+    </string>
+    <string>
+      <source>No package loaded</source>
+      <translation />
+    </string>
+    <string>
+      <source>No string selected</source>
+      <translation />
+    </string>
+    <string>
+      <source>Open</source>
+      <translation />
+    </string>
+    <string>
+      <source>Open Editor</source>
+      <translation />
+    </string>
+    <string>
+      <source>Package</source>
+      <translation />
+    </string>
+    <string>
+      <source>Release QA</source>
+      <translation />
+    </string>
+    <string>
+      <source>Reset</source>
+      <translation />
+    </string>
+    <string>
+      <source>Save translated strings to dictionary for reuse</source>
+      <translation />
+    </string>
+    <string>
+      <source>Scope</source>
+      <translation />
+    </string>
+    <string>
+      <source>Search</source>
+      <translation />
+    </string>
+    <string>
+      <source>Search ID, Original, or Translation...</source>
+      <translation />
+    </string>
+    <string>
+      <source>Search ID, original and translation</source>
+      <translation />
+    </string>
+    <string>
+      <source>Search ID, original text, and translation text at the same time.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Select a string to preview full text.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Selected string</source>
+      <translation />
+    </string>
+    <string>
+      <source>Show a thin status distribution bar above the table.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Show advanced search modes</source>
+      <translation />
+    </string>
+    <string>
+      <source>Status</source>
+      <translation />
+    </string>
+    <string>
+      <source>Status Overview Bar</source>
+      <translation />
+    </string>
+    <string>
+      <source>Translation table</source>
+      <translation />
+    </string>
+    <string>
+      <source>Validate Release</source>
+      <translation />
+    </string>
+    <string>
+      <source>Validate Release...</source>
+      <translation />
+    </string>
+    <string>
+      <source>Validating release</source>
+      <translation />
+    </string>
+    <string>
+      <source>Validation cancelled</source>
+      <translation />
+    </string>
+    <string>
+      <source>Validation preset:</source>
+      <translation />
+    </string>
+    <string>
+      <source>Workspace Warnings...</source>
+      <translation />
+    </string>
+    <string>
+      <source>Workspace stats</source>
+      <translation />
+    </string>
+    <string>
+      <source>approved</source>
+      <translation />
+    </string>
+    <string>
+      <source>draft</source>
+      <translation />
+    </string>
+    <string>
+      <source>needs review</source>
+      <translation />
+    </string>
+    <string>
+      <source>shown</source>
+      <translation />
+    </string>
+    <string>
+      <source>untranslated</source>
+      <translation />
     </string>
   </context>
   <context name="Messages">
     <string>
       <source>Save dictionary for modified packages?</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Are you sure you want to delete the selected records?</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Not found text records in this file!</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Not found text records in this files!</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Not found text records in following files:</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Translation completed with {} successes.
 
 Errors:
 {}</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>... and {} other errors</source>
-      <translation/>
+      <translation />
     </string>
   </context>
   <context name="Errors">
     <string>
       <source>Language code not found!</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Translation failed with error code: {}</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Invalid API key.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Your quota has exceeded!</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>There was a temporary problem with the DeepL Service.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama base URL is empty.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama base URL or model is empty.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama is not reachable at {url}. Start Ollama or check the base URL.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama model was not found. Run: ollama pull {model}</source>
-      <translation/>
+      <translation />
+    </string>
+    <string>
+      <source>A maximum of 500 characters is allowed.</source>
+      <translation />
     </string>
   </context>
   <context name="OptionsDialog">
     <string>
       <source>NOT FOUND</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>{} not exist</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>FOUND</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>BASE GAME</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Expansion packs</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Game packs</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Stuff packs</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Options and dictionaries</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Build dictionaries</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Languages</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Source</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Destination</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Game path</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Create backup package before finalization</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Saving translation without conflicts (experemental)</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Interface</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Do not use automatic translation from other dictionaries</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>General</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Providers</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Dictionaries</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>DeepL API key</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Translation providers</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>OpenAI-compatible</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama local</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>API key</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Glossary ID</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Model</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Base URL</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Test</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Usage</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Configured and enabled providers appear in Batch Translate and Translation Studio.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Loading models...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Loaded {count} models.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>API key OK, choose a model.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Model list is unavailable; typed model was kept.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Click Test to validate the API key and load available models. You can also type a custom model name.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Choose a local model from the dropdown, or type a custom Ollama model name.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Test the API key and load available models.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Checking {provider}...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Checking DeepL...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama is ready and enabled.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama is ready but disabled. Enable it to show Ollama in translation lists.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Language</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Theme</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Light</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Dark</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>The application needs to be restarted</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>The translation version differs from the application version, so the interface may not be fully translated</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Test Gemini</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Test OpenAI-compatible</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Enable Ollama local provider</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Refresh Ollama models</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Test Ollama</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Download Ollama</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Download recommended model</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Cancel model download</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini, OpenAI-compatible, and Ollama providers use a safety prompt that asks the model to preserve Sims tokens and line count. Options can detect local Ollama models and download the recommended translategemma:12b model after confirmation. Do not share or commit your API key.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Checking Ollama setup...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Opened the official Ollama download page. Install Ollama, start it, then refresh models.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Recommended model download is not available until Ollama is installed and running.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Downloading Ollama model...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Cancelling Ollama model download...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Download recommended Ollama model</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Download {model} for local translation?</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>This model is about {size}. It needs internet access and disk space, and Ollama stores it outside this app.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Download model</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama was not found on this computer. Download Ollama to use local models.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama server is reachable, but the local executable was not found. You can use the server, but this app cannot download models automatically.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama is installed but the server is not reachable. Start Ollama, then refresh models.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama is installed, but the recommended model is missing. Download translategemma:12b here or choose another local model.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama is ready. Recommended model is installed.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama executable was not found. Download and start Ollama first.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Starting Ollama model download...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama model download was cancelled.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Downloading {model}: {percent}%</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Downloaded {model}.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Ollama model download failed with exit code {code}.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Translation cache</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Reuse exact translation matches</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Stores successful translations by source/destination language, engine, glossary or model, and source text hash. API keys are never stored in the cache.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Clear translation cache</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Cache contains {entries:,} entry/entries, {size:,} bytes.</source>
-      <translation/>
+      <translation />
+    </string>
+    <string>
+      <source>All packs</source>
+      <translation />
+    </string>
+    <string>
+      <source>Browse...</source>
+      <translation />
+    </string>
+    <string>
+      <source>Create backup before Finalize</source>
+      <translation />
+    </string>
+    <string>
+      <source>Creates separate hashed STBL resources instead of touching the original STBL resources. Use only when testing conflict avoidance with a package copy.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Filter packs...</source>
+      <translation />
+    </string>
+    <string>
+      <source>Free packs</source>
+      <translation />
+    </string>
+    <string>
+      <source>Kits</source>
+      <translation />
+    </string>
+    <string>
+      <source>No packs match the current filter. Clear the search field to see the full catalog.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Only use exact dictionary matches</source>
+      <translation />
+    </string>
+    <string>
+      <source>Pack Manager</source>
+      <translation />
+    </string>
+    <string>
+      <source>Recommended. When Finalize writes over a source package, keep a .package.backup copy first.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Safety defaults</source>
+      <translation />
+    </string>
+    <string>
+      <source>Select the folder that contains Data, EP, GP, SP, and FP folders from your The Sims 4 installation.</source>
+      <translation />
+    </string>
+    <string>
+      <source>These choices are saved automatically. For Vietnamese release work, keep backups on, leave conflict-free mode off unless testing a copy, and review context-sensitive dictionary matches.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Use conflict-free save mode (experimental)</source>
+      <translation />
+    </string>
+    <string>
+      <source>When enabled, dictionary auto-fill is stricter and avoids fallback matches from the same source text. Leave disabled to reuse more dictionary translations, then review context-sensitive strings manually.</source>
+      <translation />
+    </string>
+    <string>
+      <source>by {}</source>
+      <translation />
     </string>
   </context>
   <context name="ReplaceDialog">
     <string>
       <source>Search and replace</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Case sensitive</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Search</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Replace</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Search and replace in:</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>All strings</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Not validated strings</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Cancel</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>OK</source>
-      <translation/>
+      <translation />
     </string>
   </context>
   <context name="System">
     <string>
       <source>Saving package {}...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Loading dictionaries...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Build dictionaries...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Exporting translate...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Importing translate...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>All files</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Packages</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>STBL files</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>XML files</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>JSON files</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Binary files</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Opening file {}...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Opening files...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Opening file...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Translating...</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Stopping translate, waiting for the finish of the threads...</source>
-      <translation/>
+      <translation />
+    </string>
+    <string>
+      <source>Cancelling...</source>
+      <translation />
+    </string>
+    <string>
+      <source>Exported {} file(s), {} string(s)</source>
+      <translation />
+    </string>
+    <string>
+      <source>Exporting Translation Hub CSV...</source>
+      <translation />
+    </string>
+    <string>
+      <source>Imported {} translations, unchanged {}, skipped {}, missing {}</source>
+      <translation />
+    </string>
+    <string>
+      <source>Loaded {} unique strings, skipped {} duplicates</source>
+      <translation />
+    </string>
+    <string>
+      <source>Saved package {}, {} resource(s)</source>
+      <translation />
     </string>
   </context>
   <context name="ToolBar">
     <string>
       <source>-- All files --</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Search in translation</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Search in ID</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Search in original</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>-- All instances --</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Translated</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Not translated</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Validated translation</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Partial translation</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Different strings</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Search...</source>
-      <translation/>
+      <translation />
     </string>
   </context>
   <context name="ImportDialog">
     <string>
       <source>Import translate</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Overwrite</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Everything</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Everything but already validated strings</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Everything but already validated and partial strings</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Partial strings</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Selection only</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Replace existing translation</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Import</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Cancel</source>
-      <translation/>
+      <translation />
+    </string>
+    <string>
+      <source>Apply matching translations while keeping validated work protected.</source>
+      <translation />
     </string>
   </context>
   <context name="TranslateDialog">
     <string>
       <source>Translate</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Cancel</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Batch translate</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Log</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Line-by-line translation</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Multiline translation</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Slow but more accurate translation.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>A faster, but perhaps less accurate translation.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Some lines could not be translated.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Stop translate</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Translation cache: {hits:,} reused, {misses:,} to translate.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>AI batch translation</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>{engine} will translate {records:,} records, about {characters:,} source characters.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Review provider pricing and quota before continuing.</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Continue with AI provider</source>
-      <translation/>
+      <translation />
+    </string>
+    <string>
+      <source>Continue with DeepL</source>
+      <translation />
+    </string>
+    <string>
+      <source>Current usage: {used:,} / {limit:,} characters.
+After this batch: about {after:,} characters ({percent:.1f}%).</source>
+      <translation />
+    </string>
+    <string>
+      <source>Current usage: {used:,} characters.</source>
+      <translation />
+    </string>
+    <string>
+      <source>DeepL batch translation</source>
+      <translation />
+    </string>
+    <string>
+      <source>DeepL will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Stopping...</source>
+      <translation />
+    </string>
+    <string>
+      <source>Translate the chosen records in the background and keep the workspace responsive.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Usage unavailable: {message}</source>
+      <translation />
     </string>
   </context>
   <context name="TextEditor">
     <string>
       <source>Undo</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Redo</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Cut</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Copy</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Paste</source>
-      <translation/>
+      <translation />
     </string>
     <string>
       <source>Select All</source>
-      <translation/>
+      <translation />
+    </string>
+  </context>
+  <context name="JobDrawer">
+    <string>
+      <source>Cancel</source>
+      <translation />
+    </string>
+    <string>
+      <source>Cancelled</source>
+      <translation />
+    </string>
+    <string>
+      <source>Cancelling...</source>
+      <translation />
+    </string>
+    <string>
+      <source>Clear</source>
+      <translation />
+    </string>
+    <string>
+      <source>Done</source>
+      <translation />
+    </string>
+    <string>
+      <source>Error</source>
+      <translation />
+    </string>
+    <string>
+      <source>Finished: foreground job</source>
+      <translation />
+    </string>
+    <string>
+      <source>Hide jobs</source>
+      <translation />
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation />
+    </string>
+    <string>
+      <source>Jobs</source>
+      <translation />
+    </string>
+    <string>
+      <source>No active background jobs.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Queued</source>
+      <translation />
+    </string>
+    <string>
+      <source>Recent jobs</source>
+      <translation />
+    </string>
+    <string>
+      <source>Running</source>
+      <translation />
+    </string>
+    <string>
+      <source>Show jobs</source>
+      <translation />
+    </string>
+    <string>
+      <source>Started</source>
+      <translation />
+    </string>
+    <string>
+      <source>Working</source>
+      <translation />
+    </string>
+    <string>
+      <source>active background job(s)</source>
+      <translation />
+    </string>
+  </context>
+  <context name="TokenAssistant">
+    <string>
+      <source>Category</source>
+      <translation />
+    </string>
+    <string>
+      <source>Copy</source>
+      <translation />
+    </string>
+    <string>
+      <source>Female text...</source>
+      <translation />
+    </string>
+    <string>
+      <source>Index</source>
+      <translation />
+    </string>
+    <string>
+      <source>Insert</source>
+      <translation />
+    </string>
+    <string>
+      <source>Male text...</source>
+      <translation />
+    </string>
+    <string>
+      <source>Male/Female pair</source>
+      <translation />
+    </string>
+    <string>
+      <source>Suffix</source>
+      <translation />
+    </string>
+    <string>
+      <source>Token</source>
+      <translation />
+    </string>
+    <string>
+      <source>Token Assistant</source>
+      <translation />
+    </string>
+  </context>
+  <context name="TokenValidation">
+    <string>
+      <source>All source tokens are preserved in the translation draft.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Back to Edit</source>
+      <translation />
+    </string>
+    <string>
+      <source>Continue and Approve</source>
+      <translation />
+    </string>
+    <string>
+      <source>Continue and Mark Needs Review</source>
+      <translation />
+    </string>
+    <string>
+      <source>Continue only if these token differences are intentional.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Extra</source>
+      <translation />
+    </string>
+    <string>
+      <source>Line breaks differ</source>
+      <translation />
+    </string>
+    <string>
+      <source>Line-break count differs</source>
+      <translation />
+    </string>
+    <string>
+      <source>Missing</source>
+      <translation />
+    </string>
+    <string>
+      <source>OK</source>
+      <translation />
+    </string>
+    <string>
+      <source>Order differs</source>
+      <translation />
+    </string>
+    <string>
+      <source>Suggested outcome: Approved.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Suggested outcome: Needs Review until the token differences are intentional.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Token check:</source>
+      <translation />
+    </string>
+    <string>
+      <source>Token differences can break in-game placeholders or formatting.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Token order differs</source>
+      <translation />
+    </string>
+    <string>
+      <source>{outcome} with token warnings</source>
+      <translation />
+    </string>
+  </context>
+  <context name="ReleaseValidationDialog">
+    <string>
+      <source>All</source>
+      <translation />
+    </string>
+    <string>
+      <source>Back to Fix</source>
+      <translation />
+    </string>
+    <string>
+      <source>CSV report (*.csv)</source>
+      <translation />
+    </string>
+    <string>
+      <source>Category</source>
+      <translation />
+    </string>
+    <string>
+      <source>Close</source>
+      <translation />
+    </string>
+    <string>
+      <source>Continue</source>
+      <translation />
+    </string>
+    <string>
+      <source>Continue anyway</source>
+      <translation />
+    </string>
+    <string>
+      <source>Copy selected issue</source>
+      <translation />
+    </string>
+    <string>
+      <source>Copy summary</source>
+      <translation />
+    </string>
+    <string>
+      <source>Export Pre-release Validation Report</source>
+      <translation />
+    </string>
+    <string>
+      <source>Export report</source>
+      <translation />
+    </string>
+    <string>
+      <source>Pre-release Validation Report</source>
+      <translation />
+    </string>
+    <string>
+      <source>Pre-release validation ({profile}): {critical} critical, {warning} warning, {info} info for {written:,}/{total:,} record(s).</source>
+      <translation />
+    </string>
+    <string>
+      <source>Review day-to-day workspace issues without starting a save or export.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Review potential blank-text and token issues before writing release files.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Search</source>
+      <translation />
+    </string>
+    <string>
+      <source>Search package, instance, ID, reason, original, or translation...</source>
+      <translation />
+    </string>
+    <string>
+      <source>Text report (*.txt)</source>
+      <translation />
+    </string>
+    <string>
+      <source>Workspace Warnings</source>
+      <translation />
+    </string>
+    <string>
+      <source>{shown:,} issue(s) shown from {total:,}.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Code</source>
+      <translation />
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation />
+    </string>
+    <string>
+      <source>Original</source>
+      <translation />
+    </string>
+    <string>
+      <source>Package</source>
+      <translation />
+    </string>
+    <string>
+      <source>Reason</source>
+      <translation />
+    </string>
+    <string>
+      <source>Severity</source>
+      <translation />
+    </string>
+    <string>
+      <source>Status</source>
+      <translation />
+    </string>
+    <string>
+      <source>String ID</source>
+      <translation />
+    </string>
+    <string>
+      <source>Translation</source>
+      <translation />
+    </string>
+  </context>
+  <context name="ValidationCategory">
+    <string>
+      <source>Blank risk</source>
+      <translation />
+    </string>
+    <string>
+      <source>Duplicate output</source>
+      <translation />
+    </string>
+    <string>
+      <source>Length / layout risk</source>
+      <translation />
+    </string>
+    <string>
+      <source>Resource</source>
+      <translation />
+    </string>
+    <string>
+      <source>Source changed</source>
+      <translation />
+    </string>
+    <string>
+      <source>Status</source>
+      <translation />
+    </string>
+    <string>
+      <source>Summary</source>
+      <translation />
+    </string>
+    <string>
+      <source>Token safety</source>
+      <translation />
+    </string>
+  </context>
+  <context name="ValidationProfile">
+    <string>
+      <source>Soft release</source>
+      <translation />
+    </string>
+    <string>
+      <source>Strict release</source>
+      <translation />
+    </string>
+  </context>
+  <context name="ValidationSeverity">
+    <string>
+      <source>Critical</source>
+      <translation />
+    </string>
+    <string>
+      <source>Info</source>
+      <translation />
+    </string>
+    <string>
+      <source>Warning</source>
+      <translation />
     </string>
   </context>
 </ts>

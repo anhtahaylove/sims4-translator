@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ts language="da_DK" name="Dansk (Danish)" version="1.4" authors="Marianne Topping">
+<?xml version='1.0' encoding='utf-8'?>
+<ts language="da_DK" name="Dansk (Danish)" version="2.2.11" authors="Marianne Topping">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -7,7 +7,7 @@
     </string>
     <string>
       <source>OK (Ctrl+Enter)</source>
-      <translation />
+      <translation>OK (Ctrl+Enter)</translation>
     </string>
     <string>
       <source>Original text</source>
@@ -44,6 +44,58 @@
     <string>
       <source>Comment...</source>
       <translation>Kommentar...</translation>
+    </string>
+    <string>
+      <source>Approve (Ctrl+Enter)</source>
+      <translation>Godkend (Ctrl+Enter)</translation>
+    </string>
+    <string>
+      <source>Dictionary suggestions</source>
+      <translation>Ordbogsforslag</translation>
+    </string>
+    <string>
+      <source>Draft</source>
+      <translation>Udkast</translation>
+    </string>
+    <string>
+      <source>Needs Review</source>
+      <translation>Trænger til gennemgang</translation>
+    </string>
+    <string>
+      <source>Original</source>
+      <translation>Original</translation>
+    </string>
+    <string>
+      <source>Review token safety, refine the draft, then approve it or mark it for review.</source>
+      <translation>Gennemgå tokens sikkerhed, finjuster udkastet, og godkend det derefter, eller markér det til gennemgang.</translation>
+    </string>
+    <string>
+      <source>Selected suggestion</source>
+      <translation>Valgt forslag</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Status</translation>
+    </string>
+    <string>
+      <source>Suggestions</source>
+      <translation>Forslag</translation>
+    </string>
+    <string>
+      <source>Tokens</source>
+      <translation>Poletter</translation>
+    </string>
+    <string>
+      <source>Translation Studio</source>
+      <translation>Oversættelsesstudie</translation>
+    </string>
+    <string>
+      <source>Translation draft</source>
+      <translation>Oversættelsesudkast</translation>
+    </string>
+    <string>
+      <source>chars</source>
+      <translation>tegn</translation>
     </string>
   </context>
   <context name="ExportDialog">
@@ -87,11 +139,15 @@
       <source>Selection only</source>
       <translation>Kun valgte</translation>
     </string>
+    <string>
+      <source>Choose which records to write, then continue in the background.</source>
+      <translation>Vælg, hvilke poster du vil skrive, og fortsæt derefter i baggrunden.</translation>
+    </string>
   </context>
   <context name="MainTableView">
     <string>
       <source>Original</source>
-      <translation />
+      <translation>Original</translation>
     </string>
     <string>
       <source>Translated</source>
@@ -99,7 +155,7 @@
     </string>
     <string>
       <source>LD</source>
-      <translation />
+      <translation>LD</translation>
     </string>
     <string>
       <source>Instance</source>
@@ -112,6 +168,14 @@
     <string>
       <source>Comment</source>
       <translation>Kommentar</translation>
+    </string>
+    <string>
+      <source>ID</source>
+      <translation>ID</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Status</translation>
     </string>
   </context>
   <context name="MainWindow">
@@ -173,7 +237,7 @@
     </string>
     <string>
       <source>Exit</source>
-      <translation />
+      <translation>Afslut</translation>
     </string>
     <string>
       <source>Undo</source>
@@ -311,6 +375,190 @@
       <source>Color visualization</source>
       <translation>Farve visualisering</translation>
     </string>
+    <string>
+      <source>Open package -&gt; Translate -&gt; Validate Release -&gt; Save as package</source>
+      <translation>Åbn pakke -&gt; Oversæt -&gt; Valider udgivelse -&gt; Gem som pakke</translation>
+    </string>
+    <string>
+      <source>Open package</source>
+      <translation>Åbn pakke</translation>
+    </string>
+    <string>
+      <source>Activity Dock</source>
+      <translation>Aktivitetsdok</translation>
+    </string>
+    <string>
+      <source>Advanced</source>
+      <translation>Avanceret</translation>
+    </string>
+    <string>
+      <source>Approve</source>
+      <translation>Godkend</translation>
+    </string>
+    <string>
+      <source>Approve all translations</source>
+      <translation>Godkend alle oversættelser</translation>
+    </string>
+    <string>
+      <source>Clear filters</source>
+      <translation>Ryd filtre</translation>
+    </string>
+    <string>
+      <source>Dictionary</source>
+      <translation>Ordbog</translation>
+    </string>
+    <string>
+      <source>Export</source>
+      <translation>Eksporter</translation>
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation>Inaktiv</translation>
+    </string>
+    <string>
+      <source>Import</source>
+      <translation>Importer</translation>
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation>Forekomst</translation>
+    </string>
+    <string>
+      <source>Mark as needs review</source>
+      <translation>Markér som behovsanmeldelse</translation>
+    </string>
+    <string>
+      <source>Mode</source>
+      <translation>tilstand</translation>
+    </string>
+    <string>
+      <source>No package loaded</source>
+      <translation>Ingen pakke indlæst</translation>
+    </string>
+    <string>
+      <source>No string selected</source>
+      <translation>Ingen streng valgt</translation>
+    </string>
+    <string>
+      <source>Open</source>
+      <translation>Åbn</translation>
+    </string>
+    <string>
+      <source>Open Editor</source>
+      <translation>Åbn Editor</translation>
+    </string>
+    <string>
+      <source>Package</source>
+      <translation>Pakke</translation>
+    </string>
+    <string>
+      <source>Release QA</source>
+      <translation>Frigiv QA</translation>
+    </string>
+    <string>
+      <source>Reset</source>
+      <translation>Nulstil</translation>
+    </string>
+    <string>
+      <source>Save translated strings to dictionary for reuse</source>
+      <translation>Gem oversatte strenge i ordbogen til genbrug</translation>
+    </string>
+    <string>
+      <source>Scope</source>
+      <translation>Omfang</translation>
+    </string>
+    <string>
+      <source>Search</source>
+      <translation>Søg</translation>
+    </string>
+    <string>
+      <source>Search ID, Original, or Translation...</source>
+      <translation>Søg id, original eller oversættelse...</translation>
+    </string>
+    <string>
+      <source>Search ID, original and translation</source>
+      <translation>Søg ID, original og oversættelse</translation>
+    </string>
+    <string>
+      <source>Search ID, original text, and translation text at the same time.</source>
+      <translation>Søg efter ID, originaltekst og oversættelsestekst på samme tid.</translation>
+    </string>
+    <string>
+      <source>Select a string to preview full text.</source>
+      <translation>Vælg en streng for at få vist fuld tekst.</translation>
+    </string>
+    <string>
+      <source>Selected string</source>
+      <translation>Valgt streng</translation>
+    </string>
+    <string>
+      <source>Show a thin status distribution bar above the table.</source>
+      <translation>Vis en tynd statusfordelingslinje over tabellen.</translation>
+    </string>
+    <string>
+      <source>Show advanced search modes</source>
+      <translation>Vis avancerede søgetilstande</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Status</translation>
+    </string>
+    <string>
+      <source>Status Overview Bar</source>
+      <translation>Statusoversigtsbjælke</translation>
+    </string>
+    <string>
+      <source>Translation table</source>
+      <translation>Oversættelsestabel</translation>
+    </string>
+    <string>
+      <source>Validate Release</source>
+      <translation>Valider udgivelse</translation>
+    </string>
+    <string>
+      <source>Validate Release...</source>
+      <translation>Valider udgivelse...</translation>
+    </string>
+    <string>
+      <source>Validating release</source>
+      <translation>Validerer udgivelse</translation>
+    </string>
+    <string>
+      <source>Validation cancelled</source>
+      <translation>Validering annulleret</translation>
+    </string>
+    <string>
+      <source>Validation preset:</source>
+      <translation>Validering forudindstillet:</translation>
+    </string>
+    <string>
+      <source>Workspace Warnings...</source>
+      <translation>Arbejdsområdeadvarsler...</translation>
+    </string>
+    <string>
+      <source>Workspace stats</source>
+      <translation>Arbejdspladsstatistik</translation>
+    </string>
+    <string>
+      <source>approved</source>
+      <translation>godkendt</translation>
+    </string>
+    <string>
+      <source>draft</source>
+      <translation>udkast</translation>
+    </string>
+    <string>
+      <source>needs review</source>
+      <translation>trænger til gennemgang</translation>
+    </string>
+    <string>
+      <source>shown</source>
+      <translation>vist</translation>
+    </string>
+    <string>
+      <source>untranslated</source>
+      <translation>uoversat</translation>
+    </string>
   </context>
   <context name="Messages">
     <string>
@@ -369,6 +617,26 @@ Fejl:
       <source>There was a temporary problem with the DeepL Service.</source>
       <translation>Der var et midlertidigt problem med DeepL Service</translation>
     </string>
+    <string>
+      <source>Ollama base URL is empty.</source>
+      <translation>Ollama-basis-URL er tom.</translation>
+    </string>
+    <string>
+      <source>Ollama base URL or model is empty.</source>
+      <translation>Ollama-basis-URL eller model er tom.</translation>
+    </string>
+    <string>
+      <source>Ollama is not reachable at {url}. Start Ollama or check the base URL.</source>
+      <translation>Ollama kan ikke nås på {url}. Start Ollama eller tjek basis-URL'en.</translation>
+    </string>
+    <string>
+      <source>Ollama model was not found. Run: ollama pull {model}</source>
+      <translation>Ollama-modellen blev ikke fundet. Kør: ollama pull {model}</translation>
+    </string>
+    <string>
+      <source>A maximum of 500 characters is allowed.</source>
+      <translation>Maksimalt 500 tegn er tilladt.</translation>
+    </string>
   </context>
   <context name="OptionsDialog">
     <string>
@@ -405,7 +673,7 @@ Fejl:
     </string>
     <string>
       <source>Build dictionaries</source>
-      <translation />
+      <translation>Byg ordbøger</translation>
     </string>
     <string>
       <source>Languages</source>
@@ -425,7 +693,7 @@ Fejl:
     </string>
     <string>
       <source>...</source>
-      <translation />
+      <translation>..</translation>
     </string>
     <string>
       <source>Create backup package before finalization</source>
@@ -448,12 +716,100 @@ Fejl:
       <translation>Generelt</translation>
     </string>
     <string>
+      <source>Providers</source>
+      <translation>Udbydere</translation>
+    </string>
+    <string>
       <source>Dictionaries</source>
       <translation>Ordbøger</translation>
     </string>
     <string>
       <source>DeepL API key</source>
       <translation>DeepL API nøgle</translation>
+    </string>
+    <string>
+      <source>Translation providers</source>
+      <translation>Oversættelsesudbydere</translation>
+    </string>
+    <string>
+      <source>OpenAI-compatible</source>
+      <translation>OpenAI-kompatibel</translation>
+    </string>
+    <string>
+      <source>Ollama local</source>
+      <translation>Ollama (lokal)</translation>
+    </string>
+    <string>
+      <source>API key</source>
+      <translation>API-nøgle</translation>
+    </string>
+    <string>
+      <source>Glossary ID</source>
+      <translation>Ordbogs-ID</translation>
+    </string>
+    <string>
+      <source>Model</source>
+      <translation>Model</translation>
+    </string>
+    <string>
+      <source>Base URL</source>
+      <translation>Basis-URL</translation>
+    </string>
+    <string>
+      <source>Test</source>
+      <translation>Test</translation>
+    </string>
+    <string>
+      <source>Usage</source>
+      <translation>Brug</translation>
+    </string>
+    <string>
+      <source>Configured and enabled providers appear in Batch Translate and Translation Studio.</source>
+      <translation>Konfigurerede og aktiverede udbydere vises i Batch Oversættelse og Oversættelsesstudio.</translation>
+    </string>
+    <string>
+      <source>Loading models...</source>
+      <translation>Indlæser modeller...</translation>
+    </string>
+    <string>
+      <source>Loaded {count} models.</source>
+      <translation>Indlæst {count} modeller.</translation>
+    </string>
+    <string>
+      <source>API key OK, choose a model.</source>
+      <translation>API-nøgle OK, vælg en model.</translation>
+    </string>
+    <string>
+      <source>Model list is unavailable; typed model was kept.</source>
+      <translation>Modellisten er utilgængelig; den indtastede model blev beholdt.</translation>
+    </string>
+    <string>
+      <source>Click Test to validate the API key and load available models. You can also type a custom model name.</source>
+      <translation>Klik på "Test" for at validere API-nøglen og indlæse tilgængelige modeller. Du kan også indtaste et brugerdefineret modelnavn.</translation>
+    </string>
+    <string>
+      <source>Choose a local model from the dropdown, or type a custom Ollama model name.</source>
+      <translation>Vælg en lokal model fra rullemenuen, eller indtast et brugerdefineret Ollama-modelnavn.</translation>
+    </string>
+    <string>
+      <source>Test the API key and load available models.</source>
+      <translation>Test API-nøglen og indlæs tilgængelige modeller.</translation>
+    </string>
+    <string>
+      <source>Checking {provider}...</source>
+      <translation>Tjekker {provider}...</translation>
+    </string>
+    <string>
+      <source>Checking DeepL...</source>
+      <translation>Tjekker DeepL...</translation>
+    </string>
+    <string>
+      <source>Ollama is ready and enabled.</source>
+      <translation>Ollama er klar og aktiveret.</translation>
+    </string>
+    <string>
+      <source>Ollama is ready but disabled. Enable it to show Ollama in translation lists.</source>
+      <translation>Ollama er klar, men deaktiveret. Aktiver den for at vise Ollama i oversættelseslisterne.</translation>
     </string>
     <string>
       <source>Language</source>
@@ -478,6 +834,210 @@ Fejl:
     <string>
       <source>The translation version differs from the application version, so the interface may not be fully translated</source>
       <translation>Oversættelsesversionen er forskellig fra programmets version, så interfacet bliver måske ikke oversat</translation>
+    </string>
+    <string>
+      <source>Test Gemini</source>
+      <translation>Test Gemini</translation>
+    </string>
+    <string>
+      <source>Test OpenAI-compatible</source>
+      <translation>Test OpenAI-kompatibel</translation>
+    </string>
+    <string>
+      <source>Enable Ollama local provider</source>
+      <translation>Aktiver Ollama-lokal provider</translation>
+    </string>
+    <string>
+      <source>Refresh Ollama models</source>
+      <translation>Opdater Ollama-modeller</translation>
+    </string>
+    <string>
+      <source>Test Ollama</source>
+      <translation>Test Ollama</translation>
+    </string>
+    <string>
+      <source>Download Ollama</source>
+      <translation>Download Ollama</translation>
+    </string>
+    <string>
+      <source>Download recommended model</source>
+      <translation>Download anbefalet model</translation>
+    </string>
+    <string>
+      <source>Cancel model download</source>
+      <translation>Annuller modeldownload</translation>
+    </string>
+    <string>
+      <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini, OpenAI-compatible, and Ollama providers use a safety prompt that asks the model to preserve Sims tokens and line count. Options can detect local Ollama models and download the recommended translategemma:12b model after confirmation. Do not share or commit your API key.</source>
+      <translation>Konfigurer valgfrie oversættelsesproviders, og vælg derefter en i Søg og rediger eller batch-oversæt. DeepL understøtter brugskontrol og ordliste-ID. Gemini, OpenAI-kompatibel og Ollama-providers bruger en sikkerhedsprompt, der beder modellen om at bevare Sims-tokens og linjetælling. Indstillinger kan detektere lokale Ollama-modeller og downloade den anbefalede translategemma:12b-model efter bekræftelse. Del ikke eller commit din API-nøgle.</translation>
+    </string>
+    <string>
+      <source>Checking Ollama setup...</source>
+      <translation>Tjekker Ollama-opsætning...</translation>
+    </string>
+    <string>
+      <source>Opened the official Ollama download page. Install Ollama, start it, then refresh models.</source>
+      <translation>Åbn den officielle Ollama-downloadside. Installer Ollama, start den, og opdater derefter modellerne.</translation>
+    </string>
+    <string>
+      <source>Recommended model download is not available until Ollama is installed and running.</source>
+      <translation>Download af anbefalet model er ikke tilgængelig, før Ollama er installeret og kører.</translation>
+    </string>
+    <string>
+      <source>Downloading Ollama model...</source>
+      <translation>Downloader Ollama-model...</translation>
+    </string>
+    <string>
+      <source>Cancelling Ollama model download...</source>
+      <translation>Annullerer Ollama-modeldownload...</translation>
+    </string>
+    <string>
+      <source>Download recommended Ollama model</source>
+      <translation>Download anbefalet Ollama-model</translation>
+    </string>
+    <string>
+      <source>Download {model} for local translation?</source>
+      <translation>Download {model} til lokal oversættelse?</translation>
+    </string>
+    <string>
+      <source>This model is about {size}. It needs internet access and disk space, and Ollama stores it outside this app.</source>
+      <translation>Denne model handler om {size}. Den kræver internetadgang og diskplads, og Ollama gemmer den uden for denne app.</translation>
+    </string>
+    <string>
+      <source>Download model</source>
+      <translation>Download model</translation>
+    </string>
+    <string>
+      <source>Ollama was not found on this computer. Download Ollama to use local models.</source>
+      <translation>Ollama blev ikke fundet på denne computer. Download Ollama for at bruge lokale modeller.</translation>
+    </string>
+    <string>
+      <source>Ollama server is reachable, but the local executable was not found. You can use the server, but this app cannot download models automatically.</source>
+      <translation>Ollama-serveren er tilgængelig, men den lokale eksekverbare fil blev ikke fundet. Du kan bruge serveren, men denne app kan ikke automatisk downloade modeller.</translation>
+    </string>
+    <string>
+      <source>Ollama is installed but the server is not reachable. Start Ollama, then refresh models.</source>
+      <translation>Ollama er installeret, men serveren er ikke tilgængelig. Start Ollama, og opdater derefter modellerne.</translation>
+    </string>
+    <string>
+      <source>Ollama is installed, but the recommended model is missing. Download translategemma:12b here or choose another local model.</source>
+      <translation>Ollama er installeret, men den anbefalede model mangler. Download translategemma:12b her, eller vælg en anden lokal model.</translation>
+    </string>
+    <string>
+      <source>Ollama is ready. Recommended model is installed.</source>
+      <translation>Ollama er klar. Den anbefalede model er installeret.</translation>
+    </string>
+    <string>
+      <source>Ollama executable was not found. Download and start Ollama first.</source>
+      <translation>Ollama-eksekverbare fil blev ikke fundet. Download og start Ollama først.</translation>
+    </string>
+    <string>
+      <source>Starting Ollama model download...</source>
+      <translation>Starter download af Ollama-model...</translation>
+    </string>
+    <string>
+      <source>Ollama model download was cancelled.</source>
+      <translation>Ollama-modeldownload blev afbrudt.</translation>
+    </string>
+    <string>
+      <source>Downloading {model}: {percent}%</source>
+      <translation>Downloader {model}: {percent}%</translation>
+    </string>
+    <string>
+      <source>Downloaded {model}.</source>
+      <translation>Downloadet {model}.</translation>
+    </string>
+    <string>
+      <source>Ollama model download failed with exit code {code}.</source>
+      <translation>Ollama-modeldownload mislykkedes med exit-kode {code}.</translation>
+    </string>
+    <string>
+      <source>Translation cache</source>
+      <translation>Oversættelsescache</translation>
+    </string>
+    <string>
+      <source>Reuse exact translation matches</source>
+      <translation>Genbrug præcise oversættelsestilpasninger</translation>
+    </string>
+    <string>
+      <source>Stores successful translations by source/destination language, engine, glossary or model, and source text hash. API keys are never stored in the cache.</source>
+      <translation>Gemmer succesfulde oversættelser baseret på kilde-/destinationssprog, motor, ordliste eller model og kildetekst-hash. API-nøgler gemmes aldrig i cachen.</translation>
+    </string>
+    <string>
+      <source>Clear translation cache</source>
+      <translation>Ryd oversættelsescachen</translation>
+    </string>
+    <string>
+      <source>Cache contains {entries:,} entry/entries, {size:,} bytes.</source>
+      <translation>Cachen indeholder {entries:,} element(er), {size:,} bytes.</translation>
+    </string>
+    <string>
+      <source>All packs</source>
+      <translation>Alle pakker</translation>
+    </string>
+    <string>
+      <source>Browse...</source>
+      <translation>Gennemse...</translation>
+    </string>
+    <string>
+      <source>Create backup before Finalize</source>
+      <translation>Opret backup før færdiggørelse</translation>
+    </string>
+    <string>
+      <source>Creates separate hashed STBL resources instead of touching the original STBL resources. Use only when testing conflict avoidance with a package copy.</source>
+      <translation>Opretter separate hashed STBL-ressourcer i stedet for at røre ved de originale STBL-ressourcer. Brug kun, når du tester konfliktundgåelse med en pakkekopi.</translation>
+    </string>
+    <string>
+      <source>Filter packs...</source>
+      <translation>Filterpakker...</translation>
+    </string>
+    <string>
+      <source>Free packs</source>
+      <translation>Gratis pakker</translation>
+    </string>
+    <string>
+      <source>Kits</source>
+      <translation>Sæt</translation>
+    </string>
+    <string>
+      <source>No packs match the current filter. Clear the search field to see the full catalog.</source>
+      <translation>Ingen pakker matcher det aktuelle filter. Ryd søgefeltet for at se hele kataloget.</translation>
+    </string>
+    <string>
+      <source>Only use exact dictionary matches</source>
+      <translation>Brug kun nøjagtige ordbogsmatches</translation>
+    </string>
+    <string>
+      <source>Pack Manager</source>
+      <translation>Pack Manager</translation>
+    </string>
+    <string>
+      <source>Recommended. When Finalize writes over a source package, keep a .package.backup copy first.</source>
+      <translation>Anbefales. Når Finalize skriver over en kildepakke, skal du først beholde en .package.backup-kopi.</translation>
+    </string>
+    <string>
+      <source>Safety defaults</source>
+      <translation>Sikkerhedsstandarder</translation>
+    </string>
+    <string>
+      <source>Select the folder that contains Data, EP, GP, SP, and FP folders from your The Sims 4 installation.</source>
+      <translation>Vælg den mappe, der indeholder Data-, EP-, GP-, SP- og FP-mapper fra din The Sims 4-installation.</translation>
+    </string>
+    <string>
+      <source>These choices are saved automatically. For Vietnamese release work, keep backups on, leave conflict-free mode off unless testing a copy, and review context-sensitive dictionary matches.</source>
+      <translation>Disse valg gemmes automatisk. For vietnamesisk udgivelsesarbejde skal du holde sikkerhedskopier aktiveret, lade konfliktfri tilstand være slået fra, medmindre du tester en kopi, og gennemgå kontekstafhængige ordbogsmatches.</translation>
+    </string>
+    <string>
+      <source>Use conflict-free save mode (experimental)</source>
+      <translation>Brug konfliktfri gemmetilstand (eksperimentel)</translation>
+    </string>
+    <string>
+      <source>When enabled, dictionary auto-fill is stricter and avoids fallback matches from the same source text. Leave disabled to reuse more dictionary translations, then review context-sensitive strings manually.</source>
+      <translation>Når det er aktiveret, er autoudfyldning af ordbog strengere og undgår reservematches fra den samme kildetekst. Lad være deaktiveret for at genbruge flere ordbogsoversættelser, og gennemgå derefter kontekstfølsomme strenge manuelt.</translation>
+    </string>
+    <string>
+      <source>by {}</source>
+      <translation>af {}</translation>
     </string>
   </context>
   <context name="ReplaceDialog">
@@ -515,7 +1075,7 @@ Fejl:
     </string>
     <string>
       <source>OK</source>
-      <translation />
+      <translation>OK</translation>
     </string>
   </context>
   <context name="System">
@@ -582,6 +1142,30 @@ Fejl:
     <string>
       <source>Stopping translate, waiting for the finish of the threads...</source>
       <translation>Stopper med at oversætte og venter på, at trådene bliver færdige...</translation>
+    </string>
+    <string>
+      <source>Cancelling...</source>
+      <translation>Annullerer...</translation>
+    </string>
+    <string>
+      <source>Exported {} file(s), {} string(s)</source>
+      <translation>Eksporteret {} fil(er), {} streng(er)</translation>
+    </string>
+    <string>
+      <source>Exporting Translation Hub CSV...</source>
+      <translation>Eksporterer Translation Hub CSV...</translation>
+    </string>
+    <string>
+      <source>Imported {} translations, unchanged {}, skipped {}, missing {}</source>
+      <translation>Importerede {}-oversættelser, uændret {}, sprunget over {}, mangler {}</translation>
+    </string>
+    <string>
+      <source>Loaded {} unique strings, skipped {} duplicates</source>
+      <translation>Indlæste {} unikke strenge, sprunget over {} dubletter</translation>
+    </string>
+    <string>
+      <source>Saved package {}, {} resource(s)</source>
+      <translation>Gemt pakke {}, {} ressource(r)</translation>
     </string>
   </context>
   <context name="ToolBar">
@@ -671,6 +1255,10 @@ Fejl:
       <source>Cancel</source>
       <translation>Fortryd</translation>
     </string>
+    <string>
+      <source>Apply matching translations while keeping validated work protected.</source>
+      <translation>Anvend matchende oversættelser, mens du holder valideret arbejde beskyttet.</translation>
+    </string>
   </context>
   <context name="TranslateDialog">
     <string>
@@ -687,7 +1275,7 @@ Fejl:
     </string>
     <string>
       <source>Log</source>
-      <translation />
+      <translation>Log</translation>
     </string>
     <string>
       <source>Line-by-line translation</source>
@@ -712,6 +1300,60 @@ Fejl:
     <string>
       <source>Stop translate</source>
       <translation>Stop oversættelse</translation>
+    </string>
+    <string>
+      <source>Translation cache: {hits:,} reused, {misses:,} to translate.</source>
+      <translation>Oversættelsescache: {hits:,} genbrugt, {misses:,} til oversættelse.</translation>
+    </string>
+    <string>
+      <source>AI batch translation</source>
+      <translation>AI-batchoversættelse</translation>
+    </string>
+    <string>
+      <source>{engine} will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation>{engine} vil oversætte {records:,} poster, svarende til ca. {characters:,} kilde-tegn.</translation>
+    </string>
+    <string>
+      <source>Review provider pricing and quota before continuing.</source>
+      <translation>Gennemgå udbyderens priser og kvoter, før du fortsætter.</translation>
+    </string>
+    <string>
+      <source>Continue with AI provider</source>
+      <translation>Fortsæt med AI-udbyder</translation>
+    </string>
+    <string>
+      <source>Continue with DeepL</source>
+      <translation>Fortsæt med DeepL</translation>
+    </string>
+    <string>
+      <source>Current usage: {used:,} / {limit:,} characters.
+After this batch: about {after:,} characters ({percent:.1f}%).</source>
+      <translation>Nuværende brug: {used:,} / {limit:,} tegn.
+Efter denne batch: ca. {after:,} tegn ({percent:.1f}%).</translation>
+    </string>
+    <string>
+      <source>Current usage: {used:,} characters.</source>
+      <translation>Nuværende brug: {used:,} tegn.</translation>
+    </string>
+    <string>
+      <source>DeepL batch translation</source>
+      <translation>DeepL batch-oversættelse</translation>
+    </string>
+    <string>
+      <source>DeepL will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation>DeepL vil oversætte {records:,} poster, omkring {characters:,} kildetegn.</translation>
+    </string>
+    <string>
+      <source>Stopping...</source>
+      <translation>Stopper...</translation>
+    </string>
+    <string>
+      <source>Translate the chosen records in the background and keep the workspace responsive.</source>
+      <translation>Oversæt de valgte poster i baggrunden, og hold arbejdsområdet responsivt.</translation>
+    </string>
+    <string>
+      <source>Usage unavailable: {message}</source>
+      <translation>Brug ikke tilgængelig: {message}</translation>
     </string>
   </context>
   <context name="TextEditor">
@@ -738,6 +1380,368 @@ Fejl:
     <string>
       <source>Select All</source>
       <translation>Vælg alle</translation>
+    </string>
+  </context>
+  <context name="JobDrawer">
+    <string>
+      <source>Cancel</source>
+      <translation>Annuller</translation>
+    </string>
+    <string>
+      <source>Cancelled</source>
+      <translation>Annulleret</translation>
+    </string>
+    <string>
+      <source>Cancelling...</source>
+      <translation>Annullerer...</translation>
+    </string>
+    <string>
+      <source>Clear</source>
+      <translation>Ryd</translation>
+    </string>
+    <string>
+      <source>Done</source>
+      <translation>Færdig</translation>
+    </string>
+    <string>
+      <source>Error</source>
+      <translation>Fejl</translation>
+    </string>
+    <string>
+      <source>Finished: foreground job</source>
+      <translation>Færdig: forgrundsarbejde</translation>
+    </string>
+    <string>
+      <source>Hide jobs</source>
+      <translation>Skjul job</translation>
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation>Inaktiv</translation>
+    </string>
+    <string>
+      <source>Jobs</source>
+      <translation>Jobs</translation>
+    </string>
+    <string>
+      <source>No active background jobs.</source>
+      <translation>Ingen aktive baggrundsjob.</translation>
+    </string>
+    <string>
+      <source>Queued</source>
+      <translation>I kø</translation>
+    </string>
+    <string>
+      <source>Recent jobs</source>
+      <translation>Nylige job</translation>
+    </string>
+    <string>
+      <source>Running</source>
+      <translation>Løb</translation>
+    </string>
+    <string>
+      <source>Show jobs</source>
+      <translation>Vis job</translation>
+    </string>
+    <string>
+      <source>Started</source>
+      <translation>Startede</translation>
+    </string>
+    <string>
+      <source>Working</source>
+      <translation>Arbejder</translation>
+    </string>
+    <string>
+      <source>active background job(s)</source>
+      <translation>aktive baggrundsjob</translation>
+    </string>
+  </context>
+  <context name="TokenAssistant">
+    <string>
+      <source>Category</source>
+      <translation>Kategori</translation>
+    </string>
+    <string>
+      <source>Copy</source>
+      <translation>Kopiér</translation>
+    </string>
+    <string>
+      <source>Female text...</source>
+      <translation>Kvinde tekst...</translation>
+    </string>
+    <string>
+      <source>Index</source>
+      <translation>Indeks</translation>
+    </string>
+    <string>
+      <source>Insert</source>
+      <translation>Indsæt</translation>
+    </string>
+    <string>
+      <source>Male text...</source>
+      <translation>Mandlig tekst...</translation>
+    </string>
+    <string>
+      <source>Male/Female pair</source>
+      <translation>Mand/kvinde par</translation>
+    </string>
+    <string>
+      <source>Suffix</source>
+      <translation>Suffiks</translation>
+    </string>
+    <string>
+      <source>Token</source>
+      <translation>Token</translation>
+    </string>
+    <string>
+      <source>Token Assistant</source>
+      <translation>Token-assistent</translation>
+    </string>
+  </context>
+  <context name="TokenValidation">
+    <string>
+      <source>All source tokens are preserved in the translation draft.</source>
+      <translation>Alle kildesymboler er bevaret i oversættelsesudkastet.</translation>
+    </string>
+    <string>
+      <source>Back to Edit</source>
+      <translation>Tilbage til Rediger</translation>
+    </string>
+    <string>
+      <source>Continue and Approve</source>
+      <translation>Fortsæt og godkend</translation>
+    </string>
+    <string>
+      <source>Continue and Mark Needs Review</source>
+      <translation>Fortsæt og Mark skal gennemgås</translation>
+    </string>
+    <string>
+      <source>Continue only if these token differences are intentional.</source>
+      <translation>Fortsæt kun, hvis disse token-forskelle er bevidste.</translation>
+    </string>
+    <string>
+      <source>Extra</source>
+      <translation>Ekstra</translation>
+    </string>
+    <string>
+      <source>Line breaks differ</source>
+      <translation>Linjeskift er forskellige</translation>
+    </string>
+    <string>
+      <source>Line-break count differs</source>
+      <translation>Antallet af linjeskift er forskelligt</translation>
+    </string>
+    <string>
+      <source>Missing</source>
+      <translation>Mangler</translation>
+    </string>
+    <string>
+      <source>OK</source>
+      <translation>OK</translation>
+    </string>
+    <string>
+      <source>Order differs</source>
+      <translation>Rækkefølgen er forskellig</translation>
+    </string>
+    <string>
+      <source>Suggested outcome: Approved.</source>
+      <translation>Foreslået resultat: Godkendt.</translation>
+    </string>
+    <string>
+      <source>Suggested outcome: Needs Review until the token differences are intentional.</source>
+      <translation>Foreslået resultat: Skal gennemgås, indtil token-forskellene er bevidste.</translation>
+    </string>
+    <string>
+      <source>Token check:</source>
+      <translation>Tokencheck:</translation>
+    </string>
+    <string>
+      <source>Token differences can break in-game placeholders or formatting.</source>
+      <translation>Tokenforskelle kan ødelægge pladsholdere eller formatering i spillet.</translation>
+    </string>
+    <string>
+      <source>Token order differs</source>
+      <translation>Tokens rækkefølge er forskellig</translation>
+    </string>
+    <string>
+      <source>{outcome} with token warnings</source>
+      <translation>{outcome} med token-advarsler</translation>
+    </string>
+  </context>
+  <context name="ReleaseValidationDialog">
+    <string>
+      <source>All</source>
+      <translation>Alle</translation>
+    </string>
+    <string>
+      <source>Back to Fix</source>
+      <translation>Tilbage til Fix</translation>
+    </string>
+    <string>
+      <source>CSV report (*.csv)</source>
+      <translation>CSV-rapport (*.csv)</translation>
+    </string>
+    <string>
+      <source>Category</source>
+      <translation>Kategori</translation>
+    </string>
+    <string>
+      <source>Close</source>
+      <translation>Luk</translation>
+    </string>
+    <string>
+      <source>Continue</source>
+      <translation>Fortsæt</translation>
+    </string>
+    <string>
+      <source>Continue anyway</source>
+      <translation>Fortsæt alligevel</translation>
+    </string>
+    <string>
+      <source>Copy selected issue</source>
+      <translation>Kopiér det valgte problem</translation>
+    </string>
+    <string>
+      <source>Copy summary</source>
+      <translation>Kopiér resumé</translation>
+    </string>
+    <string>
+      <source>Export Pre-release Validation Report</source>
+      <translation>Eksportér Pre-release Validation Report</translation>
+    </string>
+    <string>
+      <source>Export report</source>
+      <translation>Eksport rapport</translation>
+    </string>
+    <string>
+      <source>Pre-release Validation Report</source>
+      <translation>Pre-release Valideringsrapport</translation>
+    </string>
+    <string>
+      <source>Pre-release validation ({profile}): {critical} critical, {warning} warning, {info} info for {written:,}/{total:,} record(s).</source>
+      <translation>Pre-release validering ({profile}): {critical} kritisk, {warning} advarsel, {info} info for {written:,}/{total:,} post(er).</translation>
+    </string>
+    <string>
+      <source>Review day-to-day workspace issues without starting a save or export.</source>
+      <translation>Gennemgå daglige arbejdsområdeproblemer uden at starte en lagring eller eksport.</translation>
+    </string>
+    <string>
+      <source>Review potential blank-text and token issues before writing release files.</source>
+      <translation>Gennemgå potentielle problemer med tom tekst og token, før du skriver udgivelsesfiler.</translation>
+    </string>
+    <string>
+      <source>Search</source>
+      <translation>Søg</translation>
+    </string>
+    <string>
+      <source>Search package, instance, ID, reason, original, or translation...</source>
+      <translation>Søg i pakke, forekomst, ID, årsag, original eller oversættelse...</translation>
+    </string>
+    <string>
+      <source>Text report (*.txt)</source>
+      <translation>Tekstrapport (*.txt)</translation>
+    </string>
+    <string>
+      <source>Workspace Warnings</source>
+      <translation>Arbejdspladsadvarsler</translation>
+    </string>
+    <string>
+      <source>{shown:,} issue(s) shown from {total:,}.</source>
+      <translation>{shown:,} problemer vist fra {total:,}.</translation>
+    </string>
+    <string>
+      <source>Code</source>
+      <translation>Kode</translation>
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation>Forekomst</translation>
+    </string>
+    <string>
+      <source>Original</source>
+      <translation>Original</translation>
+    </string>
+    <string>
+      <source>Package</source>
+      <translation>Pakke</translation>
+    </string>
+    <string>
+      <source>Reason</source>
+      <translation>Årsag</translation>
+    </string>
+    <string>
+      <source>Severity</source>
+      <translation>Sværhedsgrad</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Status</translation>
+    </string>
+    <string>
+      <source>String ID</source>
+      <translation>Streng-id</translation>
+    </string>
+    <string>
+      <source>Translation</source>
+      <translation>Oversættelse</translation>
+    </string>
+  </context>
+  <context name="ValidationCategory">
+    <string>
+      <source>Blank risk</source>
+      <translation>Tom risiko</translation>
+    </string>
+    <string>
+      <source>Duplicate output</source>
+      <translation>Dublet output</translation>
+    </string>
+    <string>
+      <source>Length / layout risk</source>
+      <translation>Længde / layout risiko</translation>
+    </string>
+    <string>
+      <source>Resource</source>
+      <translation>Ressource</translation>
+    </string>
+    <string>
+      <source>Source changed</source>
+      <translation>Kilde ændret</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Status</translation>
+    </string>
+    <string>
+      <source>Summary</source>
+      <translation>Resumé</translation>
+    </string>
+    <string>
+      <source>Token safety</source>
+      <translation>Token sikkerhed</translation>
+    </string>
+  </context>
+  <context name="ValidationProfile">
+    <string>
+      <source>Soft release</source>
+      <translation>Blød udløser</translation>
+    </string>
+    <string>
+      <source>Strict release</source>
+      <translation>Streng frigivelse</translation>
+    </string>
+  </context>
+  <context name="ValidationSeverity">
+    <string>
+      <source>Critical</source>
+      <translation>Kritisk</translation>
+    </string>
+    <string>
+      <source>Info</source>
+      <translation>Info</translation>
+    </string>
+    <string>
+      <source>Warning</source>
+      <translation>Advarsel</translation>
     </string>
   </context>
 </ts>

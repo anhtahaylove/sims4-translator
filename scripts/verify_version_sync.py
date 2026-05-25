@@ -37,8 +37,7 @@ def verify(version: str) -> list[str]:
     if not re.search(rf'^## Version {re.escape(version)}\b', changelog, re.MULTILINE):
         errors.append(f'CHANGELOG.md is missing latest heading for Version {version}')
 
-    for interface_name in ('english.xml', 'vietnamese.xml'):
-        path = ROOT / 'prefs' / 'interface' / interface_name
+    for path in sorted((ROOT / 'prefs' / 'interface').glob('*.xml')):
         xml_version = _interface_version(path)
         if xml_version != version:
             errors.append(f'{path.relative_to(ROOT)} version is {xml_version!r}, expected {version!r}')

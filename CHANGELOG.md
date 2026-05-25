@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.2.11 - 2026-05-25
+
+- Completed all bundled interface language catalogs for the current UI and added strict all-language localization checks.
+
 ## Version 2.2.10 - 2026-05-25
 
 - Fixed main-table hover tooltips so XML-like tags and Sims tokens stay escaped, highlighted, and readable instead of being interpreted as broken tooltip HTML.

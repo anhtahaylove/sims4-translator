@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ts language="zh_TW" name="中文 (Chinese)" version="1.1.2" authors="Tina.">
+<?xml version='1.0' encoding='utf-8'?>
+<ts language="zh_TW" name="中文 (Chinese)" version="2.2.11" authors="Tina.">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -43,7 +43,59 @@
     </string>
     <string>
       <source>Comment...</source>
-      <translation />
+      <translation>評論...</translation>
+    </string>
+    <string>
+      <source>Approve (Ctrl+Enter)</source>
+      <translation>批准（Ctrl+Enter）</translation>
+    </string>
+    <string>
+      <source>Dictionary suggestions</source>
+      <translation>字典建議</translation>
+    </string>
+    <string>
+      <source>Draft</source>
+      <translation>吃水</translation>
+    </string>
+    <string>
+      <source>Needs Review</source>
+      <translation>需求審查</translation>
+    </string>
+    <string>
+      <source>Original</source>
+      <translation>原創</translation>
+    </string>
+    <string>
+      <source>Review token safety, refine the draft, then approve it or mark it for review.</source>
+      <translation>審查代幣安全性，完善草案，然後批准或標記為供審查。</translation>
+    </string>
+    <string>
+      <source>Selected suggestion</source>
+      <translation>選定的建議</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>狀態</translation>
+    </string>
+    <string>
+      <source>Suggestions</source>
+      <translation>建議</translation>
+    </string>
+    <string>
+      <source>Tokens</source>
+      <translation>代幣</translation>
+    </string>
+    <string>
+      <source>Translation Studio</source>
+      <translation>翻譯工作室</translation>
+    </string>
+    <string>
+      <source>Translation draft</source>
+      <translation>翻譯稿</translation>
+    </string>
+    <string>
+      <source>chars</source>
+      <translation>字元</translation>
     </string>
   </context>
   <context name="ExportDialog">
@@ -73,7 +125,7 @@
     </string>
     <string>
       <source>Each package as a separate file</source>
-      <translation />
+      <translation>將每個包視為獨立檔案</translation>
     </string>
     <string>
       <source>Exported records</source>
@@ -87,11 +139,11 @@
       <source>Selection only</source>
       <translation>选中词条</translation>
     </string>
+    <string>
+      <source>Choose which records to write, then continue in the background.</source>
+      <translation>選擇要寫入的記錄，然後在背景繼續。</translation>
+    </string>
   </context>
-  <context name="GenerateDialog">
-    </context>
-  <context name="InsertDialog">
-    </context>
   <context name="MainTableView">
     <string>
       <source>Original</source>
@@ -115,7 +167,15 @@
     </string>
     <string>
       <source>Comment</source>
-      <translation />
+      <translation>評論</translation>
+    </string>
+    <string>
+      <source>ID</source>
+      <translation>身分證號</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>狀態</translation>
     </string>
   </context>
   <context name="MainWindow">
@@ -213,11 +273,11 @@
     </string>
     <string>
       <source>To JSON (Sims 4 Studio format)...</source>
-      <translation />
+      <translation>轉換為 JSON (The Sims 4 Studio 格式)...</translation>
     </string>
     <string>
       <source>To Binary (Sims 4 Studio format)...</source>
-      <translation />
+      <translation>轉換為二進位 (The Sims 4 Studio 格式)...</translation>
     </string>
     <string>
       <source>Use original group</source>
@@ -289,31 +349,215 @@
     </string>
     <string>
       <source>Standart</source>
-      <translation />
+      <translation>標準</translation>
     </string>
     <string>
       <source>From the source file</source>
-      <translation />
+      <translation>從原始檔案</translation>
     </string>
     <string>
       <source>XML format</source>
-      <translation />
+      <translation>XML 格式</translation>
     </string>
     <string>
       <source>XML format (Deaderpool's STBL editor)</source>
-      <translation />
+      <translation>XML 格式 (Deaderpool 的 STBL 編輯器)</translation>
     </string>
     <string>
       <source>Batch translate...</source>
-      <translation />
+      <translation>批量翻譯...</translation>
     </string>
     <string>
       <source>Translate</source>
-      <translation />
+      <translation>翻譯</translation>
     </string>
     <string>
       <source>Color visualization</source>
-      <translation />
+      <translation>色彩視覺化</translation>
+    </string>
+    <string>
+      <source>Open package -&gt; Translate -&gt; Validate Release -&gt; Save as package</source>
+      <translation>開啟包 -&gt; 翻譯 -&gt; 驗證發布 -&gt; 儲存為包</translation>
+    </string>
+    <string>
+      <source>Open package</source>
+      <translation>開啟包</translation>
+    </string>
+    <string>
+      <source>Activity Dock</source>
+      <translation>活動碼頭</translation>
+    </string>
+    <string>
+      <source>Advanced</source>
+      <translation>進階</translation>
+    </string>
+    <string>
+      <source>Approve</source>
+      <translation>核准</translation>
+    </string>
+    <string>
+      <source>Approve all translations</source>
+      <translation>批准所有翻譯</translation>
+    </string>
+    <string>
+      <source>Clear filters</source>
+      <translation>清除過濾器</translation>
+    </string>
+    <string>
+      <source>Dictionary</source>
+      <translation>字典</translation>
+    </string>
+    <string>
+      <source>Export</source>
+      <translation>出口</translation>
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation>空閒</translation>
+    </string>
+    <string>
+      <source>Import</source>
+      <translation>進口</translation>
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation>實例</translation>
+    </string>
+    <string>
+      <source>Mark as needs review</source>
+      <translation>標記為需要審查</translation>
+    </string>
+    <string>
+      <source>Mode</source>
+      <translation>模式</translation>
+    </string>
+    <string>
+      <source>No package loaded</source>
+      <translation>沒有載入包</translation>
+    </string>
+    <string>
+      <source>No string selected</source>
+      <translation>未選擇任何字串</translation>
+    </string>
+    <string>
+      <source>Open</source>
+      <translation>打開</translation>
+    </string>
+    <string>
+      <source>Open Editor</source>
+      <translation>開啟編輯器</translation>
+    </string>
+    <string>
+      <source>Package</source>
+      <translation>套餐</translation>
+    </string>
+    <string>
+      <source>Release QA</source>
+      <translation>發布品質檢查</translation>
+    </string>
+    <string>
+      <source>Reset</source>
+      <translation>重置</translation>
+    </string>
+    <string>
+      <source>Save translated strings to dictionary for reuse</source>
+      <translation>將翻譯後的字串儲存到字典中以供重複使用</translation>
+    </string>
+    <string>
+      <source>Scope</source>
+      <translation>適用範圍</translation>
+    </string>
+    <string>
+      <source>Search</source>
+      <translation>搜尋</translation>
+    </string>
+    <string>
+      <source>Search ID, Original, or Translation...</source>
+      <translation>搜尋 ID、原文或翻譯...</translation>
+    </string>
+    <string>
+      <source>Search ID, original and translation</source>
+      <translation>搜尋 ID、原文和翻譯</translation>
+    </string>
+    <string>
+      <source>Search ID, original text, and translation text at the same time.</source>
+      <translation>同時搜尋ID、原文、翻譯文字。</translation>
+    </string>
+    <string>
+      <source>Select a string to preview full text.</source>
+      <translation>選擇一個字串以預覽全文。</translation>
+    </string>
+    <string>
+      <source>Selected string</source>
+      <translation>選定的字串</translation>
+    </string>
+    <string>
+      <source>Show a thin status distribution bar above the table.</source>
+      <translation>在表格上方顯示一個細長的狀態分佈欄。</translation>
+    </string>
+    <string>
+      <source>Show advanced search modes</source>
+      <translation>顯示進階搜尋模式</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>狀態</translation>
+    </string>
+    <string>
+      <source>Status Overview Bar</source>
+      <translation>狀態概覽欄</translation>
+    </string>
+    <string>
+      <source>Translation table</source>
+      <translation>翻譯表</translation>
+    </string>
+    <string>
+      <source>Validate Release</source>
+      <translation>驗證發布</translation>
+    </string>
+    <string>
+      <source>Validate Release...</source>
+      <translation>驗證發布...</translation>
+    </string>
+    <string>
+      <source>Validating release</source>
+      <translation>驗證發布</translation>
+    </string>
+    <string>
+      <source>Validation cancelled</source>
+      <translation>驗證已取消</translation>
+    </string>
+    <string>
+      <source>Validation preset:</source>
+      <translation>驗證預設：</translation>
+    </string>
+    <string>
+      <source>Workspace Warnings...</source>
+      <translation>工作區警告...</translation>
+    </string>
+    <string>
+      <source>Workspace stats</source>
+      <translation>工作區統計信息</translation>
+    </string>
+    <string>
+      <source>approved</source>
+      <translation>已批准</translation>
+    </string>
+    <string>
+      <source>draft</source>
+      <translation>草案</translation>
+    </string>
+    <string>
+      <source>needs review</source>
+      <translation>需求審查</translation>
+    </string>
+    <string>
+      <source>shown</source>
+      <translation>顯示</translation>
+    </string>
+    <string>
+      <source>untranslated</source>
+      <translation>未翻譯的</translation>
     </string>
   </context>
   <context name="Messages">
@@ -335,40 +579,63 @@
     </string>
     <string>
       <source>Not found text records in following files:</source>
-      <translation />
+      <translation>在以下檔案中未找到文字記錄：</translation>
     </string>
     <string>
       <source>Translation completed with {} successes.
 
 Errors:
 {}</source>
-      <translation />
+      <translation>翻譯完成，成功 {} 次.
+
+錯誤：
+{}</translation>
     </string>
     <string>
       <source>... and {} other errors</source>
-      <translation />
+      <translation>.. 以及 {} 個其他錯誤</translation>
     </string>
   </context>
   <context name="Errors">
     <string>
       <source>Language code not found!</source>
-      <translation />
+      <translation>找不到語言代碼！</translation>
     </string>
     <string>
       <source>Translation failed with error code: {}</source>
-      <translation />
+      <translation>翻譯失敗，錯誤代碼：{}</translation>
     </string>
     <string>
       <source>Invalid API key.</source>
-      <translation />
+      <translation>API 金鑰無效。</translation>
     </string>
     <string>
       <source>Your quota has exceeded!</source>
-      <translation />
+      <translation>您的配額已超過！</translation>
     </string>
     <string>
       <source>There was a temporary problem with the DeepL Service.</source>
-      <translation />
+      <translation>DeepL 服務出現了暫時性問題。</translation>
+    </string>
+    <string>
+      <source>Ollama base URL is empty.</source>
+      <translation>Ollama 基礎 URL 為空。</translation>
+    </string>
+    <string>
+      <source>Ollama base URL or model is empty.</source>
+      <translation>Ollama 基礎 URL 或模型為空。</translation>
+    </string>
+    <string>
+      <source>Ollama is not reachable at {url}. Start Ollama or check the base URL.</source>
+      <translation>無法連線到 {url} 的 Ollama。請啟動 Ollama 或檢查基礎 URL。</translation>
+    </string>
+    <string>
+      <source>Ollama model was not found. Run: ollama pull {model}</source>
+      <translation>未找到 Ollama 模型。請執行：ollama pull {model}</translation>
+    </string>
+    <string>
+      <source>A maximum of 500 characters is allowed.</source>
+      <translation>最多允許 500 個字元。</translation>
     </string>
   </context>
   <context name="OptionsDialog">
@@ -426,7 +693,7 @@ Errors:
     </string>
     <string>
       <source>...</source>
-      <translation />
+      <translation>..</translation>
     </string>
     <string>
       <source>Create backup package before finalization</source>
@@ -442,43 +709,335 @@ Errors:
     </string>
     <string>
       <source>Do not use automatic translation from other dictionaries</source>
-      <translation />
+      <translation>請勿使用來自其他字典的自動翻譯。</translation>
     </string>
     <string>
       <source>General</source>
-      <translation />
+      <translation>一般</translation>
+    </string>
+    <string>
+      <source>Providers</source>
+      <translation>提供者</translation>
     </string>
     <string>
       <source>Dictionaries</source>
-      <translation />
+      <translation>詞典</translation>
     </string>
     <string>
       <source>DeepL API key</source>
-      <translation />
+      <translation>DeepL API 金鑰</translation>
+    </string>
+    <string>
+      <source>Translation providers</source>
+      <translation>翻譯提供者</translation>
+    </string>
+    <string>
+      <source>OpenAI-compatible</source>
+      <translation>OpenAI 兼容</translation>
+    </string>
+    <string>
+      <source>Ollama local</source>
+      <translation>Ollama 本地</translation>
+    </string>
+    <string>
+      <source>API key</source>
+      <translation>API 金鑰</translation>
+    </string>
+    <string>
+      <source>Glossary ID</source>
+      <translation>詞彙表 ID</translation>
+    </string>
+    <string>
+      <source>Model</source>
+      <translation>模型</translation>
+    </string>
+    <string>
+      <source>Base URL</source>
+      <translation>基本 URL</translation>
+    </string>
+    <string>
+      <source>Test</source>
+      <translation>測試</translation>
+    </string>
+    <string>
+      <source>Usage</source>
+      <translation>使用情況</translation>
+    </string>
+    <string>
+      <source>Configured and enabled providers appear in Batch Translate and Translation Studio.</source>
+      <translation>已配置並啟用的提供者將顯示在批量翻譯和翻譯工作室中。</translation>
+    </string>
+    <string>
+      <source>Loading models...</source>
+      <translation>正在載入模型...</translation>
+    </string>
+    <string>
+      <source>Loaded {count} models.</source>
+      <translation>已載入 {count} 個模型。</translation>
+    </string>
+    <string>
+      <source>API key OK, choose a model.</source>
+      <translation>API 金鑰驗證成功，請選擇一個模型。</translation>
+    </string>
+    <string>
+      <source>Model list is unavailable; typed model was kept.</source>
+      <translation>模型列表不可用；已保留您輸入的模型名稱。</translation>
+    </string>
+    <string>
+      <source>Click Test to validate the API key and load available models. You can also type a custom model name.</source>
+      <translation>點擊「測試」以驗證 API 金鑰並載入可用模型。您也可以輸入自訂模型名稱。</translation>
+    </string>
+    <string>
+      <source>Choose a local model from the dropdown, or type a custom Ollama model name.</source>
+      <translation>請從下拉列表中選擇一個本機模型，或輸入一個自訂的 Ollama 模型名稱。</translation>
+    </string>
+    <string>
+      <source>Test the API key and load available models.</source>
+      <translation>測試 API 金鑰並載入可用模型。</translation>
+    </string>
+    <string>
+      <source>Checking {provider}...</source>
+      <translation>正在檢查 {provider}...</translation>
+    </string>
+    <string>
+      <source>Checking DeepL...</source>
+      <translation>正在檢查 DeepL...</translation>
+    </string>
+    <string>
+      <source>Ollama is ready and enabled.</source>
+      <translation>Ollama 已就緒且已啟用。</translation>
+    </string>
+    <string>
+      <source>Ollama is ready but disabled. Enable it to show Ollama in translation lists.</source>
+      <translation>Ollama 已就緒但已停用。啟用它以在翻譯列表中顯示 Ollama。</translation>
     </string>
     <string>
       <source>Language</source>
-      <translation />
+      <translation>語言</translation>
     </string>
     <string>
       <source>Theme</source>
-      <translation />
+      <translation>主題</translation>
     </string>
     <string>
       <source>Light</source>
-      <translation />
+      <translation>淺色</translation>
     </string>
     <string>
       <source>Dark</source>
-      <translation />
+      <translation>深色</translation>
     </string>
     <string>
       <source>The application needs to be restarted</source>
-      <translation />
+      <translation>應用程式需要重新啟動</translation>
     </string>
     <string>
       <source>The translation version differs from the application version, so the interface may not be fully translated</source>
-      <translation />
+      <translation>翻譯版本與應用程式版本不同，因此介面可能未完全翻譯。</translation>
+    </string>
+    <string>
+      <source>Test Gemini</source>
+      <translation>測試 Gemini</translation>
+    </string>
+    <string>
+      <source>Test OpenAI-compatible</source>
+      <translation>測試 OpenAI 兼容版本</translation>
+    </string>
+    <string>
+      <source>Enable Ollama local provider</source>
+      <translation>啟用 Ollama 本地提供者</translation>
+    </string>
+    <string>
+      <source>Refresh Ollama models</source>
+      <translation>重新整理 Ollama 模型</translation>
+    </string>
+    <string>
+      <source>Test Ollama</source>
+      <translation>測試 Ollama</translation>
+    </string>
+    <string>
+      <source>Download Ollama</source>
+      <translation>下載 Ollama</translation>
+    </string>
+    <string>
+      <source>Download recommended model</source>
+      <translation>下載推薦模型</translation>
+    </string>
+    <string>
+      <source>Cancel model download</source>
+      <translation>取消模型下載</translation>
+    </string>
+    <string>
+      <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini, OpenAI-compatible, and Ollama providers use a safety prompt that asks the model to preserve Sims tokens and line count. Options can detect local Ollama models and download the recommended translategemma:12b model after confirmation. Do not share or commit your API key.</source>
+      <translation>配置可選的翻譯提供者，然後在「搜尋與編輯」或「批量翻譯」中選擇一個。DeepL 支援使用量檢查和詞彙表 ID。Gemini、OpenAI 兼容版本和 Ollama 提供者使用安全提示，要求模型保留 Sims 標記和行數。選項可以檢測本地 Ollama 模型，並在確認後下載推薦的 translategemma:12b 模型。請勿分享或提交您的 API 金鑰。</translation>
+    </string>
+    <string>
+      <source>Checking Ollama setup...</source>
+      <translation>正在檢查 Ollama 設定...</translation>
+    </string>
+    <string>
+      <source>Opened the official Ollama download page. Install Ollama, start it, then refresh models.</source>
+      <translation>已開啟官方 Ollama 下載頁面。安裝 Ollama，啟動它，然後重新整理模型。</translation>
+    </string>
+    <string>
+      <source>Recommended model download is not available until Ollama is installed and running.</source>
+      <translation>在 Ollama 安裝並執行之前，無法使用下載推薦模型的功能。</translation>
+    </string>
+    <string>
+      <source>Downloading Ollama model...</source>
+      <translation>正在下載 Ollama 模型...</translation>
+    </string>
+    <string>
+      <source>Cancelling Ollama model download...</source>
+      <translation>正在取消 Ollama 模型下載...</translation>
+    </string>
+    <string>
+      <source>Download recommended Ollama model</source>
+      <translation>下載推薦的 Ollama 模型</translation>
+    </string>
+    <string>
+      <source>Download {model} for local translation?</source>
+      <translation>是否下載 {model} 以進行本地翻譯？</translation>
+    </string>
+    <string>
+      <source>This model is about {size}. It needs internet access and disk space, and Ollama stores it outside this app.</source>
+      <translation>此模型大约需要 {size}。它需要網路連線和磁碟空間，並且 Ollama 會將其儲存在此應用程式之外。</translation>
+    </string>
+    <string>
+      <source>Download model</source>
+      <translation>下載模型</translation>
+    </string>
+    <string>
+      <source>Ollama was not found on this computer. Download Ollama to use local models.</source>
+      <translation>未在此電腦上找到 Ollama。要使用本機模型，請下載 Ollama。</translation>
+    </string>
+    <string>
+      <source>Ollama server is reachable, but the local executable was not found. You can use the server, but this app cannot download models automatically.</source>
+      <translation>Ollama 伺服器已連線，但未找到本機可執行檔。您可以連接到伺服器，但此應用程式無法自動下載模型。</translation>
+    </string>
+    <string>
+      <source>Ollama is installed but the server is not reachable. Start Ollama, then refresh models.</source>
+      <translation>已安裝 Ollama，但伺服器無法連線。請啟動 Ollama，然後重新整理模型。</translation>
+    </string>
+    <string>
+      <source>Ollama is installed, but the recommended model is missing. Download translategemma:12b here or choose another local model.</source>
+      <translation>已安裝 Ollama，但缺少建議的模型。在此處下載 translategemma:12b，或選擇其他本機模型。</translation>
+    </string>
+    <string>
+      <source>Ollama is ready. Recommended model is installed.</source>
+      <translation>Ollama 已就緒。已安裝建議的模型。</translation>
+    </string>
+    <string>
+      <source>Ollama executable was not found. Download and start Ollama first.</source>
+      <translation>未找到 Ollama 可執行檔。請先下載並啟動 Ollama。</translation>
+    </string>
+    <string>
+      <source>Starting Ollama model download...</source>
+      <translation>正在開始下載 Ollama 模型...</translation>
+    </string>
+    <string>
+      <source>Ollama model download was cancelled.</source>
+      <translation>已取消 Ollama 模型下載。</translation>
+    </string>
+    <string>
+      <source>Downloading {model}: {percent}%</source>
+      <translation>正在下載 {model}: {percent}%</translation>
+    </string>
+    <string>
+      <source>Downloaded {model}.</source>
+      <translation>已下載 {model}。</translation>
+    </string>
+    <string>
+      <source>Ollama model download failed with exit code {code}.</source>
+      <translation>Ollama 模型下載失敗，錯誤代碼為 {code}。</translation>
+    </string>
+    <string>
+      <source>Translation cache</source>
+      <translation>翻譯快取</translation>
+    </string>
+    <string>
+      <source>Reuse exact translation matches</source>
+      <translation>重複使用完全匹配的翻譯</translation>
+    </string>
+    <string>
+      <source>Stores successful translations by source/destination language, engine, glossary or model, and source text hash. API keys are never stored in the cache.</source>
+      <translation>儲存根據來源/目標語言、引擎、詞彙表或模型以及來源文字雜湊進行的成功翻譯。API 金鑰永遠不會儲存在快取中。</translation>
+    </string>
+    <string>
+      <source>Clear translation cache</source>
+      <translation>清除翻譯快取</translation>
+    </string>
+    <string>
+      <source>Cache contains {entries:,} entry/entries, {size:,} bytes.</source>
+      <translation>快取包含 {entries:,} 個項目，總計 {size:,} 位元組。</translation>
+    </string>
+    <string>
+      <source>All packs</source>
+      <translation>所有包</translation>
+    </string>
+    <string>
+      <source>Browse...</source>
+      <translation>瀏覽...</translation>
+    </string>
+    <string>
+      <source>Create backup before Finalize</source>
+      <translation>在完成之前建立備份</translation>
+    </string>
+    <string>
+      <source>Creates separate hashed STBL resources instead of touching the original STBL resources. Use only when testing conflict avoidance with a package copy.</source>
+      <translation>建立單獨的雜湊 STBL 資源，而不是接觸原始 STBL 資源。僅在測試與套件副本的衝突避免時使用。</translation>
+    </string>
+    <string>
+      <source>Filter packs...</source>
+      <translation>過濾包...</translation>
+    </string>
+    <string>
+      <source>Free packs</source>
+      <translation>免費包</translation>
+    </string>
+    <string>
+      <source>Kits</source>
+      <translation>套件</translation>
+    </string>
+    <string>
+      <source>No packs match the current filter. Clear the search field to see the full catalog.</source>
+      <translation>沒有包與當前過濾器匹配。清除搜尋欄位以查看完整目錄。</translation>
+    </string>
+    <string>
+      <source>Only use exact dictionary matches</source>
+      <translation>僅使用精確的字典匹配</translation>
+    </string>
+    <string>
+      <source>Pack Manager</source>
+      <translation>套件管理器</translation>
+    </string>
+    <string>
+      <source>Recommended. When Finalize writes over a source package, keep a .package.backup copy first.</source>
+      <translation>推薦。當 Finalize 覆蓋來源套件時，首先保留 .package.backup 副本。</translation>
+    </string>
+    <string>
+      <source>Safety defaults</source>
+      <translation>安全預設值</translation>
+    </string>
+    <string>
+      <source>Select the folder that contains Data, EP, GP, SP, and FP folders from your The Sims 4 installation.</source>
+      <translation>從 The Sims 4 安裝中選擇包含 Data、EP、GP、SP 和 FP 資料夾的資料夾。</translation>
+    </string>
+    <string>
+      <source>These choices are saved automatically. For Vietnamese release work, keep backups on, leave conflict-free mode off unless testing a copy, and review context-sensitive dictionary matches.</source>
+      <translation>這些選擇會自動儲存。對於越南語發布工作，請保持備份打開，關閉無衝突模式（除非測試副本），並檢查上下文相關的字典匹配。</translation>
+    </string>
+    <string>
+      <source>Use conflict-free save mode (experimental)</source>
+      <translation>使用無衝突保存模式（實驗性）</translation>
+    </string>
+    <string>
+      <source>When enabled, dictionary auto-fill is stricter and avoids fallback matches from the same source text. Leave disabled to reuse more dictionary translations, then review context-sensitive strings manually.</source>
+      <translation>啟用後，字典自動填充會更加嚴格，並避免來自相同來源文字的後備匹配。保持停用狀態以重複使用更多字典翻譯，然後手動查看上下文相關字串。</translation>
+    </string>
+    <string>
+      <source>by {}</source>
+      <translation>透過 {}</translation>
     </string>
   </context>
   <context name="ReplaceDialog">
@@ -538,7 +1097,7 @@ Errors:
     </string>
     <string>
       <source>Importing translate...</source>
-      <translation />
+      <translation>正在匯入 translate...</translation>
     </string>
     <string>
       <source>All files</source>
@@ -558,11 +1117,11 @@ Errors:
     </string>
     <string>
       <source>JSON files</source>
-      <translation />
+      <translation>JSON 檔案</translation>
     </string>
     <string>
       <source>Binary files</source>
-      <translation />
+      <translation>二進位檔案</translation>
     </string>
     <string>
       <source>Opening file {}...</source>
@@ -578,11 +1137,35 @@ Errors:
     </string>
     <string>
       <source>Translating...</source>
-      <translation />
+      <translation>正在翻譯...</translation>
     </string>
     <string>
       <source>Stopping translate, waiting for the finish of the threads...</source>
-      <translation />
+      <translation>正在停止翻譯，等待所有執行緒完成...</translation>
+    </string>
+    <string>
+      <source>Cancelling...</source>
+      <translation>正在取消...</translation>
+    </string>
+    <string>
+      <source>Exported {} file(s), {} string(s)</source>
+      <translation>匯出的 {} 檔案、{} 字串</translation>
+    </string>
+    <string>
+      <source>Exporting Translation Hub CSV...</source>
+      <translation>正在匯出 Translation Hub CSV...</translation>
+    </string>
+    <string>
+      <source>Imported {} translations, unchanged {}, skipped {}, missing {}</source>
+      <translation>匯入 {} 翻譯，未更改 {}，跳過 {}，缺少 {}</translation>
+    </string>
+    <string>
+      <source>Loaded {} unique strings, skipped {} duplicates</source>
+      <translation>載入 {} 唯一字串，跳過 {} 重複項</translation>
+    </string>
+    <string>
+      <source>Saved package {}, {} resource(s)</source>
+      <translation>已儲存的包 {}、{} 資源</translation>
     </string>
   </context>
   <context name="ToolBar">
@@ -628,7 +1211,7 @@ Errors:
     </string>
     <string>
       <source>Search...</source>
-      <translation />
+      <translation>搜尋...</translation>
     </string>
   </context>
   <context name="ImportDialog">
@@ -672,73 +1255,493 @@ Errors:
       <source>Cancel</source>
       <translation>取消</translation>
     </string>
+    <string>
+      <source>Apply matching translations while keeping validated work protected.</source>
+      <translation>應用相符的翻譯，同時保護經過驗證的作品。</translation>
+    </string>
   </context>
   <context name="TranslateDialog">
     <string>
       <source>Translate</source>
-      <translation />
+      <translation>翻譯</translation>
     </string>
     <string>
       <source>Cancel</source>
-      <translation />
+      <translation>取消</translation>
     </string>
     <string>
       <source>Batch translate</source>
-      <translation />
+      <translation>批量翻譯</translation>
     </string>
     <string>
       <source>Log</source>
-      <translation />
+      <translation>日誌</translation>
     </string>
     <string>
       <source>Line-by-line translation</source>
-      <translation />
+      <translation>逐行翻譯</translation>
     </string>
     <string>
       <source>Multiline translation</source>
-      <translation />
+      <translation>多行翻譯</translation>
     </string>
     <string>
       <source>Slow but more accurate translation.</source>
-      <translation />
+      <translation>速度較慢，但更精確的翻譯。</translation>
     </string>
     <string>
       <source>A faster, but perhaps less accurate translation.</source>
-      <translation />
+      <translation>速度更快，但可能不太精確的翻譯。</translation>
     </string>
     <string>
       <source>Some lines could not be translated.</source>
-      <translation />
+      <translation>部分行無法翻譯。</translation>
     </string>
     <string>
       <source>Stop translate</source>
-      <translation />
+      <translation>停止翻譯</translation>
+    </string>
+    <string>
+      <source>Translation cache: {hits:,} reused, {misses:,} to translate.</source>
+      <translation>翻譯快取：已重用 {hits:,}，剩餘 {misses:,} 待翻譯。</translation>
+    </string>
+    <string>
+      <source>AI batch translation</source>
+      <translation>AI 批量翻譯</translation>
+    </string>
+    <string>
+      <source>{engine} will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation>{engine} 將翻譯 {records:,} 筆記錄，約 {characters:,} 個來源字元。</translation>
+    </string>
+    <string>
+      <source>Review provider pricing and quota before continuing.</source>
+      <translation>繼續前，請查看 AI 服務供應商的價格和配額。</translation>
+    </string>
+    <string>
+      <source>Continue with AI provider</source>
+      <translation>繼續使用 AI 服務</translation>
+    </string>
+    <string>
+      <source>Continue with DeepL</source>
+      <translation>繼續 DeepL</translation>
+    </string>
+    <string>
+      <source>Current usage: {used:,} / {limit:,} characters.
+After this batch: about {after:,} characters ({percent:.1f}%).</source>
+      <translation>目前使用情況：{used:,} / {limit:,} 個字元。
+ 此批次之後：約 {after:,} 個字元 ({percent:.1f}%)。</translation>
+    </string>
+    <string>
+      <source>Current usage: {used:,} characters.</source>
+      <translation>目前用法：{used:,} 個字元。</translation>
+    </string>
+    <string>
+      <source>DeepL batch translation</source>
+      <translation>DeepL批量翻譯</translation>
+    </string>
+    <string>
+      <source>DeepL will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation>DeepL 將翻譯 {records:,} 記錄，大約 {characters:,} 原始字元。</translation>
+    </string>
+    <string>
+      <source>Stopping...</source>
+      <translation>停止...</translation>
+    </string>
+    <string>
+      <source>Translate the chosen records in the background and keep the workspace responsive.</source>
+      <translation>在後台翻譯所選記錄並保持工作區響應。</translation>
+    </string>
+    <string>
+      <source>Usage unavailable: {message}</source>
+      <translation>無法使用：{message}</translation>
     </string>
   </context>
   <context name="TextEditor">
     <string>
       <source>Undo</source>
-      <translation />
+      <translation>撤銷</translation>
     </string>
     <string>
       <source>Redo</source>
-      <translation />
+      <translation>重做</translation>
     </string>
     <string>
       <source>Cut</source>
-      <translation />
+      <translation>剪切</translation>
     </string>
     <string>
       <source>Copy</source>
-      <translation />
+      <translation>複製</translation>
     </string>
     <string>
       <source>Paste</source>
-      <translation />
+      <translation>貼上</translation>
     </string>
     <string>
       <source>Select All</source>
-      <translation />
+      <translation>全選</translation>
+    </string>
+  </context>
+  <context name="JobDrawer">
+    <string>
+      <source>Cancel</source>
+      <translation>取消</translation>
+    </string>
+    <string>
+      <source>Cancelled</source>
+      <translation>取消</translation>
+    </string>
+    <string>
+      <source>Cancelling...</source>
+      <translation>正在取消...</translation>
+    </string>
+    <string>
+      <source>Clear</source>
+      <translation>清除</translation>
+    </string>
+    <string>
+      <source>Done</source>
+      <translation>完成</translation>
+    </string>
+    <string>
+      <source>Error</source>
+      <translation>錯誤</translation>
+    </string>
+    <string>
+      <source>Finished: foreground job</source>
+      <translation>完成：前台工作</translation>
+    </string>
+    <string>
+      <source>Hide jobs</source>
+      <translation>隱藏職位</translation>
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation>空閒</translation>
+    </string>
+    <string>
+      <source>Jobs</source>
+      <translation>工作機會</translation>
+    </string>
+    <string>
+      <source>No active background jobs.</source>
+      <translation>沒有活動的後台作業。</translation>
+    </string>
+    <string>
+      <source>Queued</source>
+      <translation>排隊</translation>
+    </string>
+    <string>
+      <source>Recent jobs</source>
+      <translation>最近的工作</translation>
+    </string>
+    <string>
+      <source>Running</source>
+      <translation>跑步</translation>
+    </string>
+    <string>
+      <source>Show jobs</source>
+      <translation>顯示職位</translation>
+    </string>
+    <string>
+      <source>Started</source>
+      <translation>開始</translation>
+    </string>
+    <string>
+      <source>Working</source>
+      <translation>工作</translation>
+    </string>
+    <string>
+      <source>active background job(s)</source>
+      <translation>活躍的後台作業</translation>
+    </string>
+  </context>
+  <context name="TokenAssistant">
+    <string>
+      <source>Category</source>
+      <translation>類別</translation>
+    </string>
+    <string>
+      <source>Copy</source>
+      <translation>複製</translation>
+    </string>
+    <string>
+      <source>Female text...</source>
+      <translation>女文...</translation>
+    </string>
+    <string>
+      <source>Index</source>
+      <translation>索引</translation>
+    </string>
+    <string>
+      <source>Insert</source>
+      <translation>插入</translation>
+    </string>
+    <string>
+      <source>Male text...</source>
+      <translation>男文...</translation>
+    </string>
+    <string>
+      <source>Male/Female pair</source>
+      <translation>男/女一對</translation>
+    </string>
+    <string>
+      <source>Suffix</source>
+      <translation>後綴</translation>
+    </string>
+    <string>
+      <source>Token</source>
+      <translation>代幣</translation>
+    </string>
+    <string>
+      <source>Token Assistant</source>
+      <translation>代幣助手</translation>
+    </string>
+  </context>
+  <context name="TokenValidation">
+    <string>
+      <source>All source tokens are preserved in the translation draft.</source>
+      <translation>所有來源標記都保留在翻譯草稿中。</translation>
+    </string>
+    <string>
+      <source>Back to Edit</source>
+      <translation>返回編輯</translation>
+    </string>
+    <string>
+      <source>Continue and Approve</source>
+      <translation>繼續並批准</translation>
+    </string>
+    <string>
+      <source>Continue and Mark Needs Review</source>
+      <translation>繼續並標記需要審核</translation>
+    </string>
+    <string>
+      <source>Continue only if these token differences are intentional.</source>
+      <translation>僅當這些標記差異是有意為之時才繼續。</translation>
+    </string>
+    <string>
+      <source>Extra</source>
+      <translation>額外</translation>
+    </string>
+    <string>
+      <source>Line breaks differ</source>
+      <translation>換行符不同</translation>
+    </string>
+    <string>
+      <source>Line-break count differs</source>
+      <translation>換行數不同</translation>
+    </string>
+    <string>
+      <source>Missing</source>
+      <translation>失蹤</translation>
+    </string>
+    <string>
+      <source>OK</source>
+      <translation>好的</translation>
+    </string>
+    <string>
+      <source>Order differs</source>
+      <translation>順序不同</translation>
+    </string>
+    <string>
+      <source>Suggested outcome: Approved.</source>
+      <translation>建議結果：批准。</translation>
+    </string>
+    <string>
+      <source>Suggested outcome: Needs Review until the token differences are intentional.</source>
+      <translation>建議的結果：需要審查，直到像徵性差異是故意的。</translation>
+    </string>
+    <string>
+      <source>Token check:</source>
+      <translation>令牌檢查：</translation>
+    </string>
+    <string>
+      <source>Token differences can break in-game placeholders or formatting.</source>
+      <translation>令牌差異可能會破壞遊戲中的佔位符或格式。</translation>
+    </string>
+    <string>
+      <source>Token order differs</source>
+      <translation>令牌順序不同</translation>
+    </string>
+    <string>
+      <source>{outcome} with token warnings</source>
+      <translation>{outcome} 附有令牌警告</translation>
+    </string>
+  </context>
+  <context name="ReleaseValidationDialog">
+    <string>
+      <source>All</source>
+      <translation>全部</translation>
+    </string>
+    <string>
+      <source>Back to Fix</source>
+      <translation>返回修復</translation>
+    </string>
+    <string>
+      <source>CSV report (*.csv)</source>
+      <translation>CSV 報告 (*.csv)</translation>
+    </string>
+    <string>
+      <source>Category</source>
+      <translation>類別</translation>
+    </string>
+    <string>
+      <source>Close</source>
+      <translation>關閉</translation>
+    </string>
+    <string>
+      <source>Continue</source>
+      <translation>繼續</translation>
+    </string>
+    <string>
+      <source>Continue anyway</source>
+      <translation>仍然繼續</translation>
+    </string>
+    <string>
+      <source>Copy selected issue</source>
+      <translation>複製選定的問題</translation>
+    </string>
+    <string>
+      <source>Copy summary</source>
+      <translation>複製摘要</translation>
+    </string>
+    <string>
+      <source>Export Pre-release Validation Report</source>
+      <translation>匯出預發布驗證報告</translation>
+    </string>
+    <string>
+      <source>Export report</source>
+      <translation>出口報告</translation>
+    </string>
+    <string>
+      <source>Pre-release Validation Report</source>
+      <translation>預發布驗證報告</translation>
+    </string>
+    <string>
+      <source>Pre-release validation ({profile}): {critical} critical, {warning} warning, {info} info for {written:,}/{total:,} record(s).</source>
+      <translation>預發布驗證 ({profile})：{critical} 嚴重、{warning} 警告、{written:,}/{total:,} 記錄的 {info} 資訊。</translation>
+    </string>
+    <string>
+      <source>Review day-to-day workspace issues without starting a save or export.</source>
+      <translation>無需開始儲存或匯出即可查看日常工作區問題。</translation>
+    </string>
+    <string>
+      <source>Review potential blank-text and token issues before writing release files.</source>
+      <translation>在編寫發布文件之前檢查潛在的空白文字和令牌問題。</translation>
+    </string>
+    <string>
+      <source>Search</source>
+      <translation>搜尋</translation>
+    </string>
+    <string>
+      <source>Search package, instance, ID, reason, original, or translation...</source>
+      <translation>搜尋包、實例、ID、原因、原文或翻譯...</translation>
+    </string>
+    <string>
+      <source>Text report (*.txt)</source>
+      <translation>文字報告（*.txt）</translation>
+    </string>
+    <string>
+      <source>Workspace Warnings</source>
+      <translation>工作區警告</translation>
+    </string>
+    <string>
+      <source>{shown:,} issue(s) shown from {total:,}.</source>
+      <translation>{total:,} 顯示的 {shown:,} 問題。</translation>
+    </string>
+    <string>
+      <source>Code</source>
+      <translation>程式碼</translation>
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation>實例</translation>
+    </string>
+    <string>
+      <source>Original</source>
+      <translation>原創</translation>
+    </string>
+    <string>
+      <source>Package</source>
+      <translation>套餐</translation>
+    </string>
+    <string>
+      <source>Reason</source>
+      <translation>原因</translation>
+    </string>
+    <string>
+      <source>Severity</source>
+      <translation>嚴重性</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>狀態</translation>
+    </string>
+    <string>
+      <source>String ID</source>
+      <translation>字串ID</translation>
+    </string>
+    <string>
+      <source>Translation</source>
+      <translation>翻譯</translation>
+    </string>
+  </context>
+  <context name="ValidationCategory">
+    <string>
+      <source>Blank risk</source>
+      <translation>空白風險</translation>
+    </string>
+    <string>
+      <source>Duplicate output</source>
+      <translation>重複輸出</translation>
+    </string>
+    <string>
+      <source>Length / layout risk</source>
+      <translation>長度/佈局風險</translation>
+    </string>
+    <string>
+      <source>Resource</source>
+      <translation>資源</translation>
+    </string>
+    <string>
+      <source>Source changed</source>
+      <translation>來源已更改</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>狀態</translation>
+    </string>
+    <string>
+      <source>Summary</source>
+      <translation>總結</translation>
+    </string>
+    <string>
+      <source>Token safety</source>
+      <translation>代幣安全</translation>
+    </string>
+  </context>
+  <context name="ValidationProfile">
+    <string>
+      <source>Soft release</source>
+      <translation>軟釋放</translation>
+    </string>
+    <string>
+      <source>Strict release</source>
+      <translation>嚴格放行</translation>
+    </string>
+  </context>
+  <context name="ValidationSeverity">
+    <string>
+      <source>Critical</source>
+      <translation>關鍵</translation>
+    </string>
+    <string>
+      <source>Info</source>
+      <translation>資訊</translation>
+    </string>
+    <string>
+      <source>Warning</source>
+      <translation>警告</translation>
     </string>
   </context>
 </ts>

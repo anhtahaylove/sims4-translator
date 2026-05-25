@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ts language="uk_UA" name="Українська (Ukrainian)" version="1.4" authors="Roman Kozin">
+<?xml version='1.0' encoding='utf-8'?>
+<ts language="uk_UA" name="Українська (Ukrainian)" version="2.2.11" authors="Roman Kozin">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -7,7 +7,7 @@
     </string>
     <string>
       <source>OK (Ctrl+Enter)</source>
-      <translation />
+      <translation>OK (Ctrl+Enter)</translation>
     </string>
     <string>
       <source>Original text</source>
@@ -44,6 +44,58 @@
     <string>
       <source>Comment...</source>
       <translation>Коментувати...</translation>
+    </string>
+    <string>
+      <source>Approve (Ctrl+Enter)</source>
+      <translation>Схвалити (Ctrl+Enter)</translation>
+    </string>
+    <string>
+      <source>Dictionary suggestions</source>
+      <translation>Словникові пропозиції</translation>
+    </string>
+    <string>
+      <source>Draft</source>
+      <translation>Чернетка</translation>
+    </string>
+    <string>
+      <source>Needs Review</source>
+      <translation>Потребує перегляду</translation>
+    </string>
+    <string>
+      <source>Original</source>
+      <translation>Оригінал</translation>
+    </string>
+    <string>
+      <source>Review token safety, refine the draft, then approve it or mark it for review.</source>
+      <translation>Перегляньте безпеку маркера, уточніть чернетку, а потім схваліть її або позначте для перегляду.</translation>
+    </string>
+    <string>
+      <source>Selected suggestion</source>
+      <translation>Вибрана пропозиція</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Статус</translation>
+    </string>
+    <string>
+      <source>Suggestions</source>
+      <translation>Пропозиції</translation>
+    </string>
+    <string>
+      <source>Tokens</source>
+      <translation>Жетони</translation>
+    </string>
+    <string>
+      <source>Translation Studio</source>
+      <translation>Студія перекладів</translation>
+    </string>
+    <string>
+      <source>Translation draft</source>
+      <translation>Чернетка перекладу</translation>
+    </string>
+    <string>
+      <source>chars</source>
+      <translation>символи</translation>
     </string>
   </context>
   <context name="ExportDialog">
@@ -87,6 +139,10 @@
       <source>Selection only</source>
       <translation>Тільки обрані</translation>
     </string>
+    <string>
+      <source>Choose which records to write, then continue in the background.</source>
+      <translation>Виберіть, які записи записувати, а потім продовжуйте у фоновому режимі.</translation>
+    </string>
   </context>
   <context name="MainTableView">
     <string>
@@ -112,6 +168,14 @@
     <string>
       <source>Comment</source>
       <translation>Коментар</translation>
+    </string>
+    <string>
+      <source>ID</source>
+      <translation>ID</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Статус</translation>
     </string>
   </context>
   <context name="MainWindow">
@@ -311,6 +375,190 @@
       <source>Color visualization</source>
       <translation>Кольорова візуалізація</translation>
     </string>
+    <string>
+      <source>Open package -&gt; Translate -&gt; Validate Release -&gt; Save as package</source>
+      <translation>Відкрити пакет -&gt; Перекласти -&gt; Перевірити версію -&gt; Зберегти як пакет</translation>
+    </string>
+    <string>
+      <source>Open package</source>
+      <translation>Відкрити пакет</translation>
+    </string>
+    <string>
+      <source>Activity Dock</source>
+      <translation>Док активності</translation>
+    </string>
+    <string>
+      <source>Advanced</source>
+      <translation>Просунутий</translation>
+    </string>
+    <string>
+      <source>Approve</source>
+      <translation>Затвердити</translation>
+    </string>
+    <string>
+      <source>Approve all translations</source>
+      <translation>Затвердити всі переклади</translation>
+    </string>
+    <string>
+      <source>Clear filters</source>
+      <translation>Очистити фільтри</translation>
+    </string>
+    <string>
+      <source>Dictionary</source>
+      <translation>Словник</translation>
+    </string>
+    <string>
+      <source>Export</source>
+      <translation>Експорт</translation>
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation>Бездіяльність</translation>
+    </string>
+    <string>
+      <source>Import</source>
+      <translation>Імпорт</translation>
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation>Екземпляр</translation>
+    </string>
+    <string>
+      <source>Mark as needs review</source>
+      <translation>Позначити як потребує перевірки</translation>
+    </string>
+    <string>
+      <source>Mode</source>
+      <translation>Режим</translation>
+    </string>
+    <string>
+      <source>No package loaded</source>
+      <translation>Пакет не завантажено</translation>
+    </string>
+    <string>
+      <source>No string selected</source>
+      <translation>Рядок не вибрано</translation>
+    </string>
+    <string>
+      <source>Open</source>
+      <translation>відкритий</translation>
+    </string>
+    <string>
+      <source>Open Editor</source>
+      <translation>Відкрийте редактор</translation>
+    </string>
+    <string>
+      <source>Package</source>
+      <translation>Пакет</translation>
+    </string>
+    <string>
+      <source>Release QA</source>
+      <translation>Випуск QA</translation>
+    </string>
+    <string>
+      <source>Reset</source>
+      <translation>Скинути</translation>
+    </string>
+    <string>
+      <source>Save translated strings to dictionary for reuse</source>
+      <translation>Збережіть перекладені рядки до словника для повторного використання</translation>
+    </string>
+    <string>
+      <source>Scope</source>
+      <translation>Область застосування</translation>
+    </string>
+    <string>
+      <source>Search</source>
+      <translation>Пошук</translation>
+    </string>
+    <string>
+      <source>Search ID, Original, or Translation...</source>
+      <translation>Ідентифікатор пошуку, оригінал або переклад...</translation>
+    </string>
+    <string>
+      <source>Search ID, original and translation</source>
+      <translation>Ідентифікатор пошуку, оригінал і переклад</translation>
+    </string>
+    <string>
+      <source>Search ID, original text, and translation text at the same time.</source>
+      <translation>Шукати ідентифікатор, оригінальний текст і текст перекладу одночасно.</translation>
+    </string>
+    <string>
+      <source>Select a string to preview full text.</source>
+      <translation>Виберіть рядок, щоб переглянути повний текст.</translation>
+    </string>
+    <string>
+      <source>Selected string</source>
+      <translation>Вибраний рядок</translation>
+    </string>
+    <string>
+      <source>Show a thin status distribution bar above the table.</source>
+      <translation>Показати тонку панель розподілу стану над таблицею.</translation>
+    </string>
+    <string>
+      <source>Show advanced search modes</source>
+      <translation>Показати розширені режими пошуку</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Статус</translation>
+    </string>
+    <string>
+      <source>Status Overview Bar</source>
+      <translation>Панель огляду стану</translation>
+    </string>
+    <string>
+      <source>Translation table</source>
+      <translation>Таблиця перекладу</translation>
+    </string>
+    <string>
+      <source>Validate Release</source>
+      <translation>Підтвердити реліз</translation>
+    </string>
+    <string>
+      <source>Validate Release...</source>
+      <translation>Перевірити випуск...</translation>
+    </string>
+    <string>
+      <source>Validating release</source>
+      <translation>Перевірка випуску</translation>
+    </string>
+    <string>
+      <source>Validation cancelled</source>
+      <translation>Перевірку скасовано</translation>
+    </string>
+    <string>
+      <source>Validation preset:</source>
+      <translation>Попереднє налаштування перевірки:</translation>
+    </string>
+    <string>
+      <source>Workspace Warnings...</source>
+      <translation>Попередження щодо робочого середовища...</translation>
+    </string>
+    <string>
+      <source>Workspace stats</source>
+      <translation>Статистика робочої області</translation>
+    </string>
+    <string>
+      <source>approved</source>
+      <translation>затверджено</translation>
+    </string>
+    <string>
+      <source>draft</source>
+      <translation>проект</translation>
+    </string>
+    <string>
+      <source>needs review</source>
+      <translation>потребує перегляду</translation>
+    </string>
+    <string>
+      <source>shown</source>
+      <translation>показано</translation>
+    </string>
+    <string>
+      <source>untranslated</source>
+      <translation>неперекладений</translation>
+    </string>
   </context>
   <context name="Messages">
     <string>
@@ -327,7 +575,7 @@
     </string>
     <string>
       <source>Not found text records in this files!</source>
-      <translation />
+      <translation>Не знайдено текстових записів у цих файлах!</translation>
     </string>
     <string>
       <source>Not found text records in following files:</source>
@@ -346,6 +594,48 @@ Errors:
     <string>
       <source>... and {} other errors</source>
       <translation>... та {} інших помилок</translation>
+    </string>
+  </context>
+  <context name="Errors">
+    <string>
+      <source>Language code not found!</source>
+      <translation>Код мови не знайдено!</translation>
+    </string>
+    <string>
+      <source>Translation failed with error code: {}</source>
+      <translation>Транзакція завершилась з наступним кодом помилки: {}</translation>
+    </string>
+    <string>
+      <source>Invalid API key.</source>
+      <translation>Некоректний АРІ ключ.</translation>
+    </string>
+    <string>
+      <source>Your quota has exceeded!</source>
+      <translation>Перевищена квота!</translation>
+    </string>
+    <string>
+      <source>There was a temporary problem with the DeepL Service.</source>
+      <translation>DeepL сервіс тимчасово не працює або виникли тимчасові труднощі. Спробуйте знову..</translation>
+    </string>
+    <string>
+      <source>Ollama base URL is empty.</source>
+      <translation>Базовий URL-адрес Ollama не вказано.</translation>
+    </string>
+    <string>
+      <source>Ollama base URL or model is empty.</source>
+      <translation>Базовий URL-адрес або модель Ollama не вказано.</translation>
+    </string>
+    <string>
+      <source>Ollama is not reachable at {url}. Start Ollama or check the base URL.</source>
+      <translation>Ollama недоступний за адресою {url}. Запустіть Ollama або перевірте базовий URL-адрес.</translation>
+    </string>
+    <string>
+      <source>Ollama model was not found. Run: ollama pull {model}</source>
+      <translation>Модель Ollama не знайдено. Виконайте: ollama pull {model}</translation>
+    </string>
+    <string>
+      <source>A maximum of 500 characters is allowed.</source>
+      <translation>Допускається максимум 500 символів.</translation>
     </string>
   </context>
   <context name="OptionsDialog">
@@ -426,12 +716,100 @@ Errors:
       <translation>Основні</translation>
     </string>
     <string>
+      <source>Providers</source>
+      <translation>Постачальники</translation>
+    </string>
+    <string>
       <source>Dictionaries</source>
       <translation>Словники</translation>
     </string>
     <string>
       <source>DeepL API key</source>
       <translation>DeepL АРІ ключ</translation>
+    </string>
+    <string>
+      <source>Translation providers</source>
+      <translation>Постачальники перекладу</translation>
+    </string>
+    <string>
+      <source>OpenAI-compatible</source>
+      <translation>Сумісний з OpenAI</translation>
+    </string>
+    <string>
+      <source>Ollama local</source>
+      <translation>Локальна модель Ollama</translation>
+    </string>
+    <string>
+      <source>API key</source>
+      <translation>Ключ API</translation>
+    </string>
+    <string>
+      <source>Glossary ID</source>
+      <translation>Ідентифікатор глосарію</translation>
+    </string>
+    <string>
+      <source>Model</source>
+      <translation>Модель</translation>
+    </string>
+    <string>
+      <source>Base URL</source>
+      <translation>Базовий URL-адрес</translation>
+    </string>
+    <string>
+      <source>Test</source>
+      <translation>Тестування</translation>
+    </string>
+    <string>
+      <source>Usage</source>
+      <translation>Використання</translation>
+    </string>
+    <string>
+      <source>Configured and enabled providers appear in Batch Translate and Translation Studio.</source>
+      <translation>Налаштовані та активовані постачальники відображаються в Batch Translate та Translation Studio.</translation>
+    </string>
+    <string>
+      <source>Loading models...</source>
+      <translation>Завантаження моделей...</translation>
+    </string>
+    <string>
+      <source>Loaded {count} models.</source>
+      <translation>Завантажено {count} моделей.</translation>
+    </string>
+    <string>
+      <source>API key OK, choose a model.</source>
+      <translation>Ключ API OK, виберіть модель.</translation>
+    </string>
+    <string>
+      <source>Model list is unavailable; typed model was kept.</source>
+      <translation>Список моделей недоступний; введений вручну модель збережено.</translation>
+    </string>
+    <string>
+      <source>Click Test to validate the API key and load available models. You can also type a custom model name.</source>
+      <translation>Натисніть "Тестування", щоб перевірити ключ API та завантажити доступні моделі. Ви також можете ввести назву моделі вручну.</translation>
+    </string>
+    <string>
+      <source>Choose a local model from the dropdown, or type a custom Ollama model name.</source>
+      <translation>Виберіть локальну модель із випадаючого списку або введіть назву моделі Ollama вручну.</translation>
+    </string>
+    <string>
+      <source>Test the API key and load available models.</source>
+      <translation>Перевірити ключ API та завантажити доступні моделі.</translation>
+    </string>
+    <string>
+      <source>Checking {provider}...</source>
+      <translation>Перевірка {provider}...</translation>
+    </string>
+    <string>
+      <source>Checking DeepL...</source>
+      <translation>Перевірка DeepL...</translation>
+    </string>
+    <string>
+      <source>Ollama is ready and enabled.</source>
+      <translation>Ollama готовий та активований.</translation>
+    </string>
+    <string>
+      <source>Ollama is ready but disabled. Enable it to show Ollama in translation lists.</source>
+      <translation>Ollama готовий, але деактивований. Увімкніть його, щоб відобразити Ollama у списках перекладачів.</translation>
     </string>
     <string>
       <source>Language</source>
@@ -457,27 +835,209 @@ Errors:
       <source>The translation version differs from the application version, so the interface may not be fully translated</source>
       <translation>Версія перекладу відрізняється від версії програми, Тому інтерфейс може бути не до кінця перекладеним</translation>
     </string>
-  </context>
-  <context name="Errors">
     <string>
-      <source>Language code not found!</source>
-      <translation>Код мови не знайдено!</translation>
+      <source>Test Gemini</source>
+      <translation>Перевірити Gemini</translation>
     </string>
     <string>
-      <source>Translation failed with error code: {}</source>
-      <translation>Транзакція завершилась з наступним кодом помилки: {}</translation>
+      <source>Test OpenAI-compatible</source>
+      <translation>Перевірити сумісність з OpenAI</translation>
     </string>
     <string>
-      <source>Invalid API key.</source>
-      <translation>Некоректний АРІ ключ.</translation>
+      <source>Enable Ollama local provider</source>
+      <translation>Увімкнути локальний провайдер Ollama</translation>
     </string>
     <string>
-      <source>Your quota has exceeded!</source>
-      <translation>Перевищена квота!</translation>
+      <source>Refresh Ollama models</source>
+      <translation>Оновити моделі Ollama</translation>
     </string>
     <string>
-      <source>There was a temporary problem with the DeepL Service.</source>
-      <translation>DeepL сервіс тимчасово не працює або виникли тимчасові труднощі. Спробуйте знову..</translation>
+      <source>Test Ollama</source>
+      <translation>Перевірити Ollama</translation>
+    </string>
+    <string>
+      <source>Download Ollama</source>
+      <translation>Завантажити Ollama</translation>
+    </string>
+    <string>
+      <source>Download recommended model</source>
+      <translation>Завантажити рекомендовану модель</translation>
+    </string>
+    <string>
+      <source>Cancel model download</source>
+      <translation>Скасувати завантаження моделі</translation>
+    </string>
+    <string>
+      <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini, OpenAI-compatible, and Ollama providers use a safety prompt that asks the model to preserve Sims tokens and line count. Options can detect local Ollama models and download the recommended translategemma:12b model after confirmation. Do not share or commit your API key.</source>
+      <translation>Налаштуйте додаткові провайдери перекладу, а потім виберіть один із них у розділах "Пошук та редагування" або "Масовий переклад". DeepL підтримує перевірку використання та ідентифікатор словника. Провайдери Gemini, сумісні з OpenAI та Ollama використовують запит безпеки, який просить модель зберігати токени Sims та кількість рядків. Налаштування можуть виявляти локальні моделі Ollama та завантажувати рекомендовану модель translategemma:12b після підтвердження. Не передавайте та не публікуйте свій ключ API.</translation>
+    </string>
+    <string>
+      <source>Checking Ollama setup...</source>
+      <translation>Перевірка налаштувань Ollama...</translation>
+    </string>
+    <string>
+      <source>Opened the official Ollama download page. Install Ollama, start it, then refresh models.</source>
+      <translation>Відкрито офіційну сторінку завантаження Ollama. Встановіть Ollama, запустіть його, а потім оновіть моделі.</translation>
+    </string>
+    <string>
+      <source>Recommended model download is not available until Ollama is installed and running.</source>
+      <translation>Завантаження рекомендованої моделі недоступне, поки Ollama не буде встановлено та запущено.</translation>
+    </string>
+    <string>
+      <source>Downloading Ollama model...</source>
+      <translation>Завантаження моделі Ollama...</translation>
+    </string>
+    <string>
+      <source>Cancelling Ollama model download...</source>
+      <translation>Скасування завантаження моделі Ollama...</translation>
+    </string>
+    <string>
+      <source>Download recommended Ollama model</source>
+      <translation>Завантажити рекомендовану модель Ollama</translation>
+    </string>
+    <string>
+      <source>Download {model} for local translation?</source>
+      <translation>Завантажити {model} для локального перекладу?</translation>
+    </string>
+    <string>
+      <source>This model is about {size}. It needs internet access and disk space, and Ollama stores it outside this app.</source>
+      <translation>Ця модель займає близько {size}. Вона потребує доступу до Інтернету та дискового простору, а Ollama зберігає її поза межами цієї програми.</translation>
+    </string>
+    <string>
+      <source>Download model</source>
+      <translation>Завантажити модель</translation>
+    </string>
+    <string>
+      <source>Ollama was not found on this computer. Download Ollama to use local models.</source>
+      <translation>Ollama не знайдено на цьому комп'ютері. Завантажте Ollama, щоб використовувати локальні моделі.</translation>
+    </string>
+    <string>
+      <source>Ollama server is reachable, but the local executable was not found. You can use the server, but this app cannot download models automatically.</source>
+      <translation>Сервер Ollama доступний, але локальний виконуваний файл не знайдено. Ви можете використовувати сервер, але ця програма не може автоматично завантажувати моделі.</translation>
+    </string>
+    <string>
+      <source>Ollama is installed but the server is not reachable. Start Ollama, then refresh models.</source>
+      <translation>Ollama встановлено, але сервер недоступний. Запустіть Ollama, потім оновіть список моделей.</translation>
+    </string>
+    <string>
+      <source>Ollama is installed, but the recommended model is missing. Download translategemma:12b here or choose another local model.</source>
+      <translation>Ollama встановлено, але рекомендована модель відсутня. Завантажте translategemma:12b тут або виберіть іншу локальну модель.</translation>
+    </string>
+    <string>
+      <source>Ollama is ready. Recommended model is installed.</source>
+      <translation>Ollama готовий. Рекомендована модель встановлена.</translation>
+    </string>
+    <string>
+      <source>Ollama executable was not found. Download and start Ollama first.</source>
+      <translation>Виконавчий файл Ollama не знайдено. Спочатку завантажте та запустіть Ollama.</translation>
+    </string>
+    <string>
+      <source>Starting Ollama model download...</source>
+      <translation>Почато завантаження моделі Ollama...</translation>
+    </string>
+    <string>
+      <source>Ollama model download was cancelled.</source>
+      <translation>Завантаження моделі Ollama скасовано.</translation>
+    </string>
+    <string>
+      <source>Downloading {model}: {percent}%</source>
+      <translation>Завантаження {model}: {percent}%</translation>
+    </string>
+    <string>
+      <source>Downloaded {model}.</source>
+      <translation>Завантажено {model}.</translation>
+    </string>
+    <string>
+      <source>Ollama model download failed with exit code {code}.</source>
+      <translation>Завантаження моделі Ollama завершилося помилкою з кодом виходу {code}.</translation>
+    </string>
+    <string>
+      <source>Translation cache</source>
+      <translation>Кеш перекладів</translation>
+    </string>
+    <string>
+      <source>Reuse exact translation matches</source>
+      <translation>Використовувати точні відповідності перекладів</translation>
+    </string>
+    <string>
+      <source>Stores successful translations by source/destination language, engine, glossary or model, and source text hash. API keys are never stored in the cache.</source>
+      <translation>Зберігає успішні переклади за мовою вихідного/цільового тексту, двигуном, словником або моделлю, а також хешем вихідного тексту. Ключі API ніколи не зберігаються в кеші.</translation>
+    </string>
+    <string>
+      <source>Clear translation cache</source>
+      <translation>Очистити кеш перекладів</translation>
+    </string>
+    <string>
+      <source>Cache contains {entries:,} entry/entries, {size:,} bytes.</source>
+      <translation>Кеш містить {entries:,} запис/записи, {size:,} байт.</translation>
+    </string>
+    <string>
+      <source>All packs</source>
+      <translation>Всі пакети</translation>
+    </string>
+    <string>
+      <source>Browse...</source>
+      <translation>Огляд...</translation>
+    </string>
+    <string>
+      <source>Create backup before Finalize</source>
+      <translation>Створіть резервну копію перед завершенням</translation>
+    </string>
+    <string>
+      <source>Creates separate hashed STBL resources instead of touching the original STBL resources. Use only when testing conflict avoidance with a package copy.</source>
+      <translation>Створює окремі хешовані ресурси STBL замість того, щоб торкатися оригінальних ресурсів STBL. Використовуйте лише під час тестування уникнення конфліктів із копією пакета.</translation>
+    </string>
+    <string>
+      <source>Filter packs...</source>
+      <translation>Фільтр-пакети...</translation>
+    </string>
+    <string>
+      <source>Free packs</source>
+      <translation>Безкоштовні пакети</translation>
+    </string>
+    <string>
+      <source>Kits</source>
+      <translation>комплекти</translation>
+    </string>
+    <string>
+      <source>No packs match the current filter. Clear the search field to see the full catalog.</source>
+      <translation>Жоден пакет не відповідає поточному фільтру. Очистіть поле пошуку, щоб переглянути повний каталог.</translation>
+    </string>
+    <string>
+      <source>Only use exact dictionary matches</source>
+      <translation>Використовуйте лише точні збіги зі словника</translation>
+    </string>
+    <string>
+      <source>Pack Manager</source>
+      <translation>Менеджер пакетів</translation>
+    </string>
+    <string>
+      <source>Recommended. When Finalize writes over a source package, keep a .package.backup copy first.</source>
+      <translation>Рекомендовано. Коли Finalize записує вихідний пакет, спочатку збережіть резервну копію .package.backup.</translation>
+    </string>
+    <string>
+      <source>Safety defaults</source>
+      <translation>Стандартні параметри безпеки</translation>
+    </string>
+    <string>
+      <source>Select the folder that contains Data, EP, GP, SP, and FP folders from your The Sims 4 installation.</source>
+      <translation>Виберіть папку, яка містить папки Data, EP, GP, SP і FP у вашій установці The Sims 4.</translation>
+    </string>
+    <string>
+      <source>These choices are saved automatically. For Vietnamese release work, keep backups on, leave conflict-free mode off unless testing a copy, and review context-sensitive dictionary matches.</source>
+      <translation>Ці параметри зберігаються автоматично. Для роботи над випуском в’єтнамською мовою залишайте резервні копії ввімкненими, вимикайте безконфліктний режим, якщо не тестуєте копію, і переглядайте контекстно-залежні словникові збіги.</translation>
+    </string>
+    <string>
+      <source>Use conflict-free save mode (experimental)</source>
+      <translation>Використовуйте безконфліктний режим збереження (експериментальний)</translation>
+    </string>
+    <string>
+      <source>When enabled, dictionary auto-fill is stricter and avoids fallback matches from the same source text. Leave disabled to reuse more dictionary translations, then review context-sensitive strings manually.</source>
+      <translation>Якщо ввімкнено, автоматичне заповнення словника суворіше й уникає резервних збігів із того самого вихідного тексту. Залиште вимкненим, щоб повторно використати більше перекладів словника, а потім перегляньте контекстно-залежні рядки вручну.</translation>
+    </string>
+    <string>
+      <source>by {}</source>
+      <translation>від {}</translation>
     </string>
   </context>
   <context name="ReplaceDialog">
@@ -516,6 +1076,96 @@ Errors:
     <string>
       <source>OK</source>
       <translation>ОК</translation>
+    </string>
+  </context>
+  <context name="System">
+    <string>
+      <source>Saving package {}...</source>
+      <translation>Збереження пакету {}...</translation>
+    </string>
+    <string>
+      <source>Loading dictionaries...</source>
+      <translation>Завантаження словників...</translation>
+    </string>
+    <string>
+      <source>Build dictionaries...</source>
+      <translation>Створення словників...</translation>
+    </string>
+    <string>
+      <source>Exporting translate...</source>
+      <translation>Експорт перекладу...</translation>
+    </string>
+    <string>
+      <source>Importing translate...</source>
+      <translation>Імпорт перекладу...</translation>
+    </string>
+    <string>
+      <source>All files</source>
+      <translation>Всі файли</translation>
+    </string>
+    <string>
+      <source>Packages</source>
+      <translation>Пакети</translation>
+    </string>
+    <string>
+      <source>STBL files</source>
+      <translation>STBL файли</translation>
+    </string>
+    <string>
+      <source>XML files</source>
+      <translation>XML файли</translation>
+    </string>
+    <string>
+      <source>JSON files</source>
+      <translation>JSON файли</translation>
+    </string>
+    <string>
+      <source>Binary files</source>
+      <translation>Бінарні файли</translation>
+    </string>
+    <string>
+      <source>Opening file {}...</source>
+      <translation>Відкриття файлу {}...</translation>
+    </string>
+    <string>
+      <source>Opening files...</source>
+      <translation>Відкриття файлів...</translation>
+    </string>
+    <string>
+      <source>Opening file...</source>
+      <translation>Відкриття файлу...</translation>
+    </string>
+    <string>
+      <source>Translating...</source>
+      <translation>Переклад...</translation>
+    </string>
+    <string>
+      <source>Stopping translate, waiting for the finish of the threads...</source>
+      <translation>Зупинка перекладу, очікування завершення потоків...</translation>
+    </string>
+    <string>
+      <source>Cancelling...</source>
+      <translation>Скасування...</translation>
+    </string>
+    <string>
+      <source>Exported {} file(s), {} string(s)</source>
+      <translation>Експортовано {} файлів, {} рядків</translation>
+    </string>
+    <string>
+      <source>Exporting Translation Hub CSV...</source>
+      <translation>Експорт CSV Translation Hub...</translation>
+    </string>
+    <string>
+      <source>Imported {} translations, unchanged {}, skipped {}, missing {}</source>
+      <translation>Імпортовано {} перекладів, без змін {}, пропущено {}, відсутні {}</translation>
+    </string>
+    <string>
+      <source>Loaded {} unique strings, skipped {} duplicates</source>
+      <translation>Завантажено {} унікальних рядків, пропущено {} дублікатів</translation>
+    </string>
+    <string>
+      <source>Saved package {}, {} resource(s)</source>
+      <translation>Збережений пакет {}, {} ресурс(и)</translation>
     </string>
   </context>
   <context name="ToolBar">
@@ -605,71 +1255,9 @@ Errors:
       <source>Cancel</source>
       <translation>Скасувати</translation>
     </string>
-  </context>
-  <context name="System">
     <string>
-      <source>Saving package {}...</source>
-      <translation>Збереження пакету {}...</translation>
-    </string>
-    <string>
-      <source>Loading dictionaries...</source>
-      <translation>Завантаження словників...</translation>
-    </string>
-    <string>
-      <source>Build dictionaries...</source>
-      <translation>Створення словників...</translation>
-    </string>
-    <string>
-      <source>Exporting translate...</source>
-      <translation>Експорт перекладу...</translation>
-    </string>
-    <string>
-      <source>Importing translate...</source>
-      <translation>Імпорт перекладу...</translation>
-    </string>
-    <string>
-      <source>All files</source>
-      <translation>Всі файли</translation>
-    </string>
-    <string>
-      <source>Packages</source>
-      <translation>Пакети</translation>
-    </string>
-    <string>
-      <source>STBL files</source>
-      <translation>STBL файли</translation>
-    </string>
-    <string>
-      <source>XML files</source>
-      <translation>XML файли</translation>
-    </string>
-    <string>
-      <source>JSON files</source>
-      <translation>JSON файли</translation>
-    </string>
-    <string>
-      <source>Binary files</source>
-      <translation>Бінарні файли</translation>
-    </string>
-    <string>
-      <source>Opening file {}...</source>
-      <translation>Відкриття файлу {}...</translation>
-    </string>
-    <string>
-      <source>Opening files...</source>
-      <translation>Відкриття файлів...</translation>
-    </string>
-    <string>
-      <source>Opening file...</source>
-      <translation>Відкриття файлу...</translation>
-    </string>
-    <string>
-      <source>Translating...</source>
-      <translation>Переклад...</translation>
-    </string>
-    <string>
-      <source>Stopping translate, waiting for the finish of the threads...</source>
-      <translation>Зупинка перекладу, очікування завершення потоків...</translation>
+      <source>Apply matching translations while keeping validated work protected.</source>
+      <translation>Застосовуйте відповідні переклади, захищаючи підтверджену роботу.</translation>
     </string>
   </context>
   <context name="TranslateDialog">
@@ -713,6 +1301,60 @@ Errors:
       <source>Stop translate</source>
       <translation>Зупинити переклад</translation>
     </string>
+    <string>
+      <source>Translation cache: {hits:,} reused, {misses:,} to translate.</source>
+      <translation>Кеш перекладів: {hits:,} використано, {misses:,} для перекладу.</translation>
+    </string>
+    <string>
+      <source>AI batch translation</source>
+      <translation>Масовий переклад за допомогою ШІ</translation>
+    </string>
+    <string>
+      <source>{engine} will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation>{engine} перекладе {records:,} записів, приблизно {characters:,} символів вихідного тексту.</translation>
+    </string>
+    <string>
+      <source>Review provider pricing and quota before continuing.</source>
+      <translation>Перегляньте ціни та ліміти обраного провайдера перед продовженням.</translation>
+    </string>
+    <string>
+      <source>Continue with AI provider</source>
+      <translation>Продовжити з провайдером ШІ</translation>
+    </string>
+    <string>
+      <source>Continue with DeepL</source>
+      <translation>Продовжуйте з DeepL</translation>
+    </string>
+    <string>
+      <source>Current usage: {used:,} / {limit:,} characters.
+After this batch: about {after:,} characters ({percent:.1f}%).</source>
+      <translation>Поточне використання: {used:,} / {limit:,} символів.
+Після цієї партії: приблизно {after:,} символів ({percent:.1f}%).</translation>
+    </string>
+    <string>
+      <source>Current usage: {used:,} characters.</source>
+      <translation>Поточне використання: {used:,} символів.</translation>
+    </string>
+    <string>
+      <source>DeepL batch translation</source>
+      <translation>Пакетний переклад DeepL</translation>
+    </string>
+    <string>
+      <source>DeepL will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation>DeepL перекладе {records:,} записів, приблизно {characters:,} вихідних символів.</translation>
+    </string>
+    <string>
+      <source>Stopping...</source>
+      <translation>Зупинка...</translation>
+    </string>
+    <string>
+      <source>Translate the chosen records in the background and keep the workspace responsive.</source>
+      <translation>Перекладіть вибрані записи у фоновому режимі та забезпечте адаптивність робочого середовища.</translation>
+    </string>
+    <string>
+      <source>Usage unavailable: {message}</source>
+      <translation>Використання недоступне: {message}</translation>
+    </string>
   </context>
   <context name="TextEditor">
     <string>
@@ -738,6 +1380,368 @@ Errors:
     <string>
       <source>Select All</source>
       <translation>Обрати все</translation>
+    </string>
+  </context>
+  <context name="JobDrawer">
+    <string>
+      <source>Cancel</source>
+      <translation>Скасувати</translation>
+    </string>
+    <string>
+      <source>Cancelled</source>
+      <translation>Скасовано</translation>
+    </string>
+    <string>
+      <source>Cancelling...</source>
+      <translation>Скасування...</translation>
+    </string>
+    <string>
+      <source>Clear</source>
+      <translation>ясно</translation>
+    </string>
+    <string>
+      <source>Done</source>
+      <translation>Готово</translation>
+    </string>
+    <string>
+      <source>Error</source>
+      <translation>Помилка</translation>
+    </string>
+    <string>
+      <source>Finished: foreground job</source>
+      <translation>Завершено: завдання на передньому плані</translation>
+    </string>
+    <string>
+      <source>Hide jobs</source>
+      <translation>Приховати робочі місця</translation>
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation>Бездіяльність</translation>
+    </string>
+    <string>
+      <source>Jobs</source>
+      <translation>Вакансії</translation>
+    </string>
+    <string>
+      <source>No active background jobs.</source>
+      <translation>Немає активних фонових завдань.</translation>
+    </string>
+    <string>
+      <source>Queued</source>
+      <translation>У черзі</translation>
+    </string>
+    <string>
+      <source>Recent jobs</source>
+      <translation>Останні вакансії</translation>
+    </string>
+    <string>
+      <source>Running</source>
+      <translation>Біг</translation>
+    </string>
+    <string>
+      <source>Show jobs</source>
+      <translation>Показати робочі місця</translation>
+    </string>
+    <string>
+      <source>Started</source>
+      <translation>розпочато</translation>
+    </string>
+    <string>
+      <source>Working</source>
+      <translation>Працює</translation>
+    </string>
+    <string>
+      <source>active background job(s)</source>
+      <translation>активні фонові завдання</translation>
+    </string>
+  </context>
+  <context name="TokenAssistant">
+    <string>
+      <source>Category</source>
+      <translation>Категорія</translation>
+    </string>
+    <string>
+      <source>Copy</source>
+      <translation>Копія</translation>
+    </string>
+    <string>
+      <source>Female text...</source>
+      <translation>Жіночий текст...</translation>
+    </string>
+    <string>
+      <source>Index</source>
+      <translation>Індекс</translation>
+    </string>
+    <string>
+      <source>Insert</source>
+      <translation>Вставка</translation>
+    </string>
+    <string>
+      <source>Male text...</source>
+      <translation>Чоловічий текст...</translation>
+    </string>
+    <string>
+      <source>Male/Female pair</source>
+      <translation>Пара чоловік/жінка</translation>
+    </string>
+    <string>
+      <source>Suffix</source>
+      <translation>Суфікс</translation>
+    </string>
+    <string>
+      <source>Token</source>
+      <translation>Токен</translation>
+    </string>
+    <string>
+      <source>Token Assistant</source>
+      <translation>Токен-помічник</translation>
+    </string>
+  </context>
+  <context name="TokenValidation">
+    <string>
+      <source>All source tokens are preserved in the translation draft.</source>
+      <translation>Усі вихідні лексеми зберігаються в чернетці перекладу.</translation>
+    </string>
+    <string>
+      <source>Back to Edit</source>
+      <translation>Назад до редагування</translation>
+    </string>
+    <string>
+      <source>Continue and Approve</source>
+      <translation>Продовжити та підтвердити</translation>
+    </string>
+    <string>
+      <source>Continue and Mark Needs Review</source>
+      <translation>Продовжити та позначити Потрібна перевірка</translation>
+    </string>
+    <string>
+      <source>Continue only if these token differences are intentional.</source>
+      <translation>Продовжуйте, лише якщо ці символічні відмінності є навмисними.</translation>
+    </string>
+    <string>
+      <source>Extra</source>
+      <translation>Екстра</translation>
+    </string>
+    <string>
+      <source>Line breaks differ</source>
+      <translation>Розриви рядків відрізняються</translation>
+    </string>
+    <string>
+      <source>Line-break count differs</source>
+      <translation>Кількість розривів рядків відрізняється</translation>
+    </string>
+    <string>
+      <source>Missing</source>
+      <translation>Відсутня</translation>
+    </string>
+    <string>
+      <source>OK</source>
+      <translation>добре</translation>
+    </string>
+    <string>
+      <source>Order differs</source>
+      <translation>Порядок відрізняється</translation>
+    </string>
+    <string>
+      <source>Suggested outcome: Approved.</source>
+      <translation>Пропонований результат: схвалено.</translation>
+    </string>
+    <string>
+      <source>Suggested outcome: Needs Review until the token differences are intentional.</source>
+      <translation>Пропонований результат: потребує перегляду, доки відмінності маркерів не стануть навмисними.</translation>
+    </string>
+    <string>
+      <source>Token check:</source>
+      <translation>Перевірка маркера:</translation>
+    </string>
+    <string>
+      <source>Token differences can break in-game placeholders or formatting.</source>
+      <translation>Відмінності токенів можуть порушити заповнювачі або форматування в грі.</translation>
+    </string>
+    <string>
+      <source>Token order differs</source>
+      <translation>Порядок токенів відрізняється</translation>
+    </string>
+    <string>
+      <source>{outcome} with token warnings</source>
+      <translation>{outcome} із попередженнями про маркери</translation>
+    </string>
+  </context>
+  <context name="ReleaseValidationDialog">
+    <string>
+      <source>All</source>
+      <translation>все</translation>
+    </string>
+    <string>
+      <source>Back to Fix</source>
+      <translation>Назад до виправлення</translation>
+    </string>
+    <string>
+      <source>CSV report (*.csv)</source>
+      <translation>Звіт CSV (*.csv)</translation>
+    </string>
+    <string>
+      <source>Category</source>
+      <translation>Категорія</translation>
+    </string>
+    <string>
+      <source>Close</source>
+      <translation>Закрити</translation>
+    </string>
+    <string>
+      <source>Continue</source>
+      <translation>Продовжити</translation>
+    </string>
+    <string>
+      <source>Continue anyway</source>
+      <translation>Все одно продовжуй</translation>
+    </string>
+    <string>
+      <source>Copy selected issue</source>
+      <translation>Копіювати вибрану проблему</translation>
+    </string>
+    <string>
+      <source>Copy summary</source>
+      <translation>Копіювати резюме</translation>
+    </string>
+    <string>
+      <source>Export Pre-release Validation Report</source>
+      <translation>Експорт звіту перевірки попередньої версії</translation>
+    </string>
+    <string>
+      <source>Export report</source>
+      <translation>Звіт про експорт</translation>
+    </string>
+    <string>
+      <source>Pre-release Validation Report</source>
+      <translation>Звіт про перевірку попередньої версії</translation>
+    </string>
+    <string>
+      <source>Pre-release validation ({profile}): {critical} critical, {warning} warning, {info} info for {written:,}/{total:,} record(s).</source>
+      <translation>Перевірка перед випуском ({profile}): {critical} критично, {warning} попередження, {info} інформація для {written:,}/{total:,} запис(ів).</translation>
+    </string>
+    <string>
+      <source>Review day-to-day workspace issues without starting a save or export.</source>
+      <translation>Переглядайте повсякденні проблеми з робочим середовищем, не починаючи збереження чи експорт.</translation>
+    </string>
+    <string>
+      <source>Review potential blank-text and token issues before writing release files.</source>
+      <translation>Перегляньте можливі проблеми з порожнім текстом і маркерами, перш ніж писати файли випуску.</translation>
+    </string>
+    <string>
+      <source>Search</source>
+      <translation>Пошук</translation>
+    </string>
+    <string>
+      <source>Search package, instance, ID, reason, original, or translation...</source>
+      <translation>Шукати пакет, примірник, ідентифікатор, причину, оригінал або переклад...</translation>
+    </string>
+    <string>
+      <source>Text report (*.txt)</source>
+      <translation>Текстовий звіт (*.txt)</translation>
+    </string>
+    <string>
+      <source>Workspace Warnings</source>
+      <translation>Попередження щодо робочого середовища</translation>
+    </string>
+    <string>
+      <source>{shown:,} issue(s) shown from {total:,}.</source>
+      <translation>{shown:,} проблеми, показані з {total:,}.</translation>
+    </string>
+    <string>
+      <source>Code</source>
+      <translation>Код</translation>
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation>Екземпляр</translation>
+    </string>
+    <string>
+      <source>Original</source>
+      <translation>Оригінал</translation>
+    </string>
+    <string>
+      <source>Package</source>
+      <translation>Пакет</translation>
+    </string>
+    <string>
+      <source>Reason</source>
+      <translation>Причина</translation>
+    </string>
+    <string>
+      <source>Severity</source>
+      <translation>Суворість</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Статус</translation>
+    </string>
+    <string>
+      <source>String ID</source>
+      <translation>Ідентифікатор рядка</translation>
+    </string>
+    <string>
+      <source>Translation</source>
+      <translation>Переклад</translation>
+    </string>
+  </context>
+  <context name="ValidationCategory">
+    <string>
+      <source>Blank risk</source>
+      <translation>Пустий ризик</translation>
+    </string>
+    <string>
+      <source>Duplicate output</source>
+      <translation>Дубльований вихід</translation>
+    </string>
+    <string>
+      <source>Length / layout risk</source>
+      <translation>Довжина / ризик макета</translation>
+    </string>
+    <string>
+      <source>Resource</source>
+      <translation>Ресурс</translation>
+    </string>
+    <string>
+      <source>Source changed</source>
+      <translation>Джерело змінено</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Статус</translation>
+    </string>
+    <string>
+      <source>Summary</source>
+      <translation>Резюме</translation>
+    </string>
+    <string>
+      <source>Token safety</source>
+      <translation>Безпека жетонів</translation>
+    </string>
+  </context>
+  <context name="ValidationProfile">
+    <string>
+      <source>Soft release</source>
+      <translation>М'який випуск</translation>
+    </string>
+    <string>
+      <source>Strict release</source>
+      <translation>Строгий випуск</translation>
+    </string>
+  </context>
+  <context name="ValidationSeverity">
+    <string>
+      <source>Critical</source>
+      <translation>Критичний</translation>
+    </string>
+    <string>
+      <source>Info</source>
+      <translation>Інформація</translation>
+    </string>
+    <string>
+      <source>Warning</source>
+      <translation>Попередження</translation>
     </string>
   </context>
 </ts>

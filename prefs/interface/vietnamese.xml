@@ -1,9 +1,191 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="vi_VN" name="Vietnamese" version="2.2.10" authors="Community">
+<ts language="vi_VN" name="Vietnamese" version="2.2.11" authors="Community">
+  <context name="EditWindow">
+    <string>
+      <source>Search and Edit</source>
+      <translation>Tìm kiếm và chỉnh sửa</translation>
+    </string>
+    <string>
+      <source>OK (Ctrl+Enter)</source>
+      <translation>Đồng ý (Ctrl+Enter)</translation>
+    </string>
+    <string>
+      <source>Original text</source>
+      <translation>Văn bản gốc</translation>
+    </string>
+    <string>
+      <source>Different original</source>
+      <translation>Văn bản gốc khác</translation>
+    </string>
+    <string>
+      <source>Current translation</source>
+      <translation>Bản dịch hiện tại</translation>
+    </string>
+    <string>
+      <source>Different translation</source>
+      <translation>Bản dịch khác</translation>
+    </string>
+    <string>
+      <source>Cancel</source>
+      <translation>Hủy</translation>
+    </string>
+    <string>
+      <source>Translate</source>
+      <translation>Dịch</translation>
+    </string>
+    <string>
+      <source>Use this translation</source>
+      <translation>Dùng bản dịch này</translation>
+    </string>
+    <string>
+      <source>Loading...</source>
+      <translation>Đang tải...</translation>
+    </string>
+    <string>
+      <source>Comment...</source>
+      <translation>Ghi chú...</translation>
+    </string>
+    <string>
+      <source>Approve (Ctrl+Enter)</source>
+      <translation>Phê duyệt (Ctrl+Enter)</translation>
+    </string>
+    <string>
+      <source>Dictionary suggestions</source>
+      <translation>Gợi ý từ từ điển</translation>
+    </string>
+    <string>
+      <source>Draft</source>
+      <translation>Nháp</translation>
+    </string>
+    <string>
+      <source>Needs Review</source>
+      <translation>Cần xem lại</translation>
+    </string>
+    <string>
+      <source>Original</source>
+      <translation>Gốc</translation>
+    </string>
+    <string>
+      <source>Review token safety, refine the draft, then approve it or mark it for review.</source>
+      <translation>Kiểm tra token, chỉnh bản dịch rồi phê duyệt hoặc đánh dấu cần xem lại.</translation>
+    </string>
+    <string>
+      <source>Selected suggestion</source>
+      <translation>Gợi ý đã chọn</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Trạng thái</translation>
+    </string>
+    <string>
+      <source>Suggestions</source>
+      <translation>Gợi ý</translation>
+    </string>
+    <string>
+      <source>Tokens</source>
+      <translation>Token</translation>
+    </string>
+    <string>
+      <source>Translation Studio</source>
+      <translation>Studio dịch thuật</translation>
+    </string>
+    <string>
+      <source>Translation draft</source>
+      <translation>Bản dịch nháp</translation>
+    </string>
+    <string>
+      <source>chars</source>
+      <translation>ký tự</translation>
+    </string>
+  </context>
+  <context name="ExportDialog">
+    <string>
+      <source>Export translate</source>
+      <translation>Xuất bản dịch</translation>
+    </string>
+    <string>
+      <source>Export</source>
+      <translation>Xuất</translation>
+    </string>
+    <string>
+      <source>Everything</source>
+      <translation>Tất cả</translation>
+    </string>
+    <string>
+      <source>Everything but untranslated strings</source>
+      <translation>Tất cả trừ chuỗi chưa dịch</translation>
+    </string>
+    <string>
+      <source>Only selected instance</source>
+      <translation>Chỉ instance đã chọn</translation>
+    </string>
+    <string>
+      <source>Each instance as a separate file</source>
+      <translation>Mỗi instance thành một tệp riêng</translation>
+    </string>
+    <string>
+      <source>Each package as a separate file</source>
+      <translation>Mỗi package thành một tệp riêng</translation>
+    </string>
+    <string>
+      <source>Exported records</source>
+      <translation>Bản ghi xuất</translation>
+    </string>
+    <string>
+      <source>Cancel</source>
+      <translation>Hủy</translation>
+    </string>
+    <string>
+      <source>Selection only</source>
+      <translation>Chỉ mục đã chọn</translation>
+    </string>
+    <string>
+      <source>Choose which records to write, then continue in the background.</source>
+      <translation>Chọn bản ghi cần ghi, sau đó tiếp tục ở chế độ nền.</translation>
+    </string>
+  </context>
+  <context name="MainTableView">
+    <string>
+      <source>Original</source>
+      <translation>Văn bản gốc</translation>
+    </string>
+    <string>
+      <source>Translated</source>
+      <translation>Đã dịch</translation>
+    </string>
+    <string>
+      <source>LD</source>
+      <translation>LD</translation>
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation>Instance</translation>
+    </string>
+    <string>
+      <source>Group</source>
+      <translation>Group</translation>
+    </string>
+    <string>
+      <source>Comment</source>
+      <translation>Ghi chú</translation>
+    </string>
+    <string>
+      <source>ID</source>
+      <translation>ID</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Trạng thái</translation>
+    </string>
+  </context>
   <context name="MainWindow">
     <string>
       <source>File</source>
       <translation>Tệp</translation>
+    </string>
+    <string>
+      <source>Export translation</source>
+      <translation>Xuất bản dịch</translation>
     </string>
     <string>
       <source>Translation</source>
@@ -18,316 +200,28 @@
       <translation>Tùy chọn</translation>
     </string>
     <string>
+      <source>Group</source>
+      <translation>Group</translation>
+    </string>
+    <string>
       <source>Help</source>
       <translation>Trợ giúp</translation>
-    </string>
-    <string>
-      <source>Load file...</source>
-      <translation>Mở tệp...</translation>
-    </string>
-    <string>
-      <source>Add file...</source>
-      <translation>Thêm tệp...</translation>
-    </string>
-    <string>
-      <source>Save</source>
-      <translation>Lưu</translation>
     </string>
     <string>
       <source>Save as...</source>
       <translation>Lưu thành...</translation>
     </string>
     <string>
-      <source>Import translation...</source>
-      <translation>Nhập bản dịch...</translation>
+      <source>Close</source>
+      <translation>Đóng</translation>
     </string>
     <string>
-      <source>Export translation</source>
-      <translation>Xuất bản dịch</translation>
-    </string>
-    <string>
-      <source>Batch translate...</source>
-      <translation>Dịch hàng loạt...</translation>
+      <source>Save</source>
+      <translation>Lưu</translation>
     </string>
     <string>
       <source>Save dictionary</source>
       <translation>Lưu từ điển</translation>
-    </string>
-    <string>
-      <source>Options...</source>
-      <translation>Tùy chọn...</translation>
-    </string>
-    <string>
-      <source>Validate Release...</source>
-      <translation>Kiểm tra bản phát hành...</translation>
-    </string>
-    <string>
-      <source>Status Overview Bar</source>
-      <translation>Thanh tổng quan trạng thái</translation>
-    </string>
-    <string>
-      <source>Show a thin status distribution bar above the table.</source>
-      <translation>Hiển thị thanh mỏng cho biết tỷ lệ trạng thái phía trên bảng.</translation>
-    </string>
-    <string>
-      <source>Open</source>
-      <translation>Mở</translation>
-    </string>
-    <string>
-      <source>Import</source>
-      <translation>Nhập</translation>
-    </string>
-    <string>
-      <source>Export</source>
-      <translation>Xuất</translation>
-    </string>
-    <string>
-      <source>Translate</source>
-      <translation>Dịch</translation>
-    </string>
-    <string>
-      <source>Dictionary</source>
-      <translation>Từ điển</translation>
-    </string>
-    <string>
-      <source>Release QA</source>
-      <translation>Kiểm tra phát hành</translation>
-    </string>
-    <string>
-      <source>Save translated strings to dictionary for reuse</source>
-      <translation>Lưu các string đã dịch vào từ điển để tái sử dụng</translation>
-    </string>
-    <string>
-      <source>Approve all translations</source>
-      <translation>Phê duyệt tất cả bản dịch</translation>
-    </string>
-    <string>
-      <source>Workspace Warnings...</source>
-      <translation>Cảnh báo workspace...</translation>
-    </string>
-    <string>
-      <source>Activity Dock</source>
-      <translation>Bảng hoạt động</translation>
-    </string>
-    <string>
-      <source>Search</source>
-      <translation>Tìm kiếm</translation>
-    </string>
-    <string>
-      <source>Search ID, Original, or Translation...</source>
-      <translation>Tìm ID, văn bản gốc hoặc bản dịch...</translation>
-    </string>
-    <string>
-      <source>Search ID, original text, and translation text at the same time.</source>
-      <translation>Tìm đồng thời theo ID, văn bản gốc và bản dịch.</translation>
-    </string>
-    <string>
-      <source>Search ID, original and translation</source>
-      <translation>Tìm theo ID, văn bản gốc và bản dịch</translation>
-    </string>
-    <string>
-      <source>Search original and translation text that contains the query.</source>
-      <translation>Tìm văn bản gốc và bản dịch có chứa nội dung nhập.</translation>
-    </string>
-    <string>
-      <source>Search original and translation text that exactly matches the query.</source>
-      <translation>Tìm văn bản gốc và bản dịch khớp chính xác với nội dung nhập.</translation>
-    </string>
-    <string>
-      <source>Search original and translation text that begins with the query.</source>
-      <translation>Tìm văn bản gốc và bản dịch bắt đầu bằng nội dung nhập.</translation>
-    </string>
-    <string>
-      <source>Search original and translation text that ends with the query.</source>
-      <translation>Tìm văn bản gốc và bản dịch kết thúc bằng nội dung nhập.</translation>
-    </string>
-    <string>
-      <source>Search original, translation, and ID with a regular expression.</source>
-      <translation>Tìm văn bản gốc, bản dịch và ID bằng biểu thức chính quy.</translation>
-    </string>
-    <string>
-      <source>Search exact string ID. Hex values like 0x0000002A are supported.</source>
-      <translation>Tìm đúng string ID. Hỗ trợ giá trị hex như 0x0000002A.</translation>
-    </string>
-    <string>
-      <source>Advanced Search</source>
-      <translation>Tìm kiếm nâng cao</translation>
-    </string>
-    <string>
-      <source>Advanced</source>
-      <translation>Nâng cao</translation>
-    </string>
-    <string>
-      <source>Show advanced search modes</source>
-      <translation>Hiện các chế độ tìm kiếm nâng cao</translation>
-    </string>
-    <string>
-      <source>Mode</source>
-      <translation>Chế độ</translation>
-    </string>
-    <string>
-      <source>Status</source>
-      <translation>Trạng thái</translation>
-    </string>
-    <string>
-      <source>Scope</source>
-      <translation>Phạm vi</translation>
-    </string>
-    <string>
-      <source>Package</source>
-      <translation>Package</translation>
-    </string>
-    <string>
-      <source>Instance</source>
-      <translation>Instance</translation>
-    </string>
-    <string>
-      <source>Clear filters</source>
-      <translation>Xóa bộ lọc</translation>
-    </string>
-    <string>
-      <source>Translation table</source>
-      <translation>Bảng dịch</translation>
-    </string>
-    <string>
-      <source>Ready for a package</source>
-      <translation>Sẵn sàng mở package</translation>
-    </string>
-    <string>
-      <source>Load a .package, .stbl, XML, JSON, Binary, or generated synthetic smoke package.</source>
-      <translation>Mở .package, .stbl, XML, JSON, Binary hoặc package smoke synthetic.</translation>
-    </string>
-    <string>
-      <source>Open package -&gt; Translate -&gt; Validate Release -&gt; Save as package</source>
-      <translation>Mở package -&gt; Dịch -&gt; Kiểm tra phát hành -&gt; Save as package</translation>
-    </string>
-    <string>
-      <source>Open package</source>
-      <translation>Mở package</translation>
-    </string>
-    <string>
-      <source>Approve</source>
-      <translation>Phê duyệt</translation>
-    </string>
-    <string>
-      <source>Reset</source>
-      <translation>Đặt lại</translation>
-    </string>
-    <string>
-      <source>Open Editor</source>
-      <translation>Mở Editor</translation>
-    </string>
-    <string>
-      <source>Collapse preview</source>
-      <translation>Thu gọn xem trước</translation>
-    </string>
-    <string>
-      <source>Expand preview</source>
-      <translation>Mở rộng xem trước</translation>
-    </string>
-    <string>
-      <source>No package loaded</source>
-      <translation>Chưa mở package</translation>
-    </string>
-    <string>
-      <source>Workspace stats</source>
-      <translation>Thống kê workspace</translation>
-    </string>
-    <string>
-      <source>shown</source>
-      <translation>đang hiển thị</translation>
-    </string>
-    <string>
-      <source>package</source>
-      <translation>package</translation>
-    </string>
-    <string>
-      <source>packages</source>
-      <translation>packages</translation>
-    </string>
-    <string>
-      <source>approved</source>
-      <translation>đã phê duyệt</translation>
-    </string>
-    <string>
-      <source>draft</source>
-      <translation>bản nháp</translation>
-    </string>
-    <string>
-      <source>needs review</source>
-      <translation>cần xem lại</translation>
-    </string>
-    <string>
-      <source>untranslated</source>
-      <translation>chưa dịch</translation>
-    </string>
-    <string>
-      <source>All</source>
-      <translation>Tất cả</translation>
-    </string>
-    <string>
-      <source>Untranslated</source>
-      <translation>Chưa dịch</translation>
-    </string>
-    <string>
-      <source>Draft</source>
-      <translation>Bản nháp</translation>
-    </string>
-    <string>
-      <source>Approved</source>
-      <translation>Đã phê duyệt</translation>
-    </string>
-    <string>
-      <source>Needs review</source>
-      <translation>Cần xem lại</translation>
-    </string>
-    <string>
-      <source>Modified only</source>
-      <translation>Chỉ mục đã sửa</translation>
-    </string>
-    <string>
-      <source>No string selected</source>
-      <translation>Chưa chọn string</translation>
-    </string>
-    <string>
-      <source>Idle</source>
-      <translation>Chờ</translation>
-    </string>
-    <string>
-      <source>Selected string</source>
-      <translation>String đã chọn</translation>
-    </string>
-    <string>
-      <source>Select a string to preview full text.</source>
-      <translation>Chọn một string để xem đầy đủ nội dung.</translation>
-    </string>
-    <string>
-      <source>Mark as needs review</source>
-      <translation>Đánh dấu cần xem lại</translation>
-    </string>
-    <string>
-      <source>Validate Release</source>
-      <translation>Kiểm tra bản phát hành</translation>
-    </string>
-    <string>
-      <source>Validation preset:</source>
-      <translation>Kiểu kiểm tra:</translation>
-    </string>
-    <string>
-      <source>Validating release</source>
-      <translation>Đang kiểm tra phát hành</translation>
-    </string>
-    <string>
-      <source>Validation cancelled</source>
-      <translation>Đã hủy kiểm tra</translation>
-    </string>
-    <string>
-      <source>Group</source>
-      <translation>Group</translation>
-    </string>
-    <string>
-      <source>Close</source>
-      <translation>Đóng</translation>
     </string>
     <string>
       <source>Search and replace...</source>
@@ -352,6 +246,10 @@
     <string>
       <source>About Qt...</source>
       <translation>Giới thiệu Qt...</translation>
+    </string>
+    <string>
+      <source>Options...</source>
+      <translation>Tùy chọn...</translation>
     </string>
     <string>
       <source>To XML...</source>
@@ -422,6 +320,18 @@
       <translation>Dán</translation>
     </string>
     <string>
+      <source>Load file...</source>
+      <translation>Mở tệp...</translation>
+    </string>
+    <string>
+      <source>Add file...</source>
+      <translation>Thêm tệp...</translation>
+    </string>
+    <string>
+      <source>Import translation...</source>
+      <translation>Nhập bản dịch...</translation>
+    </string>
+    <string>
       <source>Remove record</source>
       <translation>Xóa bản ghi</translation>
     </string>
@@ -454,22 +364,316 @@
       <translation>Định dạng XML (STBL Editor của Deaderpool)</translation>
     </string>
     <string>
+      <source>Batch translate...</source>
+      <translation>Dịch hàng loạt...</translation>
+    </string>
+    <string>
+      <source>Translate</source>
+      <translation>Dịch</translation>
+    </string>
+    <string>
       <source>Color visualization</source>
       <translation>Trực quan hóa màu sắc</translation>
     </string>
+    <string>
+      <source>Open package -&gt; Translate -&gt; Validate Release -&gt; Save as package</source>
+      <translation>Mở package -&gt; Dịch -&gt; Kiểm tra phát hành -&gt; Save as package</translation>
+    </string>
+    <string>
+      <source>Open package</source>
+      <translation>Mở package</translation>
+    </string>
+    <string>
+      <source>Activity Dock</source>
+      <translation>Bảng hoạt động</translation>
+    </string>
+    <string>
+      <source>Advanced</source>
+      <translation>Nâng cao</translation>
+    </string>
+    <string>
+      <source>Approve</source>
+      <translation>Phê duyệt</translation>
+    </string>
+    <string>
+      <source>Approve all translations</source>
+      <translation>Phê duyệt tất cả bản dịch</translation>
+    </string>
+    <string>
+      <source>Clear filters</source>
+      <translation>Xóa bộ lọc</translation>
+    </string>
+    <string>
+      <source>Dictionary</source>
+      <translation>Từ điển</translation>
+    </string>
+    <string>
+      <source>Export</source>
+      <translation>Xuất</translation>
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation>Chờ</translation>
+    </string>
+    <string>
+      <source>Import</source>
+      <translation>Nhập</translation>
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation>Instance</translation>
+    </string>
+    <string>
+      <source>Mark as needs review</source>
+      <translation>Đánh dấu cần xem lại</translation>
+    </string>
+    <string>
+      <source>Mode</source>
+      <translation>Chế độ</translation>
+    </string>
+    <string>
+      <source>No package loaded</source>
+      <translation>Chưa mở package</translation>
+    </string>
+    <string>
+      <source>No string selected</source>
+      <translation>Chưa chọn string</translation>
+    </string>
+    <string>
+      <source>Open</source>
+      <translation>Mở</translation>
+    </string>
+    <string>
+      <source>Open Editor</source>
+      <translation>Mở Editor</translation>
+    </string>
+    <string>
+      <source>Package</source>
+      <translation>Package</translation>
+    </string>
+    <string>
+      <source>Release QA</source>
+      <translation>Kiểm tra phát hành</translation>
+    </string>
+    <string>
+      <source>Reset</source>
+      <translation>Đặt lại</translation>
+    </string>
+    <string>
+      <source>Save translated strings to dictionary for reuse</source>
+      <translation>Lưu các string đã dịch vào từ điển để tái sử dụng</translation>
+    </string>
+    <string>
+      <source>Scope</source>
+      <translation>Phạm vi</translation>
+    </string>
+    <string>
+      <source>Search</source>
+      <translation>Tìm kiếm</translation>
+    </string>
+    <string>
+      <source>Search ID, Original, or Translation...</source>
+      <translation>Tìm ID, văn bản gốc hoặc bản dịch...</translation>
+    </string>
+    <string>
+      <source>Search ID, original and translation</source>
+      <translation>Tìm theo ID, văn bản gốc và bản dịch</translation>
+    </string>
+    <string>
+      <source>Search ID, original text, and translation text at the same time.</source>
+      <translation>Tìm đồng thời theo ID, văn bản gốc và bản dịch.</translation>
+    </string>
+    <string>
+      <source>Select a string to preview full text.</source>
+      <translation>Chọn một string để xem đầy đủ nội dung.</translation>
+    </string>
+    <string>
+      <source>Selected string</source>
+      <translation>String đã chọn</translation>
+    </string>
+    <string>
+      <source>Show a thin status distribution bar above the table.</source>
+      <translation>Hiển thị thanh mỏng cho biết tỷ lệ trạng thái phía trên bảng.</translation>
+    </string>
+    <string>
+      <source>Show advanced search modes</source>
+      <translation>Hiện các chế độ tìm kiếm nâng cao</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Trạng thái</translation>
+    </string>
+    <string>
+      <source>Status Overview Bar</source>
+      <translation>Thanh tổng quan trạng thái</translation>
+    </string>
+    <string>
+      <source>Translation table</source>
+      <translation>Bảng dịch</translation>
+    </string>
+    <string>
+      <source>Validate Release</source>
+      <translation>Kiểm tra bản phát hành</translation>
+    </string>
+    <string>
+      <source>Validate Release...</source>
+      <translation>Kiểm tra bản phát hành...</translation>
+    </string>
+    <string>
+      <source>Validating release</source>
+      <translation>Đang kiểm tra phát hành</translation>
+    </string>
+    <string>
+      <source>Validation cancelled</source>
+      <translation>Đã hủy kiểm tra</translation>
+    </string>
+    <string>
+      <source>Validation preset:</source>
+      <translation>Kiểu kiểm tra:</translation>
+    </string>
+    <string>
+      <source>Workspace Warnings...</source>
+      <translation>Cảnh báo workspace...</translation>
+    </string>
+    <string>
+      <source>Workspace stats</source>
+      <translation>Thống kê workspace</translation>
+    </string>
+    <string>
+      <source>approved</source>
+      <translation>đã phê duyệt</translation>
+    </string>
+    <string>
+      <source>draft</source>
+      <translation>bản nháp</translation>
+    </string>
+    <string>
+      <source>needs review</source>
+      <translation>cần xem lại</translation>
+    </string>
+    <string>
+      <source>shown</source>
+      <translation>đang hiển thị</translation>
+    </string>
+    <string>
+      <source>untranslated</source>
+      <translation>chưa dịch</translation>
+    </string>
+  </context>
+  <context name="Messages">
+    <string>
+      <source>Save dictionary for modified packages?</source>
+      <translation>Lưu từ điển cho các package đã chỉnh sửa?</translation>
+    </string>
+    <string>
+      <source>Are you sure you want to delete the selected records?</source>
+      <translation>Bạn có chắc muốn xóa các bản ghi đã chọn?</translation>
+    </string>
+    <string>
+      <source>Not found text records in this file!</source>
+      <translation>Không tìm thấy bản ghi text trong tệp này!</translation>
+    </string>
+    <string>
+      <source>Not found text records in this files!</source>
+      <translation>Không tìm thấy bản ghi text trong các tệp này!</translation>
+    </string>
+    <string>
+      <source>Not found text records in following files:</source>
+      <translation>Không tìm thấy bản ghi text trong các tệp sau:</translation>
+    </string>
+    <string>
+      <source>Translation completed with {} successes.
+
+Errors:
+{}</source>
+      <translation>Dịch xong với {} mục thành công.
+
+Lỗi:
+{}</translation>
+    </string>
+    <string>
+      <source>... and {} other errors</source>
+      <translation>... và {} lỗi khác</translation>
+    </string>
+  </context>
+  <context name="Errors">
+    <string>
+      <source>Language code not found!</source>
+      <translation>Không tìm thấy mã ngôn ngữ!</translation>
+    </string>
+    <string>
+      <source>Translation failed with error code: {}</source>
+      <translation>Dịch thất bại với mã lỗi: {}</translation>
+    </string>
+    <string>
+      <source>Invalid API key.</source>
+      <translation>API key không hợp lệ.</translation>
+    </string>
+    <string>
+      <source>Your quota has exceeded!</source>
+      <translation>Bạn đã vượt quá quota!</translation>
+    </string>
+    <string>
+      <source>There was a temporary problem with the DeepL Service.</source>
+      <translation>DeepL đang gặp sự cố tạm thời.</translation>
+    </string>
+    <string>
+      <source>Ollama base URL is empty.</source>
+      <translation>Base URL của Ollama đang trống.</translation>
+    </string>
+    <string>
+      <source>Ollama base URL or model is empty.</source>
+      <translation>Base URL hoặc model Ollama đang trống.</translation>
+    </string>
+    <string>
+      <source>Ollama is not reachable at {url}. Start Ollama or check the base URL.</source>
+      <translation>Không kết nối được Ollama tại {url}. Hãy mở Ollama hoặc kiểm tra lại base URL.</translation>
+    </string>
+    <string>
+      <source>Ollama model was not found. Run: ollama pull {model}</source>
+      <translation>Không tìm thấy model Ollama. Chạy: ollama pull {model}</translation>
+    </string>
+    <string>
+      <source>A maximum of 500 characters is allowed.</source>
+      <translation>Cho phép tối đa 500 ký tự.</translation>
+    </string>
   </context>
   <context name="OptionsDialog">
+    <string>
+      <source>NOT FOUND</source>
+      <translation>KHÔNG TÌM THẤY</translation>
+    </string>
+    <string>
+      <source>{} not exist</source>
+      <translation>{} không tồn tại</translation>
+    </string>
+    <string>
+      <source>FOUND</source>
+      <translation>ĐÃ TÌM THẤY</translation>
+    </string>
+    <string>
+      <source>BASE GAME</source>
+      <translation>BASE GAME</translation>
+    </string>
+    <string>
+      <source>Expansion packs</source>
+      <translation>Expansion Pack</translation>
+    </string>
+    <string>
+      <source>Game packs</source>
+      <translation>Game Pack</translation>
+    </string>
+    <string>
+      <source>Stuff packs</source>
+      <translation>Stuff Pack</translation>
+    </string>
     <string>
       <source>Options and dictionaries</source>
       <translation>Tùy chọn và từ điển</translation>
     </string>
     <string>
-      <source>Interface</source>
-      <translation>Giao diện</translation>
-    </string>
-    <string>
-      <source>Safety defaults</source>
-      <translation>Thiết lập an toàn</translation>
+      <source>Build dictionaries</source>
+      <translation>Tạo từ điển</translation>
     </string>
     <string>
       <source>Languages</source>
@@ -484,20 +688,40 @@
       <translation>Đích</translation>
     </string>
     <string>
-      <source>Language</source>
-      <translation>Ngôn ngữ giao diện</translation>
+      <source>Game path</source>
+      <translation>Đường dẫn game</translation>
     </string>
     <string>
-      <source>Create backup before Finalize</source>
-      <translation>Tạo bản sao lưu trước khi Finalize</translation>
+      <source>...</source>
+      <translation>...</translation>
     </string>
     <string>
-      <source>Use conflict-free save mode (experimental)</source>
-      <translation>Dùng chế độ lưu tránh xung đột (thử nghiệm)</translation>
+      <source>Create backup package before finalization</source>
+      <translation>Tạo package backup trước khi Finalize</translation>
     </string>
     <string>
-      <source>Only use exact dictionary matches</source>
-      <translation>Chỉ dùng bản dịch khớp chính xác trong từ điển</translation>
+      <source>Saving translation without conflicts (experemental)</source>
+      <translation>Lưu bản dịch tránh conflict (thử nghiệm)</translation>
+    </string>
+    <string>
+      <source>Interface</source>
+      <translation>Giao diện</translation>
+    </string>
+    <string>
+      <source>Do not use automatic translation from other dictionaries</source>
+      <translation>Không tự lấy bản dịch từ từ điển khác</translation>
+    </string>
+    <string>
+      <source>General</source>
+      <translation>Chung</translation>
+    </string>
+    <string>
+      <source>Providers</source>
+      <translation>Provider</translation>
+    </string>
+    <string>
+      <source>Dictionaries</source>
+      <translation>Từ điển</translation>
     </string>
     <string>
       <source>DeepL API key</source>
@@ -588,76 +812,24 @@
       <translation>Ollama đã sẵn sàng nhưng chưa bật. Hãy bật provider để Ollama xuất hiện trong danh sách dịch.</translation>
     </string>
     <string>
-      <source>Test key</source>
-      <translation>Kiểm tra khóa</translation>
+      <source>Language</source>
+      <translation>Ngôn ngữ giao diện</translation>
     </string>
     <string>
-      <source>Check usage</source>
-      <translation>Kiểm tra dung lượng</translation>
+      <source>Theme</source>
+      <translation>Theme</translation>
     </string>
     <string>
-      <source>Changes are saved automatically.</source>
-      <translation>Thay đổi được lưu tự động.</translation>
+      <source>Light</source>
+      <translation>Sáng</translation>
     </string>
     <string>
-      <source>Game path</source>
-      <translation>Đường dẫn game</translation>
+      <source>Dark</source>
+      <translation>Tối</translation>
     </string>
     <string>
-      <source>Pack Manager</source>
-      <translation>Quản lý gói</translation>
-    </string>
-    <string>
-      <source>Build dictionaries</source>
-      <translation>Tạo từ điển</translation>
-    </string>
-    <string>
-      <source>General</source>
-      <translation>Chung</translation>
-    </string>
-    <string>
-      <source>Providers</source>
-      <translation>Provider</translation>
-    </string>
-    <string>
-      <source>Dictionaries</source>
-      <translation>Từ điển</translation>
-    </string>
-    <string>
-      <source>Browse...</source>
-      <translation>Duyệt...</translation>
-    </string>
-    <string>
-      <source>Filter packs...</source>
-      <translation>Lọc gói...</translation>
-    </string>
-    <string>
-      <source>Build dictionaries...</source>
-      <translation>Đang tạo từ điển...</translation>
-    </string>
-    <string>
-      <source>All packs</source>
-      <translation>Tất cả gói</translation>
-    </string>
-    <string>
-      <source>Expansion packs</source>
-      <translation>Expansion Pack</translation>
-    </string>
-    <string>
-      <source>Game packs</source>
-      <translation>Game Pack</translation>
-    </string>
-    <string>
-      <source>Stuff packs</source>
-      <translation>Stuff Pack</translation>
-    </string>
-    <string>
-      <source>Kits</source>
-      <translation>Kit</translation>
-    </string>
-    <string>
-      <source>Free packs</source>
-      <translation>Gói miễn phí</translation>
+      <source>The application needs to be restarted</source>
+      <translation>Cần khởi động lại ứng dụng</translation>
     </string>
     <string>
       <source>The translation version differs from the application version, so the interface may not be fully translated</source>
@@ -800,548 +972,256 @@
       <translation>Cache hiện có {entries:,} mục, {size:,} byte.</translation>
     </string>
     <string>
+      <source>All packs</source>
+      <translation>Tất cả gói</translation>
+    </string>
+    <string>
+      <source>Browse...</source>
+      <translation>Duyệt...</translation>
+    </string>
+    <string>
+      <source>Create backup before Finalize</source>
+      <translation>Tạo bản sao lưu trước khi Finalize</translation>
+    </string>
+    <string>
+      <source>Creates separate hashed STBL resources instead of touching the original STBL resources. Use only when testing conflict avoidance with a package copy.</source>
+      <translation>Tạo tài nguyên STBL được băm riêng biệt thay vì chạm vào tài nguyên STBL ban đầu. Chỉ sử dụng khi kiểm tra khả năng tránh xung đột bằng bản sao gói.</translation>
+    </string>
+    <string>
+      <source>Filter packs...</source>
+      <translation>Lọc gói...</translation>
+    </string>
+    <string>
+      <source>Free packs</source>
+      <translation>Gói miễn phí</translation>
+    </string>
+    <string>
+      <source>Kits</source>
+      <translation>Kit</translation>
+    </string>
+    <string>
+      <source>No packs match the current filter. Clear the search field to see the full catalog.</source>
+      <translation>Không có gói nào phù hợp với bộ lọc hiện tại. Xóa trường tìm kiếm để xem danh mục đầy đủ.</translation>
+    </string>
+    <string>
+      <source>Only use exact dictionary matches</source>
+      <translation>Chỉ dùng bản dịch khớp chính xác trong từ điển</translation>
+    </string>
+    <string>
+      <source>Pack Manager</source>
+      <translation>Quản lý gói</translation>
+    </string>
+    <string>
+      <source>Recommended. When Finalize writes over a source package, keep a .package.backup copy first.</source>
+      <translation>Khuyến khích. Khi Hoàn thiện ghi lên gói nguồn, trước tiên hãy giữ bản sao .package.backup.</translation>
+    </string>
+    <string>
+      <source>Safety defaults</source>
+      <translation>Thiết lập an toàn</translation>
+    </string>
+    <string>
+      <source>Select the folder that contains Data, EP, GP, SP, and FP folders from your The Sims 4 installation.</source>
+      <translation>Chọn thư mục chứa các thư mục Dữ liệu, EP, GP, SP và FP từ bản cài đặt The Sims 4 của bạn.</translation>
+    </string>
+    <string>
+      <source>These choices are saved automatically. For Vietnamese release work, keep backups on, leave conflict-free mode off unless testing a copy, and review context-sensitive dictionary matches.</source>
+      <translation>Những lựa chọn này được lưu tự động. Đối với công việc phát hành bằng tiếng Việt, hãy tiếp tục sao lưu, tắt chế độ không xung đột trừ khi kiểm tra một bản sao và xem xét các từ điển phù hợp với ngữ cảnh.</translation>
+    </string>
+    <string>
+      <source>Use conflict-free save mode (experimental)</source>
+      <translation>Dùng chế độ lưu tránh xung đột (thử nghiệm)</translation>
+    </string>
+    <string>
+      <source>When enabled, dictionary auto-fill is stricter and avoids fallback matches from the same source text. Leave disabled to reuse more dictionary translations, then review context-sensitive strings manually.</source>
+      <translation>Khi được bật, tính năng tự động điền từ điển sẽ chặt chẽ hơn và tránh các kết quả trùng khớp dự phòng từ cùng một văn bản nguồn. Tắt để sử dụng lại nhiều bản dịch từ điển hơn, sau đó xem lại các chuỗi theo ngữ cảnh theo cách thủ công.</translation>
+    </string>
+    <string>
       <source>by {}</source>
       <translation>bởi {}</translation>
     </string>
-    <string>
-      <source>NOT FOUND</source>
-      <translation>KHÔNG TÌM THẤY</translation>
-    </string>
-    <string>
-      <source>{} not exist</source>
-      <translation>{} không tồn tại</translation>
-    </string>
-    <string>
-      <source>FOUND</source>
-      <translation>ĐÃ TÌM THẤY</translation>
-    </string>
-    <string>
-      <source>BASE GAME</source>
-      <translation>BASE GAME</translation>
-    </string>
-    <string>
-      <source>...</source>
-      <translation>...</translation>
-    </string>
-    <string>
-      <source>Create backup package before finalization</source>
-      <translation>Tạo package backup trước khi Finalize</translation>
-    </string>
-    <string>
-      <source>Saving translation without conflicts (experemental)</source>
-      <translation>Lưu bản dịch tránh conflict (thử nghiệm)</translation>
-    </string>
-    <string>
-      <source>Do not use automatic translation from other dictionaries</source>
-      <translation>Không tự lấy bản dịch từ từ điển khác</translation>
-    </string>
-    <string>
-      <source>Theme</source>
-      <translation>Theme</translation>
-    </string>
-    <string>
-      <source>Light</source>
-      <translation>Sáng</translation>
-    </string>
-    <string>
-      <source>Dark</source>
-      <translation>Tối</translation>
-    </string>
-    <string>
-      <source>The application needs to be restarted</source>
-      <translation>Cần khởi động lại ứng dụng</translation>
-    </string>
   </context>
-  <context name="EditWindow">
+  <context name="ReplaceDialog">
     <string>
-      <source>Search and Edit</source>
-      <translation>Tìm kiếm và chỉnh sửa</translation>
+      <source>Search and replace</source>
+      <translation>Tìm và thay thế</translation>
     </string>
     <string>
-      <source>Original text</source>
-      <translation>Văn bản gốc</translation>
+      <source>Case sensitive</source>
+      <translation>Phân biệt hoa thường</translation>
     </string>
     <string>
-      <source>Current translation</source>
-      <translation>Bản dịch hiện tại</translation>
+      <source>Search</source>
+      <translation>Tìm kiếm</translation>
     </string>
     <string>
-      <source>Translate</source>
-      <translation>Dịch</translation>
+      <source>Replace</source>
+      <translation>Thay thế</translation>
+    </string>
+    <string>
+      <source>Search and replace in:</source>
+      <translation>Tìm và thay thế trong:</translation>
+    </string>
+    <string>
+      <source>All strings</source>
+      <translation>Tất cả string</translation>
+    </string>
+    <string>
+      <source>Not validated strings</source>
+      <translation>String chưa duyệt</translation>
     </string>
     <string>
       <source>Cancel</source>
       <translation>Hủy</translation>
-    </string>
-    <string>
-      <source>Translation Studio</source>
-      <translation>Studio dịch thuật</translation>
-    </string>
-    <string>
-      <source>Review token safety, refine the draft, then approve it or mark it for review.</source>
-      <translation>Kiểm tra token, chỉnh bản dịch rồi phê duyệt hoặc đánh dấu cần xem lại.</translation>
-    </string>
-    <string>
-      <source>Dictionary suggestions</source>
-      <translation>Gợi ý từ từ điển</translation>
-    </string>
-    <string>
-      <source>Selected suggestion</source>
-      <translation>Gợi ý đã chọn</translation>
-    </string>
-    <string>
-      <source>Tokens</source>
-      <translation>Token</translation>
-    </string>
-    <string>
-      <source>Suggestions</source>
-      <translation>Gợi ý</translation>
-    </string>
-    <string>
-      <source>Approve (Ctrl+Enter)</source>
-      <translation>Phê duyệt (Ctrl+Enter)</translation>
-    </string>
-    <string>
-      <source>Needs Review</source>
-      <translation>Cần xem lại</translation>
-    </string>
-    <string>
-      <source>Different original</source>
-      <translation>Văn bản gốc khác</translation>
-    </string>
-    <string>
-      <source>Translation draft</source>
-      <translation>Bản dịch nháp</translation>
-    </string>
-    <string>
-      <source>Different translation</source>
-      <translation>Bản dịch khác</translation>
-    </string>
-    <string>
-      <source>Comment...</source>
-      <translation>Ghi chú...</translation>
-    </string>
-    <string>
-      <source>Status</source>
-      <translation>Trạng thái</translation>
-    </string>
-    <string>
-      <source>Original</source>
-      <translation>Gốc</translation>
-    </string>
-    <string>
-      <source>Draft</source>
-      <translation>Nháp</translation>
-    </string>
-    <string>
-      <source>chars</source>
-      <translation>ký tự</translation>
-    </string>
-    <string>
-      <source>Loading...</source>
-      <translation>Đang tải...</translation>
-    </string>
-    <string>
-      <source>Use this translation</source>
-      <translation>Dùng bản dịch này</translation>
-    </string>
-    <string>
-      <source>OK (Ctrl+Enter)</source>
-      <translation>Đồng ý (Ctrl+Enter)</translation>
-    </string>
-  </context>
-  <context name="Status">
-    <string>
-      <source>Untranslated</source>
-      <translation>Chưa dịch</translation>
-    </string>
-    <string>
-      <source>Needs review</source>
-      <translation>Cần xem lại</translation>
-    </string>
-    <string>
-      <source>Approved</source>
-      <translation>Đã phê duyệt</translation>
-    </string>
-    <string>
-      <source>Draft</source>
-      <translation>Bản nháp</translation>
-    </string>
-    <string>
-      <source>Edited</source>
-      <translation>Đã sửa</translation>
-    </string>
-    <string>
-      <source>Unknown</source>
-      <translation>Không rõ</translation>
-    </string>
-  </context>
-  <context name="SearchMode">
-    <string>
-      <source>Hybrid</source>
-      <translation>Tổng hợp</translation>
-    </string>
-    <string>
-      <source>Contains</source>
-      <translation>Chứa</translation>
-    </string>
-    <string>
-      <source>Exact</source>
-      <translation>Khớp chính xác</translation>
-    </string>
-    <string>
-      <source>Begins with</source>
-      <translation>Bắt đầu bằng</translation>
-    </string>
-    <string>
-      <source>Ends with</source>
-      <translation>Kết thúc bằng</translation>
-    </string>
-    <string>
-      <source>Regex</source>
-      <translation>Regex</translation>
-    </string>
-    <string>
-      <source>ID equals</source>
-      <translation>ID chính xác</translation>
-    </string>
-  </context>
-  <context name="TokenValidation">
-    <string>
-      <source>Token check:</source>
-      <translation>Kiểm tra token:</translation>
     </string>
     <string>
       <source>OK</source>
       <translation>OK</translation>
     </string>
-    <string>
-      <source>Missing</source>
-      <translation>Thiếu</translation>
-    </string>
-    <string>
-      <source>Extra</source>
-      <translation>Thừa</translation>
-    </string>
-    <string>
-      <source>Line breaks differ</source>
-      <translation>Khác số lần xuống dòng</translation>
-    </string>
-    <string>
-      <source>Order differs</source>
-      <translation>Khác thứ tự</translation>
-    </string>
-    <string>
-      <source>All source tokens are preserved in the translation draft.</source>
-      <translation>Tất cả token gốc đã được giữ trong bản dịch nháp.</translation>
-    </string>
-    <string>
-      <source>Line-break count differs</source>
-      <translation>Số lần xuống dòng khác nhau</translation>
-    </string>
-    <string>
-      <source>Token order differs</source>
-      <translation>Thứ tự token khác nhau</translation>
-    </string>
-    <string>
-      <source>Suggested outcome: Approved.</source>
-      <translation>Gợi ý trạng thái: Đã phê duyệt.</translation>
-    </string>
-    <string>
-      <source>Suggested outcome: Needs Review until the token differences are intentional.</source>
-      <translation>Gợi ý trạng thái: Cần xem lại cho đến khi chắc chắn khác biệt token là chủ ý.</translation>
-    </string>
-    <string>
-      <source>Continue only if these token differences are intentional.</source>
-      <translation>Chỉ tiếp tục nếu các khác biệt token này là chủ ý.</translation>
-    </string>
-    <string>
-      <source>Token differences can break in-game placeholders or formatting.</source>
-      <translation>Khác biệt token có thể làm hỏng placeholder hoặc định dạng trong game.</translation>
-    </string>
-    <string>
-      <source>{outcome} with token warnings</source>
-      <translation>{outcome} có cảnh báo token</translation>
-    </string>
-    <string>
-      <source>Back to Edit</source>
-      <translation>Quay lại chỉnh sửa</translation>
-    </string>
-    <string>
-      <source>Continue and Mark Needs Review</source>
-      <translation>Tiếp tục và đánh dấu cần xem lại</translation>
-    </string>
-    <string>
-      <source>Continue and Approve</source>
-      <translation>Tiếp tục và phê duyệt</translation>
-    </string>
   </context>
-  <context name="TokenAssistant">
+  <context name="System">
     <string>
-      <source>Token Assistant</source>
-      <translation>Trợ lý token</translation>
+      <source>Saving package {}...</source>
+      <translation>Đang lưu package {}...</translation>
     </string>
     <string>
-      <source>Category</source>
-      <translation>Nhóm</translation>
+      <source>Loading dictionaries...</source>
+      <translation>Đang tải từ điển...</translation>
     </string>
     <string>
-      <source>Token</source>
-      <translation>Token</translation>
+      <source>Build dictionaries...</source>
+      <translation>Đang tạo từ điển...</translation>
     </string>
     <string>
-      <source>Index</source>
-      <translation>Số thứ tự</translation>
+      <source>Exporting translate...</source>
+      <translation>Đang xuất bản dịch...</translation>
     </string>
     <string>
-      <source>Suffix</source>
-      <translation>Hậu tố</translation>
+      <source>Importing translate...</source>
+      <translation>Đang nhập bản dịch...</translation>
     </string>
     <string>
-      <source>Male/Female pair</source>
-      <translation>Cặp nam/nữ</translation>
+      <source>All files</source>
+      <translation>Tất cả tệp</translation>
     </string>
     <string>
-      <source>Male text...</source>
-      <translation>Văn bản nam...</translation>
+      <source>Packages</source>
+      <translation>Package</translation>
     </string>
     <string>
-      <source>Female text...</source>
-      <translation>Văn bản nữ...</translation>
+      <source>STBL files</source>
+      <translation>Tệp STBL</translation>
     </string>
     <string>
-      <source>Insert</source>
-      <translation>Chèn</translation>
+      <source>XML files</source>
+      <translation>Tệp XML</translation>
     </string>
     <string>
-      <source>Copy</source>
-      <translation>Sao chép</translation>
+      <source>JSON files</source>
+      <translation>Tệp JSON</translation>
     </string>
     <string>
-      <source>Names &amp; Pronouns</source>
-      <translation>Tên &amp; đại từ</translation>
+      <source>Binary files</source>
+      <translation>Tệp Binary</translation>
     </string>
     <string>
-      <source>Numbers &amp; Money</source>
-      <translation>Số &amp; tiền</translation>
+      <source>Opening file {}...</source>
+      <translation>Đang mở tệp {}...</translation>
     </string>
     <string>
-      <source>Formatting</source>
-      <translation>Định dạng</translation>
+      <source>Opening files...</source>
+      <translation>Đang mở nhiều tệp...</translation>
     </string>
     <string>
-      <source>Sim first name</source>
-      <translation>Tên Sim</translation>
+      <source>Opening file...</source>
+      <translation>Đang mở tệp...</translation>
     </string>
     <string>
-      <source>Sim last name</source>
-      <translation>Họ Sim</translation>
+      <source>Translating...</source>
+      <translation>Đang dịch...</translation>
     </string>
     <string>
-      <source>Sim full name</source>
-      <translation>Họ tên Sim</translation>
-    </string>
-    <string>
-      <source>Subject pronoun</source>
-      <translation>Đại từ chủ ngữ</translation>
-    </string>
-    <string>
-      <source>Object pronoun</source>
-      <translation>Đại từ tân ngữ</translation>
-    </string>
-    <string>
-      <source>Possessive pronoun</source>
-      <translation>Đại từ sở hữu</translation>
-    </string>
-    <string>
-      <source>Number</source>
-      <translation>Số</translation>
-    </string>
-    <string>
-      <source>Money</source>
-      <translation>Tiền</translation>
-    </string>
-    <string>
-      <source>Currency</source>
-      <translation>Tiền tệ</translation>
-    </string>
-    <string>
-      <source>Decimal</source>
-      <translation>Số thập phân</translation>
-    </string>
-    <string>
-      <source>Line break</source>
-      <translation>Xuống dòng</translation>
-    </string>
-    <string>
-      <source>Double line break</source>
-      <translation>Xuống dòng kép</translation>
-    </string>
-    <string>
-      <source>Bold tag pair</source>
-      <translation>Cặp thẻ in đậm</translation>
-    </string>
-    <string>
-      <source>Italic tag pair</source>
-      <translation>Cặp thẻ in nghiêng</translation>
-    </string>
-    <string>
-      <source>He/She</source>
-      <translation>Anh ấy/Cô ấy</translation>
-    </string>
-    <string>
-      <source>Him/Her</source>
-      <translation>Anh ấy/Cô ấy</translation>
-    </string>
-    <string>
-      <source>His/Her</source>
-      <translation>Của anh ấy/của cô ấy</translation>
-    </string>
-    <string>
-      <source>Insert one escaped line break</source>
-      <translation>Chèn một ký hiệu xuống dòng dạng escaped</translation>
-    </string>
-    <string>
-      <source>Insert two escaped line breaks</source>
-      <translation>Chèn hai ký hiệu xuống dòng dạng escaped</translation>
-    </string>
-  </context>
-  <context name="JobDrawer">
-    <string>
-      <source>Jobs</source>
-      <translation>Tác vụ</translation>
-    </string>
-    <string>
-      <source>Hide jobs</source>
-      <translation>Ẩn tác vụ</translation>
-    </string>
-    <string>
-      <source>Show jobs</source>
-      <translation>Hiện tác vụ</translation>
-    </string>
-    <string>
-      <source>Recent jobs</source>
-      <translation>Tác vụ gần đây</translation>
-    </string>
-    <string>
-      <source>Idle</source>
-      <translation>Chờ</translation>
-    </string>
-    <string>
-      <source>Clear</source>
-      <translation>Xóa</translation>
-    </string>
-    <string>
-      <source>No active background jobs.</source>
-      <translation>Không có tác vụ nền đang chạy.</translation>
-    </string>
-    <string>
-      <source>Queued</source>
-      <translation>Đang chờ</translation>
-    </string>
-    <string>
-      <source>Cancel</source>
-      <translation>Hủy</translation>
+      <source>Stopping translate, waiting for the finish of the threads...</source>
+      <translation>Đang dừng dịch, chờ các luồng hoàn tất...</translation>
     </string>
     <string>
       <source>Cancelling...</source>
       <translation>Đang hủy...</translation>
     </string>
     <string>
-      <source>Error</source>
-      <translation>Lỗi</translation>
+      <source>Exported {} file(s), {} string(s)</source>
+      <translation>Đã xuất {} tệp, {} chuỗi</translation>
     </string>
     <string>
-      <source>Cancelled</source>
-      <translation>Đã hủy</translation>
+      <source>Exporting Translation Hub CSV...</source>
+      <translation>Đang xuất CSV của Trung tâm dịch...</translation>
     </string>
     <string>
-      <source>Finished</source>
-      <translation>Hoàn tất</translation>
+      <source>Imported {} translations, unchanged {}, skipped {}, missing {}</source>
+      <translation>Đã nhập {} bản dịch, không thay đổi {}, bị bỏ qua {}, thiếu {}</translation>
     </string>
     <string>
-      <source>Done</source>
-      <translation>Xong</translation>
+      <source>Loaded {} unique strings, skipped {} duplicates</source>
+      <translation>Đã tải {} chuỗi duy nhất, bỏ qua {} chuỗi trùng lặp</translation>
     </string>
     <string>
-      <source>Running</source>
-      <translation>Đang chạy</translation>
-    </string>
-    <string>
-      <source>Started</source>
-      <translation>Bắt đầu</translation>
-    </string>
-    <string>
-      <source>Working</source>
-      <translation>Đang xử lý</translation>
-    </string>
-    <string>
-      <source>Finished: foreground job</source>
-      <translation>Hoàn tất: tác vụ foreground</translation>
-    </string>
-    <string>
-      <source>active background job(s)</source>
-      <translation>tác vụ nền đang chạy</translation>
+      <source>Saved package {}, {} resource(s)</source>
+      <translation>Gói đã lưu {}, {} tài nguyên</translation>
     </string>
   </context>
-  <context name="ExportDialog">
+  <context name="ToolBar">
     <string>
-      <source>Export translate</source>
-      <translation>Xuất bản dịch</translation>
+      <source>-- All files --</source>
+      <translation>-- Tất cả tệp --</translation>
     </string>
     <string>
-      <source>Export</source>
-      <translation>Xuất</translation>
+      <source>Search in translation</source>
+      <translation>Tìm trong bản dịch</translation>
     </string>
     <string>
-      <source>Everything</source>
-      <translation>Tất cả</translation>
+      <source>Search in ID</source>
+      <translation>Tìm trong ID</translation>
     </string>
     <string>
-      <source>Selection only</source>
-      <translation>Chỉ mục đã chọn</translation>
+      <source>Search in original</source>
+      <translation>Tìm trong bản gốc</translation>
     </string>
     <string>
-      <source>Cancel</source>
-      <translation>Hủy</translation>
+      <source>-- All instances --</source>
+      <translation>-- Tất cả instance --</translation>
     </string>
     <string>
-      <source>Everything but untranslated strings</source>
-      <translation>Tất cả trừ chuỗi chưa dịch</translation>
+      <source>Translated</source>
+      <translation>Đã dịch</translation>
     </string>
     <string>
-      <source>Only selected instance</source>
-      <translation>Chỉ instance đã chọn</translation>
+      <source>Not translated</source>
+      <translation>Chưa dịch</translation>
     </string>
     <string>
-      <source>Each instance as a separate file</source>
-      <translation>Mỗi instance thành một tệp riêng</translation>
+      <source>Validated translation</source>
+      <translation>Bản dịch đã duyệt</translation>
     </string>
     <string>
-      <source>Each package as a separate file</source>
-      <translation>Mỗi package thành một tệp riêng</translation>
+      <source>Partial translation</source>
+      <translation>Bản dịch một phần</translation>
     </string>
     <string>
-      <source>Exported records</source>
-      <translation>Bản ghi xuất</translation>
+      <source>Different strings</source>
+      <translation>String khác nhau</translation>
+    </string>
+    <string>
+      <source>Search...</source>
+      <translation>Tìm kiếm...</translation>
     </string>
   </context>
-  <context name="TranslateDialog">
+  <context name="ImportDialog">
     <string>
-      <source>Batch translate</source>
-      <translation>Dịch hàng loạt</translation>
+      <source>Import translate</source>
+      <translation>Nhập bản dịch</translation>
     </string>
     <string>
-      <source>Translate</source>
-      <translation>Dịch</translation>
-    </string>
-    <string>
-      <source>Cancel</source>
-      <translation>Hủy</translation>
-    </string>
-    <string>
-      <source>Log</source>
-      <translation>Nhật ký</translation>
+      <source>Overwrite</source>
+      <translation>Ghi đè</translation>
     </string>
     <string>
       <source>Everything</source>
@@ -1362,6 +1242,40 @@
     <string>
       <source>Selection only</source>
       <translation>Chỉ mục đã chọn</translation>
+    </string>
+    <string>
+      <source>Replace existing translation</source>
+      <translation>Thay bản dịch hiện có</translation>
+    </string>
+    <string>
+      <source>Import</source>
+      <translation>Nhập</translation>
+    </string>
+    <string>
+      <source>Cancel</source>
+      <translation>Hủy</translation>
+    </string>
+    <string>
+      <source>Apply matching translations while keeping validated work protected.</source>
+      <translation>Áp dụng các bản dịch phù hợp trong khi vẫn bảo vệ tác phẩm đã được xác thực.</translation>
+    </string>
+  </context>
+  <context name="TranslateDialog">
+    <string>
+      <source>Translate</source>
+      <translation>Dịch</translation>
+    </string>
+    <string>
+      <source>Cancel</source>
+      <translation>Hủy</translation>
+    </string>
+    <string>
+      <source>Batch translate</source>
+      <translation>Dịch hàng loạt</translation>
+    </string>
+    <string>
+      <source>Log</source>
+      <translation>Nhật ký</translation>
     </string>
     <string>
       <source>Line-by-line translation</source>
@@ -1408,24 +1322,8 @@
       <translation>Tiếp tục với provider AI</translation>
     </string>
     <string>
-      <source>Stopping...</source>
-      <translation>Đang dừng...</translation>
-    </string>
-    <string>
-      <source>Stopping translate, waiting for the finish of the threads...</source>
-      <translation>Đang dừng dịch, chờ các luồng hoàn tất...</translation>
-    </string>
-    <string>
-      <source>Translating...</source>
-      <translation>Đang dịch...</translation>
-    </string>
-    <string>
-      <source>DeepL batch translation</source>
-      <translation>Dịch hàng loạt bằng DeepL</translation>
-    </string>
-    <string>
-      <source>DeepL will translate {records:,} records, about {characters:,} source characters.</source>
-      <translation>DeepL sẽ dịch {records:,} record, khoảng {characters:,} ký tự nguồn.</translation>
+      <source>Continue with DeepL</source>
+      <translation>Tiếp tục với DeepL</translation>
     </string>
     <string>
       <source>Current usage: {used:,} / {limit:,} characters.
@@ -1438,520 +1336,24 @@ Sau batch này: khoảng {after:,} ký tự ({percent:.1f}%).</translation>
       <translation>Đã dùng: {used:,} ký tự.</translation>
     </string>
     <string>
+      <source>DeepL batch translation</source>
+      <translation>Dịch hàng loạt bằng DeepL</translation>
+    </string>
+    <string>
+      <source>DeepL will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation>DeepL sẽ dịch {records:,} record, khoảng {characters:,} ký tự nguồn.</translation>
+    </string>
+    <string>
+      <source>Stopping...</source>
+      <translation>Đang dừng...</translation>
+    </string>
+    <string>
+      <source>Translate the chosen records in the background and keep the workspace responsive.</source>
+      <translation>Dịch các bản ghi đã chọn ở chế độ nền và giữ cho không gian làm việc luôn phản hồi.</translation>
+    </string>
+    <string>
       <source>Usage unavailable: {message}</source>
       <translation>Không lấy được usage: {message}</translation>
-    </string>
-    <string>
-      <source>Continue with DeepL</source>
-      <translation>Tiếp tục với DeepL</translation>
-    </string>
-  </context>
-  <context name="ReleaseValidationDialog">
-    <string>
-      <source>Workspace Warnings</source>
-      <translation>Cảnh báo workspace</translation>
-    </string>
-    <string>
-      <source>Pre-release Validation Report</source>
-      <translation>Báo cáo kiểm tra trước khi phát hành</translation>
-    </string>
-    <string>
-      <source>Review day-to-day workspace issues without starting a save or export.</source>
-      <translation>Rà soát lỗi trong workspace mà không bắt đầu lưu hoặc xuất file.</translation>
-    </string>
-    <string>
-      <source>Review potential blank-text and token issues before writing release files.</source>
-      <translation>Rà soát nguy cơ text trống và lỗi token trước khi ghi file phát hành.</translation>
-    </string>
-    <string>
-      <source>Pre-release validation ({profile}): {critical} critical, {warning} warning, {info} info for {written:,}/{total:,} record(s).</source>
-      <translation>Kiểm tra phát hành ({profile}): {critical} nghiêm trọng, {warning} cảnh báo, {info} thông tin cho {written:,}/{total:,} record.</translation>
-    </string>
-    <string>
-      <source>Severity</source>
-      <translation>Mức độ</translation>
-    </string>
-    <string>
-      <source>Code</source>
-      <translation>Mã</translation>
-    </string>
-    <string>
-      <source>Category</source>
-      <translation>Nhóm</translation>
-    </string>
-    <string>
-      <source>Package</source>
-      <translation>Package</translation>
-    </string>
-    <string>
-      <source>Instance</source>
-      <translation>Instance</translation>
-    </string>
-    <string>
-      <source>String ID</source>
-      <translation>String ID</translation>
-    </string>
-    <string>
-      <source>Status</source>
-      <translation>Trạng thái</translation>
-    </string>
-    <string>
-      <source>Reason</source>
-      <translation>Lý do</translation>
-    </string>
-    <string>
-      <source>Original</source>
-      <translation>Văn bản gốc</translation>
-    </string>
-    <string>
-      <source>Translation</source>
-      <translation>Bản dịch</translation>
-    </string>
-    <string>
-      <source>Critical</source>
-      <translation>Nghiêm trọng</translation>
-    </string>
-    <string>
-      <source>Warning</source>
-      <translation>Cảnh báo</translation>
-    </string>
-    <string>
-      <source>Info</source>
-      <translation>Thông tin</translation>
-    </string>
-    <string>
-      <source>All</source>
-      <translation>Tất cả</translation>
-    </string>
-    <string>
-      <source>Records</source>
-      <translation>Record</translation>
-    </string>
-    <string>
-      <source>Packages</source>
-      <translation>Package</translation>
-    </string>
-    <string>
-      <source>STBL resources</source>
-      <translation>STBL resource</translation>
-    </string>
-    <string>
-      <source>Destination</source>
-      <translation>Ngôn ngữ đích</translation>
-    </string>
-    <string>
-      <source>Preset</source>
-      <translation>Kiểu kiểm tra</translation>
-    </string>
-    <string>
-      <source>Search</source>
-      <translation>Tìm kiếm</translation>
-    </string>
-    <string>
-      <source>Search package, instance, ID, reason, original, or translation...</source>
-      <translation>Tìm package, instance, ID, lý do, văn bản gốc hoặc bản dịch...</translation>
-    </string>
-    <string>
-      <source>Export report</source>
-      <translation>Xuất báo cáo</translation>
-    </string>
-    <string>
-      <source>Copy selected issue</source>
-      <translation>Sao chép lỗi đã chọn</translation>
-    </string>
-    <string>
-      <source>Copy summary</source>
-      <translation>Sao chép tóm tắt</translation>
-    </string>
-    <string>
-      <source>Back to Fix</source>
-      <translation>Quay lại sửa</translation>
-    </string>
-    <string>
-      <source>Continue anyway</source>
-      <translation>Vẫn tiếp tục</translation>
-    </string>
-    <string>
-      <source>Continue</source>
-      <translation>Tiếp tục</translation>
-    </string>
-    <string>
-      <source>Close</source>
-      <translation>Đóng</translation>
-    </string>
-    <string>
-      <source>{shown:,} issue(s) shown from {total:,}.</source>
-      <translation>Đang hiển thị {shown:,}/{total:,} lỗi.</translation>
-    </string>
-    <string>
-      <source>Export Pre-release Validation Report</source>
-      <translation>Xuất báo cáo kiểm tra phát hành</translation>
-    </string>
-    <string>
-      <source>Text report (*.txt)</source>
-      <translation>Báo cáo text (*.txt)</translation>
-    </string>
-    <string>
-      <source>CSV report (*.csv)</source>
-      <translation>Báo cáo CSV (*.csv)</translation>
-    </string>
-  </context>
-  <context name="ValidationSeverity">
-    <string>
-      <source>Critical</source>
-      <translation>Nghiêm trọng</translation>
-    </string>
-    <string>
-      <source>Warning</source>
-      <translation>Cảnh báo</translation>
-    </string>
-    <string>
-      <source>Info</source>
-      <translation>Thông tin</translation>
-    </string>
-    <string>
-      <source>All</source>
-      <translation>Tất cả</translation>
-    </string>
-  </context>
-  <context name="ValidationCategory">
-    <string>
-      <source>Blank risk</source>
-      <translation>Nguy cơ text trống</translation>
-    </string>
-    <string>
-      <source>Token safety</source>
-      <translation>An toàn token</translation>
-    </string>
-    <string>
-      <source>Status</source>
-      <translation>Trạng thái</translation>
-    </string>
-    <string>
-      <source>Duplicate output</source>
-      <translation>Trùng output</translation>
-    </string>
-    <string>
-      <source>Resource</source>
-      <translation>Resource</translation>
-    </string>
-    <string>
-      <source>Source changed</source>
-      <translation>Nguồn đã thay đổi</translation>
-    </string>
-    <string>
-      <source>Summary</source>
-      <translation>Tóm tắt</translation>
-    </string>
-  </context>
-  <context name="ValidationProfile">
-    <string>
-      <source>Soft release</source>
-      <translation>Kiểm tra mềm</translation>
-    </string>
-    <string>
-      <source>Strict release</source>
-      <translation>Kiểm tra nghiêm ngặt</translation>
-    </string>
-  </context>
-  <context name="System">
-    <string>
-      <source>Loading dictionaries...</source>
-      <translation>Đang tải từ điển...</translation>
-    </string>
-    <string>
-      <source>Build dictionaries...</source>
-      <translation>Đang tạo từ điển...</translation>
-    </string>
-    <string>
-      <source>Opening file...</source>
-      <translation>Đang mở tệp...</translation>
-    </string>
-    <string>
-      <source>Opening files...</source>
-      <translation>Đang mở nhiều tệp...</translation>
-    </string>
-    <string>
-      <source>Translating...</source>
-      <translation>Đang dịch...</translation>
-    </string>
-    <string>
-      <source>Saving package {}...</source>
-      <translation>Đang lưu package {}...</translation>
-    </string>
-    <string>
-      <source>Exporting translate...</source>
-      <translation>Đang xuất bản dịch...</translation>
-    </string>
-    <string>
-      <source>Importing translate...</source>
-      <translation>Đang nhập bản dịch...</translation>
-    </string>
-    <string>
-      <source>All files</source>
-      <translation>Tất cả tệp</translation>
-    </string>
-    <string>
-      <source>Packages</source>
-      <translation>Package</translation>
-    </string>
-    <string>
-      <source>STBL files</source>
-      <translation>Tệp STBL</translation>
-    </string>
-    <string>
-      <source>XML files</source>
-      <translation>Tệp XML</translation>
-    </string>
-    <string>
-      <source>JSON files</source>
-      <translation>Tệp JSON</translation>
-    </string>
-    <string>
-      <source>Binary files</source>
-      <translation>Tệp Binary</translation>
-    </string>
-    <string>
-      <source>Opening file {}...</source>
-      <translation>Đang mở tệp {}...</translation>
-    </string>
-    <string>
-      <source>Stopping translate, waiting for the finish of the threads...</source>
-      <translation>Đang dừng dịch, chờ các luồng hoàn tất...</translation>
-    </string>
-  </context>
-  <context name="ToolBar">
-    <string>
-      <source>-- All files --</source>
-      <translation>-- Tất cả tệp --</translation>
-    </string>
-    <string>
-      <source>-- All instances --</source>
-      <translation>-- Tất cả instance --</translation>
-    </string>
-    <string>
-      <source>Search...</source>
-      <translation>Tìm kiếm...</translation>
-    </string>
-    <string>
-      <source>Search in translation</source>
-      <translation>Tìm trong bản dịch</translation>
-    </string>
-    <string>
-      <source>Search in ID</source>
-      <translation>Tìm trong ID</translation>
-    </string>
-    <string>
-      <source>Search in original</source>
-      <translation>Tìm trong bản gốc</translation>
-    </string>
-    <string>
-      <source>Translated</source>
-      <translation>Đã dịch</translation>
-    </string>
-    <string>
-      <source>Not translated</source>
-      <translation>Chưa dịch</translation>
-    </string>
-    <string>
-      <source>Validated translation</source>
-      <translation>Bản dịch đã duyệt</translation>
-    </string>
-    <string>
-      <source>Partial translation</source>
-      <translation>Bản dịch một phần</translation>
-    </string>
-    <string>
-      <source>Different strings</source>
-      <translation>String khác nhau</translation>
-    </string>
-  </context>
-  <context name="MainTableView">
-    <string>
-      <source>ID</source>
-      <translation>ID</translation>
-    </string>
-    <string>
-      <source>Instance</source>
-      <translation>Instance</translation>
-    </string>
-    <string>
-      <source>Group</source>
-      <translation>Group</translation>
-    </string>
-    <string>
-      <source>Original</source>
-      <translation>Văn bản gốc</translation>
-    </string>
-    <string>
-      <source>Translated</source>
-      <translation>Đã dịch</translation>
-    </string>
-    <string>
-      <source>Comment</source>
-      <translation>Ghi chú</translation>
-    </string>
-    <string>
-      <source>Status</source>
-      <translation>Trạng thái</translation>
-    </string>
-    <string>
-      <source>LD</source>
-      <translation>LD</translation>
-    </string>
-  </context>
-  <context name="Messages">
-    <string>
-      <source>Save dictionary for modified packages?</source>
-      <translation>Lưu từ điển cho các package đã chỉnh sửa?</translation>
-    </string>
-    <string>
-      <source>Are you sure you want to delete the selected records?</source>
-      <translation>Bạn có chắc muốn xóa các bản ghi đã chọn?</translation>
-    </string>
-    <string>
-      <source>Not found text records in this file!</source>
-      <translation>Không tìm thấy bản ghi text trong tệp này!</translation>
-    </string>
-    <string>
-      <source>Not found text records in this files!</source>
-      <translation>Không tìm thấy bản ghi text trong các tệp này!</translation>
-    </string>
-    <string>
-      <source>Not found text records in following files:</source>
-      <translation>Không tìm thấy bản ghi text trong các tệp sau:</translation>
-    </string>
-    <string>
-      <source>Translation completed with {} successes.
-
-Errors:
-{}</source>
-      <translation>Dịch xong với {} mục thành công.
-
-Lỗi:
-{}</translation>
-    </string>
-    <string>
-      <source>... and {} other errors</source>
-      <translation>... và {} lỗi khác</translation>
-    </string>
-  </context>
-  <context name="Errors">
-    <string>
-      <source>Language code not found!</source>
-      <translation>Không tìm thấy mã ngôn ngữ!</translation>
-    </string>
-    <string>
-      <source>Translation failed with error code: {}</source>
-      <translation>Dịch thất bại với mã lỗi: {}</translation>
-    </string>
-    <string>
-      <source>Invalid API key.</source>
-      <translation>API key không hợp lệ.</translation>
-    </string>
-    <string>
-      <source>Your quota has exceeded!</source>
-      <translation>Bạn đã vượt quá quota!</translation>
-    </string>
-    <string>
-      <source>There was a temporary problem with the DeepL Service.</source>
-      <translation>DeepL đang gặp sự cố tạm thời.</translation>
-    </string>
-    <string>
-      <source>Ollama base URL is empty.</source>
-      <translation>Base URL của Ollama đang trống.</translation>
-    </string>
-    <string>
-      <source>Ollama base URL or model is empty.</source>
-      <translation>Base URL hoặc model Ollama đang trống.</translation>
-    </string>
-    <string>
-      <source>Ollama is not reachable at {url}. Start Ollama or check the base URL.</source>
-      <translation>Không kết nối được Ollama tại {url}. Hãy mở Ollama hoặc kiểm tra lại base URL.</translation>
-    </string>
-    <string>
-      <source>Ollama model was not found. Run: ollama pull {model}</source>
-      <translation>Không tìm thấy model Ollama. Chạy: ollama pull {model}</translation>
-    </string>
-  </context>
-  <context name="ReplaceDialog">
-    <string>
-      <source>Search and replace</source>
-      <translation>Tìm và thay thế</translation>
-    </string>
-    <string>
-      <source>Case sensitive</source>
-      <translation>Phân biệt hoa thường</translation>
-    </string>
-    <string>
-      <source>Search</source>
-      <translation>Tìm kiếm</translation>
-    </string>
-    <string>
-      <source>Replace</source>
-      <translation>Thay thế</translation>
-    </string>
-    <string>
-      <source>Search and replace in:</source>
-      <translation>Tìm và thay thế trong:</translation>
-    </string>
-    <string>
-      <source>All strings</source>
-      <translation>Tất cả string</translation>
-    </string>
-    <string>
-      <source>Not validated strings</source>
-      <translation>String chưa duyệt</translation>
-    </string>
-    <string>
-      <source>Cancel</source>
-      <translation>Hủy</translation>
-    </string>
-    <string>
-      <source>OK</source>
-      <translation>OK</translation>
-    </string>
-  </context>
-  <context name="ImportDialog">
-    <string>
-      <source>Import translate</source>
-      <translation>Nhập bản dịch</translation>
-    </string>
-    <string>
-      <source>Overwrite</source>
-      <translation>Ghi đè</translation>
-    </string>
-    <string>
-      <source>Everything</source>
-      <translation>Tất cả</translation>
-    </string>
-    <string>
-      <source>Everything but already validated strings</source>
-      <translation>Tất cả trừ string đã duyệt</translation>
-    </string>
-    <string>
-      <source>Everything but already validated and partial strings</source>
-      <translation>Tất cả trừ string đã duyệt và string một phần</translation>
-    </string>
-    <string>
-      <source>Partial strings</source>
-      <translation>String một phần</translation>
-    </string>
-    <string>
-      <source>Selection only</source>
-      <translation>Chỉ mục đã chọn</translation>
-    </string>
-    <string>
-      <source>Replace existing translation</source>
-      <translation>Thay bản dịch hiện có</translation>
-    </string>
-    <string>
-      <source>Import</source>
-      <translation>Nhập</translation>
-    </string>
-    <string>
-      <source>Cancel</source>
-      <translation>Hủy</translation>
     </string>
   </context>
   <context name="TextEditor">
@@ -1978,6 +1380,368 @@ Lỗi:
     <string>
       <source>Select All</source>
       <translation>Chọn tất cả</translation>
+    </string>
+  </context>
+  <context name="JobDrawer">
+    <string>
+      <source>Cancel</source>
+      <translation>Hủy</translation>
+    </string>
+    <string>
+      <source>Cancelled</source>
+      <translation>Đã hủy</translation>
+    </string>
+    <string>
+      <source>Cancelling...</source>
+      <translation>Đang hủy...</translation>
+    </string>
+    <string>
+      <source>Clear</source>
+      <translation>Xóa</translation>
+    </string>
+    <string>
+      <source>Done</source>
+      <translation>Xong</translation>
+    </string>
+    <string>
+      <source>Error</source>
+      <translation>Lỗi</translation>
+    </string>
+    <string>
+      <source>Finished: foreground job</source>
+      <translation>Hoàn tất: tác vụ foreground</translation>
+    </string>
+    <string>
+      <source>Hide jobs</source>
+      <translation>Ẩn tác vụ</translation>
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation>Chờ</translation>
+    </string>
+    <string>
+      <source>Jobs</source>
+      <translation>Tác vụ</translation>
+    </string>
+    <string>
+      <source>No active background jobs.</source>
+      <translation>Không có tác vụ nền đang chạy.</translation>
+    </string>
+    <string>
+      <source>Queued</source>
+      <translation>Đang chờ</translation>
+    </string>
+    <string>
+      <source>Recent jobs</source>
+      <translation>Tác vụ gần đây</translation>
+    </string>
+    <string>
+      <source>Running</source>
+      <translation>Đang chạy</translation>
+    </string>
+    <string>
+      <source>Show jobs</source>
+      <translation>Hiện tác vụ</translation>
+    </string>
+    <string>
+      <source>Started</source>
+      <translation>Bắt đầu</translation>
+    </string>
+    <string>
+      <source>Working</source>
+      <translation>Đang xử lý</translation>
+    </string>
+    <string>
+      <source>active background job(s)</source>
+      <translation>tác vụ nền đang chạy</translation>
+    </string>
+  </context>
+  <context name="TokenAssistant">
+    <string>
+      <source>Category</source>
+      <translation>Nhóm</translation>
+    </string>
+    <string>
+      <source>Copy</source>
+      <translation>Sao chép</translation>
+    </string>
+    <string>
+      <source>Female text...</source>
+      <translation>Văn bản nữ...</translation>
+    </string>
+    <string>
+      <source>Index</source>
+      <translation>Số thứ tự</translation>
+    </string>
+    <string>
+      <source>Insert</source>
+      <translation>Chèn</translation>
+    </string>
+    <string>
+      <source>Male text...</source>
+      <translation>Văn bản nam...</translation>
+    </string>
+    <string>
+      <source>Male/Female pair</source>
+      <translation>Cặp nam/nữ</translation>
+    </string>
+    <string>
+      <source>Suffix</source>
+      <translation>Hậu tố</translation>
+    </string>
+    <string>
+      <source>Token</source>
+      <translation>Token</translation>
+    </string>
+    <string>
+      <source>Token Assistant</source>
+      <translation>Trợ lý token</translation>
+    </string>
+  </context>
+  <context name="TokenValidation">
+    <string>
+      <source>All source tokens are preserved in the translation draft.</source>
+      <translation>Tất cả token gốc đã được giữ trong bản dịch nháp.</translation>
+    </string>
+    <string>
+      <source>Back to Edit</source>
+      <translation>Quay lại chỉnh sửa</translation>
+    </string>
+    <string>
+      <source>Continue and Approve</source>
+      <translation>Tiếp tục và phê duyệt</translation>
+    </string>
+    <string>
+      <source>Continue and Mark Needs Review</source>
+      <translation>Tiếp tục và đánh dấu cần xem lại</translation>
+    </string>
+    <string>
+      <source>Continue only if these token differences are intentional.</source>
+      <translation>Chỉ tiếp tục nếu các khác biệt token này là chủ ý.</translation>
+    </string>
+    <string>
+      <source>Extra</source>
+      <translation>Thừa</translation>
+    </string>
+    <string>
+      <source>Line breaks differ</source>
+      <translation>Khác số lần xuống dòng</translation>
+    </string>
+    <string>
+      <source>Line-break count differs</source>
+      <translation>Số lần xuống dòng khác nhau</translation>
+    </string>
+    <string>
+      <source>Missing</source>
+      <translation>Thiếu</translation>
+    </string>
+    <string>
+      <source>OK</source>
+      <translation>OK</translation>
+    </string>
+    <string>
+      <source>Order differs</source>
+      <translation>Khác thứ tự</translation>
+    </string>
+    <string>
+      <source>Suggested outcome: Approved.</source>
+      <translation>Gợi ý trạng thái: Đã phê duyệt.</translation>
+    </string>
+    <string>
+      <source>Suggested outcome: Needs Review until the token differences are intentional.</source>
+      <translation>Gợi ý trạng thái: Cần xem lại cho đến khi chắc chắn khác biệt token là chủ ý.</translation>
+    </string>
+    <string>
+      <source>Token check:</source>
+      <translation>Kiểm tra token:</translation>
+    </string>
+    <string>
+      <source>Token differences can break in-game placeholders or formatting.</source>
+      <translation>Khác biệt token có thể làm hỏng placeholder hoặc định dạng trong game.</translation>
+    </string>
+    <string>
+      <source>Token order differs</source>
+      <translation>Thứ tự token khác nhau</translation>
+    </string>
+    <string>
+      <source>{outcome} with token warnings</source>
+      <translation>{outcome} có cảnh báo token</translation>
+    </string>
+  </context>
+  <context name="ReleaseValidationDialog">
+    <string>
+      <source>All</source>
+      <translation>Tất cả</translation>
+    </string>
+    <string>
+      <source>Back to Fix</source>
+      <translation>Quay lại sửa</translation>
+    </string>
+    <string>
+      <source>CSV report (*.csv)</source>
+      <translation>Báo cáo CSV (*.csv)</translation>
+    </string>
+    <string>
+      <source>Category</source>
+      <translation>Nhóm</translation>
+    </string>
+    <string>
+      <source>Close</source>
+      <translation>Đóng</translation>
+    </string>
+    <string>
+      <source>Continue</source>
+      <translation>Tiếp tục</translation>
+    </string>
+    <string>
+      <source>Continue anyway</source>
+      <translation>Vẫn tiếp tục</translation>
+    </string>
+    <string>
+      <source>Copy selected issue</source>
+      <translation>Sao chép lỗi đã chọn</translation>
+    </string>
+    <string>
+      <source>Copy summary</source>
+      <translation>Sao chép tóm tắt</translation>
+    </string>
+    <string>
+      <source>Export Pre-release Validation Report</source>
+      <translation>Xuất báo cáo kiểm tra phát hành</translation>
+    </string>
+    <string>
+      <source>Export report</source>
+      <translation>Xuất báo cáo</translation>
+    </string>
+    <string>
+      <source>Pre-release Validation Report</source>
+      <translation>Báo cáo kiểm tra trước khi phát hành</translation>
+    </string>
+    <string>
+      <source>Pre-release validation ({profile}): {critical} critical, {warning} warning, {info} info for {written:,}/{total:,} record(s).</source>
+      <translation>Kiểm tra phát hành ({profile}): {critical} nghiêm trọng, {warning} cảnh báo, {info} thông tin cho {written:,}/{total:,} record.</translation>
+    </string>
+    <string>
+      <source>Review day-to-day workspace issues without starting a save or export.</source>
+      <translation>Rà soát lỗi trong workspace mà không bắt đầu lưu hoặc xuất file.</translation>
+    </string>
+    <string>
+      <source>Review potential blank-text and token issues before writing release files.</source>
+      <translation>Rà soát nguy cơ text trống và lỗi token trước khi ghi file phát hành.</translation>
+    </string>
+    <string>
+      <source>Search</source>
+      <translation>Tìm kiếm</translation>
+    </string>
+    <string>
+      <source>Search package, instance, ID, reason, original, or translation...</source>
+      <translation>Tìm package, instance, ID, lý do, văn bản gốc hoặc bản dịch...</translation>
+    </string>
+    <string>
+      <source>Text report (*.txt)</source>
+      <translation>Báo cáo text (*.txt)</translation>
+    </string>
+    <string>
+      <source>Workspace Warnings</source>
+      <translation>Cảnh báo workspace</translation>
+    </string>
+    <string>
+      <source>{shown:,} issue(s) shown from {total:,}.</source>
+      <translation>Đang hiển thị {shown:,}/{total:,} lỗi.</translation>
+    </string>
+    <string>
+      <source>Code</source>
+      <translation>Mã</translation>
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation>Instance</translation>
+    </string>
+    <string>
+      <source>Original</source>
+      <translation>Văn bản gốc</translation>
+    </string>
+    <string>
+      <source>Package</source>
+      <translation>Package</translation>
+    </string>
+    <string>
+      <source>Reason</source>
+      <translation>Lý do</translation>
+    </string>
+    <string>
+      <source>Severity</source>
+      <translation>Mức độ</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Trạng thái</translation>
+    </string>
+    <string>
+      <source>String ID</source>
+      <translation>String ID</translation>
+    </string>
+    <string>
+      <source>Translation</source>
+      <translation>Bản dịch</translation>
+    </string>
+  </context>
+  <context name="ValidationCategory">
+    <string>
+      <source>Blank risk</source>
+      <translation>Nguy cơ text trống</translation>
+    </string>
+    <string>
+      <source>Duplicate output</source>
+      <translation>Trùng output</translation>
+    </string>
+    <string>
+      <source>Length / layout risk</source>
+      <translation>Rủi ro về chiều dài/bố cục</translation>
+    </string>
+    <string>
+      <source>Resource</source>
+      <translation>Resource</translation>
+    </string>
+    <string>
+      <source>Source changed</source>
+      <translation>Nguồn đã thay đổi</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Trạng thái</translation>
+    </string>
+    <string>
+      <source>Summary</source>
+      <translation>Tóm tắt</translation>
+    </string>
+    <string>
+      <source>Token safety</source>
+      <translation>An toàn token</translation>
+    </string>
+  </context>
+  <context name="ValidationProfile">
+    <string>
+      <source>Soft release</source>
+      <translation>Kiểm tra mềm</translation>
+    </string>
+    <string>
+      <source>Strict release</source>
+      <translation>Kiểm tra nghiêm ngặt</translation>
+    </string>
+  </context>
+  <context name="ValidationSeverity">
+    <string>
+      <source>Critical</source>
+      <translation>Nghiêm trọng</translation>
+    </string>
+    <string>
+      <source>Info</source>
+      <translation>Thông tin</translation>
+    </string>
+    <string>
+      <source>Warning</source>
+      <translation>Cảnh báo</translation>
     </string>
   </context>
 </ts>

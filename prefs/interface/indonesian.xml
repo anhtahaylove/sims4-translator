@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ts language="id_ID" name="Indonesia (Indonesian)" version="1.4" authors="wahyudiZulhaidar">
+<?xml version='1.0' encoding='utf-8'?>
+<ts language="id_ID" name="Indonesia (Indonesian)" version="2.2.11" authors="wahyudiZulhaidar">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -45,6 +45,58 @@
       <source>Comment...</source>
       <translation>Komentar...</translation>
     </string>
+    <string>
+      <source>Approve (Ctrl+Enter)</source>
+      <translation>Setujui (Ctrl+Enter)</translation>
+    </string>
+    <string>
+      <source>Dictionary suggestions</source>
+      <translation>Saran kamus</translation>
+    </string>
+    <string>
+      <source>Draft</source>
+      <translation>Draf</translation>
+    </string>
+    <string>
+      <source>Needs Review</source>
+      <translation>Perlu Peninjauan</translation>
+    </string>
+    <string>
+      <source>Original</source>
+      <translation>Asli</translation>
+    </string>
+    <string>
+      <source>Review token safety, refine the draft, then approve it or mark it for review.</source>
+      <translation>Tinjau keamanan token, perbaiki drafnya, lalu setujui atau tandai untuk ditinjau.</translation>
+    </string>
+    <string>
+      <source>Selected suggestion</source>
+      <translation>Saran yang dipilih</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Status</translation>
+    </string>
+    <string>
+      <source>Suggestions</source>
+      <translation>Saran</translation>
+    </string>
+    <string>
+      <source>Tokens</source>
+      <translation>Token</translation>
+    </string>
+    <string>
+      <source>Translation Studio</source>
+      <translation>Studio Terjemahan</translation>
+    </string>
+    <string>
+      <source>Translation draft</source>
+      <translation>Draf terjemahan</translation>
+    </string>
+    <string>
+      <source>chars</source>
+      <translation>karakter</translation>
+    </string>
   </context>
   <context name="ExportDialog">
     <string>
@@ -87,6 +139,10 @@
       <source>Selection only</source>
       <translation>Hanya pilihan</translation>
     </string>
+    <string>
+      <source>Choose which records to write, then continue in the background.</source>
+      <translation>Pilih rekaman mana yang akan ditulis, lalu lanjutkan di latar belakang.</translation>
+    </string>
   </context>
   <context name="MainTableView">
     <string>
@@ -112,6 +168,14 @@
     <string>
       <source>Comment</source>
       <translation>Komentar</translation>
+    </string>
+    <string>
+      <source>ID</source>
+      <translation>tanda pengenal</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Status</translation>
     </string>
   </context>
   <context name="MainWindow">
@@ -311,6 +375,190 @@
       <source>Color visualization</source>
       <translation>Visualisasi warna</translation>
     </string>
+    <string>
+      <source>Open package -&gt; Translate -&gt; Validate Release -&gt; Save as package</source>
+      <translation>Buka paket -&gt; Terjemahkan -&gt; Validasi Rilis -&gt; Simpan sebagai paket</translation>
+    </string>
+    <string>
+      <source>Open package</source>
+      <translation>Buka paket</translation>
+    </string>
+    <string>
+      <source>Activity Dock</source>
+      <translation>Dermaga Aktivitas</translation>
+    </string>
+    <string>
+      <source>Advanced</source>
+      <translation>Lanjutan</translation>
+    </string>
+    <string>
+      <source>Approve</source>
+      <translation>Menyetujui</translation>
+    </string>
+    <string>
+      <source>Approve all translations</source>
+      <translation>Setujui semua terjemahan</translation>
+    </string>
+    <string>
+      <source>Clear filters</source>
+      <translation>Hapus filter</translation>
+    </string>
+    <string>
+      <source>Dictionary</source>
+      <translation>Kamus</translation>
+    </string>
+    <string>
+      <source>Export</source>
+      <translation>Ekspor</translation>
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation>Menganggur</translation>
+    </string>
+    <string>
+      <source>Import</source>
+      <translation>Impor</translation>
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation>Contoh</translation>
+    </string>
+    <string>
+      <source>Mark as needs review</source>
+      <translation>Tandai sebagai perlu ditinjau</translation>
+    </string>
+    <string>
+      <source>Mode</source>
+      <translation>Modus</translation>
+    </string>
+    <string>
+      <source>No package loaded</source>
+      <translation>Tidak ada paket yang dimuat</translation>
+    </string>
+    <string>
+      <source>No string selected</source>
+      <translation>Tidak ada string yang dipilih</translation>
+    </string>
+    <string>
+      <source>Open</source>
+      <translation>Buka</translation>
+    </string>
+    <string>
+      <source>Open Editor</source>
+      <translation>Buka Penyunting</translation>
+    </string>
+    <string>
+      <source>Package</source>
+      <translation>Paket</translation>
+    </string>
+    <string>
+      <source>Release QA</source>
+      <translation>Rilis QA</translation>
+    </string>
+    <string>
+      <source>Reset</source>
+      <translation>Setel ulang</translation>
+    </string>
+    <string>
+      <source>Save translated strings to dictionary for reuse</source>
+      <translation>Simpan string yang diterjemahkan ke kamus untuk digunakan kembali</translation>
+    </string>
+    <string>
+      <source>Scope</source>
+      <translation>Ruang lingkup</translation>
+    </string>
+    <string>
+      <source>Search</source>
+      <translation>Cari</translation>
+    </string>
+    <string>
+      <source>Search ID, Original, or Translation...</source>
+      <translation>Pencarian ID, Asli, atau Terjemahan...</translation>
+    </string>
+    <string>
+      <source>Search ID, original and translation</source>
+      <translation>ID Pencarian, asli dan terjemahan</translation>
+    </string>
+    <string>
+      <source>Search ID, original text, and translation text at the same time.</source>
+      <translation>ID Pencarian, teks asli, dan teks terjemahan secara bersamaan.</translation>
+    </string>
+    <string>
+      <source>Select a string to preview full text.</source>
+      <translation>Pilih string untuk melihat pratinjau teks lengkap.</translation>
+    </string>
+    <string>
+      <source>Selected string</source>
+      <translation>Tali yang dipilih</translation>
+    </string>
+    <string>
+      <source>Show a thin status distribution bar above the table.</source>
+      <translation>Tampilkan bilah distribusi status tipis di atas tabel.</translation>
+    </string>
+    <string>
+      <source>Show advanced search modes</source>
+      <translation>Tampilkan mode pencarian lanjutan</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Status</translation>
+    </string>
+    <string>
+      <source>Status Overview Bar</source>
+      <translation>Bilah Ikhtisar Status</translation>
+    </string>
+    <string>
+      <source>Translation table</source>
+      <translation>Tabel terjemahan</translation>
+    </string>
+    <string>
+      <source>Validate Release</source>
+      <translation>Validasi Rilis</translation>
+    </string>
+    <string>
+      <source>Validate Release...</source>
+      <translation>Validasi Rilis...</translation>
+    </string>
+    <string>
+      <source>Validating release</source>
+      <translation>Memvalidasi rilis</translation>
+    </string>
+    <string>
+      <source>Validation cancelled</source>
+      <translation>Validasi dibatalkan</translation>
+    </string>
+    <string>
+      <source>Validation preset:</source>
+      <translation>Prasetel validasi:</translation>
+    </string>
+    <string>
+      <source>Workspace Warnings...</source>
+      <translation>Peringatan Ruang Kerja...</translation>
+    </string>
+    <string>
+      <source>Workspace stats</source>
+      <translation>Statistik ruang kerja</translation>
+    </string>
+    <string>
+      <source>approved</source>
+      <translation>disetujui</translation>
+    </string>
+    <string>
+      <source>draft</source>
+      <translation>draf</translation>
+    </string>
+    <string>
+      <source>needs review</source>
+      <translation>perlu ditinjau</translation>
+    </string>
+    <string>
+      <source>shown</source>
+      <translation>ditampilkan</translation>
+    </string>
+    <string>
+      <source>untranslated</source>
+      <translation>tidak diterjemahkan</translation>
+    </string>
   </context>
   <context name="Messages">
     <string>
@@ -368,6 +616,26 @@ Kesalahan:
     <string>
       <source>There was a temporary problem with the DeepL Service.</source>
       <translation>Ada masalah sementara dengan Layanan DeepL.</translation>
+    </string>
+    <string>
+      <source>Ollama base URL is empty.</source>
+      <translation>URL dasar Ollama kosong.</translation>
+    </string>
+    <string>
+      <source>Ollama base URL or model is empty.</source>
+      <translation>URL dasar atau model Ollama kosong.</translation>
+    </string>
+    <string>
+      <source>Ollama is not reachable at {url}. Start Ollama or check the base URL.</source>
+      <translation>Ollama tidak dapat dijangkau di {url}. Mulai Ollama atau periksa URL dasarnya.</translation>
+    </string>
+    <string>
+      <source>Ollama model was not found. Run: ollama pull {model}</source>
+      <translation>Model Ollama tidak ditemukan. Jalankan: ollama pull {model}</translation>
+    </string>
+    <string>
+      <source>A maximum of 500 characters is allowed.</source>
+      <translation>Maksimum 500 karakter diperbolehkan.</translation>
     </string>
   </context>
   <context name="OptionsDialog">
@@ -448,12 +716,100 @@ Kesalahan:
       <translation>Umum</translation>
     </string>
     <string>
+      <source>Providers</source>
+      <translation>Penyedia</translation>
+    </string>
+    <string>
       <source>Dictionaries</source>
       <translation>Kamus</translation>
     </string>
     <string>
       <source>DeepL API key</source>
       <translation>Kunci API DeepL</translation>
+    </string>
+    <string>
+      <source>Translation providers</source>
+      <translation>Penyedia terjemahan</translation>
+    </string>
+    <string>
+      <source>OpenAI-compatible</source>
+      <translation>Kompatibel dengan OpenAI</translation>
+    </string>
+    <string>
+      <source>Ollama local</source>
+      <translation>Lokal Ollama</translation>
+    </string>
+    <string>
+      <source>API key</source>
+      <translation>Kunci API</translation>
+    </string>
+    <string>
+      <source>Glossary ID</source>
+      <translation>ID Glosarium</translation>
+    </string>
+    <string>
+      <source>Model</source>
+      <translation>Model</translation>
+    </string>
+    <string>
+      <source>Base URL</source>
+      <translation>URL dasar</translation>
+    </string>
+    <string>
+      <source>Test</source>
+      <translation>Uji</translation>
+    </string>
+    <string>
+      <source>Usage</source>
+      <translation>Penggunaan</translation>
+    </string>
+    <string>
+      <source>Configured and enabled providers appear in Batch Translate and Translation Studio.</source>
+      <translation>Penyedia yang dikonfigurasi dan diaktifkan akan muncul di Batch Translate dan Translation Studio.</translation>
+    </string>
+    <string>
+      <source>Loading models...</source>
+      <translation>Memuat model...</translation>
+    </string>
+    <string>
+      <source>Loaded {count} models.</source>
+      <translation>Model {count} telah dimuat.</translation>
+    </string>
+    <string>
+      <source>API key OK, choose a model.</source>
+      <translation>Kunci API OK, pilih model.</translation>
+    </string>
+    <string>
+      <source>Model list is unavailable; typed model was kept.</source>
+      <translation>Daftar model tidak tersedia; model yang diketik tetap digunakan.</translation>
+    </string>
+    <string>
+      <source>Click Test to validate the API key and load available models. You can also type a custom model name.</source>
+      <translation>Klik Uji untuk memvalidasi kunci API dan memuat model yang tersedia. Anda juga dapat mengetik nama model khusus.</translation>
+    </string>
+    <string>
+      <source>Choose a local model from the dropdown, or type a custom Ollama model name.</source>
+      <translation>Pilih model lokal dari daftar tarik-turun, atau ketik nama model Ollama khusus.</translation>
+    </string>
+    <string>
+      <source>Test the API key and load available models.</source>
+      <translation>Uji kunci API dan muat model yang tersedia.</translation>
+    </string>
+    <string>
+      <source>Checking {provider}...</source>
+      <translation>Memeriksa {provider}...</translation>
+    </string>
+    <string>
+      <source>Checking DeepL...</source>
+      <translation>Memeriksa DeepL...</translation>
+    </string>
+    <string>
+      <source>Ollama is ready and enabled.</source>
+      <translation>Ollama sudah siap dan aktif.</translation>
+    </string>
+    <string>
+      <source>Ollama is ready but disabled. Enable it to show Ollama in translation lists.</source>
+      <translation>Ollama sudah siap tetapi tidak aktif. Aktifkan untuk menampilkan Ollama dalam daftar terjemahan.</translation>
     </string>
     <string>
       <source>Language</source>
@@ -478,6 +834,210 @@ Kesalahan:
     <string>
       <source>The translation version differs from the application version, so the interface may not be fully translated</source>
       <translation>Versi terjemahan berbeda dari versi aplikasi, sehingga antarmuka mungkin tidak sepenuhnya diterjemahkan</translation>
+    </string>
+    <string>
+      <source>Test Gemini</source>
+      <translation>Uji Coba Gemini</translation>
+    </string>
+    <string>
+      <source>Test OpenAI-compatible</source>
+      <translation>Uji Coba OpenAI-kompatibel</translation>
+    </string>
+    <string>
+      <source>Enable Ollama local provider</source>
+      <translation>Aktifkan penyedia lokal Ollama</translation>
+    </string>
+    <string>
+      <source>Refresh Ollama models</source>
+      <translation>Perbarui model Ollama</translation>
+    </string>
+    <string>
+      <source>Test Ollama</source>
+      <translation>Uji Coba Ollama</translation>
+    </string>
+    <string>
+      <source>Download Ollama</source>
+      <translation>Unduh Ollama</translation>
+    </string>
+    <string>
+      <source>Download recommended model</source>
+      <translation>Unduh model yang direkomendasikan</translation>
+    </string>
+    <string>
+      <source>Cancel model download</source>
+      <translation>Batalkan pengunduhan model</translation>
+    </string>
+    <string>
+      <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini, OpenAI-compatible, and Ollama providers use a safety prompt that asks the model to preserve Sims tokens and line count. Options can detect local Ollama models and download the recommended translategemma:12b model after confirmation. Do not share or commit your API key.</source>
+      <translation>Konfigurasikan penyedia terjemahan opsional, lalu pilih salah satu di Pencarian dan Edit atau terjemahan massal. DeepL mendukung pemeriksaan penggunaan dan ID glosarium. Penyedia Gemini, OpenAI-kompatibel, dan Ollama menggunakan prompt keamanan yang meminta model untuk mempertahankan token Sims dan jumlah baris. Opsi dapat mendeteksi model Ollama lokal dan mengunduh model translategemma:12b yang direkomendasikan setelah konfirmasi. Jangan bagikan atau masukkan kunci API Anda.</translation>
+    </string>
+    <string>
+      <source>Checking Ollama setup...</source>
+      <translation>Memeriksa pengaturan Ollama...</translation>
+    </string>
+    <string>
+      <source>Opened the official Ollama download page. Install Ollama, start it, then refresh models.</source>
+      <translation>Membuka halaman unduhan resmi Ollama. Instal Ollama, jalankan, lalu perbarui model.</translation>
+    </string>
+    <string>
+      <source>Recommended model download is not available until Ollama is installed and running.</source>
+      <translation>Pengunduhan model yang direkomendasikan tidak tersedia sampai Ollama terinstal dan berjalan.</translation>
+    </string>
+    <string>
+      <source>Downloading Ollama model...</source>
+      <translation>Mengunduh model Ollama...</translation>
+    </string>
+    <string>
+      <source>Cancelling Ollama model download...</source>
+      <translation>Membatalkan pengunduhan model Ollama...</translation>
+    </string>
+    <string>
+      <source>Download recommended Ollama model</source>
+      <translation>Unduh model Ollama yang direkomendasikan</translation>
+    </string>
+    <string>
+      <source>Download {model} for local translation?</source>
+      <translation>Unduh {model} untuk terjemahan lokal?</translation>
+    </string>
+    <string>
+      <source>This model is about {size}. It needs internet access and disk space, and Ollama stores it outside this app.</source>
+      <translation>Model ini berukuran sekitar {size}. Model ini membutuhkan akses internet dan ruang disk, dan Ollama menyimpannya di luar aplikasi ini.</translation>
+    </string>
+    <string>
+      <source>Download model</source>
+      <translation>Unduh model</translation>
+    </string>
+    <string>
+      <source>Ollama was not found on this computer. Download Ollama to use local models.</source>
+      <translation>Ollama tidak ditemukan di komputer ini. Unduh Ollama untuk menggunakan model lokal.</translation>
+    </string>
+    <string>
+      <source>Ollama server is reachable, but the local executable was not found. You can use the server, but this app cannot download models automatically.</source>
+      <translation>Server Ollama dapat dijangkau, tetapi executable lokal tidak ditemukan. Anda dapat menggunakan server, tetapi aplikasi ini tidak dapat mengunduh model secara otomatis.</translation>
+    </string>
+    <string>
+      <source>Ollama is installed but the server is not reachable. Start Ollama, then refresh models.</source>
+      <translation>Ollama sudah terinstal, tetapi server tidak dapat dijangkau. Jalankan Ollama, lalu perbarui model.</translation>
+    </string>
+    <string>
+      <source>Ollama is installed, but the recommended model is missing. Download translategemma:12b here or choose another local model.</source>
+      <translation>Ollama sudah terinstal, tetapi model yang direkomendasikan hilang. Unduh translategemma:12b di sini atau pilih model lokal lainnya.</translation>
+    </string>
+    <string>
+      <source>Ollama is ready. Recommended model is installed.</source>
+      <translation>Ollama sudah siap. Model yang direkomendasikan sudah terpasang.</translation>
+    </string>
+    <string>
+      <source>Ollama executable was not found. Download and start Ollama first.</source>
+      <translation>File eksekusi Ollama tidak ditemukan. Unduh dan jalankan Ollama terlebih dahulu.</translation>
+    </string>
+    <string>
+      <source>Starting Ollama model download...</source>
+      <translation>Memulai pengunduhan model Ollama...</translation>
+    </string>
+    <string>
+      <source>Ollama model download was cancelled.</source>
+      <translation>Pengunduhan model Ollama dibatalkan.</translation>
+    </string>
+    <string>
+      <source>Downloading {model}: {percent}%</source>
+      <translation>Mengunduh {model}: {percent}%</translation>
+    </string>
+    <string>
+      <source>Downloaded {model}.</source>
+      <translation>Selesai mengunduh {model}.</translation>
+    </string>
+    <string>
+      <source>Ollama model download failed with exit code {code}.</source>
+      <translation>Pengunduhan model Ollama gagal dengan kode keluar {code}.</translation>
+    </string>
+    <string>
+      <source>Translation cache</source>
+      <translation>Cache terjemahan</translation>
+    </string>
+    <string>
+      <source>Reuse exact translation matches</source>
+      <translation>Gunakan kembali hasil terjemahan yang persis sama.</translation>
+    </string>
+    <string>
+      <source>Stores successful translations by source/destination language, engine, glossary or model, and source text hash. API keys are never stored in the cache.</source>
+      <translation>Menyimpan terjemahan yang berhasil berdasarkan bahasa sumber/tujuan, mesin, glosarium atau model, dan hash teks sumber. Kunci API tidak pernah disimpan dalam cache.</translation>
+    </string>
+    <string>
+      <source>Clear translation cache</source>
+      <translation>Hapus cache terjemahan</translation>
+    </string>
+    <string>
+      <source>Cache contains {entries:,} entry/entries, {size:,} bytes.</source>
+      <translation>Cache berisi {entries:,} entri, {size:,} byte.</translation>
+    </string>
+    <string>
+      <source>All packs</source>
+      <translation>Semua paket</translation>
+    </string>
+    <string>
+      <source>Browse...</source>
+      <translation>Jelajahi...</translation>
+    </string>
+    <string>
+      <source>Create backup before Finalize</source>
+      <translation>Buat cadangan sebelum Finalisasi</translation>
+    </string>
+    <string>
+      <source>Creates separate hashed STBL resources instead of touching the original STBL resources. Use only when testing conflict avoidance with a package copy.</source>
+      <translation>Membuat sumber daya STBL yang di-hash terpisah alih-alih menyentuh sumber daya STBL asli. Gunakan hanya saat menguji penghindaran konflik dengan salinan paket.</translation>
+    </string>
+    <string>
+      <source>Filter packs...</source>
+      <translation>Paket filter...</translation>
+    </string>
+    <string>
+      <source>Free packs</source>
+      <translation>Paket gratis</translation>
+    </string>
+    <string>
+      <source>Kits</source>
+      <translation>perlengkapan</translation>
+    </string>
+    <string>
+      <source>No packs match the current filter. Clear the search field to see the full catalog.</source>
+      <translation>Tidak ada paket yang cocok dengan filter saat ini. Kosongkan kolom pencarian untuk melihat katalog lengkap.</translation>
+    </string>
+    <string>
+      <source>Only use exact dictionary matches</source>
+      <translation>Hanya gunakan kamus yang sama persis</translation>
+    </string>
+    <string>
+      <source>Pack Manager</source>
+      <translation>Manajer Paket</translation>
+    </string>
+    <string>
+      <source>Recommended. When Finalize writes over a source package, keep a .package.backup copy first.</source>
+      <translation>Direkomendasikan. Saat Finalize menulis paket sumber, simpan salinan .package.backup terlebih dahulu.</translation>
+    </string>
+    <string>
+      <source>Safety defaults</source>
+      <translation>Default keamanan</translation>
+    </string>
+    <string>
+      <source>Select the folder that contains Data, EP, GP, SP, and FP folders from your The Sims 4 installation.</source>
+      <translation>Pilih folder yang berisi folder Data, EP, GP, SP, dan FP dari instalasi The Sims 4 Anda.</translation>
+    </string>
+    <string>
+      <source>These choices are saved automatically. For Vietnamese release work, keep backups on, leave conflict-free mode off unless testing a copy, and review context-sensitive dictionary matches.</source>
+      <translation>Pilihan ini disimpan secara otomatis. Untuk pekerjaan rilis bahasa Vietnam, tetap aktifkan pencadangan, matikan mode bebas konflik kecuali menguji salinannya, dan tinjau kecocokan kamus peka konteks.</translation>
+    </string>
+    <string>
+      <source>Use conflict-free save mode (experimental)</source>
+      <translation>Gunakan mode simpan bebas konflik (eksperimental)</translation>
+    </string>
+    <string>
+      <source>When enabled, dictionary auto-fill is stricter and avoids fallback matches from the same source text. Leave disabled to reuse more dictionary translations, then review context-sensitive strings manually.</source>
+      <translation>Jika diaktifkan, pengisian otomatis kamus akan lebih ketat dan menghindari pencocokan cadangan dari teks sumber yang sama. Biarkan dinonaktifkan untuk menggunakan kembali lebih banyak terjemahan kamus, lalu tinjau string peka konteks secara manual.</translation>
+    </string>
+    <string>
+      <source>by {}</source>
+      <translation>oleh {}</translation>
     </string>
   </context>
   <context name="ReplaceDialog">
@@ -583,6 +1143,30 @@ Kesalahan:
       <source>Stopping translate, waiting for the finish of the threads...</source>
       <translation>Menghentikan terjemahan, menunggu selesainya thread...</translation>
     </string>
+    <string>
+      <source>Cancelling...</source>
+      <translation>Membatalkan...</translation>
+    </string>
+    <string>
+      <source>Exported {} file(s), {} string(s)</source>
+      <translation>Mengekspor {} file, {} string</translation>
+    </string>
+    <string>
+      <source>Exporting Translation Hub CSV...</source>
+      <translation>Mengekspor CSV Hub Terjemahan...</translation>
+    </string>
+    <string>
+      <source>Imported {} translations, unchanged {}, skipped {}, missing {}</source>
+      <translation>Terjemahan {} yang diimpor, {} tidak diubah, {} dilewati, {} hilang</translation>
+    </string>
+    <string>
+      <source>Loaded {} unique strings, skipped {} duplicates</source>
+      <translation>Memuat {} string unik, melewatkan {} duplikat</translation>
+    </string>
+    <string>
+      <source>Saved package {}, {} resource(s)</source>
+      <translation>Paket tersimpan {}, {} sumber daya</translation>
+    </string>
   </context>
   <context name="ToolBar">
     <string>
@@ -671,6 +1255,10 @@ Kesalahan:
       <source>Cancel</source>
       <translation>Batal</translation>
     </string>
+    <string>
+      <source>Apply matching translations while keeping validated work protected.</source>
+      <translation>Terapkan terjemahan yang cocok sambil menjaga pekerjaan yang divalidasi tetap terlindungi.</translation>
+    </string>
   </context>
   <context name="TranslateDialog">
     <string>
@@ -713,6 +1301,60 @@ Kesalahan:
       <source>Stop translate</source>
       <translation>Hentikan terjemahan</translation>
     </string>
+    <string>
+      <source>Translation cache: {hits:,} reused, {misses:,} to translate.</source>
+      <translation>Cache terjemahan: {hits:,} digunakan kembali, {misses:,} untuk diterjemahkan.</translation>
+    </string>
+    <string>
+      <source>AI batch translation</source>
+      <translation>Terjemahan batch AI</translation>
+    </string>
+    <string>
+      <source>{engine} will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation>{engine} akan menerjemahkan {records:,} rekaman, sekitar {characters:,} karakter sumber.</translation>
+    </string>
+    <string>
+      <source>Review provider pricing and quota before continuing.</source>
+      <translation>Periksa harga dan kuota penyedia sebelum melanjutkan.</translation>
+    </string>
+    <string>
+      <source>Continue with AI provider</source>
+      <translation>Lanjutkan dengan penyedia AI</translation>
+    </string>
+    <string>
+      <source>Continue with DeepL</source>
+      <translation>Lanjutkan dengan DeepL</translation>
+    </string>
+    <string>
+      <source>Current usage: {used:,} / {limit:,} characters.
+After this batch: about {after:,} characters ({percent:.1f}%).</source>
+      <translation>Penggunaan saat ini: {used:,} / {limit:,} karakter.
+Setelah batch ini: sekitar {after:,} karakter ({percent:.1f}%).</translation>
+    </string>
+    <string>
+      <source>Current usage: {used:,} characters.</source>
+      <translation>Penggunaan saat ini: {used:,} karakter.</translation>
+    </string>
+    <string>
+      <source>DeepL batch translation</source>
+      <translation>Terjemahan batch DeepL</translation>
+    </string>
+    <string>
+      <source>DeepL will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation>DeepL akan menerjemahkan {records:,} catatan, tentang {characters:,} karakter sumber.</translation>
+    </string>
+    <string>
+      <source>Stopping...</source>
+      <translation>Berhenti...</translation>
+    </string>
+    <string>
+      <source>Translate the chosen records in the background and keep the workspace responsive.</source>
+      <translation>Terjemahkan rekaman yang dipilih di latar belakang dan jaga agar ruang kerja tetap responsif.</translation>
+    </string>
+    <string>
+      <source>Usage unavailable: {message}</source>
+      <translation>Penggunaan tidak tersedia: {message}</translation>
+    </string>
   </context>
   <context name="TextEditor">
     <string>
@@ -738,6 +1380,368 @@ Kesalahan:
     <string>
       <source>Select All</source>
       <translation>Pilih Semua</translation>
+    </string>
+  </context>
+  <context name="JobDrawer">
+    <string>
+      <source>Cancel</source>
+      <translation>Batalkan</translation>
+    </string>
+    <string>
+      <source>Cancelled</source>
+      <translation>Dibatalkan</translation>
+    </string>
+    <string>
+      <source>Cancelling...</source>
+      <translation>Membatalkan...</translation>
+    </string>
+    <string>
+      <source>Clear</source>
+      <translation>Jelas</translation>
+    </string>
+    <string>
+      <source>Done</source>
+      <translation>Selesai</translation>
+    </string>
+    <string>
+      <source>Error</source>
+      <translation>Kesalahan</translation>
+    </string>
+    <string>
+      <source>Finished: foreground job</source>
+      <translation>Selesai: pekerjaan latar depan</translation>
+    </string>
+    <string>
+      <source>Hide jobs</source>
+      <translation>Sembunyikan pekerjaan</translation>
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation>Menganggur</translation>
+    </string>
+    <string>
+      <source>Jobs</source>
+      <translation>Pekerjaan</translation>
+    </string>
+    <string>
+      <source>No active background jobs.</source>
+      <translation>Tidak ada pekerjaan latar belakang yang aktif.</translation>
+    </string>
+    <string>
+      <source>Queued</source>
+      <translation>Mengantri</translation>
+    </string>
+    <string>
+      <source>Recent jobs</source>
+      <translation>Pekerjaan terkini</translation>
+    </string>
+    <string>
+      <source>Running</source>
+      <translation>Berlari</translation>
+    </string>
+    <string>
+      <source>Show jobs</source>
+      <translation>Tunjukkan pekerjaan</translation>
+    </string>
+    <string>
+      <source>Started</source>
+      <translation>Dimulai</translation>
+    </string>
+    <string>
+      <source>Working</source>
+      <translation>Bekerja</translation>
+    </string>
+    <string>
+      <source>active background job(s)</source>
+      <translation>pekerjaan latar belakang aktif</translation>
+    </string>
+  </context>
+  <context name="TokenAssistant">
+    <string>
+      <source>Category</source>
+      <translation>Kategori</translation>
+    </string>
+    <string>
+      <source>Copy</source>
+      <translation>Salin</translation>
+    </string>
+    <string>
+      <source>Female text...</source>
+      <translation>Teks wanita...</translation>
+    </string>
+    <string>
+      <source>Index</source>
+      <translation>Indeks</translation>
+    </string>
+    <string>
+      <source>Insert</source>
+      <translation>Sisipkan</translation>
+    </string>
+    <string>
+      <source>Male text...</source>
+      <translation>Teks pria...</translation>
+    </string>
+    <string>
+      <source>Male/Female pair</source>
+      <translation>Pasangan Pria/Wanita</translation>
+    </string>
+    <string>
+      <source>Suffix</source>
+      <translation>Akhiran</translation>
+    </string>
+    <string>
+      <source>Token</source>
+      <translation>Tanda</translation>
+    </string>
+    <string>
+      <source>Token Assistant</source>
+      <translation>Asisten Token</translation>
+    </string>
+  </context>
+  <context name="TokenValidation">
+    <string>
+      <source>All source tokens are preserved in the translation draft.</source>
+      <translation>Semua token sumber disimpan dalam draf terjemahan.</translation>
+    </string>
+    <string>
+      <source>Back to Edit</source>
+      <translation>Kembali ke Sunting</translation>
+    </string>
+    <string>
+      <source>Continue and Approve</source>
+      <translation>Lanjutkan dan Setujui</translation>
+    </string>
+    <string>
+      <source>Continue and Mark Needs Review</source>
+      <translation>Lanjutkan dan Tandai Perlu Tinjauan</translation>
+    </string>
+    <string>
+      <source>Continue only if these token differences are intentional.</source>
+      <translation>Lanjutkan hanya jika perbedaan token ini disengaja.</translation>
+    </string>
+    <string>
+      <source>Extra</source>
+      <translation>Ekstra</translation>
+    </string>
+    <string>
+      <source>Line breaks differ</source>
+      <translation>Jeda baris berbeda</translation>
+    </string>
+    <string>
+      <source>Line-break count differs</source>
+      <translation>Jumlah jeda baris berbeda-beda</translation>
+    </string>
+    <string>
+      <source>Missing</source>
+      <translation>Hilang</translation>
+    </string>
+    <string>
+      <source>OK</source>
+      <translation>Oke</translation>
+    </string>
+    <string>
+      <source>Order differs</source>
+      <translation>Urutannya berbeda</translation>
+    </string>
+    <string>
+      <source>Suggested outcome: Approved.</source>
+      <translation>Hasil yang disarankan: Disetujui.</translation>
+    </string>
+    <string>
+      <source>Suggested outcome: Needs Review until the token differences are intentional.</source>
+      <translation>Hasil yang disarankan: Perlu Tinjauan hingga perbedaan token memang disengaja.</translation>
+    </string>
+    <string>
+      <source>Token check:</source>
+      <translation>Pemeriksaan token:</translation>
+    </string>
+    <string>
+      <source>Token differences can break in-game placeholders or formatting.</source>
+      <translation>Perbedaan token dapat merusak placeholder atau pemformatan dalam game.</translation>
+    </string>
+    <string>
+      <source>Token order differs</source>
+      <translation>Urutan token berbeda</translation>
+    </string>
+    <string>
+      <source>{outcome} with token warnings</source>
+      <translation>{outcome} dengan peringatan token</translation>
+    </string>
+  </context>
+  <context name="ReleaseValidationDialog">
+    <string>
+      <source>All</source>
+      <translation>Semua</translation>
+    </string>
+    <string>
+      <source>Back to Fix</source>
+      <translation>Kembali ke Memperbaiki</translation>
+    </string>
+    <string>
+      <source>CSV report (*.csv)</source>
+      <translation>Laporan CSV (*.csv)</translation>
+    </string>
+    <string>
+      <source>Category</source>
+      <translation>Kategori</translation>
+    </string>
+    <string>
+      <source>Close</source>
+      <translation>Tutup</translation>
+    </string>
+    <string>
+      <source>Continue</source>
+      <translation>Lanjutkan</translation>
+    </string>
+    <string>
+      <source>Continue anyway</source>
+      <translation>Lanjutkan saja</translation>
+    </string>
+    <string>
+      <source>Copy selected issue</source>
+      <translation>Salin masalah yang dipilih</translation>
+    </string>
+    <string>
+      <source>Copy summary</source>
+      <translation>Salin ringkasan</translation>
+    </string>
+    <string>
+      <source>Export Pre-release Validation Report</source>
+      <translation>Ekspor Laporan Validasi Pra-rilis</translation>
+    </string>
+    <string>
+      <source>Export report</source>
+      <translation>Ekspor laporan</translation>
+    </string>
+    <string>
+      <source>Pre-release Validation Report</source>
+      <translation>Laporan Validasi Pra-rilis</translation>
+    </string>
+    <string>
+      <source>Pre-release validation ({profile}): {critical} critical, {warning} warning, {info} info for {written:,}/{total:,} record(s).</source>
+      <translation>Validasi pra-rilis ({profile}): {critical} kritis, {warning} peringatan, {info} info untuk {written:,}/{total:,} catatan.</translation>
+    </string>
+    <string>
+      <source>Review day-to-day workspace issues without starting a save or export.</source>
+      <translation>Tinjau masalah ruang kerja sehari-hari tanpa memulai penyimpanan atau ekspor.</translation>
+    </string>
+    <string>
+      <source>Review potential blank-text and token issues before writing release files.</source>
+      <translation>Tinjau potensi masalah teks kosong dan token sebelum menulis file rilis.</translation>
+    </string>
+    <string>
+      <source>Search</source>
+      <translation>Cari</translation>
+    </string>
+    <string>
+      <source>Search package, instance, ID, reason, original, or translation...</source>
+      <translation>Cari paket, contoh, ID, alasan, asli, atau terjemahan...</translation>
+    </string>
+    <string>
+      <source>Text report (*.txt)</source>
+      <translation>Laporan teks (*.txt)</translation>
+    </string>
+    <string>
+      <source>Workspace Warnings</source>
+      <translation>Peringatan Ruang Kerja</translation>
+    </string>
+    <string>
+      <source>{shown:,} issue(s) shown from {total:,}.</source>
+      <translation>{shown:,} terbitan ditampilkan dari {total:,}.</translation>
+    </string>
+    <string>
+      <source>Code</source>
+      <translation>Kode</translation>
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation>Contoh</translation>
+    </string>
+    <string>
+      <source>Original</source>
+      <translation>Asli</translation>
+    </string>
+    <string>
+      <source>Package</source>
+      <translation>Paket</translation>
+    </string>
+    <string>
+      <source>Reason</source>
+      <translation>Alasan</translation>
+    </string>
+    <string>
+      <source>Severity</source>
+      <translation>Keparahan</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Status</translation>
+    </string>
+    <string>
+      <source>String ID</source>
+      <translation>ID tali</translation>
+    </string>
+    <string>
+      <source>Translation</source>
+      <translation>Terjemahan</translation>
+    </string>
+  </context>
+  <context name="ValidationCategory">
+    <string>
+      <source>Blank risk</source>
+      <translation>Risiko kosong</translation>
+    </string>
+    <string>
+      <source>Duplicate output</source>
+      <translation>Keluaran duplikat</translation>
+    </string>
+    <string>
+      <source>Length / layout risk</source>
+      <translation>Risiko panjang / tata letak</translation>
+    </string>
+    <string>
+      <source>Resource</source>
+      <translation>Sumber daya</translation>
+    </string>
+    <string>
+      <source>Source changed</source>
+      <translation>Sumber berubah</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Status</translation>
+    </string>
+    <string>
+      <source>Summary</source>
+      <translation>Ringkasan</translation>
+    </string>
+    <string>
+      <source>Token safety</source>
+      <translation>Keamanan tanda</translation>
+    </string>
+  </context>
+  <context name="ValidationProfile">
+    <string>
+      <source>Soft release</source>
+      <translation>Rilis lembut</translation>
+    </string>
+    <string>
+      <source>Strict release</source>
+      <translation>Rilis yang ketat</translation>
+    </string>
+  </context>
+  <context name="ValidationSeverity">
+    <string>
+      <source>Critical</source>
+      <translation>Kritis</translation>
+    </string>
+    <string>
+      <source>Info</source>
+      <translation>Informasi</translation>
+    </string>
+    <string>
+      <source>Warning</source>
+      <translation>Peringatan</translation>
     </string>
   </context>
 </ts>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="pt_BR" name="Português (Brasil)" version="1.4" authors="luana67">
+<ts language="pt_BR" name="Português (Brasil)" version="2.2.11" authors="luana67">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -45,6 +45,58 @@
       <source>Comment...</source>
       <translation>Comentário...</translation>
     </string>
+    <string>
+      <source>Approve (Ctrl+Enter)</source>
+      <translation>Aprovar (Ctrl+Enter)</translation>
+    </string>
+    <string>
+      <source>Dictionary suggestions</source>
+      <translation>Sugestões de dicionário</translation>
+    </string>
+    <string>
+      <source>Draft</source>
+      <translation>Rascunho</translation>
+    </string>
+    <string>
+      <source>Needs Review</source>
+      <translation>Revisão de necessidades</translation>
+    </string>
+    <string>
+      <source>Original</source>
+      <translation>Originais</translation>
+    </string>
+    <string>
+      <source>Review token safety, refine the draft, then approve it or mark it for review.</source>
+      <translation>Revise a segurança do token, refine o rascunho e aprove-o ou marque-o para revisão.</translation>
+    </string>
+    <string>
+      <source>Selected suggestion</source>
+      <translation>Sugestão selecionada</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Estado</translation>
+    </string>
+    <string>
+      <source>Suggestions</source>
+      <translation>Sugestões</translation>
+    </string>
+    <string>
+      <source>Tokens</source>
+      <translation>Fichas</translation>
+    </string>
+    <string>
+      <source>Translation Studio</source>
+      <translation>Estúdio de Tradução</translation>
+    </string>
+    <string>
+      <source>Translation draft</source>
+      <translation>Rascunho de tradução</translation>
+    </string>
+    <string>
+      <source>chars</source>
+      <translation>caracteres</translation>
+    </string>
   </context>
   <context name="ExportDialog">
     <string>
@@ -87,6 +139,10 @@
       <source>Selection only</source>
       <translation>Somente seleção</translation>
     </string>
+    <string>
+      <source>Choose which records to write, then continue in the background.</source>
+      <translation>Escolha quais registros gravar e continue em segundo plano.</translation>
+    </string>
   </context>
   <context name="MainTableView">
     <string>
@@ -113,6 +169,14 @@
       <source>Comment</source>
       <translation>Comentário</translation>
     </string>
+    <string>
+      <source>ID</source>
+      <translation>ID</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Estado</translation>
+    </string>
   </context>
   <context name="MainWindow">
     <string>
@@ -133,7 +197,7 @@
     </string>
     <string>
       <source>Options</source>
-      <translation> Opções</translation>
+      <translation>Opções</translation>
     </string>
     <string>
       <source>Group</source>
@@ -157,8 +221,7 @@
     </string>
     <string>
       <source>Save dictionary</source>
-      <translation>Salvar dicionário
-</translation>
+      <translation>Salvar dicionário</translation>
     </string>
     <string>
       <source>Search and replace...</source>
@@ -170,7 +233,7 @@
     </string>
     <string>
       <source>Reset all translations</source>
-      <translation>Redefinir todas as traduções </translation>
+      <translation>Redefinir todas as traduções</translation>
     </string>
     <string>
       <source>Exit</source>
@@ -217,7 +280,7 @@
       <translation>Para Binário (formato Sims 4 Studio)...</translation>
     </string>
     <string>
-      <source>Usar grupo original</source>
+      <source>Use original group</source>
       <translation>Usar grupo original</translation>
     </string>
     <string>
@@ -293,11 +356,11 @@
       <translation>Do arquivo de origem</translation>
     </string>
     <string>
-      <source>Formato XML</source>
+      <source>XML format</source>
       <translation>Formato XML</translation>
     </string>
     <string>
-      <source>Formato XML (Deaderpool's STBL editor)</source>
+      <source>XML format (Deaderpool's STBL editor)</source>
       <translation>Formato XML (editor STBL do Deaderpool)</translation>
     </string>
     <string>
@@ -312,6 +375,190 @@
       <source>Color visualization</source>
       <translation>Visualização de cores</translation>
     </string>
+    <string>
+      <source>Open package -&gt; Translate -&gt; Validate Release -&gt; Save as package</source>
+      <translation>Abrir pacote -&gt; Traduzir -&gt; Validar lançamento -&gt; Salvar como pacote</translation>
+    </string>
+    <string>
+      <source>Open package</source>
+      <translation>Abrir pacote</translation>
+    </string>
+    <string>
+      <source>Activity Dock</source>
+      <translation>Doca de atividades</translation>
+    </string>
+    <string>
+      <source>Advanced</source>
+      <translation>Avançado</translation>
+    </string>
+    <string>
+      <source>Approve</source>
+      <translation>Aprovar</translation>
+    </string>
+    <string>
+      <source>Approve all translations</source>
+      <translation>Aprovar todas as traduções</translation>
+    </string>
+    <string>
+      <source>Clear filters</source>
+      <translation>Limpar filtros</translation>
+    </string>
+    <string>
+      <source>Dictionary</source>
+      <translation>Dicionário</translation>
+    </string>
+    <string>
+      <source>Export</source>
+      <translation>Exportar</translation>
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation>Inativo</translation>
+    </string>
+    <string>
+      <source>Import</source>
+      <translation>Importar</translation>
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation>Instância</translation>
+    </string>
+    <string>
+      <source>Mark as needs review</source>
+      <translation>Marcar como precisa de revisão</translation>
+    </string>
+    <string>
+      <source>Mode</source>
+      <translation>Modo</translation>
+    </string>
+    <string>
+      <source>No package loaded</source>
+      <translation>Nenhum pacote carregado</translation>
+    </string>
+    <string>
+      <source>No string selected</source>
+      <translation>Nenhuma string selecionada</translation>
+    </string>
+    <string>
+      <source>Open</source>
+      <translation>Abrir</translation>
+    </string>
+    <string>
+      <source>Open Editor</source>
+      <translation>Abrir Editor</translation>
+    </string>
+    <string>
+      <source>Package</source>
+      <translation>Pacote</translation>
+    </string>
+    <string>
+      <source>Release QA</source>
+      <translation>Liberar controle de qualidade</translation>
+    </string>
+    <string>
+      <source>Reset</source>
+      <translation>Redefinir</translation>
+    </string>
+    <string>
+      <source>Save translated strings to dictionary for reuse</source>
+      <translation>Salve as strings traduzidas no dicionário para reutilização</translation>
+    </string>
+    <string>
+      <source>Scope</source>
+      <translation>Escopo</translation>
+    </string>
+    <string>
+      <source>Search</source>
+      <translation>Pesquisar</translation>
+    </string>
+    <string>
+      <source>Search ID, Original, or Translation...</source>
+      <translation>ID de pesquisa, original ou tradução...</translation>
+    </string>
+    <string>
+      <source>Search ID, original and translation</source>
+      <translation>ID de pesquisa, original e tradução</translation>
+    </string>
+    <string>
+      <source>Search ID, original text, and translation text at the same time.</source>
+      <translation>Pesquise ID, texto original e texto de tradução ao mesmo tempo.</translation>
+    </string>
+    <string>
+      <source>Select a string to preview full text.</source>
+      <translation>Selecione uma string para visualizar o texto completo.</translation>
+    </string>
+    <string>
+      <source>Selected string</source>
+      <translation>Sequência selecionada</translation>
+    </string>
+    <string>
+      <source>Show a thin status distribution bar above the table.</source>
+      <translation>Mostre uma barra fina de distribuição de status acima da tabela.</translation>
+    </string>
+    <string>
+      <source>Show advanced search modes</source>
+      <translation>Mostrar modos de pesquisa avançada</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Estado</translation>
+    </string>
+    <string>
+      <source>Status Overview Bar</source>
+      <translation>Barra de visão geral de status</translation>
+    </string>
+    <string>
+      <source>Translation table</source>
+      <translation>Tabela de tradução</translation>
+    </string>
+    <string>
+      <source>Validate Release</source>
+      <translation>Validar lançamento</translation>
+    </string>
+    <string>
+      <source>Validate Release...</source>
+      <translation>Validar lançamento...</translation>
+    </string>
+    <string>
+      <source>Validating release</source>
+      <translation>Validando a versão</translation>
+    </string>
+    <string>
+      <source>Validation cancelled</source>
+      <translation>Validação cancelada</translation>
+    </string>
+    <string>
+      <source>Validation preset:</source>
+      <translation>Predefinição de validação:</translation>
+    </string>
+    <string>
+      <source>Workspace Warnings...</source>
+      <translation>Avisos do espaço de trabalho...</translation>
+    </string>
+    <string>
+      <source>Workspace stats</source>
+      <translation>Estatísticas do espaço de trabalho</translation>
+    </string>
+    <string>
+      <source>approved</source>
+      <translation>aprovado</translation>
+    </string>
+    <string>
+      <source>draft</source>
+      <translation>rascunho</translation>
+    </string>
+    <string>
+      <source>needs review</source>
+      <translation>precisa de revisão</translation>
+    </string>
+    <string>
+      <source>shown</source>
+      <translation>mostrado</translation>
+    </string>
+    <string>
+      <source>untranslated</source>
+      <translation>não traduzido</translation>
+    </string>
   </context>
   <context name="Messages">
     <string>
@@ -324,7 +571,7 @@
     </string>
     <string>
       <source>Not found text records in this file!</source>
-      <translation>>Não foram encontrados registros de texto neste arquivo</translation>
+      <translation>&gt;Não foram encontrados registros de texto neste arquivo</translation>
     </string>
     <string>
       <source>Not found text records in this files!</source>
@@ -335,8 +582,14 @@
       <translation>Não foram encontrados registros de texto nos seguintes arquivos:</translation>
     </string>
     <string>
-      <source>Translation completed with {} successes Errors{}</source>
-      <translation>Tradução concluída com {} sucessos. Erros: {}</translation>
+      <source>Translation completed with {} successes.
+
+Errors:
+{}</source>
+      <translation>Tradução concluída com {} sucessos.
+
+Erros:
+{}</translation>
     </string>
     <string>
       <source>... and {} other errors</source>
@@ -363,6 +616,26 @@
     <string>
       <source>There was a temporary problem with the DeepL Service.</source>
       <translation>Houve um problema temporário com o Deep Service.</translation>
+    </string>
+    <string>
+      <source>Ollama base URL is empty.</source>
+      <translation>URL base do Ollama está vazio.</translation>
+    </string>
+    <string>
+      <source>Ollama base URL or model is empty.</source>
+      <translation>URL base ou modelo do Ollama está vazio.</translation>
+    </string>
+    <string>
+      <source>Ollama is not reachable at {url}. Start Ollama or check the base URL.</source>
+      <translation>Ollama não está acessível em {url}. Inicie o Ollama ou verifique o URL base.</translation>
+    </string>
+    <string>
+      <source>Ollama model was not found. Run: ollama pull {model}</source>
+      <translation>Modelo do Ollama não encontrado. Execute: ollama pull {model}</translation>
+    </string>
+    <string>
+      <source>A maximum of 500 characters is allowed.</source>
+      <translation>É permitido um máximo de 500 caracteres.</translation>
     </string>
   </context>
   <context name="OptionsDialog">
@@ -408,7 +681,7 @@
     </string>
     <string>
       <source>Source</source>
-      <translation>Fonte </translation>
+      <translation>Fonte</translation>
     </string>
     <string>
       <source>Destination</source>
@@ -443,12 +716,100 @@
       <translation>Em geral</translation>
     </string>
     <string>
+      <source>Providers</source>
+      <translation>Provedores</translation>
+    </string>
+    <string>
       <source>Dictionaries</source>
-      <translation>Dicionários</translation>                                                                                                                                             Dicionários  translation>
+      <translation>Dicionários</translation>
     </string>
     <string>
       <source>DeepL API key</source>
       <translation>Chave de API DeepL</translation>
+    </string>
+    <string>
+      <source>Translation providers</source>
+      <translation>Provedores de tradução</translation>
+    </string>
+    <string>
+      <source>OpenAI-compatible</source>
+      <translation>Compatível com OpenAI</translation>
+    </string>
+    <string>
+      <source>Ollama local</source>
+      <translation>Ollama local</translation>
+    </string>
+    <string>
+      <source>API key</source>
+      <translation>Chave da API</translation>
+    </string>
+    <string>
+      <source>Glossary ID</source>
+      <translation>ID do glossário</translation>
+    </string>
+    <string>
+      <source>Model</source>
+      <translation>Modelo</translation>
+    </string>
+    <string>
+      <source>Base URL</source>
+      <translation>URL base</translation>
+    </string>
+    <string>
+      <source>Test</source>
+      <translation>Testar</translation>
+    </string>
+    <string>
+      <source>Usage</source>
+      <translation>Uso</translation>
+    </string>
+    <string>
+      <source>Configured and enabled providers appear in Batch Translate and Translation Studio.</source>
+      <translation>Provedores configurados e habilitados aparecem em Tradução em Lote e Estúdio de Tradução.</translation>
+    </string>
+    <string>
+      <source>Loading models...</source>
+      <translation>Carregando modelos...</translation>
+    </string>
+    <string>
+      <source>Loaded {count} models.</source>
+      <translation>Modelos carregados: {count}.</translation>
+    </string>
+    <string>
+      <source>API key OK, choose a model.</source>
+      <translation>Chave da API OK, escolha um modelo.</translation>
+    </string>
+    <string>
+      <source>Model list is unavailable; typed model was kept.</source>
+      <translation>Lista de modelos indisponível; o modelo digitado foi mantido.</translation>
+    </string>
+    <string>
+      <source>Click Test to validate the API key and load available models. You can also type a custom model name.</source>
+      <translation>Clique em "Testar" para validar a chave da API e carregar os modelos disponíveis. Você também pode digitar um nome de modelo personalizado.</translation>
+    </string>
+    <string>
+      <source>Choose a local model from the dropdown, or type a custom Ollama model name.</source>
+      <translation>Escolha um modelo local no menu suspenso ou digite um nome de modelo Ollama personalizado.</translation>
+    </string>
+    <string>
+      <source>Test the API key and load available models.</source>
+      <translation>Teste a chave da API e carregue os modelos disponíveis.</translation>
+    </string>
+    <string>
+      <source>Checking {provider}...</source>
+      <translation>Verificando {provider}...</translation>
+    </string>
+    <string>
+      <source>Checking DeepL...</source>
+      <translation>Verificando DeepL...</translation>
+    </string>
+    <string>
+      <source>Ollama is ready and enabled.</source>
+      <translation>Ollama está pronto e habilitado.</translation>
+    </string>
+    <string>
+      <source>Ollama is ready but disabled. Enable it to show Ollama in translation lists.</source>
+      <translation>Ollama está pronto, mas desabilitado. Habilite-o para mostrar o Ollama nas listas de tradução.</translation>
     </string>
     <string>
       <source>Language</source>
@@ -473,6 +834,210 @@
     <string>
       <source>The translation version differs from the application version, so the interface may not be fully translated</source>
       <translation>A versão traduzida difere da versão do aplicativo, portanto a interface pode não estar totalmente traduzida</translation>
+    </string>
+    <string>
+      <source>Test Gemini</source>
+      <translation>Testar Gemini</translation>
+    </string>
+    <string>
+      <source>Test OpenAI-compatible</source>
+      <translation>Testar OpenAI-compatível</translation>
+    </string>
+    <string>
+      <source>Enable Ollama local provider</source>
+      <translation>Habilitar provedor local Ollama</translation>
+    </string>
+    <string>
+      <source>Refresh Ollama models</source>
+      <translation>Atualizar modelos Ollama</translation>
+    </string>
+    <string>
+      <source>Test Ollama</source>
+      <translation>Testar Ollama</translation>
+    </string>
+    <string>
+      <source>Download Ollama</source>
+      <translation>Baixar Ollama</translation>
+    </string>
+    <string>
+      <source>Download recommended model</source>
+      <translation>Baixar modelo recomendado</translation>
+    </string>
+    <string>
+      <source>Cancel model download</source>
+      <translation>Cancelar download do modelo</translation>
+    </string>
+    <string>
+      <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini, OpenAI-compatible, and Ollama providers use a safety prompt that asks the model to preserve Sims tokens and line count. Options can detect local Ollama models and download the recommended translategemma:12b model after confirmation. Do not share or commit your API key.</source>
+      <translation>Configure provedores de tradução opcionais e, em seguida, escolha um na pesquisa e edição ou na tradução em lote. O DeepL suporta verificações de uso e ID de glossário. Os provedores Gemini, OpenAI-compatível e Ollama usam um prompt de segurança que solicita ao modelo que preserve os tokens e a contagem de linhas do Sims. As opções podem detectar modelos Ollama locais e baixar o modelo translategemma:12b recomendado após a confirmação. Não compartilhe nem envie sua chave da API.</translation>
+    </string>
+    <string>
+      <source>Checking Ollama setup...</source>
+      <translation>Verificando a configuração do Ollama...</translation>
+    </string>
+    <string>
+      <source>Opened the official Ollama download page. Install Ollama, start it, then refresh models.</source>
+      <translation>Abriu a página de download oficial do Ollama. Instale o Ollama, inicie-o e, em seguida, atualize os modelos.</translation>
+    </string>
+    <string>
+      <source>Recommended model download is not available until Ollama is installed and running.</source>
+      <translation>O download do modelo recomendado não está disponível até que o Ollama seja instalado e esteja em execução.</translation>
+    </string>
+    <string>
+      <source>Downloading Ollama model...</source>
+      <translation>Baixando modelo do Ollama...</translation>
+    </string>
+    <string>
+      <source>Cancelling Ollama model download...</source>
+      <translation>Cancelando o download do modelo do Ollama...</translation>
+    </string>
+    <string>
+      <source>Download recommended Ollama model</source>
+      <translation>Baixar modelo Ollama recomendado</translation>
+    </string>
+    <string>
+      <source>Download {model} for local translation?</source>
+      <translation>Baixar {model} para tradução local?</translation>
+    </string>
+    <string>
+      <source>This model is about {size}. It needs internet access and disk space, and Ollama stores it outside this app.</source>
+      <translation>Este modelo tem aproximadamente {size}. Ele precisa de acesso à internet e espaço em disco, e o Ollama o armazena fora deste aplicativo.</translation>
+    </string>
+    <string>
+      <source>Download model</source>
+      <translation>Baixar modelo</translation>
+    </string>
+    <string>
+      <source>Ollama was not found on this computer. Download Ollama to use local models.</source>
+      <translation>Ollama não foi encontrado neste computador. Baixe o Ollama para usar modelos locais.</translation>
+    </string>
+    <string>
+      <source>Ollama server is reachable, but the local executable was not found. You can use the server, but this app cannot download models automatically.</source>
+      <translation>O servidor Ollama está acessível, mas o executável local não foi encontrado. Você pode usar o servidor, mas este aplicativo não pode baixar modelos automaticamente.</translation>
+    </string>
+    <string>
+      <source>Ollama is installed but the server is not reachable. Start Ollama, then refresh models.</source>
+      <translation>Ollama está instalado, mas o servidor não está acessível. Inicie o Ollama e, em seguida, atualize os modelos.</translation>
+    </string>
+    <string>
+      <source>Ollama is installed, but the recommended model is missing. Download translategemma:12b here or choose another local model.</source>
+      <translation>Ollama está instalado, mas o modelo recomendado está faltando. Baixe o translategemma:12b aqui ou escolha outro modelo local.</translation>
+    </string>
+    <string>
+      <source>Ollama is ready. Recommended model is installed.</source>
+      <translation>Ollama está pronto. Modelo recomendado instalado.</translation>
+    </string>
+    <string>
+      <source>Ollama executable was not found. Download and start Ollama first.</source>
+      <translation>O executável do Ollama não foi encontrado. Baixe e inicie o Ollama primeiro.</translation>
+    </string>
+    <string>
+      <source>Starting Ollama model download...</source>
+      <translation>Iniciando o download do modelo Ollama...</translation>
+    </string>
+    <string>
+      <source>Ollama model download was cancelled.</source>
+      <translation>O download do modelo Ollama foi cancelado.</translation>
+    </string>
+    <string>
+      <source>Downloading {model}: {percent}%</source>
+      <translation>Baixando {model}: {percent}%</translation>
+    </string>
+    <string>
+      <source>Downloaded {model}.</source>
+      <translation>Baixado {model}.</translation>
+    </string>
+    <string>
+      <source>Ollama model download failed with exit code {code}.</source>
+      <translation>O download do modelo Ollama falhou com o código de saída {code}.</translation>
+    </string>
+    <string>
+      <source>Translation cache</source>
+      <translation>Cache de tradução</translation>
+    </string>
+    <string>
+      <source>Reuse exact translation matches</source>
+      <translation>Reutilizar correspondências de tradução exatas</translation>
+    </string>
+    <string>
+      <source>Stores successful translations by source/destination language, engine, glossary or model, and source text hash. API keys are never stored in the cache.</source>
+      <translation>Armazena traduções bem-sucedidas por idioma de origem/destino, mecanismo, glossário ou modelo e hash do texto de origem. As chaves da API nunca são armazenadas no cache.</translation>
+    </string>
+    <string>
+      <source>Clear translation cache</source>
+      <translation>Limpar cache de tradução</translation>
+    </string>
+    <string>
+      <source>Cache contains {entries:,} entry/entries, {size:,} bytes.</source>
+      <translation>O cache contém {entries:,} entrada(s), {size:,} bytes.</translation>
+    </string>
+    <string>
+      <source>All packs</source>
+      <translation>Todos os pacotes</translation>
+    </string>
+    <string>
+      <source>Browse...</source>
+      <translation>Navegar...</translation>
+    </string>
+    <string>
+      <source>Create backup before Finalize</source>
+      <translation>Crie backup antes de finalizar</translation>
+    </string>
+    <string>
+      <source>Creates separate hashed STBL resources instead of touching the original STBL resources. Use only when testing conflict avoidance with a package copy.</source>
+      <translation>Cria recursos STBL com hash separados em vez de tocar nos recursos STBL originais. Use somente ao testar a prevenção de conflitos com uma cópia do pacote.</translation>
+    </string>
+    <string>
+      <source>Filter packs...</source>
+      <translation>Pacotes de filtros...</translation>
+    </string>
+    <string>
+      <source>Free packs</source>
+      <translation>Pacotes grátis</translation>
+    </string>
+    <string>
+      <source>Kits</source>
+      <translation>Conjuntos</translation>
+    </string>
+    <string>
+      <source>No packs match the current filter. Clear the search field to see the full catalog.</source>
+      <translation>Nenhum pacote corresponde ao filtro atual. Limpe o campo de pesquisa para ver o catálogo completo.</translation>
+    </string>
+    <string>
+      <source>Only use exact dictionary matches</source>
+      <translation>Use apenas correspondências exatas do dicionário</translation>
+    </string>
+    <string>
+      <source>Pack Manager</source>
+      <translation>Gerenciador de pacotes</translation>
+    </string>
+    <string>
+      <source>Recommended. When Finalize writes over a source package, keep a .package.backup copy first.</source>
+      <translation>Recomendado. Quando Finalize escreve sobre um pacote fonte, mantenha uma cópia .package.backup primeiro.</translation>
+    </string>
+    <string>
+      <source>Safety defaults</source>
+      <translation>Padrões de segurança</translation>
+    </string>
+    <string>
+      <source>Select the folder that contains Data, EP, GP, SP, and FP folders from your The Sims 4 installation.</source>
+      <translation>Selecione a pasta que contém as pastas Data, EP, GP, SP e FP da instalação do The Sims 4.</translation>
+    </string>
+    <string>
+      <source>These choices are saved automatically. For Vietnamese release work, keep backups on, leave conflict-free mode off unless testing a copy, and review context-sensitive dictionary matches.</source>
+      <translation>Essas escolhas são salvas automaticamente. Para trabalhos de lançamento vietnamita, mantenha os backups ativados, deixe o modo livre de conflitos desativado, a menos que esteja testando uma cópia, e revise as correspondências do dicionário sensíveis ao contexto.</translation>
+    </string>
+    <string>
+      <source>Use conflict-free save mode (experimental)</source>
+      <translation>Use o modo de salvamento sem conflitos (experimental)</translation>
+    </string>
+    <string>
+      <source>When enabled, dictionary auto-fill is stricter and avoids fallback matches from the same source text. Leave disabled to reuse more dictionary translations, then review context-sensitive strings manually.</source>
+      <translation>Quando ativado, o preenchimento automático do dicionário é mais rigoroso e evita correspondências alternativas do mesmo texto de origem. Deixe desativado para reutilizar mais traduções de dicionário e, em seguida, revise manualmente as strings sensíveis ao contexto.</translation>
+    </string>
+    <string>
+      <source>by {}</source>
+      <translation>por {}</translation>
     </string>
   </context>
   <context name="ReplaceDialog">
@@ -563,7 +1128,7 @@
       <translation>Abrindo arquivo{}...</translation>
     </string>
     <string>
-      <source>Abrindo arquivos...</source>
+      <source>Opening files...</source>
       <translation>Abrindo arquivos...</translation>
     </string>
     <string>
@@ -577,6 +1142,30 @@
     <string>
       <source>Stopping translate, waiting for the finish of the threads...</source>
       <translation>Parando a tradução, aguardando o término dos tópicos...</translation>
+    </string>
+    <string>
+      <source>Cancelling...</source>
+      <translation>Cancelando...</translation>
+    </string>
+    <string>
+      <source>Exported {} file(s), {} string(s)</source>
+      <translation>Arquivo(s) {} exportados, string(s) {}</translation>
+    </string>
+    <string>
+      <source>Exporting Translation Hub CSV...</source>
+      <translation>Exportando CSV do Hub de Tradução...</translation>
+    </string>
+    <string>
+      <source>Imported {} translations, unchanged {}, skipped {}, missing {}</source>
+      <translation>Traduções {} importadas, {} inalterada, {} ignorada, {} ausente</translation>
+    </string>
+    <string>
+      <source>Loaded {} unique strings, skipped {} duplicates</source>
+      <translation>Carregadas {} strings exclusivas, ignoradas {} duplicatas</translation>
+    </string>
+    <string>
+      <source>Saved package {}, {} resource(s)</source>
+      <translation>Pacote salvo {}, {} recurso(s)</translation>
     </string>
   </context>
   <context name="ToolBar">
@@ -666,6 +1255,10 @@
       <source>Cancel</source>
       <translation>Cancelar</translation>
     </string>
+    <string>
+      <source>Apply matching translations while keeping validated work protected.</source>
+      <translation>Aplique traduções correspondentes enquanto mantém o trabalho validado protegido.</translation>
+    </string>
   </context>
   <context name="TranslateDialog">
     <string>
@@ -708,6 +1301,60 @@
       <source>Stop translate</source>
       <translation>Parar de traduzir</translation>
     </string>
+    <string>
+      <source>Translation cache: {hits:,} reused, {misses:,} to translate.</source>
+      <translation>Cache de tradução: {hits:,} reutilizados, {misses:,} para traduzir.</translation>
+    </string>
+    <string>
+      <source>AI batch translation</source>
+      <translation>Tradução em lote por IA</translation>
+    </string>
+    <string>
+      <source>{engine} will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation>{engine} traduzirá {records:,} registros, aproximadamente {characters:,} caracteres de origem.</translation>
+    </string>
+    <string>
+      <source>Review provider pricing and quota before continuing.</source>
+      <translation>Revise os preços e a cota do provedor antes de continuar.</translation>
+    </string>
+    <string>
+      <source>Continue with AI provider</source>
+      <translation>Continuar com o provedor de IA</translation>
+    </string>
+    <string>
+      <source>Continue with DeepL</source>
+      <translation>Continuar com DeepL</translation>
+    </string>
+    <string>
+      <source>Current usage: {used:,} / {limit:,} characters.
+After this batch: about {after:,} characters ({percent:.1f}%).</source>
+      <translation>Uso atual: {used:,} / {limit:,} caracteres.
+Após este lote: cerca de {after:,} caracteres ({percent:.1f}%).</translation>
+    </string>
+    <string>
+      <source>Current usage: {used:,} characters.</source>
+      <translation>Uso atual: {used:,} caracteres.</translation>
+    </string>
+    <string>
+      <source>DeepL batch translation</source>
+      <translation>Tradução em lote do DeepL</translation>
+    </string>
+    <string>
+      <source>DeepL will translate {records:,} records, about {characters:,} source characters.</source>
+      <translation>O DeepL traduzirá os registros {records:,}, sobre os caracteres de origem {characters:,}.</translation>
+    </string>
+    <string>
+      <source>Stopping...</source>
+      <translation>Parando...</translation>
+    </string>
+    <string>
+      <source>Translate the chosen records in the background and keep the workspace responsive.</source>
+      <translation>Traduza os registros escolhidos em segundo plano e mantenha o espaço de trabalho responsivo.</translation>
+    </string>
+    <string>
+      <source>Usage unavailable: {message}</source>
+      <translation>Uso indisponível: {message}</translation>
+    </string>
   </context>
   <context name="TextEditor">
     <string>
@@ -733,6 +1380,368 @@
     <string>
       <source>Select All</source>
       <translation>Selecionar tudo</translation>
+    </string>
+  </context>
+  <context name="JobDrawer">
+    <string>
+      <source>Cancel</source>
+      <translation>Cancelar</translation>
+    </string>
+    <string>
+      <source>Cancelled</source>
+      <translation>Cancelado</translation>
+    </string>
+    <string>
+      <source>Cancelling...</source>
+      <translation>Cancelando...</translation>
+    </string>
+    <string>
+      <source>Clear</source>
+      <translation>Limpar</translation>
+    </string>
+    <string>
+      <source>Done</source>
+      <translation>Concluído</translation>
+    </string>
+    <string>
+      <source>Error</source>
+      <translation>Erro</translation>
+    </string>
+    <string>
+      <source>Finished: foreground job</source>
+      <translation>Concluído: trabalho em primeiro plano</translation>
+    </string>
+    <string>
+      <source>Hide jobs</source>
+      <translation>Ocultar empregos</translation>
+    </string>
+    <string>
+      <source>Idle</source>
+      <translation>Inativo</translation>
+    </string>
+    <string>
+      <source>Jobs</source>
+      <translation>Empregos</translation>
+    </string>
+    <string>
+      <source>No active background jobs.</source>
+      <translation>Nenhum trabalho ativo em segundo plano.</translation>
+    </string>
+    <string>
+      <source>Queued</source>
+      <translation>Na fila</translation>
+    </string>
+    <string>
+      <source>Recent jobs</source>
+      <translation>Empregos recentes</translation>
+    </string>
+    <string>
+      <source>Running</source>
+      <translation>Correndo</translation>
+    </string>
+    <string>
+      <source>Show jobs</source>
+      <translation>Mostrar empregos</translation>
+    </string>
+    <string>
+      <source>Started</source>
+      <translation>Iniciado</translation>
+    </string>
+    <string>
+      <source>Working</source>
+      <translation>Trabalhando</translation>
+    </string>
+    <string>
+      <source>active background job(s)</source>
+      <translation>trabalho(s) ativo(s) em segundo plano</translation>
+    </string>
+  </context>
+  <context name="TokenAssistant">
+    <string>
+      <source>Category</source>
+      <translation>Categoria</translation>
+    </string>
+    <string>
+      <source>Copy</source>
+      <translation>Copiar</translation>
+    </string>
+    <string>
+      <source>Female text...</source>
+      <translation>Texto feminino...</translation>
+    </string>
+    <string>
+      <source>Index</source>
+      <translation>Índice</translation>
+    </string>
+    <string>
+      <source>Insert</source>
+      <translation>Inserir</translation>
+    </string>
+    <string>
+      <source>Male text...</source>
+      <translation>Texto masculino...</translation>
+    </string>
+    <string>
+      <source>Male/Female pair</source>
+      <translation>Par masculino/feminino</translation>
+    </string>
+    <string>
+      <source>Suffix</source>
+      <translation>Sufixo</translation>
+    </string>
+    <string>
+      <source>Token</source>
+      <translation>Símbolo</translation>
+    </string>
+    <string>
+      <source>Token Assistant</source>
+      <translation>Assistente de token</translation>
+    </string>
+  </context>
+  <context name="TokenValidation">
+    <string>
+      <source>All source tokens are preserved in the translation draft.</source>
+      <translation>Todos os tokens de origem são preservados no rascunho de tradução.</translation>
+    </string>
+    <string>
+      <source>Back to Edit</source>
+      <translation>Voltar para editar</translation>
+    </string>
+    <string>
+      <source>Continue and Approve</source>
+      <translation>Continuar e aprovar</translation>
+    </string>
+    <string>
+      <source>Continue and Mark Needs Review</source>
+      <translation>Continuar e marcar necessidade de revisão</translation>
+    </string>
+    <string>
+      <source>Continue only if these token differences are intentional.</source>
+      <translation>Continue apenas se essas diferenças simbólicas forem intencionais.</translation>
+    </string>
+    <string>
+      <source>Extra</source>
+      <translation>Extras</translation>
+    </string>
+    <string>
+      <source>Line breaks differ</source>
+      <translation>As quebras de linha são diferentes</translation>
+    </string>
+    <string>
+      <source>Line-break count differs</source>
+      <translation>A contagem de quebras de linha é diferente</translation>
+    </string>
+    <string>
+      <source>Missing</source>
+      <translation>Desaparecido</translation>
+    </string>
+    <string>
+      <source>OK</source>
+      <translation>OK</translation>
+    </string>
+    <string>
+      <source>Order differs</source>
+      <translation>A ordem é diferente</translation>
+    </string>
+    <string>
+      <source>Suggested outcome: Approved.</source>
+      <translation>Resultado sugerido: Aprovado.</translation>
+    </string>
+    <string>
+      <source>Suggested outcome: Needs Review until the token differences are intentional.</source>
+      <translation>Resultado sugerido: Precisa ser revisado até que as diferenças simbólicas sejam intencionais.</translation>
+    </string>
+    <string>
+      <source>Token check:</source>
+      <translation>Verificação de token:</translation>
+    </string>
+    <string>
+      <source>Token differences can break in-game placeholders or formatting.</source>
+      <translation>As diferenças de token podem quebrar os espaços reservados ou a formatação do jogo.</translation>
+    </string>
+    <string>
+      <source>Token order differs</source>
+      <translation>A ordem do token é diferente</translation>
+    </string>
+    <string>
+      <source>{outcome} with token warnings</source>
+      <translation>{outcome} com avisos de token</translation>
+    </string>
+  </context>
+  <context name="ReleaseValidationDialog">
+    <string>
+      <source>All</source>
+      <translation>Todos</translation>
+    </string>
+    <string>
+      <source>Back to Fix</source>
+      <translation>Voltar para corrigir</translation>
+    </string>
+    <string>
+      <source>CSV report (*.csv)</source>
+      <translation>Relatório CSV (*.csv)</translation>
+    </string>
+    <string>
+      <source>Category</source>
+      <translation>Categoria</translation>
+    </string>
+    <string>
+      <source>Close</source>
+      <translation>Fechar</translation>
+    </string>
+    <string>
+      <source>Continue</source>
+      <translation>Continuar</translation>
+    </string>
+    <string>
+      <source>Continue anyway</source>
+      <translation>Continuar mesmo assim</translation>
+    </string>
+    <string>
+      <source>Copy selected issue</source>
+      <translation>Copiar problema selecionado</translation>
+    </string>
+    <string>
+      <source>Copy summary</source>
+      <translation>Copiar resumo</translation>
+    </string>
+    <string>
+      <source>Export Pre-release Validation Report</source>
+      <translation>Exportar relatório de validação de pré-lançamento</translation>
+    </string>
+    <string>
+      <source>Export report</source>
+      <translation>Exportar relatório</translation>
+    </string>
+    <string>
+      <source>Pre-release Validation Report</source>
+      <translation>Relatório de validação de pré-lançamento</translation>
+    </string>
+    <string>
+      <source>Pre-release validation ({profile}): {critical} critical, {warning} warning, {info} info for {written:,}/{total:,} record(s).</source>
+      <translation>Validação de pré-lançamento ({profile}): {critical} crítico, {warning} aviso, {info} informações para registro(s) {written:,}/{total:,}.</translation>
+    </string>
+    <string>
+      <source>Review day-to-day workspace issues without starting a save or export.</source>
+      <translation>Revise os problemas diários do espaço de trabalho sem iniciar um salvamento ou exportação.</translation>
+    </string>
+    <string>
+      <source>Review potential blank-text and token issues before writing release files.</source>
+      <translation>Revise possíveis problemas de texto em branco e token antes de gravar arquivos de lançamento.</translation>
+    </string>
+    <string>
+      <source>Search</source>
+      <translation>Pesquisar</translation>
+    </string>
+    <string>
+      <source>Search package, instance, ID, reason, original, or translation...</source>
+      <translation>Pesquise pacote, instância, ID, motivo, original ou tradução...</translation>
+    </string>
+    <string>
+      <source>Text report (*.txt)</source>
+      <translation>Relatório de texto (*.txt)</translation>
+    </string>
+    <string>
+      <source>Workspace Warnings</source>
+      <translation>Avisos do espaço de trabalho</translation>
+    </string>
+    <string>
+      <source>{shown:,} issue(s) shown from {total:,}.</source>
+      <translation>{shown:,} problema(s) mostrado(s) em {total:,}.</translation>
+    </string>
+    <string>
+      <source>Code</source>
+      <translation>Código</translation>
+    </string>
+    <string>
+      <source>Instance</source>
+      <translation>Instância</translation>
+    </string>
+    <string>
+      <source>Original</source>
+      <translation>Originais</translation>
+    </string>
+    <string>
+      <source>Package</source>
+      <translation>Pacote</translation>
+    </string>
+    <string>
+      <source>Reason</source>
+      <translation>Razão</translation>
+    </string>
+    <string>
+      <source>Severity</source>
+      <translation>Gravidade</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Estado</translation>
+    </string>
+    <string>
+      <source>String ID</source>
+      <translation>ID da sequência</translation>
+    </string>
+    <string>
+      <source>Translation</source>
+      <translation>Tradução</translation>
+    </string>
+  </context>
+  <context name="ValidationCategory">
+    <string>
+      <source>Blank risk</source>
+      <translation>Risco em branco</translation>
+    </string>
+    <string>
+      <source>Duplicate output</source>
+      <translation>Saída duplicada</translation>
+    </string>
+    <string>
+      <source>Length / layout risk</source>
+      <translation>Risco de comprimento/layout</translation>
+    </string>
+    <string>
+      <source>Resource</source>
+      <translation>Recurso</translation>
+    </string>
+    <string>
+      <source>Source changed</source>
+      <translation>Fonte alterada</translation>
+    </string>
+    <string>
+      <source>Status</source>
+      <translation>Estado</translation>
+    </string>
+    <string>
+      <source>Summary</source>
+      <translation>Resumo</translation>
+    </string>
+    <string>
+      <source>Token safety</source>
+      <translation>Segurança de token</translation>
+    </string>
+  </context>
+  <context name="ValidationProfile">
+    <string>
+      <source>Soft release</source>
+      <translation>Liberação suave</translation>
+    </string>
+    <string>
+      <source>Strict release</source>
+      <translation>Liberação estrita</translation>
+    </string>
+  </context>
+  <context name="ValidationSeverity">
+    <string>
+      <source>Critical</source>
+      <translation>Crítico</translation>
+    </string>
+    <string>
+      <source>Info</source>
+      <translation>Informações</translation>
+    </string>
+    <string>
+      <source>Warning</source>
+      <translation>Aviso</translation>
     </string>
   </context>
 </ts>
