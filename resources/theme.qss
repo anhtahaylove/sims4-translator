@@ -1168,6 +1168,15 @@ QProgressBar::chunk {
     border-color: __TEXT_ERROR__;
 }
 
+#jobRowsScroll {
+    background: transparent;
+    border: none;
+}
+
+#jobRowsScroll QWidget {
+    background: transparent;
+}
+
 #jobTitle {
     color: __TEXT__;
     font-weight: 600;

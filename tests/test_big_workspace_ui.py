@@ -1409,7 +1409,7 @@ class WorkspaceProShellTests(unittest.TestCase):
         item[RECORD_MAIN_TRANSLATE] = long_text
         try:
             window.update_inspector_item(item)
-            window.resize(window.minimumSize())
+            window.resize(1280, 720)
             window.show()
             app().processEvents()
 
@@ -1419,8 +1419,11 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(window.selection_original_text.toPlainText(), long_text)
             self.assertEqual(window.selection_translation_text.toPlainText(), long_text)
             self.assertTrue(window.selection_preview.isVisibleTo(window))
-            self.assertGreaterEqual(window.selection_original_text.height(), 64)
-            self.assertGreaterEqual(window.selection_translation_text.height(), 64)
+            self.assertGreaterEqual(window.selection_original_text.height(), 56)
+            self.assertGreaterEqual(window.selection_translation_text.height(), 56)
+            self.assertLessEqual(window.selection_original_text.height(), 78)
+            self.assertLessEqual(window.selection_translation_text.height(), 78)
+            self.assertLess(window.selection_bar.geometry().bottom(), window.tableview.geometry().top())
         finally:
             close_widget(window)
 

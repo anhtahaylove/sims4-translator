@@ -89,12 +89,15 @@ class JobDrawerStateTests(unittest.TestCase):
         self.assertTrue(row.active)
         self.assertFalse(row.progress_bar.isHidden())
         self.assertFalse(row.cancel_button.isHidden())
+        self.assertFalse(row.detail_label.isVisible())
 
         row.finish()
 
         self.assertFalse(row.active)
         self.assertTrue(row.progress_bar.isHidden())
         self.assertTrue(row.cancel_button.isHidden())
+        self.assertFalse(row.detail_label.isVisible())
+        self.assertGreaterEqual(row.minimumHeight(), 38)
         self.assertEqual(row.property('state'), 'done')
         self.assertEqual(row.percent_label.text(), interface.text('JobDrawer', 'Done'))
         close_widget(row)
@@ -134,6 +137,33 @@ class JobDrawerStateTests(unittest.TestCase):
             drawer.set_expanded(True)
 
             self.assertFalse(drawer.body.isHidden())
+        finally:
+            close_widget(drawer)
+
+    def test_recent_jobs_use_bounded_scroll_area_instead_of_squeezing_rows(self):
+        class Handle:
+
+            def __init__(self, index):
+                self.name = f'Completed job {index}'
+                self.job_id = f'job-{index}'
+
+            def cancel(self):
+                pass
+
+        drawer = QJobStatusDrawer()
+        try:
+            drawer.set_expanded(True)
+            for index in range(6):
+                handle = Handle(index)
+                drawer.task_started(handle)
+                drawer.task_finished(handle, cancelled=False)
+
+            self.assertIs(drawer.jobs_scroll.widget(), drawer.jobs_widget)
+            self.assertLessEqual(drawer.jobs_scroll.maximumHeight(), 128)
+            self.assertFalse(drawer.jobs_scroll.isHidden())
+            for row in drawer._QJobStatusDrawer__rows.values():
+                self.assertGreaterEqual(row.minimumHeight(), 38)
+                self.assertFalse(row.detail_label.isVisible())
         finally:
             close_widget(drawer)
 

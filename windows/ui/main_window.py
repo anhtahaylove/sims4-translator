@@ -542,8 +542,8 @@ class Ui_MainWindow(object):
         text.setObjectName('selectionPreviewText')
         text.setReadOnly(True)
         text.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
-        text.setMinimumHeight(64)
-        text.setMaximumHeight(92)
+        text.setMinimumHeight(56)
+        text.setMaximumHeight(78)
         text.setPlaceholderText('Select a string to preview full text.')
         text.highlighter = BracketHighlighter(text.document())
 

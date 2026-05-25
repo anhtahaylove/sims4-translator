@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
     QPlainTextEdit,
     QProgressBar,
     QPushButton,
+    QScrollArea,
     QToolButton,
     QVBoxLayout,
     QWidget,
@@ -23,6 +24,7 @@ class JobRow(QFrame):
         super().__init__(parent)
         self.setObjectName('jobRow')
         self.setProperty('state', 'running')
+        self.setMinimumHeight(38)
 
         self.handle = handle
         self.active = handle is not None if active is None else active
@@ -42,6 +44,7 @@ class JobRow(QFrame):
 
         self.detail_label = QLabel('', self)
         self.detail_label.setObjectName('jobDetail')
+        self.detail_label.setVisible(False)
 
         text_layout.addWidget(self.title_label)
         text_layout.addWidget(self.detail_label)
@@ -78,6 +81,7 @@ class JobRow(QFrame):
     def apply_progress(self, progress: TaskProgress) -> None:
         if progress.message:
             self.detail_label.setText(progress.message)
+            self.detail_label.setVisible(True)
 
         if progress.total:
             self.total = progress.total
@@ -101,12 +105,14 @@ class JobRow(QFrame):
         if error:
             self.set_state('error')
             self.detail_label.setText(error)
+            self.detail_label.setVisible(True)
             self.percent_label.setText(interface.text('JobDrawer', 'Error'))
             return
 
         if cancelled:
             self.set_state('cancelled')
             self.detail_label.setText(interface.text('JobDrawer', 'Cancelled'))
+            self.detail_label.setVisible(True)
             self.percent_label.setText(interface.text('JobDrawer', 'Cancelled'))
             return
 
@@ -176,10 +182,19 @@ class QJobStatusDrawer(QWidget):
         body_layout.setContentsMargins(10, 8, 10, 10)
         body_layout.setSpacing(8)
 
-        self.jobs_widget = QWidget(self.body)
+        self.jobs_scroll = QScrollArea(self.body)
+        self.jobs_scroll.setObjectName('jobRowsScroll')
+        self.jobs_scroll.setWidgetResizable(True)
+        self.jobs_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.jobs_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.jobs_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.jobs_scroll.setMaximumHeight(118)
+
+        self.jobs_widget = QWidget(self.jobs_scroll)
         self.jobs_layout = QVBoxLayout(self.jobs_widget)
         self.jobs_layout.setContentsMargins(0, 0, 0, 0)
         self.jobs_layout.setSpacing(6)
+        self.jobs_scroll.setWidget(self.jobs_widget)
 
         self.empty_label = QLabel(interface.text('JobDrawer', 'No active background jobs.'), self.body)
         self.empty_label.setObjectName('jobEmptyLabel')
@@ -189,9 +204,9 @@ class QJobStatusDrawer(QWidget):
         self.log.setObjectName('jobLog')
         self.log.setReadOnly(True)
         self.log.setMaximumBlockCount(80)
-        self.log.setFixedHeight(74)
+        self.log.setFixedHeight(68)
 
-        body_layout.addWidget(self.jobs_widget)
+        body_layout.addWidget(self.jobs_scroll)
         body_layout.addWidget(self.empty_label)
         body_layout.addWidget(self.log)
 
@@ -330,6 +345,7 @@ class QJobStatusDrawer(QWidget):
             running += 1
 
         self.empty_label.setVisible(visible_rows == 0)
+        self.jobs_scroll.setVisible(visible_rows > 0)
         self.clear_button.setEnabled(visible_rows > running)
 
         if running:

@@ -474,7 +474,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.selection_layout.setContentsMargins(12, 8, 12, 8)
         self.selection_layout.setSpacing(7)
         self.selection_header_layout.setSpacing(10)
-        preview_height = 112
+        preview_height = 78
         self.selection_original_text.setMaximumHeight(preview_height)
         self.selection_translation_text.setMaximumHeight(preview_height)
         self.workspace_hint.setVisible(True)
@@ -563,8 +563,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             widget.setVisible(has_selection)
         self.selection_preview.setVisible(has_selection and self.__selection_preview_expanded)
         if has_selection and self.__selection_preview_expanded:
-            self.selection_preview.setMinimumHeight(88)
-            self.selection_bar.setMinimumHeight(150)
+            self.selection_preview.setMinimumHeight(74)
+            self.selection_bar.setMinimumHeight(142)
         else:
             self.selection_preview.setMinimumHeight(0)
             self.selection_bar.setMinimumHeight(0)

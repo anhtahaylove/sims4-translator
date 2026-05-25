@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.2.9 - 2026-05-25
+
+- Tightened the selected-string preview so it no longer crowds or overlaps the table on laptop-height windows.
+- Kept Recent jobs readable by putting finished job rows in a bounded scroll area instead of squeezing row text.
+
 ## Version 2.2.8 - 2026-05-25
 
 - Removed configurable Batch AI limits; AI batch providers now always show a confirmation dialog before sending text.
