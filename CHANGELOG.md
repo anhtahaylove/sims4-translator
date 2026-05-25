@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.2.0 - 2026-05-25
+
+- Added an opt-in local Ollama translation provider with `translategemma:12b` as the recommended default model.
+- Added Options controls to enable Ollama, refresh local model names, choose or type a model, and test the local server.
+- Extended translation cache, batch cost confirmation, and provider smoke checks to cover Ollama without storing API keys.
+
 ## Version 2.1.0 - 2026-05-25
 
 - Added Gemini and OpenAI-compatible translation providers with token-preserving prompts and mocked tests.

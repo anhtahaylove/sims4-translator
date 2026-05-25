@@ -1,5 +1,5 @@
 name: Translation provider issue
-description: Report DeepL, Google, MyMemory, glossary, or quota problems.
+description: Report DeepL, Google, MyMemory, Gemini, OpenAI-compatible, Ollama, glossary, or quota problems.
 title: "[Translation provider]: "
 labels: ["translation-provider"]
 body:
@@ -17,6 +17,9 @@ body:
         - DeepL
         - Google
         - MyMemory
+        - Gemini
+        - OpenAI-compatible
+        - Ollama
     validations:
       required: true
   - type: input

@@ -56,9 +56,9 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('python scripts\\create_synthetic_package.py', script)
         self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', script)
         self.assertNotIn('--require-gui-outputs', script)
-        self.assertIn('python scripts\\verify_version_sync.py --version 2.1.0', script)
+        self.assertIn('python scripts\\verify_version_sync.py --version 2.2.0', script)
         self.assertIn(
-            'python scripts\\verify_interface_i18n.py --language vi_VN --version 2.1.0 --strict-empty --strict-missing',
+            'python scripts\\verify_interface_i18n.py --language vi_VN --version 2.2.0 --strict-empty --strict-missing',
             script,
         )
         self.assertIn('git diff --check', script)
@@ -160,6 +160,9 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('OPENAI_API_KEY', script)
         self.assertIn('OPENAI_BASE_URL', script)
         self.assertIn('OPENAI_MODEL', script)
+        self.assertIn('OLLAMA_BASE_URL', script)
+        self.assertIn('OLLAMA_MODEL', script)
+        self.assertIn('[switch]$Ollama', script)
         self.assertIn('redact_sensitive', script)
         self.assertIn('It does not save keys', script)
         self.assertNotIn('config.save()', script)

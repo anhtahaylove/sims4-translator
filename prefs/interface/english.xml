@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ts language="en_US" name="English" version="2.1.0" authors="">
+<ts language="en_US" name="English" version="2.2.0" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -374,6 +374,22 @@ Errors:
       <source>There was a temporary problem with the DeepL Service.</source>
       <translation/>
     </string>
+    <string>
+      <source>Ollama base URL is empty.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama base URL or model is empty.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama is not reachable at {url}. Start Ollama or check the base URL.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama model was not found. Run: ollama pull {model}</source>
+      <translation/>
+    </string>
   </context>
   <context name="OptionsDialog">
     <string>
@@ -497,7 +513,27 @@ Errors:
       <translation/>
     </string>
     <string>
-      <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini and OpenAI-compatible providers use a safety prompt that asks the model to preserve Sims tokens and line count. Do not share or commit your API key.</source>
+      <source>Enable Ollama local provider</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Refresh Ollama models</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Test Ollama</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini, OpenAI-compatible, and Ollama providers use a safety prompt that asks the model to preserve Sims tokens and line count. Recommended Ollama model: translategemma:12b. Run: ollama pull translategemma:12b. Do not share or commit your API key.</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama models loaded. Recommended model is missing. Run: ollama pull translategemma:12b</source>
+      <translation/>
+    </string>
+    <string>
+      <source>Ollama models loaded: {count:,}.</source>
       <translation/>
     </string>
     <string>

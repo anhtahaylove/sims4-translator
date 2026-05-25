@@ -14,12 +14,14 @@ from singletons.languages import languages
 Response = namedtuple('Response', 'status_code text')
 DeepLUsage = namedtuple('DeepLUsage', 'status_code character_count character_limit message')
 PlaceholderRestoreResult = namedtuple('PlaceholderRestoreResult', 'text warning')
+OllamaModels = namedtuple('OllamaModels', 'status_code models message')
 
 
 PLACEHOLDER_PATTERN = re.compile(r'(?:\\n)+|{[A-Za-z]?\d+\.[^{}]+}|<[^>]+>')
 BASE_PLACEHOLDER_PATTERN = re.compile(r'{[A-Za-z]?\d+\.[^{}]+}|<[^>]+>')
 XML_PLACEHOLDER_PATTERN = re.compile(r'<x\s+id=["\'](\d+)["\']\s*/>', re.IGNORECASE)
-AI_ENGINE_NAMES = ('gemini', 'openai-compatible')
+OLLAMA_RECOMMENDED_MODEL = 'translategemma:12b'
+OLLAMA_DEFAULT_BASE_URL = 'http://localhost:11434'
 
 
 def deepl_endpoint(api_key: str) -> str:
@@ -85,6 +87,8 @@ def ai_engine_available(engine: str) -> bool:
             config.value('api', 'openai_base_url') and
             config.value('api', 'openai_model')
         )
+    if engine_name == 'ollama':
+        return bool(config.value('api', 'ollama_enabled') and config.value('api', 'ollama_model'))
     return False
 
 
@@ -93,6 +97,47 @@ def ai_character_cap(option: str) -> int:
         return max(0, int(config.value('api', option) or 0))
     except (TypeError, ValueError):
         return 0
+
+
+def ollama_base_url(value: str = None) -> str:
+    base_url = value if value is not None else config.value('api', 'ollama_base_url') or OLLAMA_DEFAULT_BASE_URL
+    return base_url.strip().rstrip('/')
+
+
+def ollama_models(base_url: str = None) -> OllamaModels:
+    url = ollama_base_url(base_url)
+    if not url:
+        return OllamaModels(400, (), interface.text('Errors', 'Ollama base URL is empty.'))
+
+    try:
+        response = requests.get(f'{url}/api/tags', timeout=5)
+    except Exception:
+        return OllamaModels(503, (), interface.text(
+            'Errors',
+            'Ollama is not reachable at {url}. Start Ollama or check the base URL.'
+        ).format(url=url))
+
+    if response.status_code != 200:
+        detail = ''
+        try:
+            detail = response.json().get('error') or ''
+        except Exception:
+            detail = getattr(response, 'text', '') or ''
+        message = interface.text('Errors', 'Translation failed with error code: {}').format(response.status_code)
+        if detail:
+            message = f'{message} {detail}'
+        return OllamaModels(response.status_code, (), message)
+
+    try:
+        payload = response.json()
+        names = []
+        for model in payload.get('models', []):
+            name = model.get('model') or model.get('name')
+            if name and name not in names:
+                names.append(name)
+        return OllamaModels(200, tuple(names), '')
+    except Exception as exc:
+        return OllamaModels(500, (), str(exc))
 
 
 class Translator:
@@ -106,6 +151,8 @@ class Translator:
             engines.append('Gemini')
         if ai_engine_available('OpenAI-compatible'):
             engines.append('OpenAI-compatible')
+        if ai_engine_available('Ollama'):
+            engines.append('Ollama')
         return engines
 
     @property
@@ -199,6 +246,12 @@ class Translator:
             )
         elif engine_name == 'openai-compatible':
             response = Translator.__openai_compatible(
+                modified_text,
+                context=context,
+                expected_lines=modified_text.count('\n') + 1,
+            )
+        elif engine_name == 'ollama':
+            response = Translator.__ollama(
                 modified_text,
                 context=context,
                 expected_lines=modified_text.count('\n') + 1,
@@ -373,6 +426,43 @@ class Translator:
         return Translator.__provider_error_response(resp.status_code, resp, 'OpenAI-compatible')
 
     @staticmethod
+    def __ollama(text: str, context: str = '', expected_lines: int = 1) -> Response:
+        base_url = ollama_base_url()
+        model = (config.value('api', 'ollama_model') or '').strip()
+        if not base_url or not model:
+            return Response(400, interface.text('Errors', 'Ollama base URL or model is empty.'))
+
+        try:
+            resp = requests.post(
+                f'{base_url}/api/chat',
+                json={
+                    'model': model,
+                    'stream': False,
+                    'messages': [{
+                        'role': 'user',
+                        'content': Translator.__ollama_prompt(text, context, expected_lines),
+                    }],
+                    'options': {
+                        'temperature': 0.2,
+                    },
+                },
+                timeout=120,
+            )
+        except Exception:
+            return Response(503, interface.text(
+                'Errors',
+                'Ollama is not reachable at {url}. Start Ollama or check the base URL.'
+            ).format(url=base_url))
+
+        if resp.status_code == 200:
+            try:
+                return Response(200, resp.json()['message']['content'].strip())
+            except Exception as e:
+                return Response(500, str(e))
+
+        return Translator.__provider_error_response(resp.status_code, resp, 'Ollama')
+
+    @staticmethod
     def __ai_prompt(text: str, context: str, expected_lines: int) -> str:
         src = languages.source
         dst = languages.destination
@@ -389,6 +479,38 @@ class Translator:
         return '\n\n'.join(parts)
 
     @staticmethod
+    def __ollama_prompt(text: str, context: str, expected_lines: int) -> str:
+        src = Translator.__translation_language_label(config.value('translation', 'source'), source=True)
+        dst = Translator.__translation_language_label(config.value('translation', 'destination'), source=False)
+        rules = [
+            f'You are a professional {src} to {dst} game localization translator.',
+            'Your goal is to accurately convey the meaning and nuances of the original text while keeping Vietnamese natural, playful, casual, and game-like.',
+            'Produce only the Vietnamese translation, without any explanations, markdown, numbering, quotes, or extra blank lines.',
+            f'Return exactly {expected_lines} line(s).',
+            'Preserve placeholders exactly: (0), {0.String}, {0.SimFirstName}, %s, %d, <tags>, </tags>, \\n, \\x0a, and \\x0d.',
+            'Do not translate item IDs, file keys, XML tags, variable names, or formatting codes.',
+            'Use consistent terms: Sim = Sim, Moodlet = moodlet, Aspiration = Khát vọng, Trait = Đặc điểm, Household = Hộ gia đình.',
+        ]
+        if context:
+            rules.append('Context:\n' + context)
+        rules.append('Please translate the following text into Vietnamese:\n\n' + text)
+        return '\n\n'.join(rules)
+
+    @staticmethod
+    def __translation_language_label(locale: str, source: bool) -> str:
+        labels = {
+            'ENG_US': 'English (en)',
+            'VI_VN': 'Vietnamese (vi-VN)',
+        }
+        if locale in labels:
+            return labels[locale]
+
+        language = languages.by_locale(locale)
+        if language and language.google:
+            return f'{locale} ({language.google})'
+        return locale or ('source language' if source else 'target language')
+
+    @staticmethod
     def __provider_error_response(status_code: int, response, provider: str) -> Response:
         detail = ''
         try:
@@ -402,6 +524,11 @@ class Translator:
 
         if status_code in (401, 403):
             message = f'{provider} API key was rejected.'
+        elif provider == 'Ollama' and status_code == 404:
+            message = interface.text(
+                'Errors',
+                'Ollama model was not found. Run: ollama pull {model}'
+            ).format(model=OLLAMA_RECOMMENDED_MODEL)
         elif status_code == 429:
             message = f'{provider} rate limit was reached.'
         elif status_code >= 500:

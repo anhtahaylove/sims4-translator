@@ -1,6 +1,7 @@
 param(
     [switch]$Gemini,
     [switch]$OpenAICompatible,
+    [switch]$Ollama,
     [switch]$All,
     [string]$EnvFile = (Join-Path $PSScriptRoot '..\.env')
 )
@@ -34,7 +35,9 @@ function Import-DotEnv {
 Import-DotEnv -Path $EnvFile
 
 $Targets = @()
-if ($All -or (-not $Gemini -and -not $OpenAICompatible)) {
+if ($All) {
+    $Targets = @('Gemini', 'OpenAI-compatible', 'Ollama')
+} elseif (-not $Gemini -and -not $OpenAICompatible -and -not $Ollama) {
     $Targets = @('Gemini', 'OpenAI-compatible')
 } else {
     if ($Gemini) {
@@ -42,6 +45,9 @@ if ($All -or (-not $Gemini -and -not $OpenAICompatible)) {
     }
     if ($OpenAICompatible) {
         $Targets += 'OpenAI-compatible'
+    }
+    if ($Ollama) {
+        $Targets += 'Ollama'
     }
 }
 
@@ -83,6 +89,17 @@ if openai_base_url:
 openai_model = env_first('OPENAI_MODEL')
 if openai_model:
     config.set_value('api', 'openai_model', openai_model)
+
+ollama_base_url = env_first('OLLAMA_BASE_URL')
+if ollama_base_url:
+    config.set_value('api', 'ollama_base_url', ollama_base_url)
+
+ollama_model = env_first('OLLAMA_MODEL')
+if ollama_model:
+    config.set_value('api', 'ollama_model', ollama_model)
+
+if 'Ollama' in os.environ.get('SIMS4_AI_PROVIDER_SMOKE_TARGETS', ''):
+    config.set_value('api', 'ollama_enabled', True)
 
 config.set_value('translation', 'source', config.value('translation', 'source') or 'ENG_US')
 config.set_value('translation', 'destination', config.value('translation', 'destination') or 'VI_VN')

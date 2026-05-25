@@ -21,7 +21,7 @@ from singletons.languages import languages
 from singletons.signals import progress_signals
 from singletons.state import app_state
 from singletons.translation_cache import translation_cache
-from singletons.translator import deepl_usage, translator
+from singletons.translator import OLLAMA_RECOMMENDED_MODEL, deepl_usage, ollama_models, translator
 from utils.functions import opendir
 from utils.constants import *
 
@@ -234,6 +234,10 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.txt_openai_key.setText(config.value('api', 'openai_key') or '')
         self.txt_openai_base_url.setText(config.value('api', 'openai_base_url') or '')
         self.txt_openai_model.setText(config.value('api', 'openai_model') or '')
+        self.cb_ollama_enabled.setChecked(bool(config.value('api', 'ollama_enabled')))
+        self.txt_ollama_base_url.setText(config.value('api', 'ollama_base_url') or '')
+        self.cb_ollama_model.addItem(config.value('api', 'ollama_model') or OLLAMA_RECOMMENDED_MODEL)
+        self.cb_ollama_model.setCurrentText(config.value('api', 'ollama_model') or OLLAMA_RECOMMENDED_MODEL)
         self.txt_ai_session_cap.setText(str(config.value('api', 'ai_session_character_cap') or 0))
         self.txt_ai_daily_cap.setText(str(config.value('api', 'ai_daily_character_cap') or 0))
         self.cb_translation_cache.setChecked(bool(config.value('translation_cache', 'enabled')))
@@ -254,12 +258,17 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.txt_openai_key.textChanged.connect(self.change_ai_provider_settings)
         self.txt_openai_base_url.textChanged.connect(self.change_ai_provider_settings)
         self.txt_openai_model.textChanged.connect(self.change_ai_provider_settings)
+        self.cb_ollama_enabled.clicked.connect(self.change_ai_provider_settings)
+        self.txt_ollama_base_url.textChanged.connect(self.change_ai_provider_settings)
+        self.cb_ollama_model.currentTextChanged.connect(self.change_ai_provider_settings)
         self.txt_ai_session_cap.textChanged.connect(self.change_ai_provider_settings)
         self.txt_ai_daily_cap.textChanged.connect(self.change_ai_provider_settings)
         self.btn_deepl_test.clicked.connect(self.test_deepl_key)
         self.btn_deepl_usage.clicked.connect(self.check_deepl_usage)
         self.btn_gemini_test.clicked.connect(lambda: self.test_ai_provider('Gemini'))
         self.btn_openai_test.clicked.connect(lambda: self.test_ai_provider('OpenAI-compatible'))
+        self.btn_ollama_refresh.clicked.connect(self.refresh_ollama_models)
+        self.btn_ollama_test.clicked.connect(lambda: self.test_ai_provider('Ollama'))
         self.cb_translation_cache.clicked.connect(self.change_translation_cache_enabled)
         self.btn_translation_cache_clear.clicked.connect(self.clear_translation_cache)
 
@@ -345,11 +354,15 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.btn_deepl_usage.setText(interface.text('OptionsDialog', 'Check usage'))
         self.btn_gemini_test.setText(interface.text('OptionsDialog', 'Test Gemini'))
         self.btn_openai_test.setText(interface.text('OptionsDialog', 'Test OpenAI-compatible'))
+        self.cb_ollama_enabled.setText(interface.text('OptionsDialog', 'Enable Ollama local provider'))
+        self.btn_ollama_refresh.setText(interface.text('OptionsDialog', 'Refresh Ollama models'))
+        self.btn_ollama_test.setText(interface.text('OptionsDialog', 'Test Ollama'))
         self.lbl_deepl_hint.setText(interface.text(
             'OptionsDialog',
             'Configure optional translation providers, then choose one in Search and Edit or Batch translate. '
-            'DeepL supports usage checks and glossary ID. Gemini and OpenAI-compatible providers use a safety prompt '
-            'that asks the model to preserve Sims tokens and line count. '
+            'DeepL supports usage checks and glossary ID. Gemini, OpenAI-compatible, and Ollama providers use a safety '
+            'prompt that asks the model to preserve Sims tokens and line count. '
+            'Recommended Ollama model: translategemma:12b. Run: ollama pull translategemma:12b. '
             'Do not share or commit your API key.'
         ))
         self.lbl_deepl_autosave.setText(interface.text('OptionsDialog', 'Changes are saved automatically.'))
@@ -399,6 +412,8 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             (self.btn_deepl_usage, ':/images/api.png', QSize(20, 20)),
             (self.btn_gemini_test, ':/images/api.png', QSize(20, 20)),
             (self.btn_openai_test, ':/images/api.png', QSize(20, 20)),
+            (self.btn_ollama_refresh, ':/images/api.png', QSize(20, 20)),
+            (self.btn_ollama_test, ':/images/api.png', QSize(20, 20)),
             (self.btn_translation_cache_clear, ':/images/validate_0.png', QSize(20, 20)),
             (self.btn_build, ':/images/dict.png', QSize(22, 22)),
         )
@@ -447,10 +462,47 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         config.set_value('api', 'openai_key', self.txt_openai_key.text().strip())
         config.set_value('api', 'openai_base_url', self.txt_openai_base_url.text().strip())
         config.set_value('api', 'openai_model', self.txt_openai_model.text().strip())
+        config.set_value('api', 'ollama_enabled', self.cb_ollama_enabled.isChecked())
+        config.set_value('api', 'ollama_base_url', self.txt_ollama_base_url.text().strip())
+        config.set_value('api', 'ollama_model', self.cb_ollama_model.currentText().strip())
         config.set_value('api', 'ai_session_character_cap', self.__integer_field(self.txt_ai_session_cap.text()))
         config.set_value('api', 'ai_daily_character_cap', self.__integer_field(self.txt_ai_daily_cap.text()))
         self.__sync_engine_preference()
         config.save()
+
+    def refresh_ollama_models(self):
+        current = self.cb_ollama_model.currentText().strip() or OLLAMA_RECOMMENDED_MODEL
+        result = ollama_models(self.txt_ollama_base_url.text().strip())
+
+        if result.status_code != 200:
+            self.__set_provider_status(result.message, warning=True)
+            return
+
+        models = list(result.models)
+        if current and current not in models:
+            models.insert(0, current)
+        if OLLAMA_RECOMMENDED_MODEL not in models:
+            models.insert(0, OLLAMA_RECOMMENDED_MODEL)
+
+        self.cb_ollama_model.blockSignals(True)
+        self.cb_ollama_model.clear()
+        self.cb_ollama_model.addItems(models)
+        self.cb_ollama_model.setCurrentText(current)
+        self.cb_ollama_model.blockSignals(False)
+
+        if OLLAMA_RECOMMENDED_MODEL not in result.models:
+            self.__set_provider_status(
+                interface.text(
+                    'OptionsDialog',
+                    'Ollama models loaded. Recommended model is missing. Run: ollama pull translategemma:12b'
+                ),
+                warning=True,
+            )
+        else:
+            self.__set_provider_status(
+                interface.text('OptionsDialog', 'Ollama models loaded: {count:,}.').format(count=len(result.models)),
+                warning=False,
+            )
 
     def test_deepl_key(self):
         usage = deepl_usage(self.txt_deepl_key.text().strip())
@@ -463,13 +515,9 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
     def test_ai_provider(self, engine: str):
         response = translator.translate(engine, 'Hello')
         if response.status_code == 200:
-            self.lbl_deepl_status.setProperty('state', 'ok')
-            self.lbl_deepl_status.setText(f'{engine}: OK')
+            self.__set_provider_status(f'{engine}: OK', warning=False)
         else:
-            self.lbl_deepl_status.setProperty('state', 'warning')
-            self.lbl_deepl_status.setText(response.text)
-        self.lbl_deepl_status.style().unpolish(self.lbl_deepl_status)
-        self.lbl_deepl_status.style().polish(self.lbl_deepl_status)
+            self.__set_provider_status(response.text, warning=True)
 
     def change_translation_cache_enabled(self):
         config.set_value('translation_cache', 'enabled', self.cb_translation_cache.isChecked())
@@ -498,9 +546,14 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             self.lbl_deepl_status.setProperty('state', 'ok')
             self.lbl_deepl_status.setText(f'{prefix} {usage_text}')
         else:
-            self.lbl_deepl_status.setProperty('state', 'warning')
-            self.lbl_deepl_status.setText(usage.message)
+            self.__set_provider_status(usage.message, warning=True)
+            return
 
+        self.__set_provider_status(self.lbl_deepl_status.text(), warning=False)
+
+    def __set_provider_status(self, text: str, warning: bool = False):
+        self.lbl_deepl_status.setProperty('state', 'warning' if warning else 'ok')
+        self.lbl_deepl_status.setText(text)
         self.lbl_deepl_status.style().unpolish(self.lbl_deepl_status)
         self.lbl_deepl_status.style().polish(self.lbl_deepl_status)
 

@@ -7,7 +7,7 @@ comes from this open-source project.
 
 - Opens local Sims 4 `.package` / STBL translation data.
 - Lets users edit, validate, and export translation packages.
-- Supports optional online translation providers such as DeepL, Google, and MyMemory.
+- Supports optional online/local translation providers such as DeepL, Google, MyMemory, Gemini, OpenAI-compatible endpoints, and Ollama.
 - Stores user preferences locally under the user data directory.
 
 ## What This App Does Not Do
@@ -15,7 +15,7 @@ comes from this open-source project.
 - It does not include official EA, Maxis, or The Sims artwork, fonts, game files, characters, or screenshots.
 - It does not collect telemetry.
 - It does not upload your package files automatically.
-- It does not require a DeepL key unless you choose to use DeepL.
+- It does not require provider keys unless you choose a keyed provider such as DeepL, Gemini, or an OpenAI-compatible endpoint.
 - It is not affiliated with, endorsed by, sponsored by, or connected to Electronic Arts, Maxis, or The Sims.
 
 ## How To Verify A Download

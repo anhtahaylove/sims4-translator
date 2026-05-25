@@ -61,8 +61,8 @@ Open a package, choose a string, edit it in Translation Studio, check token warn
 | Requirement | Notes |
 | --- | --- |
 | Windows | Windows 10 or newer is the supported target for the packaged app. |
-| Internet | Optional. Needed only for online translation providers such as DeepL, Google, MyMemory, Gemini, or OpenAI-compatible endpoints. |
-| Provider keys | Optional. Add keys only for providers you want to use; the app does not require online translation. |
+| Internet | Optional. Needed for online providers such as DeepL, Google, MyMemory, Gemini, or OpenAI-compatible endpoints. Ollama can run locally after the model is downloaded. |
+| Provider keys | Optional. Add keys only for providers you want to use. Ollama does not need an API key. |
 | Source build | Source users need Python and the packages in `requirements.txt`; the repo does not pin an exact Python version. |
 
 ## What Can I Do With It?
@@ -73,7 +73,7 @@ Open a package, choose a string, edit it in Translation Studio, check token warn
 | Work faster | Search by ID, original text, or translated text from one hybrid search box. |
 | Read long strings | Use Selection Preview to see the full selected string without opening the editor. |
 | Avoid broken text | Highlight Sims tokens like `{0.SimFirstName}`, `\n`, `<b>`, and `<i>`. |
-| Use machine translation | Connect DeepL, Google, MyMemory, Gemini, or OpenAI-compatible endpoints, with cache reuse and batch cost warnings. |
+| Use machine translation | Connect DeepL, Google, MyMemory, Gemini, OpenAI-compatible endpoints, or local Ollama, with cache reuse and batch cost warnings. |
 | Release more safely | Run Validate Release before Save as package, Export, or Finalize. |
 
 ## A Quick Look
@@ -165,15 +165,27 @@ The important idea is simple: translate the human-readable words, but keep the r
 
 ## Translation Provider Setup
 
-Online providers are optional. You can still use the app without any API key.
+Translation providers are optional. You can still use the app without any API key, and Ollama can run locally on your machine.
 
 To use them:
 
 1. Open **Options**.
-2. Paste keys only for the providers you want: DeepL, Gemini, or an OpenAI-compatible endpoint.
+2. Paste keys only for the online providers you want: DeepL, Gemini, or an OpenAI-compatible endpoint.
 3. Click the provider test button to confirm the key works.
 4. Check DeepL usage or review AI character thresholds before big batch jobs.
 5. Optional: paste a DeepL **Glossary ID** if you already created one for consistent game terms.
+
+For local Ollama translation:
+
+1. Install and start [Ollama](https://ollama.com/).
+2. Pull the recommended model:
+
+```powershell
+ollama pull translategemma:12b
+```
+
+3. In **Options**, enable **Ollama local provider**.
+4. Click **Refresh Ollama models**, keep `translategemma:12b` or type another local model, then click **Test Ollama**.
 
 Before paid/provider-backed batch translation starts, the app estimates how many source characters will be sent so you can avoid spending quota by accident.
 

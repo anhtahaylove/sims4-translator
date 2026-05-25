@@ -65,8 +65,8 @@ Bạn cần hỗ trợ? Hãy [báo lỗi hoặc góp ý](https://github.com/anht
 | Yêu cầu | Ghi chú |
 | --- | --- |
 | Windows | Bản exe đóng gói hướng tới Windows 10 trở lên. |
-| Internet | Không bắt buộc. Chỉ cần khi dùng dịch online như DeepL, Google, MyMemory, Gemini hoặc OpenAI-compatible endpoint. |
-| Provider key | Không bắt buộc. Chỉ thêm key cho provider bạn muốn dùng; app vẫn chạy được khi không có dịch online. |
+| Internet | Không bắt buộc. Chỉ cần khi dùng dịch online như DeepL, Google, MyMemory, Gemini hoặc OpenAI-compatible endpoint. Ollama có thể chạy local sau khi tải model. |
+| Provider key | Không bắt buộc. Chỉ thêm key cho provider bạn muốn dùng; Ollama không cần API key. |
 | Chạy từ source | Người dùng source cần Python và các package trong `requirements.txt`; repo chưa pin một phiên bản Python cụ thể. |
 
 ## App Này Giúp Bạn Làm Gì?
@@ -77,7 +77,7 @@ Bạn cần hỗ trợ? Hãy [báo lỗi hoặc góp ý](https://github.com/anht
 | Tìm string nhanh | Tìm bằng ID, text gốc hoặc bản dịch trong cùng một ô tìm kiếm hybrid. |
 | Đọc string dài | Xem đầy đủ string đang chọn ngay ở Selection Preview. |
 | Tránh lỗi text trống | Highlight token như `{0.SimFirstName}`, `\n`, `<b>`, `<i>` và cảnh báo khi thiếu token. |
-| Dùng dịch máy | Cấu hình DeepL, Google, MyMemory, Gemini hoặc OpenAI-compatible endpoint, có cache và cảnh báo chi phí trước batch lớn. |
+| Dùng dịch máy | Cấu hình DeepL, Google, MyMemory, Gemini, OpenAI-compatible endpoint hoặc Ollama local, có cache và cảnh báo chi phí trước batch lớn. |
 | Xuất bản an toàn hơn | Chạy Validate Release trước khi Save as package, Export hoặc Finalize. |
 
 ## Xem Nhanh Giao Diện
@@ -169,15 +169,27 @@ Nói ngắn gọn: bạn có thể dịch câu chữ cho tự nhiên, nhưng tok
 
 ## Cấu Hình Provider Dịch
 
-Provider online là tùy chọn. Không có API key thì bạn vẫn dùng app bình thường.
+Provider dịch là tùy chọn. Không có API key thì bạn vẫn dùng app bình thường, và Ollama có thể chạy local trên máy bạn.
 
 Cách dùng:
 
 1. Mở **Tùy chọn**.
-2. Dán key cho provider bạn muốn dùng: DeepL, Gemini hoặc OpenAI-compatible endpoint.
+2. Dán key cho provider online bạn muốn dùng: DeepL, Gemini hoặc OpenAI-compatible endpoint.
 3. Bấm nút test của provider để kiểm tra key.
 4. Kiểm tra DeepL usage hoặc ngưỡng ký tự AI trước khi dịch batch lớn.
 5. Tùy chọn: dán **Glossary ID** nếu bạn đã tạo glossary trên DeepL để giữ thuật ngữ game nhất quán.
+
+Nếu muốn dịch local bằng Ollama:
+
+1. Cài và mở [Ollama](https://ollama.com/).
+2. Tải model khuyến nghị:
+
+```powershell
+ollama pull translategemma:12b
+```
+
+3. Trong **Tùy chọn**, bật **Ollama local provider**.
+4. Bấm **Làm mới model Ollama**, giữ `translategemma:12b` hoặc nhập model local khác, rồi bấm **Kiểm tra Ollama**.
 
 Trước khi Batch Translate bằng provider có quota/chi phí, app sẽ ước tính số ký tự nguồn sắp gửi để bạn tránh tốn quota ngoài ý muốn.
 

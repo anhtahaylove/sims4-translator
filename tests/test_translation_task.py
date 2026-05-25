@@ -6,12 +6,16 @@ from unittest.mock import patch
 from singletons.config import config
 from singletons.translator import (
     DeepLUsage,
+    OLLAMA_RECOMMENDED_MODEL,
+    OllamaModels,
     Response,
     ai_engine_available,
     deepl_endpoint,
     deepl_usage,
     estimate_ai_characters,
     estimate_deepl_characters,
+    ollama_base_url,
+    ollama_models,
     translator,
 )
 from utils.task_runner import CancellationToken, TaskReporter
@@ -50,6 +54,9 @@ class TranslationTaskTests(unittest.TestCase):
         config.set_value('api', 'openai_key', '')
         config.set_value('api', 'openai_base_url', 'https://api.openai.com')
         config.set_value('api', 'openai_model', 'gpt-4o-mini')
+        config.set_value('api', 'ollama_enabled', False)
+        config.set_value('api', 'ollama_base_url', 'http://localhost:11434')
+        config.set_value('api', 'ollama_model', OLLAMA_RECOMMENDED_MODEL)
 
     def test_task_returns_immutable_translation_result_without_records(self):
         request = TranslationChunkRequest(
@@ -168,14 +175,94 @@ class TranslationTaskTests(unittest.TestCase):
     def test_ai_engines_appear_only_when_configured(self):
         self.assertFalse(ai_engine_available('Gemini'))
         self.assertFalse(ai_engine_available('OpenAI-compatible'))
+        self.assertFalse(ai_engine_available('Ollama'))
 
         config.set_value('api', 'gemini_key', 'gemini-secret')
         config.set_value('api', 'openai_key', 'openai-secret')
+        config.set_value('api', 'ollama_enabled', True)
 
         self.assertTrue(ai_engine_available('Gemini'))
         self.assertTrue(ai_engine_available('OpenAI-compatible'))
+        self.assertTrue(ai_engine_available('Ollama'))
         self.assertIn('Gemini', translator.engines)
         self.assertIn('OpenAI-compatible', translator.engines)
+        self.assertIn('Ollama', translator.engines)
+
+    def test_ollama_base_url_normalizes_config_and_input(self):
+        self.assertEqual(ollama_base_url('http://localhost:11434/'), 'http://localhost:11434')
+        config.set_value('api', 'ollama_base_url', ' http://example.test:11434/ ')
+        self.assertEqual(ollama_base_url(), 'http://example.test:11434')
+
+    def test_ollama_models_parses_local_tags_and_handles_server_down(self):
+        class FakeResponse:
+            status_code = 200
+
+            @staticmethod
+            def json():
+                return {
+                    'models': [
+                        {'model': 'translategemma:12b'},
+                        {'name': 'gemma4:e4b'},
+                        {'model': 'translategemma:12b'},
+                    ]
+                }
+
+        with patch('singletons.translator.requests.get', return_value=FakeResponse()) as get:
+            result = ollama_models('http://localhost:11434/')
+
+        self.assertEqual(result, OllamaModels(200, ('translategemma:12b', 'gemma4:e4b'), ''))
+        self.assertEqual(get.call_args.args[0], 'http://localhost:11434/api/tags')
+
+        with patch('singletons.translator.requests.get', side_effect=RuntimeError('offline')):
+            result = ollama_models('http://localhost:11434')
+
+        self.assertEqual(result.status_code, 503)
+        self.assertIn('Ollama is not reachable', result.message)
+
+    def test_ollama_translate_sends_chat_payload_and_restores_placeholders(self):
+        config.set_value('api', 'ollama_enabled', True)
+        config.set_value('api', 'ollama_base_url', 'http://localhost:11434/')
+        config.set_value('api', 'ollama_model', 'translategemma:12b')
+
+        class FakeResponse:
+            status_code = 200
+
+            @staticmethod
+            def json():
+                return {'message': {'content': 'Xin chao (0)'}}
+
+        with patch('singletons.translator.requests.post', return_value=FakeResponse()) as post:
+            response = translator.translate('Ollama', 'Hello {0.SimFirstName}', context='Package: sample.package')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.text, 'Xin chao {0.SimFirstName}')
+        api_url, kwargs = post.call_args.args[0], post.call_args.kwargs
+        self.assertEqual(api_url, 'http://localhost:11434/api/chat')
+        self.assertEqual(kwargs['json']['model'], 'translategemma:12b')
+        self.assertFalse(kwargs['json']['stream'])
+        self.assertEqual(kwargs['json']['options']['temperature'], 0.2)
+        prompt = kwargs['json']['messages'][0]['content']
+        self.assertIn('professional English (en) to Vietnamese (vi-VN) game localization translator', prompt)
+        self.assertIn('Return exactly 1 line(s).', prompt)
+        self.assertIn('Package: sample.package', prompt)
+        self.assertIn('(0)', prompt)
+
+    def test_ollama_missing_model_error_is_actionable(self):
+        config.set_value('api', 'ollama_enabled', True)
+
+        class FakeResponse:
+            status_code = 404
+            text = 'model not found'
+
+            @staticmethod
+            def json():
+                return {'error': 'model not found'}
+
+        with patch('singletons.translator.requests.post', return_value=FakeResponse()):
+            response = translator.translate('Ollama', 'Hello')
+
+        self.assertEqual(response.status_code, 404)
+        self.assertIn('ollama pull translategemma:12b', response.text)
 
     def test_gemini_translate_sends_prompt_and_restores_placeholders(self):
         config.set_value('api', 'gemini_key', 'gemini-secret')
@@ -281,6 +368,15 @@ class TranslationTaskTests(unittest.TestCase):
 
         self.assertEqual(result.translations, ())
         self.assertIn('Some lines could not be translated', result.warning)
+
+    def test_ollama_cache_variant_uses_base_url_and_model(self):
+        config.set_value('api', 'ollama_base_url', 'http://localhost:11434/')
+        config.set_value('api', 'ollama_model', 'translategemma:12b')
+
+        self.assertEqual(
+            TranslateDialog._TranslateDialog__cache_variant('Ollama'),
+            'http://localhost:11434|translategemma:12b',
+        )
 
     def test_edit_translation_task_returns_dto_without_ui_mutation(self):
         request = EditTranslationRequest(engine='Mock', source='Hello')

@@ -19,7 +19,7 @@ from packer.resource import ResourceID
 from singletons.config import ConfigManager, config
 from singletons.interface import interface
 from singletons.state import app_state
-from singletons.translator import DeepLUsage
+from singletons.translator import DeepLUsage, OllamaModels, Response
 from storages.dictionaries import DictionariesStorage
 from storages.packages import PackagesStorage
 from storages.records import MainRecord
@@ -173,6 +173,14 @@ class WorkspaceProShellTests(unittest.TestCase):
         config.set_value('api', 'engine', 'Google')
         config.set_value('api', 'deepl_key', '')
         config.set_value('api', 'deepl_glossary_id', '')
+        config.set_value('api', 'gemini_key', '')
+        config.set_value('api', 'gemini_model', 'gemini-2.5-flash')
+        config.set_value('api', 'openai_key', '')
+        config.set_value('api', 'openai_base_url', 'https://api.openai.com')
+        config.set_value('api', 'openai_model', 'gpt-4o-mini')
+        config.set_value('api', 'ollama_enabled', False)
+        config.set_value('api', 'ollama_base_url', 'http://localhost:11434')
+        config.set_value('api', 'ollama_model', 'translategemma:12b')
         config.set_value('view', 'activity_visible', True)
         config.set_value('view', 'activity_expanded', True)
         config.set_value('view', 'row_density', 'comfortable')
@@ -1822,6 +1830,9 @@ class WorkspaceProShellTests(unittest.TestCase):
                 dialog.txt_openai_key.setText('openai-secret')
                 dialog.txt_openai_base_url.setText('https://example.test')
                 dialog.txt_openai_model.setText('openai-test')
+                dialog.cb_ollama_enabled.setChecked(True)
+                dialog.txt_ollama_base_url.setText('http://localhost:11434')
+                dialog.cb_ollama_model.setCurrentText('translategemma:12b')
                 dialog.txt_ai_session_cap.setText('1234')
                 dialog.txt_ai_daily_cap.setText('5678')
                 dialog.change_ai_provider_settings()
@@ -1837,11 +1848,49 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertEqual(config.value('api', 'openai_key'), 'openai-secret')
             self.assertEqual(config.value('api', 'openai_base_url'), 'https://example.test')
             self.assertEqual(config.value('api', 'openai_model'), 'openai-test')
+            self.assertTrue(config.value('api', 'ollama_enabled'))
+            self.assertEqual(config.value('api', 'ollama_base_url'), 'http://localhost:11434')
+            self.assertEqual(config.value('api', 'ollama_model'), 'translategemma:12b')
             self.assertEqual(config.value('api', 'ai_session_character_cap'), 1234)
             self.assertEqual(config.value('api', 'ai_daily_character_cap'), 5678)
             self.assertEqual(config.value('api', 'engine'), 'DeepL')
             self.assertTrue(config.value('save', 'backup'))
             self.assertGreaterEqual(save_mock.call_count, 5)
+        finally:
+            close_widget(dialog)
+            close_widget(window)
+
+    def test_options_dialog_refreshes_ollama_models_and_keeps_recommended_hint(self):
+        window = MainWindow()
+        dialog = OptionsDialog(window)
+        try:
+            dialog.txt_ollama_base_url.setText('http://localhost:11434')
+            dialog.cb_ollama_model.setCurrentText('custom-model:latest')
+            with patch(
+                'windows.options_dialog.ollama_models',
+                return_value=OllamaModels(200, ('gemma4:e4b',), ''),
+            ) as models:
+                dialog.refresh_ollama_models()
+
+            models.assert_called_with('http://localhost:11434')
+            self.assertGreaterEqual(dialog.cb_ollama_model.findText('custom-model:latest'), 0)
+            self.assertGreaterEqual(dialog.cb_ollama_model.findText('translategemma:12b'), 0)
+            self.assertGreaterEqual(dialog.cb_ollama_model.findText('gemma4:e4b'), 0)
+            self.assertEqual(dialog.cb_ollama_model.currentText(), 'custom-model:latest')
+            self.assertIn('ollama pull translategemma:12b', dialog.lbl_deepl_status.text())
+        finally:
+            close_widget(dialog)
+            close_widget(window)
+
+    def test_options_dialog_tests_ollama_without_api_key(self):
+        window = MainWindow()
+        dialog = OptionsDialog(window)
+        try:
+            with patch('windows.options_dialog.translator.translate', return_value=Response(200, 'Xin chao')) as call:
+                dialog.test_ai_provider('Ollama')
+
+            call.assert_called_once_with('Ollama', 'Hello')
+            self.assertIn('Ollama: OK', dialog.lbl_deepl_status.text())
         finally:
             close_widget(dialog)
             close_widget(window)

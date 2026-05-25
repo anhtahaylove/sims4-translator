@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="vi_VN" name="Vietnamese" version="2.1.0" authors="Community">
+<ts language="vi_VN" name="Vietnamese" version="2.2.0" authors="Community">
   <context name="MainWindow">
     <string>
       <source>File</source>
@@ -588,8 +588,28 @@
       <translation>Kiểm tra OpenAI-compatible</translation>
     </string>
     <string>
-      <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini and OpenAI-compatible providers use a safety prompt that asks the model to preserve Sims tokens and line count. Do not share or commit your API key.</source>
-      <translation>Cấu hình nhà cung cấp dịch tùy chọn, rồi chọn provider trong Search and Edit hoặc Batch translate. DeepL hỗ trợ kiểm tra usage và Glossary ID. Gemini và OpenAI-compatible dùng prompt an toàn để yêu cầu model giữ token Sims và số dòng. Không chia sẻ hoặc commit API key.</translation>
+      <source>Enable Ollama local provider</source>
+      <translation>Bật provider Ollama local</translation>
+    </string>
+    <string>
+      <source>Refresh Ollama models</source>
+      <translation>Làm mới model Ollama</translation>
+    </string>
+    <string>
+      <source>Test Ollama</source>
+      <translation>Kiểm tra Ollama</translation>
+    </string>
+    <string>
+      <source>Configure optional translation providers, then choose one in Search and Edit or Batch translate. DeepL supports usage checks and glossary ID. Gemini, OpenAI-compatible, and Ollama providers use a safety prompt that asks the model to preserve Sims tokens and line count. Recommended Ollama model: translategemma:12b. Run: ollama pull translategemma:12b. Do not share or commit your API key.</source>
+      <translation>Cấu hình nhà cung cấp dịch tùy chọn, rồi chọn provider trong Search and Edit hoặc Batch translate. DeepL hỗ trợ kiểm tra usage và Glossary ID. Gemini, OpenAI-compatible và Ollama dùng prompt an toàn để yêu cầu model giữ token Sims và số dòng. Model Ollama khuyến nghị: translategemma:12b. Chạy: ollama pull translategemma:12b. Không chia sẻ hoặc commit API key.</translation>
+    </string>
+    <string>
+      <source>Ollama models loaded. Recommended model is missing. Run: ollama pull translategemma:12b</source>
+      <translation>Đã tải danh sách model Ollama. Thiếu model khuyến nghị. Chạy: ollama pull translategemma:12b</translation>
+    </string>
+    <string>
+      <source>Ollama models loaded: {count:,}.</source>
+      <translation>Đã tải model Ollama: {count:,}.</translation>
     </string>
     <string>
       <source>Translation cache</source>
@@ -1684,6 +1704,22 @@ Lỗi:
     <string>
       <source>There was a temporary problem with the DeepL Service.</source>
       <translation>DeepL đang gặp sự cố tạm thời.</translation>
+    </string>
+    <string>
+      <source>Ollama base URL is empty.</source>
+      <translation>Base URL của Ollama đang trống.</translation>
+    </string>
+    <string>
+      <source>Ollama base URL or model is empty.</source>
+      <translation>Base URL hoặc model Ollama đang trống.</translation>
+    </string>
+    <string>
+      <source>Ollama is not reachable at {url}. Start Ollama or check the base URL.</source>
+      <translation>Không kết nối được Ollama tại {url}. Hãy mở Ollama hoặc kiểm tra lại base URL.</translation>
+    </string>
+    <string>
+      <source>Ollama model was not found. Run: ollama pull {model}</source>
+      <translation>Không tìm thấy model Ollama. Chạy: ollama pull {model}</translation>
     </string>
   </context>
   <context name="ReplaceDialog">

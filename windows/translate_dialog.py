@@ -210,7 +210,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
 
     def check_api(self):
         api = self.cb_api.currentText().lower()
-        if api in ('deepl', 'gemini', 'openai-compatible'):
+        if api in ('deepl', 'gemini', 'openai-compatible', 'ollama'):
             self.rb_fast.setEnabled(True)
         else:
             self.rb_fast.setEnabled(False)
@@ -241,7 +241,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
                 [item for _index, item in indexed_items]
         ):
             return
-        if engine.lower() in ('gemini', 'openai-compatible') and indexed_items and not self.__confirm_ai_cost(
+        if engine.lower() in ('gemini', 'openai-compatible', 'ollama') and indexed_items and not self.__confirm_ai_cost(
                 engine,
                 [item for _index, item in indexed_items]
         ):
@@ -548,6 +548,11 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             return '|'.join((
                 (config.value('api', 'openai_base_url') or '').strip().rstrip('/'),
                 (config.value('api', 'openai_model') or '').strip(),
+            ))
+        if engine_name == 'ollama':
+            return '|'.join((
+                (config.value('api', 'ollama_base_url') or '').strip().rstrip('/'),
+                (config.value('api', 'ollama_model') or '').strip(),
             ))
         return ''
 
