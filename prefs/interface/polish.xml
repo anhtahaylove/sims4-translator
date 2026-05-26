@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="pl_PL" name="Polski (Polish)" version="2.2.15" authors="Simowe Osiedle">
+<ts language="pl_PL" name="Polski (Polish)" version="2.2.16" authors="Simowe Osiedle">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -198,6 +198,10 @@
     <string>
       <source>Options</source>
       <translation>Opcje</translation>
+    </string>
+    <string>
+      <source>STBL group</source>
+      <translation>Grupa STBL</translation>
     </string>
     <string>
       <source>STBL group mode</source>

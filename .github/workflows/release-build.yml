@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Release version without the leading v, for example 2.2.15
+        description: Release version without the leading v, for example 2.2.16
         required: true
-        default: 2.2.15
+        default: 2.2.16
   push:
     tags:
       - 'v*.*.*'

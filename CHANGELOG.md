@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.2.16 - 2026-05-26
+
+- Shortened the Options submenu label to `STBL group` while keeping the full mode wording in the tooltip.
+- Added extra spacing around menu arrows so submenu labels do not collide with the arrow glyph.
+
 ## Version 2.2.15 - 2026-05-26
 
 - Fixed the Options menu width so `STBL group mode` no longer overlaps the submenu arrow.

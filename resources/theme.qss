@@ -972,7 +972,7 @@ QComboBox QAbstractItemView::item {
     height: 28px;
 }
 QMenu::item {
-    padding: 0 34px 0 24px;
+    padding: 0 42px 0 24px;
     height: 28px;
     margin: 1px 4px;
     color: __TEXT__;
@@ -1040,7 +1040,7 @@ QMenu::right-arrow:selected:!disabled {
 }
 QMenu::right-arrow {
     image: url(:/images/life/menu_right_arrow.png);
-    margin-right: 7px;
+    margin-right: 12px;
 }
 QMenu::right-arrow:disabled {
     image: url(:/images/life/menu_right_arrow_disabled.png);

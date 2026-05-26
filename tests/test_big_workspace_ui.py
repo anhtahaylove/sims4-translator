@@ -2344,7 +2344,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             window.retranslate()
             self.assertGreaterEqual(dialog.cb_language.findData('vi_VN'), 0)
             self.assertEqual(interface.text('MainWindow', 'File'), 'Tệp')
-            self.assertNotEqual(interface.text('MainWindow', 'STBL group mode'), 'STBL group mode')
+            self.assertNotEqual(interface.text('MainWindow', 'STBL group'), 'STBL group')
             self.assertEqual(window.command_open.text(), 'Mở')
             self.assertEqual(window.command_dictionary.text(), 'Từ điển')
             self.assertFalse(hasattr(window, 'filter_title'))
@@ -2373,8 +2373,12 @@ class WorkspaceProShellTests(unittest.TestCase):
     def test_options_menu_leaves_room_for_stbl_group_submenu_arrow(self):
         window = MainWindow()
         try:
-            label_width = window.menu_options.fontMetrics().horizontalAdvance(window.menu_group.title())
-            self.assertGreaterEqual(window.menu_options.minimumWidth(), label_width + 72)
+            self.assertEqual(window.menu_group.title(), 'STBL group')
+            self.assertEqual(window.menu_group.toolTip(), 'STBL group mode')
+            self.assertLess(
+                window.menu_options.fontMetrics().horizontalAdvance(window.menu_group.title()),
+                window.menu_options.minimumWidth() - 48,
+            )
             self.assertGreaterEqual(window.menu_options.minimumWidth(), 168)
         finally:
             close_widget(window)
@@ -2387,7 +2391,7 @@ class WorkspaceProShellTests(unittest.TestCase):
         storage.model.items = [item]
         storage.model.filtered = [item]
         try:
-            self.assertEqual(window.menu_group.title(), 'STBL group mode')
+            self.assertEqual(window.menu_group.title(), 'STBL group')
             self.assertEqual(window.action_group_original.text(), 'Original package group (recommended)')
             self.assertIn('resource group', window.action_group_original.toolTip())
 

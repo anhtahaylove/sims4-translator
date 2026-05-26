@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="uk_UA" name="Українська (Ukrainian)" version="2.2.15" authors="Roman Kozin">
+<ts language="uk_UA" name="Українська (Ukrainian)" version="2.2.16" authors="Roman Kozin">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -198,6 +198,10 @@
     <string>
       <source>Options</source>
       <translation>Опції</translation>
+    </string>
+    <string>
+      <source>STBL group</source>
+      <translation>Група STBL</translation>
     </string>
     <string>
       <source>STBL group mode</source>
