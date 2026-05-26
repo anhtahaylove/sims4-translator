@@ -56,9 +56,14 @@ def redact_sensitive(message: object) -> str:
     if home and home in text:
         text = text.replace(home, '%USERPROFILE%')
 
-    appdata = os.environ.get('APPDATA')
-    if appdata and appdata in text:
-        text = text.replace(appdata, '%APPDATA%')
+    for env_name, replacement in (
+            ('APPDATA', '%APPDATA%'),
+            ('LOCALAPPDATA', '%LOCALAPPDATA%'),
+            ('USERPROFILE', '%USERPROFILE%'),
+    ):
+        value = os.environ.get(env_name)
+        if value and value in text:
+            text = text.replace(value, replacement)
 
     for pattern in API_KEY_PATTERNS:
         if pattern.groups >= 2:

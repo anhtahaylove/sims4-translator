@@ -56,9 +56,9 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('python scripts\\create_synthetic_package.py', script)
         self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', script)
         self.assertNotIn('--require-gui-outputs', script)
-        self.assertIn('python scripts\\verify_version_sync.py --version 2.2.12', script)
+        self.assertIn('python scripts\\verify_version_sync.py --version 2.2.13', script)
         self.assertIn(
-            'python scripts\\verify_interface_i18n.py --all --version 2.2.12 --strict-empty --strict-missing',
+            'python scripts\\verify_interface_i18n.py --all --version 2.2.13 --strict-empty --strict-missing',
             script,
         )
         self.assertIn('git diff --check', script)
@@ -103,6 +103,12 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip', workflow)
         self.assertIn('The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip.sha256', workflow)
         self.assertIn('The-Sims-4-Translator-Plus-v${{ steps.version.outputs.version }}-windows.zip.sigstore.json', workflow)
+        self.assertIn('Generate visual i18n QA screenshots', workflow)
+        self.assertIn('Upload visual i18n QA screenshots', workflow)
+        self.assertIn('i18n-visual-qa-v${{ steps.version.outputs.version }}', workflow)
+        self.assertIn('build/i18n-visual-qa/v${{ steps.version.outputs.version }}/', workflow)
+        self.assertIn('--strict-layout --screenshots', workflow)
+        self.assertIn('python scripts\\visual_i18n_smoke.py --pseudo', workflow)
 
     def test_ci_workflow_uses_node24_actions_and_explicit_windows_runner(self):
         workflow = Path('.github/workflows/ci.yml').read_text(encoding='utf-8')

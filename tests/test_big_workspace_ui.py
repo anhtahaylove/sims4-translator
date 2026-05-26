@@ -246,6 +246,8 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertIsNot(window.filter_search.parent(), window.toolbar)
             self.assertEqual(window.command_open.property('commandLabel'), 'Open')
             self.assertEqual(window.command_translate.property('commandLabel'), 'Translate')
+            self.assertIn(window.action_copy_diagnostics, window.menu_help.actions())
+            self.assertIn(window.action_export_diagnostics, window.menu_help.actions())
             self.assertFalse(window.brand_block.isVisibleTo(window))
             self.assertFalse(window.inspector_apply.isEnabled())
         finally:
@@ -615,6 +617,44 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertIn('Token safety', copied)
             self.assertIn('0x0000002A', copied)
             self.assertIn('Missing source token', copied)
+        finally:
+            close_widget(dialog)
+
+    def test_release_validation_dialog_copies_markdown_summary(self):
+        report = ValidationReport(
+            mode='Manual validation',
+            profile=PROFILE_SOFT,
+            destination_locale='VI_VN',
+            include_untranslated=True,
+            conflict_free=False,
+            total_records=1,
+            written_records=1,
+            package_count=1,
+            resource_count=1,
+            status_counts=(('Approved', 1),),
+            issues=(ValidationIssue(
+                SEVERITY_CRITICAL,
+                'pkg.package',
+                '0x0000000000000001',
+                '0x0000002A',
+                'Approved',
+                'Missing source token(s): {0.SimFirstName}',
+                '{0.SimFirstName}',
+                '',
+                None,
+                'MISSING_TOKEN',
+                'Token safety',
+            ),),
+        )
+
+        dialog = ReleaseValidationDialog(report)
+        try:
+            dialog.copy_summary()
+
+            copied = QApplication.clipboard().text()
+            self.assertIn('# Pre-release Validation Report', copied)
+            self.assertIn('## Top Categories', copied)
+            self.assertIn('`MISSING_TOKEN`', copied)
         finally:
             close_widget(dialog)
 
@@ -1843,6 +1883,9 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertIs(dialog.gb_deepl.parent(), dialog.providers_content)
             self.assertIs(dialog.gb_cache.parent(), dialog.providers_content)
             self.assertIsNot(dialog.gb_deepl.parent(), dialog.tab_general)
+            self.assertEqual(dialog.gb_provider_health.title(), 'Provider health')
+            self.assertIn('DeepL:', dialog.lbl_provider_health.text())
+            self.assertIn('Gemini:', dialog.lbl_provider_health.text())
             self.assertEqual(dialog.gb_provider_deepl.objectName(), 'providerCard')
             self.assertEqual(dialog.gb_provider_gemini.objectName(), 'providerCard')
             self.assertEqual(dialog.gb_provider_openai.objectName(), 'providerCard')
@@ -2171,6 +2214,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             dialog._OptionsDialog__set_deepl_usage_status(usage, validation_only=True)
             self.assertIn('Valid key', dialog.lbl_deepl_status.text())
             self.assertIn('2,500 / 10,000', dialog.lbl_deepl_status.text())
+            self.assertIn('Valid key', dialog.lbl_provider_health.text())
 
             dialog._OptionsDialog__set_deepl_usage_status(usage, validation_only=False)
             self.assertIn('DeepL usage', dialog.lbl_deepl_status.text())

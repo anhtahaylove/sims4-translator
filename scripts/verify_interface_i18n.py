@@ -36,6 +36,14 @@ DYNAMIC_INTERFACE_SOURCES = {
     ('ValidationCategory', 'Summary'),
     ('ValidationProfile', 'Soft release'),
     ('ValidationProfile', 'Strict release'),
+    ('OptionsDialog', 'Configured'),
+    ('OptionsDialog', 'Missing API key'),
+    ('OptionsDialog', 'Missing model'),
+    ('OptionsDialog', 'Missing base URL'),
+    ('OptionsDialog', 'Enabled'),
+    ('OptionsDialog', 'Disabled'),
+    ('OptionsDialog', 'Yes'),
+    ('OptionsDialog', 'No'),
 }
 
 

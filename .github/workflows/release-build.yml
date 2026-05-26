@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Release version without the leading v, for example 2.2.12
+        description: Release version without the leading v, for example 2.2.13
         required: true
-        default: 2.2.12
+        default: 2.2.13
   push:
     tags:
       - 'v*.*.*'
@@ -51,6 +51,22 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-dev.txt -c constraints.txt
+
+      - name: Generate visual i18n QA screenshots
+        shell: powershell
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          python scripts\visual_i18n_smoke.py --languages english german russian ukrainian brasil chinese vietnamese --version $env:RELEASE_VERSION --strict-layout --screenshots
+          python scripts\visual_i18n_smoke.py --pseudo --version $env:RELEASE_VERSION --strict-layout --screenshots
+
+      - name: Upload visual i18n QA screenshots
+        uses: actions/upload-artifact@v7
+        with:
+          name: i18n-visual-qa-v${{ steps.version.outputs.version }}
+          path: build/i18n-visual-qa/v${{ steps.version.outputs.version }}/
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Build Windows app
         shell: powershell

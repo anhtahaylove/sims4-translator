@@ -222,20 +222,28 @@ class ReleaseValidationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             text_path = os.path.join(tmpdir, 'report.txt')
             csv_path = os.path.join(tmpdir, 'report.csv')
+            md_path = os.path.join(tmpdir, 'report.md')
 
             report.write_text(text_path)
             report.write_csv(csv_path)
+            report.write_markdown(md_path)
 
             with open(text_path, 'r', encoding='utf-8') as fp:
                 text_content = fp.read()
             with open(csv_path, 'r', encoding='utf-8-sig') as fp:
                 csv_content = fp.read()
+            with open(md_path, 'r', encoding='utf-8') as fp:
+                markdown_content = fp.read()
 
         self.assertIn('Pre-release Validation Report', text_content)
         self.assertIn('Preset: Soft release', text_content)
         self.assertIn('Missing source token', text_content)
         self.assertIn('Severity,Code,Category,Package,Instance,String ID,Status,Reason', csv_content)
         self.assertIn('MISSING_TOKEN,Token safety', csv_content)
+        self.assertIn('# Pre-release Validation Report', markdown_content)
+        self.assertIn('## Top Categories', markdown_content)
+        self.assertIn('- Token safety: 1', markdown_content)
+        self.assertIn('`MISSING_TOKEN`', markdown_content)
 
     def test_validation_task_reports_progress_and_returns_report(self):
         records = tuple(make_record(idx=index, sid=index, flag=FLAG_VALIDATED) for index in range(1, 5))

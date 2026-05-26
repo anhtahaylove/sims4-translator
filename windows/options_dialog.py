@@ -31,6 +31,7 @@ from singletons.translator import (
     translator,
 )
 from utils.functions import opendir
+from utils.diagnostics import provider_health_snapshot
 from utils.ollama_setup import (
     OLLAMA_DOWNLOAD_URL,
     OLLAMA_RECOMMENDED_MODEL_SIZE,
@@ -423,6 +424,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
 
         self.retranslate()
         self.refresh_translation_cache_status()
+        self.refresh_provider_health_summary()
         self.refresh_ollama_models()
 
     def retranslate(self):
@@ -474,6 +476,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.tabs.setTabText(self.tabs.indexOf(self.tab_providers), interface.text('OptionsDialog', 'Providers'))
         self.tabs.setTabText(self.tabs.indexOf(self.tab_dictionaries), interface.text('OptionsDialog', 'Dictionaries'))
         self.gb_deepl.setTitle(interface.text('OptionsDialog', 'Translation providers'))
+        self.gb_provider_health.setTitle(interface.text('OptionsDialog', 'Provider health'))
         self.gb_provider_deepl.setTitle('DeepL')
         self.gb_provider_gemini.setTitle('Gemini')
         self.gb_provider_openai.setTitle(interface.text('OptionsDialog', 'OpenAI-compatible'))
@@ -527,6 +530,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             'API keys are never stored in the cache.'
         ))
         self.btn_translation_cache_clear.setText(interface.text('OptionsDialog', 'Clear translation cache'))
+        self.refresh_provider_health_summary()
 
         self.lbl_language.setText(interface.text('OptionsDialog', 'Language'))
 
@@ -607,10 +611,12 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         config.set_value('api', 'deepl_key', self.txt_deepl_key.text().strip())
         self.__sync_engine_preference()
         config.save()
+        self.refresh_provider_health_summary()
 
     def change_deepl_glossary_id(self):
         config.set_value('api', 'deepl_glossary_id', self.txt_deepl_glossary_id.text().strip())
         config.save()
+        self.refresh_provider_health_summary()
 
     def change_ai_provider_settings(self):
         config.set_value('api', 'gemini_key', self.txt_gemini_key.text().strip())
@@ -624,6 +630,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.__sync_engine_preference()
         config.save()
         self.__refresh_ollama_status_message()
+        self.refresh_provider_health_summary()
 
     def refresh_ollama_models(self):
         if self.__ollama_pull_handle is not None:
@@ -807,6 +814,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.lbl_ollama_status.setText(text)
         self.lbl_ollama_status.style().unpolish(self.lbl_ollama_status)
         self.lbl_ollama_status.style().polish(self.lbl_ollama_status)
+        self.refresh_provider_health_summary()
 
     def __confirm_ollama_model_download(self) -> bool:
         message_box = QMessageBox(self)
@@ -969,6 +977,27 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             'OptionsDialog',
             'Cache contains {entries:,} entry/entries, {size:,} bytes.'
         ).format(entries=stats.entries, size=stats.size_bytes))
+        self.refresh_provider_health_summary()
+
+    def refresh_provider_health_summary(self):
+        if not hasattr(self, 'lbl_provider_health'):
+            return
+
+        lines = []
+        for provider in provider_health_snapshot():
+            status_text = self.__provider_health_status_text(provider.name, provider.status)
+            detail = f' - {provider.detail}' if provider.detail else ''
+            lines.append(interface.text(
+                'OptionsDialog',
+                '{provider}: {status} (configured: {configured}, enabled: {enabled}){detail}'
+            ).format(
+                provider=provider.name,
+                status=status_text,
+                configured=self.__yes_no(provider.configured),
+                enabled=self.__yes_no(provider.enabled),
+                detail=detail,
+            ))
+        self.lbl_provider_health.setText('\n'.join(lines))
 
     def __set_deepl_usage_status(self, usage, validation_only: bool = False):
         if usage.status_code == 200:
@@ -996,6 +1025,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         label.setText(text)
         label.style().unpolish(label)
         label.style().polish(label)
+        self.refresh_provider_health_summary()
 
     def __provider_status_label(self, engine: str):
         engine_name = (engine or '').lower()
@@ -1004,6 +1034,30 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         if engine_name == 'openai-compatible':
             return self.lbl_openai_status
         return self.lbl_deepl_status
+
+    def __provider_health_status_text(self, provider_name: str, status: str) -> str:
+        live_label = {
+            'DeepL': self.lbl_deepl_status,
+            'Gemini': self.lbl_gemini_status,
+            'OpenAI-compatible': self.lbl_openai_status,
+            'Ollama': self.lbl_ollama_status,
+        }.get(provider_name)
+        if live_label is not None and live_label.text().strip():
+            return live_label.text().strip()
+
+        labels = {
+            'configured': 'Configured',
+            'missing-key': 'Missing API key',
+            'missing-model': 'Missing model',
+            'missing-base-url': 'Missing base URL',
+            'enabled': 'Enabled',
+            'disabled': 'Disabled',
+        }
+        return interface.text('OptionsDialog', labels.get(status, status))
+
+    @staticmethod
+    def __yes_no(value: bool) -> str:
+        return interface.text('OptionsDialog', 'Yes' if value else 'No')
 
     @staticmethod
     def __provider_task_key(engine: str) -> str:

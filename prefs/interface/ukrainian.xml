@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="uk_UA" name="Українська (Ukrainian)" version="2.2.12" authors="Roman Kozin">
+<ts language="uk_UA" name="Українська (Ukrainian)" version="2.2.13" authors="Roman Kozin">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -559,6 +559,26 @@
       <source>untranslated</source>
       <translation>неперекладений</translation>
     </string>
+    <string>
+      <source>Copy diagnostics</source>
+      <translation>Скопіювати діагностику</translation>
+    </string>
+    <string>
+      <source>Export diagnostics...</source>
+      <translation>Експортувати діагностику...</translation>
+    </string>
+    <string>
+      <source>Diagnostics copied to clipboard.</source>
+      <translation>Діагностику скопійовано до буфера обміну.</translation>
+    </string>
+    <string>
+      <source>Diagnostics exported.</source>
+      <translation>Діагностику експортовано.</translation>
+    </string>
+    <string>
+      <source>Diagnostics text (*.txt)</source>
+      <translation>Текст діагностики (*.txt)</translation>
+    </string>
   </context>
   <context name="Messages">
     <string>
@@ -1038,6 +1058,46 @@ Errors:
     <string>
       <source>by {}</source>
       <translation>від {}</translation>
+    </string>
+    <string>
+      <source>Provider health</source>
+      <translation>Стан провайдерів</translation>
+    </string>
+    <string>
+      <source>{provider}: {status} (configured: {configured}, enabled: {enabled}){detail}</source>
+      <translation>{provider}: {status} (налаштовано: {configured}, увімкнено: {enabled}){detail}</translation>
+    </string>
+    <string>
+      <source>Configured</source>
+      <translation>Налаштовано</translation>
+    </string>
+    <string>
+      <source>Missing API key</source>
+      <translation>Немає API key</translation>
+    </string>
+    <string>
+      <source>Missing model</source>
+      <translation>Немає моделі</translation>
+    </string>
+    <string>
+      <source>Missing base URL</source>
+      <translation>Немає Base URL</translation>
+    </string>
+    <string>
+      <source>Enabled</source>
+      <translation>Увімкнено</translation>
+    </string>
+    <string>
+      <source>Disabled</source>
+      <translation>Вимкнено</translation>
+    </string>
+    <string>
+      <source>Yes</source>
+      <translation>Так</translation>
+    </string>
+    <string>
+      <source>No</source>
+      <translation>Ні</translation>
     </string>
   </context>
   <context name="ReplaceDialog">
@@ -1684,6 +1744,10 @@ After this batch: about {after:,} characters ({percent:.1f}%).</source>
     <string>
       <source>Translation</source>
       <translation>Переклад</translation>
+    </string>
+    <string>
+      <source>Markdown summary (*.md)</source>
+      <translation>Підсумок Markdown (*.md)</translation>
     </string>
   </context>
   <context name="ValidationCategory">

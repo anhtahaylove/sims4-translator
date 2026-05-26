@@ -2,8 +2,9 @@
 
 import sys
 import pyperclip
+from pathlib import Path
 from PySide6.QtCore import Qt, QTimer, Slot
-from PySide6.QtWidgets import QApplication, QInputDialog, QMainWindow, QMenu, QMessageBox
+from PySide6.QtWidgets import QApplication, QFileDialog, QInputDialog, QMainWindow, QMenu, QMessageBox
 from PySide6.QtGui import QAction, QIcon
 
 from .ui.main_window import Ui_MainWindow
@@ -30,6 +31,7 @@ from utils.release_validation import (
 from utils.workspace_warnings import workspace_warnings_report
 from utils.functions import open_supported, open_xml, save_package, save_xml
 from utils.constants import *
+from utils.diagnostics import build_diagnostics_text
 from utils.task_runner import TaskRunner
 
 
@@ -152,6 +154,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_group_lowbit.setChecked(config.value('group', 'lowbit'))
 
         self.action_about_qt.triggered.connect(self.about_qt)
+        self.action_copy_diagnostics.triggered.connect(self.copy_diagnostics)
+        self.action_export_diagnostics.triggered.connect(self.export_diagnostics)
         self.action_about_app = QAction(self)
         self.action_about_app.triggered.connect(self.about_app)
         self.menu_help.insertAction(self.action_about_qt, self.action_about_app)
@@ -263,6 +267,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_exit.setText(interface.text('MainWindow', 'Exit'))
         self.action_add_file.setText(interface.text('MainWindow', 'Add file...'))
         self.action_undo.setText(interface.text('MainWindow', 'Undo'))
+        self.action_copy_diagnostics.setText(interface.text('MainWindow', 'Copy diagnostics'))
+        self.action_export_diagnostics.setText(interface.text('MainWindow', 'Export diagnostics...'))
         self.action_about_qt.setText(interface.text('MainWindow', 'About Qt...'))
         self.action_about_app.setText(f'About {APP_NAME}...')
         self.action_options.setText(interface.text('MainWindow', 'Options...'))
@@ -1274,6 +1280,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dlg.deleteLater()
         self.edit_dialog.refresh_api_list()
         self.translate_dialog.refresh_api_list()
+
+    def copy_diagnostics(self):
+        QApplication.clipboard().setText(build_diagnostics_text())
+        window_signals.message.emit(interface.text('MainWindow', 'Diagnostics copied to clipboard.'))
+
+    def export_diagnostics(self):
+        path, _selected_filter = QFileDialog.getSaveFileName(
+            self,
+            interface.text('MainWindow', 'Export diagnostics...'),
+            str(Path.home() / 'sims4-translator-diagnostics.txt'),
+            interface.text('MainWindow', 'Diagnostics text (*.txt)'),
+        )
+        if not path:
+            return
+
+        Path(path).write_text(build_diagnostics_text(), encoding='utf-8')
+        window_signals.message.emit(interface.text('MainWindow', 'Diagnostics exported.'))
 
     def colorbar_toggle(self):
         config.set_value('view', 'colorbar', self.action_colorbar.isChecked())

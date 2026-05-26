@@ -175,9 +175,76 @@ class ValidationReport:
             )
         return '\n'.join(lines)
 
+    def to_markdown_summary(self) -> str:
+        severity_counts = Counter(issue.severity for issue in self.issues)
+        category_counts = Counter(issue.category or 'Uncategorized' for issue in self.issues)
+        code_counts = Counter(issue.code or 'UNCATEGORIZED' for issue in self.issues)
+        lines = [
+            '# Pre-release Validation Report',
+            '',
+            self.summary(),
+            '',
+            '## Overview',
+            '',
+            f'- Mode: {_markdown_text(self.mode)}',
+            f'- Preset: {_markdown_text(self.profile.name)}',
+            f'- Destination: `{_markdown_text(self.destination_locale)}`',
+            f'- Records: {self.written_records:,}/{self.total_records:,}',
+            f'- Packages: {self.package_count:,}',
+            f'- STBL resources: {self.resource_count:,}',
+            f'- Conflict-free save mode: {"on" if self.conflict_free else "off"}',
+            '',
+            '## Issue Counts',
+            '',
+            f'- Critical: {severity_counts.get(SEVERITY_CRITICAL, 0):,}',
+            f'- Warning: {severity_counts.get(SEVERITY_WARNING, 0):,}',
+            f'- Info: {severity_counts.get(SEVERITY_INFO, 0):,}',
+            '',
+            '## Top Categories',
+            '',
+        ]
+
+        if category_counts:
+            for category, count in category_counts.most_common(8):
+                lines.append(f'- {_markdown_text(category)}: {count:,}')
+        else:
+            lines.append('- No issues.')
+
+        lines.extend(('', '## Status Counts', ''))
+        if self.status_counts:
+            for status, count in self.status_counts:
+                lines.append(f'- {_markdown_text(status)}: {count:,}')
+        else:
+            lines.append('- No status counts.')
+
+        lines.extend(('', '## Top Issue Codes', ''))
+        if code_counts:
+            for code, count in code_counts.most_common(8):
+                lines.append(f'- `{_markdown_text(code)}`: {count:,}')
+        else:
+            lines.append('- No issue codes.')
+
+        lines.extend(('', '## Sample Issues', ''))
+        sample_issues = [issue for issue in self.issues if issue.category != CATEGORY_SUMMARY][:10]
+        if not sample_issues:
+            lines.append('- No actionable issues.')
+        for issue in sample_issues:
+            location = ' / '.join(part for part in (issue.package, issue.instance, issue.string_id) if part and part != '-')
+            if location:
+                location = f' ({_markdown_text(location)})'
+            lines.append(
+                f'- **{_markdown_text(issue.severity)}** `{_markdown_text(issue.code or "-")}` '
+                f'{_markdown_text(issue.category or "-")}{location}: {_markdown_text(issue.reason)}'
+            )
+        return '\n'.join(lines)
+
     def write_text(self, path: str) -> None:
         with open(path, 'w', encoding='utf-8') as fp:
             fp.write(self.to_text())
+
+    def write_markdown(self, path: str) -> None:
+        with open(path, 'w', encoding='utf-8') as fp:
+            fp.write(self.to_markdown_summary())
 
     def write_csv(self, path: str) -> None:
         with open(path, 'w', encoding='utf-8-sig', newline='') as fp:
@@ -565,3 +632,8 @@ def _issue_search_text(issue: ValidationIssue) -> str:
         text_to_table(issue.original),
         text_to_table(issue.translation),
     )).lower()
+
+
+def _markdown_text(value: object) -> str:
+    text = text_to_table(str(value or ''))
+    return text.replace('\\', '\\\\').replace('|', '\\|')

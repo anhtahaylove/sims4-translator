@@ -474,7 +474,7 @@ class ReleaseValidationDialog(QDialog):
             self.__open_issue(issue.record)
 
     def copy_summary(self) -> None:
-        QApplication.clipboard().setText(self.report.summary())
+        QApplication.clipboard().setText(self.report.to_markdown_summary())
 
     def copy_selected_issue(self) -> None:
         issue = self.__selected_issue()
@@ -520,6 +520,7 @@ class ReleaseValidationDialog(QDialog):
         dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
         dialog.setNameFilters((
             _display_text('ReleaseValidationDialog', 'Text report (*.txt)'),
+            _display_text('ReleaseValidationDialog', 'Markdown summary (*.md)'),
             _display_text('ReleaseValidationDialog', 'CSV report (*.csv)'),
         ))
         dialog.setDefaultSuffix('txt')
@@ -531,6 +532,8 @@ class ReleaseValidationDialog(QDialog):
         selected_filter = dialog.selectedNameFilter()
         if path.lower().endswith('.csv') or 'csv' in selected_filter.lower():
             self.report.write_csv(path)
+        elif path.lower().endswith('.md') or 'markdown' in selected_filter.lower():
+            self.report.write_markdown(path)
         else:
             self.report.write_text(path)
 

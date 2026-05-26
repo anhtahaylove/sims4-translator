@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="vi_VN" name="Vietnamese" version="2.2.12" authors="Community">
+<ts language="vi_VN" name="Vietnamese" version="2.2.13" authors="Community">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -559,6 +559,26 @@
       <source>untranslated</source>
       <translation>chưa dịch</translation>
     </string>
+    <string>
+      <source>Copy diagnostics</source>
+      <translation>Sao chép chẩn đoán</translation>
+    </string>
+    <string>
+      <source>Export diagnostics...</source>
+      <translation>Xuất chẩn đoán...</translation>
+    </string>
+    <string>
+      <source>Diagnostics copied to clipboard.</source>
+      <translation>Đã sao chép chẩn đoán vào clipboard.</translation>
+    </string>
+    <string>
+      <source>Diagnostics exported.</source>
+      <translation>Đã xuất chẩn đoán.</translation>
+    </string>
+    <string>
+      <source>Diagnostics text (*.txt)</source>
+      <translation>Tệp chẩn đoán (*.txt)</translation>
+    </string>
   </context>
   <context name="Messages">
     <string>
@@ -1038,6 +1058,46 @@ Lỗi:
     <string>
       <source>by {}</source>
       <translation>bởi {}</translation>
+    </string>
+    <string>
+      <source>Provider health</source>
+      <translation>Tình trạng provider</translation>
+    </string>
+    <string>
+      <source>{provider}: {status} (configured: {configured}, enabled: {enabled}){detail}</source>
+      <translation>{provider}: {status} (đã cấu hình: {configured}, đã bật: {enabled}){detail}</translation>
+    </string>
+    <string>
+      <source>Configured</source>
+      <translation>Đã cấu hình</translation>
+    </string>
+    <string>
+      <source>Missing API key</source>
+      <translation>Thiếu API key</translation>
+    </string>
+    <string>
+      <source>Missing model</source>
+      <translation>Thiếu model</translation>
+    </string>
+    <string>
+      <source>Missing base URL</source>
+      <translation>Thiếu Base URL</translation>
+    </string>
+    <string>
+      <source>Enabled</source>
+      <translation>Đã bật</translation>
+    </string>
+    <string>
+      <source>Disabled</source>
+      <translation>Đã tắt</translation>
+    </string>
+    <string>
+      <source>Yes</source>
+      <translation>Có</translation>
+    </string>
+    <string>
+      <source>No</source>
+      <translation>Không</translation>
     </string>
   </context>
   <context name="ReplaceDialog">
@@ -1684,6 +1744,10 @@ Sau batch này: khoảng {after:,} ký tự ({percent:.1f}%).</translation>
     <string>
       <source>Translation</source>
       <translation>Bản dịch</translation>
+    </string>
+    <string>
+      <source>Markdown summary (*.md)</source>
+      <translation>Tóm tắt Markdown (*.md)</translation>
     </string>
   </context>
   <context name="ValidationCategory">

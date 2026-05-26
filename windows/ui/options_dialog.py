@@ -149,6 +149,8 @@ class Ui_OptionsDialog(object):
         layout_deepl = QVBoxLayout(self.gb_deepl)
         layout_deepl.setSpacing(10)
 
+        self.gb_provider_health = QGroupBox(self.gb_deepl)
+        self.gb_provider_health.setObjectName('providerCard')
         self.gb_provider_deepl = QGroupBox(self.gb_deepl)
         self.gb_provider_deepl.setObjectName('providerCard')
         self.gb_provider_gemini = QGroupBox(self.gb_deepl)
@@ -236,6 +238,13 @@ class Ui_OptionsDialog(object):
         self.lbl_openai_status = QLabel(self.gb_deepl)
         self.lbl_openai_status.setObjectName('muted')
         self.lbl_openai_status.setWordWrap(True)
+        self.lbl_provider_health = QLabel(self.gb_provider_health)
+        self.lbl_provider_health.setObjectName('muted')
+        self.lbl_provider_health.setWordWrap(True)
+
+        layout_provider_health = QVBoxLayout(self.gb_provider_health)
+        layout_provider_health.setSpacing(8)
+        layout_provider_health.addWidget(self.lbl_provider_health)
 
         layout_provider_deepl = QGridLayout(self.gb_provider_deepl)
         layout_provider_deepl.setColumnStretch(1, 1)
@@ -279,6 +288,7 @@ class Ui_OptionsDialog(object):
         layout_provider_ollama.addWidget(self.lbl_ollama_status, 3, 0, 1, 3)
         layout_provider_ollama.addLayout(layout_ollama_actions, 4, 0, 1, 3)
 
+        layout_deepl.addWidget(self.gb_provider_health)
         layout_deepl.addWidget(self.gb_provider_deepl)
         layout_deepl.addWidget(self.gb_provider_gemini)
         layout_deepl.addWidget(self.gb_provider_openai)

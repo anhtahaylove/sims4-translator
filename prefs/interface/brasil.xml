@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="pt_BR" name="Português (Brasil)" version="2.2.12" authors="luana67">
+<ts language="pt_BR" name="Português (Brasil)" version="2.2.13" authors="luana67">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -559,6 +559,26 @@
       <source>untranslated</source>
       <translation>não traduzido</translation>
     </string>
+    <string>
+      <source>Copy diagnostics</source>
+      <translation>Copiar diagnósticos</translation>
+    </string>
+    <string>
+      <source>Export diagnostics...</source>
+      <translation>Exportar diagnósticos...</translation>
+    </string>
+    <string>
+      <source>Diagnostics copied to clipboard.</source>
+      <translation>Diagnósticos copiados para a área de transferência.</translation>
+    </string>
+    <string>
+      <source>Diagnostics exported.</source>
+      <translation>Diagnósticos exportados.</translation>
+    </string>
+    <string>
+      <source>Diagnostics text (*.txt)</source>
+      <translation>Texto de diagnóstico (*.txt)</translation>
+    </string>
   </context>
   <context name="Messages">
     <string>
@@ -1038,6 +1058,46 @@ Erros:
     <string>
       <source>by {}</source>
       <translation>por {}</translation>
+    </string>
+    <string>
+      <source>Provider health</source>
+      <translation>Status dos providers</translation>
+    </string>
+    <string>
+      <source>{provider}: {status} (configured: {configured}, enabled: {enabled}){detail}</source>
+      <translation>{provider}: {status} (configurado: {configured}, ativado: {enabled}){detail}</translation>
+    </string>
+    <string>
+      <source>Configured</source>
+      <translation>Configurado</translation>
+    </string>
+    <string>
+      <source>Missing API key</source>
+      <translation>API key ausente</translation>
+    </string>
+    <string>
+      <source>Missing model</source>
+      <translation>Modelo ausente</translation>
+    </string>
+    <string>
+      <source>Missing base URL</source>
+      <translation>URL base ausente</translation>
+    </string>
+    <string>
+      <source>Enabled</source>
+      <translation>Ativado</translation>
+    </string>
+    <string>
+      <source>Disabled</source>
+      <translation>Desativado</translation>
+    </string>
+    <string>
+      <source>Yes</source>
+      <translation>Sim</translation>
+    </string>
+    <string>
+      <source>No</source>
+      <translation>Não</translation>
     </string>
   </context>
   <context name="ReplaceDialog">
@@ -1684,6 +1744,10 @@ Após este lote: cerca de {after:,} caracteres ({percent:.1f}%).</translation>
     <string>
       <source>Translation</source>
       <translation>Tradução</translation>
+    </string>
+    <string>
+      <source>Markdown summary (*.md)</source>
+      <translation>Resumo Markdown (*.md)</translation>
     </string>
   </context>
   <context name="ValidationCategory">

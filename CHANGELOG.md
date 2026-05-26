@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.2.13 - 2026-05-26
+
+- Added privacy-safe diagnostics from the Help menu for bug reports without API keys or private paths.
+- Added a Providers health summary in Options and markdown-friendly Release QA summaries.
+- Added GitHub Actions visual i18n screenshot artifacts for release evidence.
+
 ## Version 2.2.12 - 2026-05-26
 
 - Added visual i18n smoke tooling with pseudo-localization stress checks for localized desktop layouts.

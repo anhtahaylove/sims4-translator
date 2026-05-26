@@ -89,6 +89,8 @@ class Ui_MainWindow(object):
         self.action_undo.setShortcut('Ctrl+Z')
 
         self.action_about_qt = QAction(MainWindow)
+        self.action_copy_diagnostics = QAction(MainWindow)
+        self.action_export_diagnostics = QAction(MainWindow)
 
         self.action_options = QAction(MainWindow)
         self.action_options.setIcon(QIcon(':/images/options.png'))
@@ -240,6 +242,9 @@ class Ui_MainWindow(object):
         self.menu_group.addAction(self.action_group_original)
         self.menu_group.addAction(self.action_group_highbit)
         self.menu_group.addAction(self.action_group_lowbit)
+        self.menu_help.addAction(self.action_copy_diagnostics)
+        self.menu_help.addAction(self.action_export_diagnostics)
+        self.menu_help.addSeparator()
         self.menu_help.addAction(self.action_about_qt)
 
         MainWindow.setMenuBar(self.menubar)
