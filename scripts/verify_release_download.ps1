@@ -148,12 +148,14 @@ Invoke-Step 'Verify release layout' {
 Invoke-Step 'Smoke start app' {
     $ExePath = Join-Path $ExtractDir "$AppName.exe"
     $UserConfig = Join-Path $RunDir 'user-config'
+    $SmokeCwd = Join-Path $RunDir 'cwd'
     New-Item -ItemType Directory -Force -Path $UserConfig | Out-Null
+    New-Item -ItemType Directory -Force -Path $SmokeCwd | Out-Null
 
     $OldConfigDir = $env:SIMS4_TRANSLATOR_CONFIG_DIR
     $env:SIMS4_TRANSLATOR_CONFIG_DIR = $UserConfig
     try {
-        $Process = Start-Process -FilePath $ExePath -WorkingDirectory $ExtractDir -WindowStyle Hidden -PassThru
+        $Process = Start-Process -FilePath $ExePath -WorkingDirectory $SmokeCwd -WindowStyle Hidden -PassThru
         Start-Sleep -Seconds $StartupSeconds
         if ($Process.HasExited) {
             throw "Release app exited early with code $($Process.ExitCode)."

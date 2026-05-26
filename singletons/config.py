@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Union
 
 from utils.constants import *
+from utils.runtime_paths import resource_path
 
 
 CONFIG_DIR_ENV = 'SIMS4_TRANSLATOR_CONFIG_DIR'
@@ -106,7 +107,7 @@ class ConfigManager:
 
     def __init__(self) -> None:
         self.__config_file = self.__resolve_config_file()
-        self.__legacy_config_file = Path('prefs') / CONFIG_FILE_NAME
+        self.__legacy_config_file = resource_path('prefs', CONFIG_FILE_NAME)
         self.__config = deepcopy(self.DEFAULTS)
         self.__load()
 

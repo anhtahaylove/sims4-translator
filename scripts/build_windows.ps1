@@ -11,6 +11,7 @@ $RepoRoot = Resolve-Path (Join-Path $PSScriptRoot '..')
 $BuildVenv = Join-Path $env:TEMP 'sims4-translator-build-venv'
 $BuildPrefs = Join-Path $env:TEMP 'sims4-translator-build-prefs'
 $BuildUserConfig = Join-Path $env:TEMP 'sims4-translator-build-user-config'
+$BuildSmokeCwd = Join-Path $env:TEMP 'sims4-translator-build-smoke-cwd'
 $AppName = 'The Sims 4 Translator Plus'
 $ExePath = Join-Path $RepoRoot "dist\$AppName\$AppName.exe"
 $DistDir = Split-Path $ExePath
@@ -124,12 +125,16 @@ try {
         if (Test-Path $BuildUserConfig) {
             Remove-Item -LiteralPath $BuildUserConfig -Recurse -Force
         }
+        if (Test-Path $BuildSmokeCwd) {
+            Remove-Item -LiteralPath $BuildSmokeCwd -Recurse -Force
+        }
         New-Item -ItemType Directory -Force -Path $BuildUserConfig | Out-Null
+        New-Item -ItemType Directory -Force -Path $BuildSmokeCwd | Out-Null
 
         $OldConfigDir = $env:SIMS4_TRANSLATOR_CONFIG_DIR
         $env:SIMS4_TRANSLATOR_CONFIG_DIR = $BuildUserConfig
         try {
-            $Process = Start-Process -FilePath $ExePath -WorkingDirectory $DistDir -WindowStyle Hidden -PassThru
+            $Process = Start-Process -FilePath $ExePath -WorkingDirectory $BuildSmokeCwd -WindowStyle Hidden -PassThru
             Start-Sleep -Seconds $StartupSeconds
             if ($Process.HasExited) {
                 throw "Built app exited early with code $($Process.ExitCode)."

@@ -14,19 +14,9 @@ from storages.dictionaries import DictionariesStorage
 
 from themes.stylesheet import stylesheet
 from utils.app_logging import setup_app_logging
+from utils.runtime_paths import resource_path
 
 import resource_rc
-
-
-def resource_base_path() -> Path:
-    frozen_base = getattr(sys, '_MEIPASS', None)
-    if frozen_base:
-        return Path(frozen_base)
-    return Path(__file__).resolve().parent
-
-
-def resource_path(relative_path: str) -> Path:
-    return resource_base_path() / relative_path
 
 
 def font_paths() -> list[Path]:

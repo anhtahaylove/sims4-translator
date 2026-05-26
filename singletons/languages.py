@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import os
 from collections import namedtuple
 import xml.etree.ElementTree as ElementTree
 
 from singletons.config import config
+from utils.runtime_paths import resource_path
 
 
 Language = namedtuple('Language', 'locale code google deepl')
@@ -18,9 +18,9 @@ class Languages:
         self.__load()
 
     def __load(self):
-        languages_file = os.path.abspath('./prefs/languages.xml')
+        languages_file = resource_path('prefs', 'languages.xml')
 
-        if not os.path.exists(languages_file):
+        if not languages_file.exists():
             return
 
         with open(languages_file, 'r', encoding='utf-8') as fp:

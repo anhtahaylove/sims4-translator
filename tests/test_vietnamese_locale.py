@@ -2,6 +2,7 @@
 
 import os
 import re
+import sys
 import tempfile
 import unittest
 import textwrap
@@ -139,6 +140,8 @@ class VietnameseLocaleTests(unittest.TestCase):
     @staticmethod
     def __config_from_xml(source: str, destination: str, migrated=None, release_migrated=None):
         cwd = os.getcwd()
+        sentinel = object()
+        previous_meipass = getattr(sys, '_MEIPASS', sentinel)
         with tempfile.TemporaryDirectory() as tmpdir:
             prefs = os.path.join(tmpdir, 'prefs')
             user_config = os.path.join(tmpdir, 'user-config')
@@ -177,11 +180,16 @@ class VietnameseLocaleTests(unittest.TestCase):
                     </config>
                 ''').lstrip())
             try:
+                setattr(sys, '_MEIPASS', tmpdir)
                 os.chdir(tmpdir)
                 with patch.dict(os.environ, {'SIMS4_TRANSLATOR_CONFIG_DIR': user_config}):
                     return ConfigManager()
             finally:
                 os.chdir(cwd)
+                if previous_meipass is sentinel:
+                    delattr(sys, '_MEIPASS')
+                else:
+                    setattr(sys, '_MEIPASS', previous_meipass)
 
     def test_resource_id_converts_to_vietnamese_language_slot(self):
         source = ResourceID(group=0, instance=0x0000000000000001, type=0x220557DA)

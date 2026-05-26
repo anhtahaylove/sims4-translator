@@ -31,6 +31,8 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn("Bundled prefs\\config.xml must not be shipped", self.script)
         self.assertIn("Built app must not write prefs\\config.xml beside the executable", self.script)
         self.assertIn('SIMS4_TRANSLATOR_CONFIG_DIR', self.script)
+        self.assertIn('sims4-translator-build-smoke-cwd', self.script)
+        self.assertIn('-WorkingDirectory $BuildSmokeCwd', self.script)
 
     def test_build_script_keeps_pyinstaller_build_only(self):
         self.assertIn('-r requirements-dev.txt -c constraints.txt', self.script)
@@ -56,9 +58,9 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('python scripts\\create_synthetic_package.py', script)
         self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', script)
         self.assertNotIn('--require-gui-outputs', script)
-        self.assertIn('python scripts\\verify_version_sync.py --version 2.2.16', script)
+        self.assertIn('python scripts\\verify_version_sync.py --version 2.2.17', script)
         self.assertIn(
-            'python scripts\\verify_interface_i18n.py --all --version 2.2.16 --strict-empty --strict-missing',
+            'python scripts\\verify_interface_i18n.py --all --version 2.2.17 --strict-empty --strict-missing',
             script,
         )
         self.assertIn('git diff --check', script)
@@ -135,6 +137,8 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('fonts\\RobotoRegular.ttf', script)
         self.assertIn('Release ZIP must not include prefs\\config.xml', script)
         self.assertIn('SIMS4_TRANSLATOR_CONFIG_DIR', script)
+        self.assertIn('$SmokeCwd', script)
+        self.assertIn('-WorkingDirectory $SmokeCwd', script)
 
     def test_false_positive_evidence_script_collects_verifiable_release_data(self):
         script = Path('scripts/collect_false_positive_evidence.ps1').read_text(encoding='utf-8')

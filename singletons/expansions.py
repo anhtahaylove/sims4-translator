@@ -6,6 +6,7 @@ from typing import List, Dict, Union
 
 from singletons.config import config
 from singletons.interface import interface
+from utils.runtime_paths import resource_path
 
 
 STUFF_PACK_CODES = {
@@ -229,7 +230,7 @@ class Expansions:
         self.__packs = {}
 
         try:
-            with open('./prefs/dlc.ini', 'r', encoding='utf-8') as fp:
+            with open(resource_path('prefs', 'dlc.ini'), 'r', encoding='utf-8') as fp:
                 content = fp.read()
         except FileNotFoundError:
             return {}

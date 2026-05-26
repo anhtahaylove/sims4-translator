@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="id_ID" name="Indonesia (Indonesian)" version="2.2.16" authors="wahyudiZulhaidar">
+<ts language="id_ID" name="Indonesia (Indonesian)" version="2.2.17" authors="wahyudiZulhaidar">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>

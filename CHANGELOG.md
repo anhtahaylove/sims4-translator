@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.2.17 - 2026-05-26
+
+- Hardened bundled resource lookup so interface catalogs, language metadata, DLC metadata, and legacy config migration do not depend on the current working directory.
+- Updated build and release smoke checks to start the app from a separate working directory and catch CWD-sensitive regressions.
+- Added fork review notes documenting which community fork ideas were adopted or skipped.
+
 ## Version 2.2.16 - 2026-05-26
 
 - Shortened the Options submenu label to `STBL group` while keeping the full mode wording in the tooltip.

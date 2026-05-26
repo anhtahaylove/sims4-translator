@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import os
-import glob
 import xml.etree.ElementTree as ElementTree
 from collections import namedtuple
 from typing import List
 
 from singletons.config import config
+from utils.runtime_paths import resource_path
 
 
 class Lang(namedtuple('Lang', 'code name items authors version')):
@@ -32,7 +31,7 @@ class Interface:
         self.__load()
 
     def __load(self) -> None:
-        files = glob.glob(os.path.join('./prefs/interface', '*.xml'))
+        files = sorted(resource_path('prefs', 'interface').glob('*.xml'))
 
         for f in files:
             with open(f, 'r', encoding='utf-8') as fp:
