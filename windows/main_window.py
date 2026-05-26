@@ -317,6 +317,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_numeration.setTitle(interface.text('MainWindow', 'Numeration'))
         self.menu_options.setTitle(interface.text('MainWindow', 'Options'))
         self.menu_group.setTitle(interface.text('MainWindow', 'STBL group mode'))
+        self.__fit_options_menu_width()
         self.menu_help.setTitle(interface.text('MainWindow', 'Help'))
         self.filter_search_label.setText(interface.text('MainWindow', 'Search'))
         self.filter_search.setPlaceholderText(interface.text('MainWindow', 'Search ID, Original, or Translation...'))
@@ -458,6 +459,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.command_export.setText(interface.text('MainWindow', 'Export'))
         self.command_export.setToolTip(interface.text('MainWindow', 'Export translation'))
         self.command_export.setMinimumWidth(max(94, self.command_export.fontMetrics().horizontalAdvance(self.command_export.text()) + 44))
+
+    def __fit_options_menu_width(self):
+        fm = self.menu_options.fontMetrics()
+        labels = [
+            action.text()
+            for action in self.menu_options.actions()
+            if not action.isSeparator()
+        ]
+        if labels:
+            longest_label = max(fm.horizontalAdvance(label) for label in labels)
+            self.menu_options.setMinimumWidth(max(168, longest_label + 72))
 
     def __apply_workspace_density(self, force=False):
         if not hasattr(self, 'action_activity_dock'):

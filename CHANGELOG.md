@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 2.2.15 - 2026-05-26
+
+- Fixed the Options menu width so `STBL group mode` no longer overlaps the submenu arrow.
+- Increased menu item padding for submenu arrows to prevent long localized labels from clipping.
+
 ## Version 2.2.14 - 2026-05-26
 
 - Fixed STBL group mode switching so high-bit/low-bit actions no longer crash.

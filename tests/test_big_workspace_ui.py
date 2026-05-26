@@ -2370,6 +2370,15 @@ class WorkspaceProShellTests(unittest.TestCase):
         finally:
             close_widget(window)
 
+    def test_options_menu_leaves_room_for_stbl_group_submenu_arrow(self):
+        window = MainWindow()
+        try:
+            label_width = window.menu_options.fontMetrics().horizontalAdvance(window.menu_group.title())
+            self.assertGreaterEqual(window.menu_options.minimumWidth(), label_width + 72)
+            self.assertGreaterEqual(window.menu_options.minimumWidth(), 168)
+        finally:
+            close_widget(window)
+
     def test_stbl_group_mode_actions_are_exclusive_and_rewrite_display_group(self):
         window = MainWindow()
         storage = app_state.packages_storage

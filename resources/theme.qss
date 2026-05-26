@@ -972,11 +972,11 @@ QComboBox QAbstractItemView::item {
     height: 28px;
 }
 QMenu::item {
-    padding: 0 10px 0 14px;
+    padding: 0 34px 0 24px;
     height: 28px;
     margin: 1px 4px;
     color: __TEXT__;
-    min-width: 100px;
+    min-width: 120px;
     border-radius: 6px;
 }
 QMenu::item:selected:!disabled,
