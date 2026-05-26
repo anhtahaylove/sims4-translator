@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="ru_RU" name="Русский (Russian)" version="2.2.13" authors="">
+<ts language="ru_RU" name="Русский (Russian)" version="2.2.14" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -200,8 +200,8 @@
       <translation>Параметры</translation>
     </string>
     <string>
-      <source>Group</source>
-      <translation>Группа</translation>
+      <source>STBL group mode</source>
+      <translation>Режим группы STBL</translation>
     </string>
     <string>
       <source>Help</source>
@@ -280,20 +280,20 @@
       <translation>Двоичный файл (Sims 4 Studio)...</translation>
     </string>
     <string>
-      <source>Use original group</source>
-      <translation>Использовать оригинальное значение</translation>
+      <source>Original package group (recommended)</source>
+      <translation>Исходная группа package (рекомендуется)</translation>
     </string>
     <string>
-      <source>Use high-bit</source>
-      <translation>Использовать старший бит</translation>
+      <source>Force high-bit group (0x8...)</source>
+      <translation>Принудительная группа high-bit (0x8...)</translation>
     </string>
     <string>
       <source>To STBL...</source>
       <translation>STBL-файл...</translation>
     </string>
     <string>
-      <source>Use low-bit</source>
-      <translation>Использовать младший бит</translation>
+      <source>Force low-bit group (0x0...)</source>
+      <translation>Принудительная группа low-bit (0x0...)</translation>
     </string>
     <string>
       <source>Edit String</source>
@@ -492,20 +492,12 @@
       <translation>Выбранная строка</translation>
     </string>
     <string>
-      <source>Show a thin status distribution bar above the table.</source>
-      <translation>Покажите тонкую полосу распределения статуса над таблицей.</translation>
-    </string>
-    <string>
       <source>Show advanced search modes</source>
       <translation>Показать режимы расширенного поиска</translation>
     </string>
     <string>
       <source>Status</source>
       <translation>Статус</translation>
-    </string>
-    <string>
-      <source>Status Overview Bar</source>
-      <translation>Панель обзора состояния</translation>
     </string>
     <string>
       <source>Translation table</source>
@@ -578,6 +570,18 @@
     <string>
       <source>Diagnostics text (*.txt)</source>
       <translation>Текст диагностики (*.txt)</translation>
+    </string>
+    <string>
+      <source>Keep the resource group from the source package. Recommended for normal releases.</source>
+      <translation>Сохраняет группу ресурса из исходного package. Рекомендуется для обычных релизов.</translation>
+    </string>
+    <string>
+      <source>Rewrite displayed and exported STBL resource groups to 0x8... for tools or mods that require high-bit groups.</source>
+      <translation>Перезаписывает отображаемые и экспортируемые группы ресурсов STBL в 0x8... для инструментов или модов, которым нужны группы high-bit.</translation>
+    </string>
+    <string>
+      <source>Rewrite displayed and exported STBL resource groups to 0x0... for tools or mods that require low-bit groups.</source>
+      <translation>Перезаписывает отображаемые и экспортируемые группы ресурсов STBL в 0x0... для инструментов или модов, которым нужны группы low-bit.</translation>
     </string>
   </context>
   <context name="Messages">

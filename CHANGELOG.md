@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.2.14 - 2026-05-26
+
+- Fixed STBL group mode switching so high-bit/low-bit actions no longer crash.
+- Renamed the technical group options to clarify that they rewrite STBL resource groups.
+- Removed the optional Status Overview Bar; status chips and workspace stats remain the primary progress summary.
+
 ## Version 2.2.13 - 2026-05-26
 
 - Added privacy-safe diagnostics from the Help menu for bug reports without API keys or private paths.

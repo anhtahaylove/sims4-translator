@@ -94,7 +94,6 @@ class ConfigManager:
             'group': False,
             'source': True,
             'comment': False,
-            'colorbar': False,
             'activity_visible': True,
             'activity_expanded': True,
             'row_density': 'comfortable',

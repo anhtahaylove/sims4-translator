@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="id_ID" name="Indonesia (Indonesian)" version="2.2.13" authors="wahyudiZulhaidar">
+<ts language="id_ID" name="Indonesia (Indonesian)" version="2.2.14" authors="wahyudiZulhaidar">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -200,8 +200,8 @@
       <translation>Opsi</translation>
     </string>
     <string>
-      <source>Group</source>
-      <translation>Grup</translation>
+      <source>STBL group mode</source>
+      <translation>Mode grup STBL</translation>
     </string>
     <string>
       <source>Help</source>
@@ -280,20 +280,20 @@
       <translation>Ke biner (format Sims 4 Studio)...</translation>
     </string>
     <string>
-      <source>Use original group</source>
-      <translation>Gunakan grup asli</translation>
+      <source>Original package group (recommended)</source>
+      <translation>Grup package asli (disarankan)</translation>
     </string>
     <string>
-      <source>Use high-bit</source>
-      <translation>Gunakan bit tinggi</translation>
+      <source>Force high-bit group (0x8...)</source>
+      <translation>Paksa grup high-bit (0x8...)</translation>
     </string>
     <string>
       <source>To STBL...</source>
       <translation>Ke STBL...</translation>
     </string>
     <string>
-      <source>Use low-bit</source>
-      <translation>Gunakan bit rendah</translation>
+      <source>Force low-bit group (0x0...)</source>
+      <translation>Paksa grup low-bit (0x0...)</translation>
     </string>
     <string>
       <source>Edit String</source>
@@ -492,20 +492,12 @@
       <translation>Tali yang dipilih</translation>
     </string>
     <string>
-      <source>Show a thin status distribution bar above the table.</source>
-      <translation>Tampilkan bilah distribusi status tipis di atas tabel.</translation>
-    </string>
-    <string>
       <source>Show advanced search modes</source>
       <translation>Tampilkan mode pencarian lanjutan</translation>
     </string>
     <string>
       <source>Status</source>
       <translation>Status</translation>
-    </string>
-    <string>
-      <source>Status Overview Bar</source>
-      <translation>Bilah Ikhtisar Status</translation>
     </string>
     <string>
       <source>Translation table</source>
@@ -578,6 +570,18 @@
     <string>
       <source>Diagnostics text (*.txt)</source>
       <translation>Teks diagnostik (*.txt)</translation>
+    </string>
+    <string>
+      <source>Keep the resource group from the source package. Recommended for normal releases.</source>
+      <translation>Mempertahankan grup resource dari package sumber. Disarankan untuk rilis normal.</translation>
+    </string>
+    <string>
+      <source>Rewrite displayed and exported STBL resource groups to 0x8... for tools or mods that require high-bit groups.</source>
+      <translation>Menulis ulang grup resource STBL yang ditampilkan dan diekspor menjadi 0x8... untuk tool atau mod yang membutuhkan grup high-bit.</translation>
+    </string>
+    <string>
+      <source>Rewrite displayed and exported STBL resource groups to 0x0... for tools or mods that require low-bit groups.</source>
+      <translation>Menulis ulang grup resource STBL yang ditampilkan dan diekspor menjadi 0x0... untuk tool atau mod yang membutuhkan grup low-bit.</translation>
     </string>
   </context>
   <context name="Messages">

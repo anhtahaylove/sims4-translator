@@ -12,7 +12,7 @@ import themes.balanced as theme
 
 from singletons.config import config
 from singletons.interface import interface
-from singletons.signals import color_signals, storage_signals
+from singletons.signals import storage_signals
 from singletons.state import app_state
 from singletons.translator import translator
 from singletons.undo import undo
@@ -284,8 +284,6 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.item.translate_old = None
 
         app_state.dictionaries_storage.update(self.item)
-
-        color_signals.update.emit()
 
         self.close()
 

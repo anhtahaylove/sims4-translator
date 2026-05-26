@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="da_DK" name="Dansk (Danish)" version="2.2.13" authors="Marianne Topping">
+<ts language="da_DK" name="Dansk (Danish)" version="2.2.14" authors="Marianne Topping">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -200,8 +200,8 @@
       <translation>Indstillinger</translation>
     </string>
     <string>
-      <source>Group</source>
-      <translation>Grupper</translation>
+      <source>STBL group mode</source>
+      <translation>STBL-gruppetilstand</translation>
     </string>
     <string>
       <source>Help</source>
@@ -280,20 +280,20 @@
       <translation>Til binær (Sims 4 Studio format)...</translation>
     </string>
     <string>
-      <source>Use original group</source>
-      <translation>Brug original gruppe</translation>
+      <source>Original package group (recommended)</source>
+      <translation>Original package-gruppe (anbefalet)</translation>
     </string>
     <string>
-      <source>Use high-bit</source>
-      <translation>Brug high-bit</translation>
+      <source>Force high-bit group (0x8...)</source>
+      <translation>Tving high-bit-gruppe (0x8...)</translation>
     </string>
     <string>
       <source>To STBL...</source>
       <translation>Til STBL...</translation>
     </string>
     <string>
-      <source>Use low-bit</source>
-      <translation>Brug low-bit</translation>
+      <source>Force low-bit group (0x0...)</source>
+      <translation>Tving low-bit-gruppe (0x0...)</translation>
     </string>
     <string>
       <source>Edit String</source>
@@ -492,20 +492,12 @@
       <translation>Valgt streng</translation>
     </string>
     <string>
-      <source>Show a thin status distribution bar above the table.</source>
-      <translation>Vis en tynd statusfordelingslinje over tabellen.</translation>
-    </string>
-    <string>
       <source>Show advanced search modes</source>
       <translation>Vis avancerede søgetilstande</translation>
     </string>
     <string>
       <source>Status</source>
       <translation>Status</translation>
-    </string>
-    <string>
-      <source>Status Overview Bar</source>
-      <translation>Statusoversigtsbjælke</translation>
     </string>
     <string>
       <source>Translation table</source>
@@ -578,6 +570,18 @@
     <string>
       <source>Diagnostics text (*.txt)</source>
       <translation>Diagnostiktekst (*.txt)</translation>
+    </string>
+    <string>
+      <source>Keep the resource group from the source package. Recommended for normal releases.</source>
+      <translation>Beholder ressourcegruppen fra kildepakken. Anbefales til normale udgivelser.</translation>
+    </string>
+    <string>
+      <source>Rewrite displayed and exported STBL resource groups to 0x8... for tools or mods that require high-bit groups.</source>
+      <translation>Omskriver viste og eksporterede STBL-ressourcegrupper til 0x8... for værktøjer eller mods, der kræver high-bit-grupper.</translation>
+    </string>
+    <string>
+      <source>Rewrite displayed and exported STBL resource groups to 0x0... for tools or mods that require low-bit groups.</source>
+      <translation>Omskriver viste og eksporterede STBL-ressourcegrupper til 0x0... for værktøjer eller mods, der kræver low-bit-grupper.</translation>
     </string>
   </context>
   <context name="Messages">

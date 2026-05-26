@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="en_US" name="English" version="2.2.13" authors="">
+<ts language="en_US" name="English" version="2.2.14" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -200,7 +200,7 @@
       <translation />
     </string>
     <string>
-      <source>Group</source>
+      <source>STBL group mode</source>
       <translation />
     </string>
     <string>
@@ -280,11 +280,11 @@
       <translation />
     </string>
     <string>
-      <source>Use original group</source>
+      <source>Original package group (recommended)</source>
       <translation />
     </string>
     <string>
-      <source>Use high-bit</source>
+      <source>Force high-bit group (0x8...)</source>
       <translation />
     </string>
     <string>
@@ -292,7 +292,7 @@
       <translation />
     </string>
     <string>
-      <source>Use low-bit</source>
+      <source>Force low-bit group (0x0...)</source>
       <translation />
     </string>
     <string>
@@ -492,19 +492,11 @@
       <translation />
     </string>
     <string>
-      <source>Show a thin status distribution bar above the table.</source>
-      <translation />
-    </string>
-    <string>
       <source>Show advanced search modes</source>
       <translation />
     </string>
     <string>
       <source>Status</source>
-      <translation />
-    </string>
-    <string>
-      <source>Status Overview Bar</source>
       <translation />
     </string>
     <string>
@@ -577,6 +569,18 @@
     </string>
     <string>
       <source>Diagnostics text (*.txt)</source>
+      <translation />
+    </string>
+    <string>
+      <source>Keep the resource group from the source package. Recommended for normal releases.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Rewrite displayed and exported STBL resource groups to 0x8... for tools or mods that require high-bit groups.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Rewrite displayed and exported STBL resource groups to 0x0... for tools or mods that require low-bit groups.</source>
       <translation />
     </string>
   </context>

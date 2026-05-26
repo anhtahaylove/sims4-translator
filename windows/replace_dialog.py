@@ -7,7 +7,6 @@ from PySide6.QtWidgets import QDialog
 from .ui.replace_dialog import Ui_ReplaceDialog
 
 from singletons.interface import interface
-from singletons.signals import color_signals
 from singletons.state import app_state
 from singletons.undo import undo
 from utils.constants import *
@@ -62,8 +61,6 @@ class ReplaceDialog(QDialog, Ui_ReplaceDialog):
                     item.flag = FLAG_PROGRESS
 
             undo.commit()
-
-            color_signals.update.emit()
 
             self.save_values()
 

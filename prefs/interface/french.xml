@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="fr_FR" name="Français (French)" version="2.2.13" authors="Eli.Dev">
+<ts language="fr_FR" name="Français (French)" version="2.2.14" authors="Eli.Dev">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -200,8 +200,8 @@
       <translation>Options</translation>
     </string>
     <string>
-      <source>Group</source>
-      <translation>Groupe</translation>
+      <source>STBL group mode</source>
+      <translation>Mode de groupe STBL</translation>
     </string>
     <string>
       <source>Help</source>
@@ -280,20 +280,20 @@
       <translation>En Binaire (format Sims 4 Studio)...</translation>
     </string>
     <string>
-      <source>Use original group</source>
-      <translation>Utiliser le groupe d'origine</translation>
+      <source>Original package group (recommended)</source>
+      <translation>Groupe package d’origine (recommandé)</translation>
     </string>
     <string>
-      <source>Use high-bit</source>
-      <translation>Utiliser le bit haut</translation>
+      <source>Force high-bit group (0x8...)</source>
+      <translation>Forcer le groupe high-bit (0x8...)</translation>
     </string>
     <string>
       <source>To STBL...</source>
       <translation>En STBL...</translation>
     </string>
     <string>
-      <source>Use low-bit</source>
-      <translation>Utiliser le bit bas</translation>
+      <source>Force low-bit group (0x0...)</source>
+      <translation>Forcer le groupe low-bit (0x0...)</translation>
     </string>
     <string>
       <source>Edit String</source>
@@ -492,20 +492,12 @@
       <translation>Chaîne sélectionnée</translation>
     </string>
     <string>
-      <source>Show a thin status distribution bar above the table.</source>
-      <translation>Afficher une fine barre de distribution d'état au-dessus du tableau.</translation>
-    </string>
-    <string>
       <source>Show advanced search modes</source>
       <translation>Afficher les modes de recherche avancés</translation>
     </string>
     <string>
       <source>Status</source>
       <translation>Statut</translation>
-    </string>
-    <string>
-      <source>Status Overview Bar</source>
-      <translation>Barre de présentation de l'état</translation>
     </string>
     <string>
       <source>Translation table</source>
@@ -578,6 +570,18 @@
     <string>
       <source>Diagnostics text (*.txt)</source>
       <translation>Texte des diagnostics (*.txt)</translation>
+    </string>
+    <string>
+      <source>Keep the resource group from the source package. Recommended for normal releases.</source>
+      <translation>Conserve le groupe de ressource du package source. Recommandé pour les releases normales.</translation>
+    </string>
+    <string>
+      <source>Rewrite displayed and exported STBL resource groups to 0x8... for tools or mods that require high-bit groups.</source>
+      <translation>Réécrit les groupes de ressources STBL affichés et exportés en 0x8... pour les outils ou mods qui exigent des groupes high-bit.</translation>
+    </string>
+    <string>
+      <source>Rewrite displayed and exported STBL resource groups to 0x0... for tools or mods that require low-bit groups.</source>
+      <translation>Réécrit les groupes de ressources STBL affichés et exportés en 0x0... pour les outils ou mods qui exigent des groupes low-bit.</translation>
     </string>
   </context>
   <context name="Messages">

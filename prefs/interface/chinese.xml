@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="zh_TW" name="中文 (Chinese)" version="2.2.13" authors="Tina.">
+<ts language="zh_TW" name="中文 (Chinese)" version="2.2.14" authors="Tina.">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -200,8 +200,8 @@
       <translation>设置</translation>
     </string>
     <string>
-      <source>Group</source>
-      <translation>Group</translation>
+      <source>STBL group mode</source>
+      <translation>STBL 群組模式</translation>
     </string>
     <string>
       <source>Help</source>
@@ -280,20 +280,20 @@
       <translation>轉換為二進位 (The Sims 4 Studio 格式)...</translation>
     </string>
     <string>
-      <source>Use original group</source>
-      <translation>使用原始组别</translation>
+      <source>Original package group (recommended)</source>
+      <translation>原始 package 群組（建議）</translation>
     </string>
     <string>
-      <source>Use high-bit</source>
-      <translation>使用高比特率</translation>
+      <source>Force high-bit group (0x8...)</source>
+      <translation>強制 high-bit 群組 (0x8...)</translation>
     </string>
     <string>
       <source>To STBL...</source>
       <translation>至STBL...</translation>
     </string>
     <string>
-      <source>Use low-bit</source>
-      <translation>使用低比特率</translation>
+      <source>Force low-bit group (0x0...)</source>
+      <translation>強制 low-bit 群組 (0x0...)</translation>
     </string>
     <string>
       <source>Edit String</source>
@@ -492,20 +492,12 @@
       <translation>選定的字串</translation>
     </string>
     <string>
-      <source>Show a thin status distribution bar above the table.</source>
-      <translation>在表格上方顯示一個細長的狀態分佈欄。</translation>
-    </string>
-    <string>
       <source>Show advanced search modes</source>
       <translation>顯示進階搜尋模式</translation>
     </string>
     <string>
       <source>Status</source>
       <translation>狀態</translation>
-    </string>
-    <string>
-      <source>Status Overview Bar</source>
-      <translation>狀態概覽欄</translation>
     </string>
     <string>
       <source>Translation table</source>
@@ -578,6 +570,18 @@
     <string>
       <source>Diagnostics text (*.txt)</source>
       <translation>診斷文字 (*.txt)</translation>
+    </string>
+    <string>
+      <source>Keep the resource group from the source package. Recommended for normal releases.</source>
+      <translation>保留來源 package 的資源群組。建議一般發布使用。</translation>
+    </string>
+    <string>
+      <source>Rewrite displayed and exported STBL resource groups to 0x8... for tools or mods that require high-bit groups.</source>
+      <translation>將顯示與匯出的 STBL 資源群組改寫為 0x8...，供需要 high-bit 群組的工具或 mod 使用。</translation>
+    </string>
+    <string>
+      <source>Rewrite displayed and exported STBL resource groups to 0x0... for tools or mods that require low-bit groups.</source>
+      <translation>將顯示與匯出的 STBL 資源群組改寫為 0x0...，供需要 low-bit 群組的工具或 mod 使用。</translation>
     </string>
   </context>
   <context name="Messages">

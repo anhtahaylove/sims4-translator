@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QDialog
 from .ui.import_dialog import Ui_ImportDialog
 
 from singletons.interface import interface
-from singletons.signals import progress_signals, color_signals, window_signals
+from singletons.signals import progress_signals, window_signals
 from singletons.state import app_state
 from singletons.undo import undo
 from utils.functions import compare, text_to_stbl
@@ -159,7 +159,6 @@ class ImportDialog(QDialog, Ui_ImportDialog):
             'Imported {} translations, unchanged {}, skipped {}, missing {}'
         ).format(stats.applied, stats.unchanged, stats.skipped_by_mode, stats.missing))
 
-        color_signals.update.emit()
         progress_signals.finished.emit()
         return stats
 

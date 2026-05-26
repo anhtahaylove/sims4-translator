@@ -14,15 +14,10 @@ class WindowSignals(QObject):
     log = Signal(str)
 
 
-class ColorSignals(QObject):
-    update = Signal()
-
-
 class StorageSignals(QObject):
     updated = Signal()
 
 
 progress_signals = ProgressSignals()
 window_signals = WindowSignals()
-color_signals = ColorSignals()
 storage_signals = StorageSignals()

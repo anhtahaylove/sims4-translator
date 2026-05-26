@@ -183,6 +183,9 @@ class WorkspaceProShellTests(unittest.TestCase):
         config.set_value('api', 'ollama_enabled', False)
         config.set_value('api', 'ollama_base_url', 'http://localhost:11434')
         config.set_value('api', 'ollama_model', 'translategemma:12b')
+        config.set_value('group', 'original', True)
+        config.set_value('group', 'highbit', False)
+        config.set_value('group', 'lowbit', False)
         config.set_value('view', 'activity_visible', True)
         config.set_value('view', 'activity_expanded', True)
         config.set_value('view', 'row_density', 'comfortable')
@@ -2341,7 +2344,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             window.retranslate()
             self.assertGreaterEqual(dialog.cb_language.findData('vi_VN'), 0)
             self.assertEqual(interface.text('MainWindow', 'File'), 'Tệp')
-            self.assertEqual(interface.text('MainWindow', 'Status Overview Bar'), 'Thanh tổng quan trạng thái')
+            self.assertNotEqual(interface.text('MainWindow', 'STBL group mode'), 'STBL group mode')
             self.assertEqual(window.command_open.text(), 'Mở')
             self.assertEqual(window.command_dictionary.text(), 'Từ điển')
             self.assertFalse(hasattr(window, 'filter_title'))
@@ -2355,21 +2358,64 @@ class WorkspaceProShellTests(unittest.TestCase):
             close_widget(dialog)
             close_widget(window)
 
-    def test_status_overview_bar_replaces_color_visualization_label_and_tooltip(self):
+    def test_status_overview_bar_is_removed_from_view_menu(self):
         window = MainWindow()
-        item = record(FLAG_UNVALIDATED)
-        before = list(item)
         try:
-            self.assertFalse(ConfigManager.DEFAULTS['view']['colorbar'])
-            self.assertEqual(window.action_colorbar.text(), 'Status Overview Bar')
-            self.assertIn('status distribution', window.action_colorbar.toolTip())
-            self.assertNotIn('Color visualization', window.action_colorbar.text())
+            self.assertNotIn('colorbar', ConfigManager.DEFAULTS['view'])
+            self.assertFalse(hasattr(window, 'action_colorbar'))
+            self.assertFalse(hasattr(window, 'colorbar'))
+            view_labels = [action.text() for action in window.menu_view.actions()]
+            self.assertNotIn('Status Overview Bar', view_labels)
+            self.assertIn('Activity Dock', view_labels)
+        finally:
+            close_widget(window)
 
-            window.colorbar.update_colors(1, 2, 3, 4)
-            self.assertIn('Approved 2', window.colorbar.toolTip())
-            self.assertIn('Needs review 3', window.colorbar.toolTip())
-            self.assertIn('Untranslated 4', window.colorbar.toolTip())
-            self.assertEqual(list(item), before)
+    def test_stbl_group_mode_actions_are_exclusive_and_rewrite_display_group(self):
+        window = MainWindow()
+        storage = app_state.packages_storage
+        item = record(FLAG_UNVALIDATED)
+        storage.packages = [PackageStub()]
+        storage.model.items = [item]
+        storage.model.filtered = [item]
+        try:
+            self.assertEqual(window.menu_group.title(), 'STBL group mode')
+            self.assertEqual(window.action_group_original.text(), 'Original package group (recommended)')
+            self.assertIn('resource group', window.action_group_original.toolTip())
+
+            window.group_highbit()
+            self.assertFalse(window.action_group_original.isChecked())
+            self.assertTrue(window.action_group_highbit.isChecked())
+            self.assertFalse(window.action_group_lowbit.isChecked())
+            self.assertEqual(item.group_hex, '0x80000000')
+            self.assertEqual(item.resource.group, 0x80000000)
+            self.assertEqual(item.resource_original.group, 0)
+
+            window.group_lowbit()
+            self.assertFalse(window.action_group_original.isChecked())
+            self.assertFalse(window.action_group_highbit.isChecked())
+            self.assertTrue(window.action_group_lowbit.isChecked())
+            self.assertEqual(item.group_hex, '0x00000000')
+            self.assertEqual(item.resource.group, 0)
+
+            window.group_original()
+            self.assertTrue(window.action_group_original.isChecked())
+            self.assertFalse(window.action_group_highbit.isChecked())
+            self.assertFalse(window.action_group_lowbit.isChecked())
+            self.assertEqual(item.group_hex, '0x00000000')
+            self.assertIs(item.resource, item.resource_original)
+        finally:
+            close_widget(window)
+
+    def test_stbl_group_mode_actions_do_not_crash_without_loaded_package(self):
+        window = MainWindow()
+        try:
+            window.group_highbit()
+            self.assertFalse(window.action_group_original.isChecked())
+            self.assertTrue(window.action_group_highbit.isChecked())
+
+            window.group_lowbit()
+            self.assertFalse(window.action_group_highbit.isChecked())
+            self.assertTrue(window.action_group_lowbit.isChecked())
         finally:
             close_widget(window)
 

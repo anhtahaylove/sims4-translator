@@ -15,7 +15,7 @@ import themes.balanced as theme
 
 from singletons.config import config
 from singletons.interface import interface
-from singletons.signals import progress_signals, color_signals
+from singletons.signals import progress_signals
 from singletons.state import app_state
 from singletons.translation_cache import translation_cache
 from singletons.translator import deepl_usage, estimate_ai_characters, estimate_deepl_characters, translator
@@ -377,7 +377,6 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         self.__translating = False
         self.__handles = []
         self.__set_busy(False)
-        color_signals.update.emit()
         progress_signals.finished.emit()
 
     @staticmethod

@@ -5,7 +5,7 @@ import pyperclip
 from pathlib import Path
 from PySide6.QtCore import Qt, QTimer, Slot
 from PySide6.QtWidgets import QApplication, QFileDialog, QInputDialog, QMainWindow, QMenu, QMessageBox
-from PySide6.QtGui import QAction, QIcon
+from PySide6.QtGui import QAction, QActionGroup, QIcon
 
 from .ui.main_window import Ui_MainWindow
 
@@ -139,19 +139,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_validate_release.triggered.connect(self.validate_release)
         self.action_undo.triggered.connect(self.undo_restore)
 
-        self.action_colorbar.triggered.connect(self.colorbar_toggle)
-        self.action_colorbar.setChecked(config.value('view', 'colorbar'))
         self.action_activity_dock.triggered.connect(self.__activity_toggled)
         self.action_activity_dock.setChecked(config.value('view', 'activity_visible') is not False)
 
         self.action_options.triggered.connect(self.options)
+        self.__group_action_group = QActionGroup(self)
+        self.__group_action_group.setExclusive(True)
+        self.__group_action_group.addAction(self.action_group_original)
+        self.__group_action_group.addAction(self.action_group_highbit)
+        self.__group_action_group.addAction(self.action_group_lowbit)
         self.action_group_original.triggered.connect(self.group_original)
         self.action_group_highbit.triggered.connect(self.group_highbit)
         self.action_group_lowbit.triggered.connect(self.group_lowbit)
 
-        self.action_group_original.setChecked(config.value('group', 'original'))
-        self.action_group_highbit.setChecked(config.value('group', 'highbit'))
-        self.action_group_lowbit.setChecked(config.value('group', 'lowbit'))
+        self.__sync_group_actions()
 
         self.action_about_qt.triggered.connect(self.about_qt)
         self.action_copy_diagnostics.triggered.connect(self.copy_diagnostics)
@@ -283,10 +284,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_export_json_s4s.setText(interface.text('MainWindow', 'To JSON (Sims 4 Studio format)...'))
         self.action_export_binary_s4s.setText(interface.text('MainWindow', 'To Binary (Sims 4 Studio format)...'))
         self.action_export_translation_hub_csv.setText('Sims 4 Translation Hub CSV (*.csv)')
-        self.action_group_original.setText(interface.text('MainWindow', 'Use original group'))
-        self.action_group_highbit.setText(interface.text('MainWindow', 'Use high-bit'))
+        self.action_group_original.setText(interface.text('MainWindow', 'Original package group (recommended)'))
+        self.action_group_original.setToolTip(interface.text(
+            'MainWindow',
+            'Keep the resource group from the source package. Recommended for normal releases.'
+        ))
+        self.action_group_highbit.setText(interface.text('MainWindow', 'Force high-bit group (0x8...)'))
+        self.action_group_highbit.setToolTip(interface.text(
+            'MainWindow',
+            'Rewrite displayed and exported STBL resource groups to 0x8... for tools or mods that require high-bit groups.'
+        ))
         self.action_export_stbl.setText(interface.text('MainWindow', 'To STBL...'))
-        self.action_group_lowbit.setText(interface.text('MainWindow', 'Use low-bit'))
+        self.action_group_lowbit.setText(interface.text('MainWindow', 'Force low-bit group (0x0...)'))
+        self.action_group_lowbit.setToolTip(interface.text(
+            'MainWindow',
+            'Rewrite displayed and exported STBL resource groups to 0x0... for tools or mods that require low-bit groups.'
+        ))
         self.action_import_translation.setText(interface.text('MainWindow', 'Import translation...'))
         self.action_save_bundle.setText(interface.text('MainWindow', 'Save bundle...'))
         self.action_load_bundle.setText(interface.text('MainWindow', 'Load bundle...'))
@@ -294,11 +307,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_num_source.setText(interface.text('MainWindow', 'From the source file'))
         self.action_num_xml.setText(interface.text('MainWindow', 'XML format'))
         self.action_num_xml_dp.setText(interface.text('MainWindow', 'XML format (Deaderpool\'s STBL editor)'))
-        self.action_colorbar.setText(interface.text('MainWindow', 'Status Overview Bar'))
-        self.action_colorbar.setToolTip(interface.text(
-            'MainWindow',
-            'Show a thin status distribution bar above the table.'
-        ))
         self.action_activity_dock.setText(interface.text('MainWindow', 'Activity Dock'))
         self.menu_file.setTitle(interface.text('MainWindow', 'File'))
         self.menu_export_translation.setTitle(interface.text('MainWindow', 'Export translation'))
@@ -308,7 +316,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_view.setTitle(interface.text('MainWindow', 'View'))
         self.menu_numeration.setTitle(interface.text('MainWindow', 'Numeration'))
         self.menu_options.setTitle(interface.text('MainWindow', 'Options'))
-        self.menu_group.setTitle(interface.text('MainWindow', 'Group'))
+        self.menu_group.setTitle(interface.text('MainWindow', 'STBL group mode'))
         self.menu_help.setTitle(interface.text('MainWindow', 'Help'))
         self.filter_search_label.setText(interface.text('MainWindow', 'Search'))
         self.filter_search.setPlaceholderText(interface.text('MainWindow', 'Search ID, Original, or Translation...'))
@@ -744,12 +752,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.update_current_file()
         self.build_instances_list()
         self.update_current_instance()
-        self.colorbar.resfesh()
         self.filter_timer_trigger()
 
     def change_instance(self):
         self.update_current_instance()
-        self.colorbar.resfesh()
         self.filter_timer_trigger()
 
     def search_timer_trigger(self):
@@ -881,8 +887,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_finalize.setEnabled(state and not app_state.packages_storage.multiplied)
         self.action_finalize_as.setEnabled(state and not app_state.packages_storage.multiplied)
 
-        self.colorbar.resfesh()
-        self.colorbar.setVisible(config.value('view', 'colorbar') and state)
         self.update_workspace_summary()
         self.__set_command_button_texts()
         if not state:
@@ -951,6 +955,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if found:
                 self.import_dialog.filename = filename
                 self.import_dialog.exec()
+                self.tableview.refresh()
+                self.update_workspace_summary()
+                self.update_inspector_item(self.tableview.selected_item())
             else:
                 QMessageBox.information(self, self.windowTitle(),
                                         interface.text('Messages', 'Not found text records in this file!'))
@@ -982,7 +989,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     item.translate = translated[0]
                     item.flag = FLAG_PROGRESS if len(translated) > 1 else FLAG_TRANSLATED
 
-        self.colorbar.resfesh()
         self.tableview.refresh()
         self.update_workspace_summary()
 
@@ -990,6 +996,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def batch_translate(self):
         self.translate_dialog.exec()
+        self.tableview.refresh()
+        self.update_workspace_summary()
+        self.update_inspector_item(self.tableview.selected_item())
 
     def translate(self):
         self.translate_dialog.translate_selection()
@@ -1188,6 +1197,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if item:
             self.edit_dialog.prepare(item)
             self.edit_dialog.exec()
+            self.tableview.refresh()
+            self.update_workspace_summary()
             self.update_inspector_item(item)
 
     def validate_selected(self, flag):
@@ -1202,7 +1213,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if flag == FLAG_UNVALIDATED:
                 item.translate = item.source
 
-        self.colorbar.resfesh()
         self.tableview.refresh()
         self.update_workspace_summary()
         self.update_inspector_item(self.tableview.selected_item())
@@ -1220,7 +1230,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if flag == FLAG_UNVALIDATED:
                 item.translate = item.source
 
-        self.colorbar.resfesh()
         self.tableview.refresh()
         self.update_workspace_summary()
         self.update_inspector_item(self.tableview.selected_item())
@@ -1258,7 +1267,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             item.translate_old = None
             item.flag = FLAG_VALIDATED
 
-        self.colorbar.resfesh()
         self.tableview.refresh()
         self.update_workspace_summary()
         self.update_inspector_item(self.tableview.selected_item())
@@ -1273,6 +1281,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def replace(self):
         if app_state.packages_storage.enabled:
             self.replace_dialog.exec()
+            self.tableview.refresh()
+            self.update_workspace_summary()
+            self.update_inspector_item(self.tableview.selected_item())
 
     def options(self):
         dlg = OptionsDialog(self)
@@ -1297,11 +1308,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         Path(path).write_text(build_diagnostics_text(), encoding='utf-8')
         window_signals.message.emit(interface.text('MainWindow', 'Diagnostics exported.'))
-
-    def colorbar_toggle(self):
-        config.set_value('view', 'colorbar', self.action_colorbar.isChecked())
-        self.colorbar.setVisible(config.value('view', 'colorbar') and app_state.packages_storage.enabled)
-        self.colorbar.resfesh()
 
     @Slot()
     def __selection_changed(self):
@@ -1504,7 +1510,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __sync_after_inspector_change(self, item):
         if app_state.packages_storage.enabled and hasattr(app_state.dictionaries_storage, 'update'):
             app_state.dictionaries_storage.update(item)
-        self.colorbar.resfesh()
         self.tableview.refresh()
         self.update_workspace_summary()
         self.update_inspector_item(item)
@@ -1527,34 +1532,56 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.selection_bar.update()
 
     def group_change(self):
-        self.action_group_original.setChecked(config.value('group', 'original'))
-        self.action_group_highbit.setChecked(config.value('group', 'highbit'))
-        self.action_group_lowbit.setChecked(config.value('group', 'lowbit'))
+        self.__sync_group_actions()
 
-        for item in app_state.packages_storage.model.items:
+        storage = app_state.packages_storage
+        if not storage or not storage.enabled:
+            return
+
+        use_original = bool(config.value('group', 'original'))
+        use_highbit = bool(config.value('group', 'highbit'))
+        for item in storage.model.items:
             rid = item[RECORD_MAIN_RESOURCE_ORIGINAL]
-            if not config.group_original:
-                rid = item[RECORD_MAIN_RESOURCE_ORIGINAL].convert_group(highbit=config.group_high)
+            if not use_original:
+                rid = item[RECORD_MAIN_RESOURCE_ORIGINAL].convert_group(highbit=use_highbit)
             item[RECORD_MAIN_GROUP] = rid.group
             item[RECORD_MAIN_RESOURCE] = rid
+
+        self.tableview.refresh()
+        self.update_workspace_summary()
+        self.update_inspector_item(self.tableview.selected_item())
 
     def group_original(self):
         config.set_value('group', 'original', True)
         config.set_value('group', 'highbit', False)
         config.set_value('group', 'lowbit', False)
+        config.save()
         self.group_change()
 
     def group_highbit(self):
         config.set_value('group', 'original', False)
         config.set_value('group', 'highbit', True)
         config.set_value('group', 'lowbit', False)
+        config.save()
         self.group_change()
 
     def group_lowbit(self):
         config.set_value('group', 'original', False)
         config.set_value('group', 'highbit', False)
         config.set_value('group', 'lowbit', True)
+        config.save()
         self.group_change()
+
+    def __sync_group_actions(self):
+        use_original = bool(config.value('group', 'original'))
+        use_highbit = bool(config.value('group', 'highbit'))
+        use_lowbit = bool(config.value('group', 'lowbit'))
+        if not (use_original or use_highbit or use_lowbit):
+            use_original = True
+
+        self.action_group_original.setChecked(use_original)
+        self.action_group_highbit.setChecked(not use_original and use_highbit)
+        self.action_group_lowbit.setChecked(not use_original and not use_highbit)
 
     def num_change(self):
         numeration = config.value('view', 'numeration')
@@ -1686,8 +1713,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @Slot()
     def __undo_restored(self):
         self.action_undo.setEnabled(undo.available)
-        self.colorbar.resfesh()
         self.tableview.refresh()
+        self.update_workspace_summary()
 
     @Slot(list)
     def __packages_loaded(self, keys: list):

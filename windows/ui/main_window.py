@@ -17,8 +17,6 @@ from PySide6.QtWidgets import (
     QSizePolicy,
 )
 from PySide6.QtGui import QAction, QIcon
-
-from widgets.colorbar import QColorBar
 from widgets.comboboxes import NoWheelComboBox
 from widgets.editor import BracketHighlighter
 from widgets.job_drawer import QJobStatusDrawer
@@ -166,8 +164,6 @@ class Ui_MainWindow(object):
 
         self.action_insert = QAction(MainWindow)
 
-        self.action_colorbar = QAction(MainWindow)
-        self.action_colorbar.setCheckable(True)
         self.action_activity_dock = QAction(MainWindow)
         self.action_activity_dock.setCheckable(True)
 
@@ -229,7 +225,6 @@ class Ui_MainWindow(object):
         self.menu_translation.addSeparator()
         self.menu_translation.addAction(self.action_undo)
         self.menu_view.addAction(self.action_insert)
-        self.menu_view.addAction(self.action_colorbar)
         self.menu_view.addAction(self.action_activity_dock)
         self.menu_view.addSeparator()
         self.menu_view.addAction(self.menu_numeration.menuAction())
@@ -339,11 +334,8 @@ class Ui_MainWindow(object):
         self.command_scope_group = None
 
         self.tableview = QMainTableView(MainWindow)
-        self.colorbar = QColorBar(MainWindow)
         self.job_drawer = QJobStatusDrawer(MainWindow)
         self.activity_drawer = self.job_drawer
-
-        self.colorbar.setVisible(False)
 
         self.central_layout = QVBoxLayout(centralwidget)
         self.central_layout.setContentsMargins(8, 8, 8, 8)
@@ -468,7 +460,6 @@ class Ui_MainWindow(object):
 
         self.table_panel_layout.addWidget(self.workspace_overview)
         self.table_panel_layout.addWidget(self.selection_bar)
-        self.table_panel_layout.addWidget(self.colorbar)
         self.table_panel_layout.addWidget(self.tableview, 1)
         return panel
 
