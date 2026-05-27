@@ -33,6 +33,12 @@ Nếu muốn kiểm chứng sâu hơn với bản release được build bằng 
 scripts\verify_release_download.ps1 -Latest -VerifyProvenance
 ```
 
+Với các release immutable mới, có thể kiểm thêm attestation ở cấp GitHub Release:
+
+```powershell
+scripts\verify_release_download.ps1 -Latest -VerifyProvenance -VerifyReleaseAttestation
+```
+
 Lệnh này kiểm thêm GitHub Artifact Attestations và bundle Sigstore/cosign đi kèm release. Đây là bằng chứng provenance của artifact, không thay thế Windows Authenticode code signing.
 
 Dành cho admin group hoặc người muốn kiểm duyệt link: kiểm tra link có trỏ về `github.com/anhtahaylove/sims4-translator`, release có đủ ZIP, `.sha256`, `.sigstore.json`, và badge CI của `main` đang pass. Xem thêm: [Trust & Safety](docs/trust-and-safety.md).

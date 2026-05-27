@@ -58,9 +58,9 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('python scripts\\create_synthetic_package.py', script)
         self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', script)
         self.assertNotIn('--require-gui-outputs', script)
-        self.assertIn('python scripts\\verify_version_sync.py --version 2.2.17', script)
+        self.assertIn('python scripts\\verify_version_sync.py --version 2.2.18', script)
         self.assertIn(
-            'python scripts\\verify_interface_i18n.py --all --version 2.2.17 --strict-empty --strict-missing',
+            'python scripts\\verify_interface_i18n.py --all --version 2.2.18 --strict-empty --strict-missing',
             script,
         )
         self.assertIn('git diff --check', script)
@@ -98,6 +98,14 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('cosign sign-blob --yes --bundle', workflow)
         self.assertIn('cosign verify-blob', workflow)
         self.assertIn('gh release create', workflow)
+        self.assertIn('--verify-tag', workflow)
+        self.assertIn('--draft', workflow)
+        self.assertIn('gh release edit $Tag --repo $env:GITHUB_REPOSITORY --draft=false --latest', workflow)
+        self.assertIn('gh release verify', workflow)
+        self.assertIn('gh release verify-asset', workflow)
+        self.assertIn('Immutable releases cannot be edited or clobbered', workflow)
+        self.assertNotIn('gh release upload', workflow)
+        self.assertNotIn('--clobber', workflow)
         self.assertIn('runs-on: windows-2025-vs2026', workflow)
         self.assertIn('actions/checkout@v6', workflow)
         self.assertIn('actions/setup-python@v6', workflow)
@@ -128,8 +136,11 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('Get-FileHash', script)
         self.assertIn('Expand-Archive', script)
         self.assertIn('[switch]$VerifyProvenance', script)
+        self.assertIn('[switch]$VerifyReleaseAttestation', script)
         self.assertIn('The-Sims-4-Translator-Plus-v$ReleaseVersion-windows.zip', script)
         self.assertIn('$ZipName.sigstore.json', script)
+        self.assertIn('gh release verify $Tag --repo $Repo', script)
+        self.assertIn('gh release verify-asset $Tag $DownloadZip --repo $Repo', script)
         self.assertIn('gh attestation verify', script)
         self.assertIn('cosign verify-blob', script)
         self.assertIn('--certificate-oidc-issuer', script)

@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.2.18 - 2026-05-27
+
+- Updated the release workflow for GitHub immutable releases: releases are now created as drafts, populated with assets, published once, and verified with GitHub release attestations.
+- Added release-attestation verification to the release download verifier while keeping older mutable releases verifiable with the existing provenance checks.
+- Reviewed Konflux CI supply-chain practices and adopted the lightweight release-attestation verification pattern without adding Kubernetes/Tekton infrastructure.
+
 ## Version 2.2.17 - 2026-05-26
 
 - Hardened bundled resource lookup so interface catalogs, language metadata, DLC metadata, and legacy config migration do not depend on the current working directory.

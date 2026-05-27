@@ -3,6 +3,7 @@ param(
     [string]$Version = '',
     [switch]$Latest,
     [switch]$VerifyProvenance,
+    [switch]$VerifyReleaseAttestation,
     [int]$StartupSeconds = 6,
     [string]$WorkDirectory = (Join-Path $env:TEMP 'sims4-translator-release-verify')
 )
@@ -101,6 +102,23 @@ Invoke-Step 'Verify SHA256 checksum' {
         throw "Checksum mismatch. Expected $ExpectedHash, got $ActualHash"
     }
     Write-Host "SHA256 OK: $ActualHash"
+}
+
+if ($VerifyReleaseAttestation) {
+    Invoke-Step 'Verify immutable GitHub release attestation' {
+        Assert-Command 'gh' 'Install GitHub CLI from https://cli.github.com/ and try again.'
+
+        $Tag = "v$ReleaseVersion"
+        & gh release verify $Tag --repo $Repo
+        if ($LASTEXITCODE -ne 0) {
+            throw 'GitHub immutable release attestation verification failed.'
+        }
+
+        & gh release verify-asset $Tag $DownloadZip --repo $Repo
+        if ($LASTEXITCODE -ne 0) {
+            throw 'GitHub immutable release asset verification failed.'
+        }
+    }
 }
 
 if ($VerifyProvenance) {

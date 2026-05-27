@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Release version without the leading v, for example 2.2.17
+        description: Release version without the leading v, for example 2.2.18
         required: true
-        default: 2.2.17
+        default: 2.2.18
   push:
     tags:
       - 'v*.*.*'
@@ -141,10 +141,17 @@ jobs:
           - Windows ZIP: ``$ZipName``
           - SHA256 checksum: ``$ChecksumName``
           - Sigstore/cosign bundle: ``$BundleName``
+          - GitHub immutable release attestation: generated automatically when this release is published
 
           Verify the checksum:
           ````powershell
           Get-FileHash .\$ZipName -Algorithm SHA256
+          ````
+
+          Verify the immutable GitHub release attestation:
+          ````powershell
+          gh release verify $Tag --repo anhtahaylove/sims4-translator
+          gh release verify-asset $Tag .\$ZipName --repo anhtahaylove/sims4-translator
           ````
 
           Verify GitHub build provenance:
@@ -171,8 +178,43 @@ jobs:
           $ErrorActionPreference = $PreviousErrorActionPreference
 
           if ($ReleaseExists) {
-            gh release edit $Tag --repo $env:GITHUB_REPOSITORY --title "The Sims 4 Translator Plus $Tag" --notes-file $NotesFile
-            gh release upload $Tag $ZipName $ChecksumName $BundleName --repo $env:GITHUB_REPOSITORY --clobber
-          } else {
-            gh release create $Tag $ZipName $ChecksumName $BundleName --repo $env:GITHUB_REPOSITORY --title "The Sims 4 Translator Plus $Tag" --notes-file $NotesFile
+            throw "Release $Tag already exists. Immutable releases cannot be edited or clobbered; create a new patch tag instead."
           }
+
+          gh release create $Tag $ZipName $ChecksumName $BundleName `
+            --repo $env:GITHUB_REPOSITORY `
+            --title "The Sims 4 Translator Plus $Tag" `
+            --notes-file $NotesFile `
+            --verify-tag `
+            --draft
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to create draft release $Tag."
+          }
+
+          gh release edit $Tag --repo $env:GITHUB_REPOSITORY --draft=false --latest
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to publish draft release $Tag."
+          }
+
+          function Invoke-ReleaseVerifyWithRetry {
+            param(
+              [string[]]$Arguments,
+              [string]$FailureMessage
+            )
+
+            for ($Attempt = 1; $Attempt -le 12; $Attempt++) {
+              & gh @Arguments
+              if ($LASTEXITCODE -eq 0) {
+                return
+              }
+              Start-Sleep -Seconds 5
+            }
+            throw $FailureMessage
+          }
+
+          Invoke-ReleaseVerifyWithRetry `
+            -Arguments @('release', 'verify', $Tag, '--repo', $env:GITHUB_REPOSITORY) `
+            -FailureMessage "GitHub immutable release attestation verification failed for $Tag."
+          Invoke-ReleaseVerifyWithRetry `
+            -Arguments @('release', 'verify-asset', $Tag, $ZipName, '--repo', $env:GITHUB_REPOSITORY) `
+            -FailureMessage "GitHub immutable release asset verification failed for $ZipName."

@@ -62,7 +62,19 @@ From a source checkout, run:
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\verify_release_download.ps1 -Latest -VerifyProvenance
 ```
 
+For immutable releases created after repository release immutability was enabled,
+you can also verify GitHub's release-level attestation:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\verify_release_download.ps1 -Latest -VerifyProvenance -VerifyReleaseAttestation
+```
+
 Manual verification:
+
+```powershell
+gh release verify vX.Y.Z --repo anhtahaylove/sims4-translator
+gh release verify-asset vX.Y.Z .\The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip --repo anhtahaylove/sims4-translator
+```
 
 ```powershell
 gh attestation verify .\The-Sims-4-Translator-Plus-vX.Y.Z-windows.zip --repo anhtahaylove/sims4-translator
@@ -82,7 +94,7 @@ warn until the EXE is signed with a trusted Windows code-signing certificate.
 2. Confirm the repository owner/name is `anhtahaylove/sims4-translator`.
 3. Open the release and check that ZIP, `.sha256`, and `.sigstore.json` assets exist.
 4. Check the repository Actions tab or CI badge. The latest `main` CI should be passing.
-5. For newer releases, run `verify_release_download.ps1 -Latest -VerifyProvenance` from a source checkout.
+5. For newer releases, run `verify_release_download.ps1 -Latest -VerifyProvenance -VerifyReleaseAttestation` from a source checkout.
 6. Check that release notes do not ask users to disable antivirus, run unknown scripts, or download from mirrors.
 
 ## Windows SmartScreen

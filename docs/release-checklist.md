@@ -95,18 +95,18 @@ must not require GUI export artifacts before it can build.
 For strict release QA after manual GUI exports exist, run:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_release.ps1 -Version 2.2.17
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_release.ps1 -Version 2.2.18
 ```
 
 Do not commit `build/`, `dist/`, generated `.package` files, local dictionaries,
 generated `.spec` files, release ZIPs, or checksum files.
 
 GitHub Actions can also build release artifacts from a clean runner. Use the
-`Release Build` workflow manually with a version such as `2.2.17`, or push a
+`Release Build` workflow manually with a version such as `2.2.18`, or push a
 `vX.Y.Z` tag. The workflow uploads the Windows ZIP, `.sha256`, `.sigstore.json`,
 and `i18n-visual-qa-vX.Y.Z` screenshot evidence as workflow artifacts. For tags,
-it publishes only the ZIP/checksum/signature assets to the matching GitHub
-Release to keep public release assets focused.
+it creates a draft release, uploads the ZIP/checksum/signature assets, publishes
+the release once, and verifies the GitHub immutable release attestation.
 
 ## Documentation And Asset Checks
 
@@ -155,7 +155,7 @@ Publish a SHA256 checksum beside the Windows ZIP. After building, package the
 release artifact and checksum with:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\package_release.ps1 -Version 2.2.17 -Force
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\package_release.ps1 -Version 2.2.18 -Force
 ```
 
 Maintainer example:
@@ -184,6 +184,13 @@ Advanced provenance verification for GitHub Actions-built releases:
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\verify_release_download.ps1 -Latest -VerifyProvenance
 ```
 
+Immutable release-attestation verification for releases created after repository
+immutability was enabled:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\verify_release_download.ps1 -Latest -VerifyProvenance -VerifyReleaseAttestation
+```
+
 For public user and moderator-facing verification guidance, keep
 [trust-and-safety.md](trust-and-safety.md) linked from the README files.
 
@@ -193,7 +200,7 @@ If a release is flagged by a small number of static or ML antivirus engines,
 prepare evidence before contacting vendors:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.2.17
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.2.18
 ```
 
 Attach or paste the generated `vendor-submission-template.txt` content into
@@ -218,8 +225,9 @@ handling rules.
 - Windows CI should run `scripts\check_fast.ps1` on Python 3.12.
 - The `Release Build` workflow should produce a ZIP and `.sha256` artifact from a clean runner.
 - The `Release Build` workflow should generate GitHub Artifact Attestations and a cosign `.sigstore.json` bundle.
-- `scripts\verify_version_sync.py --version 2.2.17` should pass before tagging.
-- `scripts\verify_interface_i18n.py --all --version 2.2.17 --strict-empty --strict-missing` should pass before release packaging.
+- The `Release Build` workflow should publish tag releases through a draft-first immutable-release flow and verify `gh release verify`.
+- `scripts\verify_version_sync.py --version 2.2.18` should pass before tagging.
+- `scripts\verify_interface_i18n.py --all --version 2.2.18 --strict-empty --strict-missing` should pass before release packaging.
 - `scripts\visual_i18n_smoke.py --languages english german russian ukrainian brasil chinese vietnamese --strict-layout --no-screenshots` should pass before release packaging.
 - GitHub release assets should include the Windows ZIP, matching `.sha256`, and matching `.sigstore.json`.
 - GitHub issue templates and `SECURITY.md` should remain present before public release.
