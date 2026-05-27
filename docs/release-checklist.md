@@ -95,14 +95,28 @@ must not require GUI export artifacts before it can build.
 For strict release QA after manual GUI exports exist, run:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_release.ps1 -Version 2.2.18
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_release.ps1 -Version 2.2.19
 ```
 
 Do not commit `build/`, `dist/`, generated `.package` files, local dictionaries,
 generated `.spec` files, release ZIPs, or checksum files.
 
+## Release Notes
+
+Add at least one changeset before tagging a public release:
+
+```powershell
+python scripts\collect_release_notes.py --version 2.2.19 --write-changelog --output build\release-notes\v2.2.19.md
+```
+
+This updates `CHANGELOG.md`, archives consumed changesets under
+`changes/archive/vX.Y.Z/`, and creates the GitHub Release notes body. The release
+workflow and `scripts\check_release.ps1` fail when the target version has no
+changeset. See [release-notes.md](release-notes.md) for the format and category
+rules.
+
 GitHub Actions can also build release artifacts from a clean runner. Use the
-`Release Build` workflow manually with a version such as `2.2.18`, or push a
+`Release Build` workflow manually with a version such as `2.2.19`, or push a
 `vX.Y.Z` tag. The workflow uploads the Windows ZIP, `.sha256`, `.sigstore.json`,
 and `i18n-visual-qa-vX.Y.Z` screenshot evidence as workflow artifacts. For tags,
 it creates a draft release, uploads the ZIP/checksum/signature assets, publishes
@@ -164,7 +178,7 @@ Publish a SHA256 checksum beside the Windows ZIP. After building, package the
 release artifact and checksum with:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\package_release.ps1 -Version 2.2.18 -Force
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\package_release.ps1 -Version 2.2.19 -Force
 ```
 
 Maintainer example:
@@ -209,7 +223,7 @@ If a release is flagged by a small number of static or ML antivirus engines,
 prepare evidence before contacting vendors:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.2.18
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.2.19
 ```
 
 Attach or paste the generated `vendor-submission-template.txt` content into
@@ -235,8 +249,8 @@ handling rules.
 - The `Release Build` workflow should produce a ZIP and `.sha256` artifact from a clean runner.
 - The `Release Build` workflow should generate GitHub Artifact Attestations and a cosign `.sigstore.json` bundle.
 - The `Release Build` workflow should publish tag releases through a draft-first immutable-release flow and verify `gh release verify`.
-- `scripts\verify_version_sync.py --version 2.2.18` should pass before tagging.
-- `scripts\verify_interface_i18n.py --all --version 2.2.18 --strict-empty --strict-missing` should pass before release packaging.
+- `scripts\verify_version_sync.py --version 2.2.19` should pass before tagging.
+- `scripts\verify_interface_i18n.py --all --version 2.2.19 --strict-empty --strict-missing` should pass before release packaging.
 - `scripts\visual_i18n_smoke.py --languages english german russian ukrainian brasil chinese vietnamese --strict-layout --no-screenshots` should pass before release packaging.
 - GitHub release assets should include the Windows ZIP, matching `.sha256`, and matching `.sigstore.json`.
 - Release notes should explain that GitHub's `Release attestation (json)` and the uploaded `.zip.sigstore.json` are separate trust layers.

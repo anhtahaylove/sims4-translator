@@ -1,5 +1,5 @@
 param(
-    [string]$Version = '2.2.18',
+    [string]$Version = '2.2.19',
     [switch]$SkipBuild,
     [switch]$SkipPackage
 )
@@ -30,6 +30,10 @@ try {
 
     Invoke-Step 'Verify interface localization health' {
         python scripts\verify_interface_i18n.py --all --version $Version --strict-empty --strict-missing
+    }
+
+    Invoke-Step 'Verify release notes exist' {
+        python scripts\collect_release_notes.py --version $Version --check
     }
 
     Invoke-Step 'Run visual i18n layout smoke' {

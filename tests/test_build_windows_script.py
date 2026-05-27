@@ -58,9 +58,9 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('python scripts\\create_synthetic_package.py', script)
         self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', script)
         self.assertNotIn('--require-gui-outputs', script)
-        self.assertIn('python scripts\\verify_version_sync.py --version 2.2.18', script)
+        self.assertIn('python scripts\\verify_version_sync.py --version 2.2.19', script)
         self.assertIn(
-            'python scripts\\verify_interface_i18n.py --all --version 2.2.18 --strict-empty --strict-missing',
+            'python scripts\\verify_interface_i18n.py --all --version 2.2.19 --strict-empty --strict-missing',
             script,
         )
         self.assertIn('git diff --check', script)
@@ -74,6 +74,7 @@ class BuildWindowsScriptTests(unittest.TestCase):
             script,
         )
         self.assertIn('--strict-layout --no-screenshots', script)
+        self.assertIn('python scripts\\collect_release_notes.py --version $Version --check', script)
         self.assertIn('package_release.ps1', script)
 
     def test_package_release_script_creates_zip_and_sha256(self):
@@ -93,18 +94,20 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('artifact-metadata: write', workflow)
         self.assertIn('scripts\\build_windows.ps1', workflow)
         self.assertIn('scripts\\package_release.ps1', workflow)
+        self.assertIn('scripts\\collect_release_notes.py --version $env:RELEASE_VERSION', workflow)
+        self.assertIn('build\\release-notes\\v$env:RELEASE_VERSION.md', workflow)
         self.assertIn('actions/attest@v4', workflow)
         self.assertIn('sigstore/cosign-installer@v4.1.2', workflow)
         self.assertIn('cosign sign-blob --yes --bundle', workflow)
         self.assertIn('cosign verify-blob', workflow)
-        self.assertIn('Why two JSON-looking files?', workflow)
-        self.assertIn('not duplicates', workflow)
+        self.assertIn('Resolve-Path "build\\release-notes\\$Tag.md"', workflow)
         self.assertIn('gh release create', workflow)
         self.assertIn('--verify-tag', workflow)
         self.assertIn('--draft', workflow)
         self.assertIn('gh release edit $Tag --repo $env:GITHUB_REPOSITORY --draft=false --latest', workflow)
-        self.assertIn('gh release verify', workflow)
-        self.assertIn('gh release verify-asset', workflow)
+        self.assertIn("Invoke-ReleaseVerifyWithRetry", workflow)
+        self.assertIn("'release', 'verify'", workflow)
+        self.assertIn("'verify-asset'", workflow)
         self.assertIn('Immutable releases cannot be edited or clobbered', workflow)
         self.assertNotIn('gh release upload', workflow)
         self.assertNotIn('--clobber', workflow)
@@ -121,6 +124,15 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('build/i18n-visual-qa/v${{ steps.version.outputs.version }}/', workflow)
         self.assertIn('--strict-layout --screenshots', workflow)
         self.assertIn('python scripts\\visual_i18n_smoke.py --pseudo', workflow)
+
+    def test_release_notes_script_keeps_verification_guidance(self):
+        script = Path('scripts/collect_release_notes.py').read_text(encoding='utf-8')
+        self.assertIn('Why this release exists:', script)
+        self.assertIn('Why two JSON-looking files?', script)
+        self.assertIn('not duplicates', script)
+        self.assertIn('gh release verify', script)
+        self.assertIn('gh attestation verify', script)
+        self.assertIn('cosign verify-blob', script)
 
     def test_ci_workflow_uses_node24_actions_and_explicit_windows_runner(self):
         workflow = Path('.github/workflows/ci.yml').read_text(encoding='utf-8')

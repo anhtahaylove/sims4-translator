@@ -211,6 +211,9 @@ Trước khi Batch Translate bằng provider có quota/chi phí, app sẽ ước
 
 Phần này chỉ cần nếu bạn muốn chạy từ source hoặc tự build bản Windows.
 
+Mỗi thay đổi đáng release cần một file changeset nhỏ để GitHub Release giải
+thích vì sao có version mới. Xem [release-notes.md](docs/release-notes.md).
+
 <details>
 <summary>Chạy từ source</summary>
 

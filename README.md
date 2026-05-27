@@ -207,6 +207,9 @@ Before paid/provider-backed batch translation starts, the app estimates how many
 
 You only need this section if you want to run from source or build the Windows app yourself.
 
+Release-worthy changes need a small changeset file so each GitHub Release
+explains why the new version exists. See [release-notes.md](docs/release-notes.md).
+
 <details>
 <summary>Run from source</summary>
 

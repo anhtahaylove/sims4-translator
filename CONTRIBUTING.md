@@ -70,4 +70,7 @@ then run `scripts\check_release.ps1`.
 
 ## Release Notes
 
-For public release work, follow `docs/release-checklist.md`.
+Every release-worthy change needs a changeset file under `changes/` so GitHub
+Release notes can explain why the new version exists. Follow
+`docs/release-notes.md` first, then use `docs/release-checklist.md` for the full
+release flow.
