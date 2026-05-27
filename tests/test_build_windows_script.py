@@ -97,6 +97,8 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('sigstore/cosign-installer@v4.1.2', workflow)
         self.assertIn('cosign sign-blob --yes --bundle', workflow)
         self.assertIn('cosign verify-blob', workflow)
+        self.assertIn('Why two JSON-looking files?', workflow)
+        self.assertIn('not duplicates', workflow)
         self.assertIn('gh release create', workflow)
         self.assertIn('--verify-tag', workflow)
         self.assertIn('--draft', workflow)
@@ -199,10 +201,14 @@ class BuildWindowsScriptTests(unittest.TestCase):
         trust = Path('docs/trust-and-safety.md').read_text(encoding='utf-8')
         readme = Path('README.md').read_text(encoding='utf-8')
         readme_vi = Path('README.vi.md').read_text(encoding='utf-8')
+        release_checklist = Path('docs/release-checklist.md').read_text(encoding='utf-8')
 
         self.assertIn('VirusTotal false-positive guidance', doc)
         self.assertIn('SecureAge false-positive form', doc)
         self.assertIn('false-positive-submissions.md', trust)
+        self.assertIn('Release attestation (json)', trust)
+        self.assertIn('.zip.sigstore.json', trust)
+        self.assertIn('should not be described as duplicate files', release_checklist)
         self.assertIn('false-positive review notes', readme)
         self.assertIn('ghi chú false-positive', readme_vi)
 

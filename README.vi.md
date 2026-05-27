@@ -17,7 +17,7 @@ Mở package, dịch string, giữ an toàn token của game, kiểm tra trướ
 
 ## Tải An Toàn Và Tự Kiểm Chứng
 
-Chỉ tải app từ trang [GitHub Releases chính thức](https://github.com/anhtahaylove/sims4-translator/releases/latest). Source code được public, bản Windows được kiểm tra bằng GitHub Actions, và mỗi release ZIP có file `.sha256` đi kèm. Các release mới cũng có bundle `.sigstore.json` để kiểm chứng provenance.
+Chỉ tải app từ trang [GitHub Releases chính thức](https://github.com/anhtahaylove/sims4-translator/releases/latest). Source code được public, bản Windows được kiểm tra bằng GitHub Actions, và mỗi release ZIP có file `.sha256` đi kèm. Các release mới cũng có GitHub release attestation và bundle cosign `.zip.sigstore.json` như hai lớp provenance riêng.
 
 Kiểm tra nhanh trên PowerShell:
 
@@ -39,7 +39,7 @@ Với các release immutable mới, có thể kiểm thêm attestation ở cấp
 scripts\verify_release_download.ps1 -Latest -VerifyProvenance -VerifyReleaseAttestation
 ```
 
-Lệnh này kiểm thêm GitHub Artifact Attestations và bundle Sigstore/cosign đi kèm release. Đây là bằng chứng provenance của artifact, không thay thế Windows Authenticode code signing.
+Lệnh này kiểm thêm GitHub Artifact Attestations, GitHub release attestation và bundle Sigstore/cosign đi kèm release. Mục `Release attestation (json)` và file `.zip.sigstore.json` là hai lớp trust khác nhau, không phải file trùng lặp. Đây là bằng chứng provenance của artifact, không thay thế Windows Authenticode code signing.
 
 Dành cho admin group hoặc người muốn kiểm duyệt link: kiểm tra link có trỏ về `github.com/anhtahaylove/sims4-translator`, release có đủ ZIP, `.sha256`, `.sigstore.json`, và badge CI của `main` đang pass. Xem thêm: [Trust & Safety](docs/trust-and-safety.md).
 

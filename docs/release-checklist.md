@@ -108,6 +108,15 @@ and `i18n-visual-qa-vX.Y.Z` screenshot evidence as workflow artifacts. For tags,
 it creates a draft release, uploads the ZIP/checksum/signature assets, publishes
 the release once, and verifies the GitHub immutable release attestation.
 
+Keep both JSON trust files:
+
+- GitHub's generated `Release attestation (json)` proves the immutable release
+  tag, commit, and asset list.
+- The uploaded `.zip.sigstore.json` proves the Windows ZIP was signed by the
+  repository's GitHub Actions release workflow.
+
+They are separate trust layers and should not be described as duplicate files.
+
 ## Documentation And Asset Checks
 
 - Confirm `README.md` and `README.vi.md` still describe the same core workflow.
@@ -230,6 +239,7 @@ handling rules.
 - `scripts\verify_interface_i18n.py --all --version 2.2.18 --strict-empty --strict-missing` should pass before release packaging.
 - `scripts\visual_i18n_smoke.py --languages english german russian ukrainian brasil chinese vietnamese --strict-layout --no-screenshots` should pass before release packaging.
 - GitHub release assets should include the Windows ZIP, matching `.sha256`, and matching `.sigstore.json`.
+- Release notes should explain that GitHub's `Release attestation (json)` and the uploaded `.zip.sigstore.json` are separate trust layers.
 - GitHub issue templates and `SECURITY.md` should remain present before public release.
 
 ## Repository Release Hygiene

@@ -22,7 +22,10 @@ example, an `Undetected` Acronis result does not need a false-positive request.
 - The EXE is not Authenticode code-signed yet, so static ML engines and
   reputation systems can be stricter than they are for signed software.
 - GitHub release artifacts include a ZIP, `.sha256` checksum, and
-  `.sigstore.json` provenance bundle.
+  `.zip.sigstore.json` cosign provenance bundle.
+- Immutable releases also show a GitHub-generated `Release attestation (json)`.
+  That file binds the release tag, commit, and asset list; it is separate from
+  the uploaded cosign bundle.
 - GitHub Artifact Attestations and Sigstore/cosign verify provenance, but they
   do not replace Windows code signing.
 - VirusTotal aggregates vendor results. If a detection is wrong, the vendor

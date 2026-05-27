@@ -17,7 +17,7 @@ Open a package, translate the strings, keep Sims tokens safe, validate your rele
 
 ## Safe Download And Verification
 
-Only download the app from the official [GitHub Releases](https://github.com/anhtahaylove/sims4-translator/releases/latest) page. The source code is public, Windows builds are checked by GitHub Actions, and each release ZIP includes a matching `.sha256` checksum. Newer releases also include GitHub release attestations and a `.sigstore.json` bundle for provenance verification.
+Only download the app from the official [GitHub Releases](https://github.com/anhtahaylove/sims4-translator/releases/latest) page. The source code is public, Windows builds are checked by GitHub Actions, and each release ZIP includes a matching `.sha256` checksum. Newer releases also include GitHub release attestations and a `.zip.sigstore.json` cosign bundle as separate provenance layers.
 
 Quick verification:
 
@@ -39,7 +39,7 @@ For immutable releases, you can also verify the GitHub release attestation:
 scripts\verify_release_download.ps1 -Latest -VerifyProvenance -VerifyReleaseAttestation
 ```
 
-This additionally checks GitHub Artifact Attestations, GitHub release attestations, and the Sigstore/cosign bundle attached to the release. These signatures prove release provenance; they do not replace Windows Authenticode code signing.
+This additionally checks GitHub Artifact Attestations, GitHub release attestations, and the Sigstore/cosign bundle attached to the release. The `Release attestation (json)` entry and the `.zip.sigstore.json` asset are intentionally different trust layers, not duplicates. These signatures prove release provenance; they do not replace Windows Authenticode code signing.
 
 For group admins or cautious users: check that the link points to `github.com/anhtahaylove/sims4-translator`, the release has ZIP, `.sha256`, and `.sigstore.json` assets, and the latest `main` CI badge is passing. More details: [Trust & Safety](docs/trust-and-safety.md).
 
