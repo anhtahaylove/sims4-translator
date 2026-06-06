@@ -13,6 +13,7 @@ from utils.constants import (
     FLAG_VALIDATED,
 )
 from utils.release_validation import (
+    CATEGORY_CONSISTENCY,
     CATEGORY_DUPLICATE,
     CATEGORY_LAYOUT,
     PROFILE_SOFT,
@@ -211,6 +212,44 @@ class ReleaseValidationTests(unittest.TestCase):
         )
 
         self.assertTrue(any(issue.code == 'LINE_COUNT_LAYOUT_RISK' for issue in report.issues))
+
+    def test_consistency_warns_when_same_source_has_multiple_translations(self):
+        first = make_record(idx=1, sid=1, source='Hello Sim', translation='Xin chào Sim', flag=FLAG_VALIDATED)
+        second = make_record(idx=2, sid=2, source='Hello  Sim', translation='Chào Sim', flag=FLAG_VALIDATED)
+
+        report = validate_release_records([first, second], 'Save as package', 'VI_VN')
+        issue = next(issue for issue in report.issues if issue.code == 'INCONSISTENT_SOURCE_TRANSLATION')
+
+        self.assertEqual(issue.category, CATEGORY_CONSISTENCY)
+        self.assertEqual(issue.severity, SEVERITY_WARNING)
+        self.assertIn('2 different translations', issue.reason)
+
+    def test_consistency_does_not_warn_when_same_source_has_same_translation(self):
+        first = make_record(idx=1, sid=1, source='Hello Sim', translation='Xin chào Sim', flag=FLAG_VALIDATED)
+        second = make_record(idx=2, sid=2, source='Hello  Sim', translation='Xin chào Sim', flag=FLAG_VALIDATED)
+
+        report = validate_release_records([first, second], 'Save as package', 'VI_VN')
+
+        self.assertFalse(any(issue.code == 'INCONSISTENT_SOURCE_TRANSLATION' for issue in report.issues))
+
+    def test_consistency_warns_for_non_approved_unchanged_translation(self):
+        report = validate_release_records(
+            [make_record(source='Needs localization', translation='Needs localization', flag=FLAG_PROGRESS)],
+            'Save as package',
+            'VI_VN',
+        )
+
+        issue = next(issue for issue in report.issues if issue.code == 'UNCHANGED_TRANSLATION_REVIEW')
+        self.assertEqual(issue.category, CATEGORY_CONSISTENCY)
+
+    def test_consistency_allows_safe_identical_token_only_text(self):
+        report = validate_release_records(
+            [make_record(source='{0.SimFirstName}', translation='{0.SimFirstName}', flag=FLAG_PROGRESS)],
+            'Save as package',
+            'VI_VN',
+        )
+
+        self.assertFalse(any(issue.code == 'UNCHANGED_TRANSLATION_REVIEW' for issue in report.issues))
 
     def test_report_export_writes_text_and_csv(self):
         report = validate_release_records(

@@ -14,6 +14,7 @@ from singletons.config import config
 from singletons.interface import interface
 from singletons.state import app_state
 from singletons.translation_cache import translation_cache
+from singletons.translation_memory import translation_memory
 from singletons.translator import ai_engine_available, deepl_available_for_current_languages
 from utils.app_logging import log_file_path, redact_sensitive
 from utils.constants import (
@@ -128,6 +129,15 @@ def build_diagnostics_text(log_tail_lines: int = 80) -> str:
     try:
         stats = translation_cache.stats()
         lines.append(f'- Enabled: {_yes_no(translation_cache.enabled)}')
+        lines.append(f'- Entries: {stats.entries:,}')
+        lines.append(f'- Size: {stats.size_bytes:,} bytes')
+    except Exception as exc:
+        lines.append(f'- Unavailable: {exc}')
+
+    lines.extend(('', 'Translation memory:'))
+    try:
+        stats = translation_memory.stats()
+        lines.append(f'- Enabled: {_yes_no(translation_memory.enabled)}')
         lines.append(f'- Entries: {stats.entries:,}')
         lines.append(f'- Size: {stats.size_bytes:,} bytes')
     except Exception as exc:

@@ -100,7 +100,11 @@ class ProxyModel(QSortFilterProxyModel):
     def process_filter(self):
         model = self.sourceModel()
         if self.__text:
-            filtered_data = [i for i in model.items if self.__text in str(i[RECORD_DICTIONARY_SOURCE]).lower()]
+            filtered_data = [
+                i for i in model.items
+                if self.__text in str(i[RECORD_DICTIONARY_SOURCE]).lower()
+                or str(i[RECORD_DICTIONARY_PACKAGE]).lower().startswith(TRANSLATION_MEMORY_PACKAGE_PREFIX)
+            ]
             model.filter(filtered_data)
             model.sort(self.__column, self.__order)
         else:

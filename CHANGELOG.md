@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 2.3.0 - 2026-06-07
+
+### Added
+
+- Added persistent Translation Memory suggestions that reuse approved/draft translations across sessions without storing API keys.
+- Added Translation Memory reuse to batch translation after exact cache misses and saved successful batch/editor translations back into memory.
+- Added Consistency warnings to Release QA for repeated source strings with multiple translations and non-approved translations still identical to the original.
+
 ## Version 2.2.19 - 2026-05-27
 
 ### Build

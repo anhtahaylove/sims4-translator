@@ -1,5 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
-<ts language="fr_FR" name="Français (French)" version="2.2.19" authors="Eli.Dev">
+﻿<?xml version='1.0' encoding='utf-8'?>
+<ts language="fr_FR" name="Français (French)" version="2.3.0" authors="Eli.Dev">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>

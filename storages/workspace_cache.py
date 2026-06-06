@@ -15,6 +15,7 @@ class WorkspaceCache:
 
     def __init__(self, path: str = ':memory:') -> None:
         self.connection = sqlite3.connect(path)
+        self.__closed = False
         self.connection.execute('PRAGMA foreign_keys = ON')
         self.__create_schema()
 
@@ -217,4 +218,13 @@ class WorkspaceCache:
         return records, occurrences
 
     def close(self) -> None:
+        if self.__closed:
+            return
+        self.__closed = True
         self.connection.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass

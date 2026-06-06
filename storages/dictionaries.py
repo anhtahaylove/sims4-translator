@@ -280,6 +280,27 @@ class DictionariesStorage:
             worker.setAutoDelete(True)
             self.__pool.start(worker)
 
+    def replace_translation_memory_suggestions(self, entries) -> None:
+        persistent = [
+            item for item in self.model.items
+            if not str(item[RECORD_DICTIONARY_PACKAGE]).lower().startswith(TRANSLATION_MEMORY_PACKAGE_PREFIX)
+        ]
+        rows = []
+        for entry in entries or ():
+            percent = int(round(float(entry.score) * 100))
+            label = f'{TRANSLATION_MEMORY_PACKAGE_PREFIX}{percent}%'
+            if entry.status:
+                label = f'{label} {entry.status}'
+            rows.append([
+                label,
+                text_to_stbl(entry.source_text),
+                text_to_stbl(entry.translated_text),
+                len(text_to_stbl(entry.source_text)),
+            ])
+        self.model.replace(persistent + rows)
+        self.proxy.process_filter()
+        self.signals.updated.emit()
+
     def save(self, force: bool = False, multi: bool = False):
         storage = app_state.packages_storage
         package = storage.current_package

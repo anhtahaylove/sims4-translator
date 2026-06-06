@@ -14,10 +14,12 @@ from singletons.config import config
 from singletons.interface import interface
 from singletons.signals import storage_signals
 from singletons.state import app_state
+from singletons.translation_memory import STATUS_APPROVED, STATUS_DRAFT, translation_memory
 from singletons.translator import translator
 from singletons.undo import undo
 from utils.functions import text_to_table, text_to_stbl
 from utils.provider_engines import refresh_engine_combo
+from utils.translation_variants import translation_variant
 from utils.task_runner import CancellationToken, TaskReporter, TaskRunner
 from utils.constants import *
 from widgets.token_highlight import TokenValidationResult, validate_translation_tokens
@@ -193,6 +195,8 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.__refresh_record_meta()
 
         self.refresh_api_list()
+        self.__refresh_translation_memory_suggestions(item)
+        app_state.dictionaries_storage.proxy.filter(item.source)
 
         if item.source_old:
             self.txt_original_diff.setPlainText(text_to_table(item.source_old))
@@ -214,6 +218,21 @@ class EditDialog(QDialog, Ui_EditDialog):
                                                                                         id=item.id))
         self.__refresh_token_state()
         self.__sync_suggestions_visibility()
+
+    def __refresh_translation_memory_suggestions(self, item) -> None:
+        if not translation_memory.enabled:
+            app_state.dictionaries_storage.replace_translation_memory_suggestions(())
+            return
+
+        engine = self.cb_api.currentText()
+        suggestions = translation_memory.suggestions(
+            config.value('translation', 'source'),
+            config.value('translation', 'destination'),
+            item.source,
+            engine=engine,
+            variant=translation_variant(engine),
+        )
+        app_state.dictionaries_storage.replace_translation_memory_suggestions(suggestions)
 
     def __sync_suggestions_visibility(self):
         model = self.tableview.model()
@@ -284,6 +303,20 @@ class EditDialog(QDialog, Ui_EditDialog):
         self.item.translate_old = None
 
         app_state.dictionaries_storage.update(self.item)
+        if translation_memory.enabled:
+            engine = self.cb_api.currentText()
+            translation_memory.store(
+                config.value('translation', 'source'),
+                config.value('translation', 'destination'),
+                engine,
+                translation_variant(engine),
+                self.item.source,
+                self.item.translate,
+                status=STATUS_APPROVED if flag == FLAG_VALIDATED else STATUS_DRAFT,
+                package=self.item.package,
+                record_id=self.item.id,
+                instance=self.item.resource.instance,
+            )
 
         self.close()
 

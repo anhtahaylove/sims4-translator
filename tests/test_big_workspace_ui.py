@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import tempfile
 import unittest
 import xml.etree.ElementTree as ElementTree
 from pathlib import Path
@@ -19,6 +20,7 @@ from packer.resource import ResourceID
 from singletons.config import ConfigManager, config
 from singletons.interface import interface
 from singletons.state import app_state
+from singletons.translation_memory import TranslationMemory
 from singletons.translator import DeepLUsage, OLLAMA_RECOMMENDED_MODEL, Response
 from storages.dictionaries import DictionariesStorage
 from storages.packages import PackagesStorage
@@ -1585,7 +1587,9 @@ class WorkspaceProShellTests(unittest.TestCase):
 
     def test_edit_dialog_recovers_space_when_dictionary_suggestions_are_empty(self):
         dialog = EditDialog()
+        previous_cache_state = config.value('translation_cache', 'enabled')
         try:
+            config.set_value('translation_cache', 'enabled', False)
             dialog.prepare(record())
             dialog.show()
             app().processEvents()
@@ -1597,6 +1601,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertTrue(dialog.btn_ok.isDefault())
             self.assertFalse(dialog.btn_translate.autoDefault())
         finally:
+            config.set_value('translation_cache', 'enabled', previous_cache_state)
             close_widget(dialog)
 
     def test_edit_dialog_suggestions_dock_can_expand_when_dictionary_data_exists(self):
@@ -1617,6 +1622,26 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertFalse(dialog.search_panel.isHidden())
         finally:
             close_widget(dialog)
+
+    def test_edit_dialog_shows_translation_memory_suggestions(self):
+        previous_cache_state = config.value('translation_cache', 'enabled')
+        with tempfile.TemporaryDirectory() as tmpdir:
+            memory = TranslationMemory(Path(tmpdir) / 'memory.sqlite3')
+            memory.store('ENG_US', 'FRE_FR', 'Google', '', 'Hello source', 'Memo suggestion')
+            dialog = EditDialog()
+            try:
+                config.set_value('translation_cache', 'enabled', True)
+                with patch('windows.edit_dialog.translation_memory', memory):
+                    dialog.prepare(record())
+
+                self.assertTrue(dialog.btn_suggestions.isEnabled())
+                packages = [row[0] for row in app_state.dictionaries_storage.model.filtered]
+                translations = [row[2] for row in app_state.dictionaries_storage.model.filtered]
+                self.assertTrue(any(str(package).startswith('tm ') for package in packages))
+                self.assertIn('Memo suggestion', translations)
+            finally:
+                config.set_value('translation_cache', 'enabled', previous_cache_state)
+                close_widget(dialog)
 
     def test_edit_dialog_keeps_escape_tokens_visible_for_highlighting(self):
         dialog = EditDialog()

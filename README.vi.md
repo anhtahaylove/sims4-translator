@@ -83,8 +83,8 @@ Bạn cần hỗ trợ? Hãy [báo lỗi hoặc góp ý](https://github.com/anht
 | Tìm string nhanh | Tìm bằng ID, text gốc hoặc bản dịch trong cùng một ô tìm kiếm hybrid. |
 | Đọc string dài | Xem đầy đủ string đang chọn ngay ở Selection Preview. |
 | Tránh lỗi text trống | Highlight token như `{0.SimFirstName}`, `\n`, `<b>`, `<i>` và cảnh báo khi thiếu token. |
-| Dùng dịch máy | Cấu hình DeepL, Google, MyMemory, Gemini, OpenAI-compatible endpoint hoặc Ollama local, có cache và cảnh báo chi phí trước batch lớn. |
-| Xuất bản an toàn hơn | Chạy Validate Release trước khi Save as package, Export hoặc Finalize. |
+| Dùng dịch máy | Cấu hình DeepL, Google, MyMemory, Gemini, OpenAI-compatible endpoint hoặc Ollama local, có cache và Translation Memory để dùng lại bản dịch cũ. |
+| Xuất bản an toàn hơn | Chạy Validate Release trước khi Save as package, Export hoặc Finalize, có thêm cảnh báo nhất quán cho source lặp lại. |
 
 ## Xem Nhanh Giao Diện
 
@@ -96,13 +96,13 @@ Tìm kiếm, lọc, xem preview và xử lý package lớn mà không cần rờ
 
 ### Translation Studio
 
-Sửa từng string trong editor tập trung, có highlight token, kiểm tra token safety, comment và nút Approve hoặc Needs Review.
+Sửa từng string trong editor tập trung, có highlight token, kiểm tra token safety, gợi ý Translation Memory, comment và nút Approve hoặc Needs Review.
 
 ![Ảnh Translation Studio](docs/assets/readme/vi/editor.png)
 
 ### Kiểm tra trước khi phát hành
 
-Validate Release giúp phát hiện bản dịch trống, thiếu token, trạng thái rủi ro, duplicate output và lỗi resource trước khi app ghi file.
+Validate Release giúp phát hiện bản dịch trống, thiếu token, trạng thái rủi ro, duplicate output, lỗi resource và source lặp nhưng dịch không nhất quán trước khi app ghi file.
 
 ![Ảnh Validate Release](docs/assets/readme/vi/validate-release.png)
 
@@ -196,6 +196,8 @@ Nếu muốn dịch local bằng Ollama:
 5. Bật **Ollama local provider**, giữ `translategemma:12b` hoặc nhập model local khác, rồi bấm **Kiểm tra Ollama**.
 
 Trước khi Batch Translate bằng provider có quota/chi phí, app sẽ ước tính số ký tự nguồn sắp gửi để bạn tránh tốn quota ngoài ý muốn.
+
+Các bản dịch thành công từ Batch Translate và Translation Studio cũng được lưu vào Translation Memory local. Database này không lưu API key; app chỉ tự dùng lại kết quả khớp chính xác theo provider/model, còn bản gần giống sẽ hiện trong Suggestions để bạn tự duyệt.
 
 ## Định Dạng Hỗ Trợ
 

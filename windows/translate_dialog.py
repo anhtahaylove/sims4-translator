@@ -18,10 +18,12 @@ from singletons.interface import interface
 from singletons.signals import progress_signals
 from singletons.state import app_state
 from singletons.translation_cache import translation_cache
+from singletons.translation_memory import STATUS_APPROVED, translation_memory
 from singletons.translator import deepl_usage, estimate_ai_characters, estimate_deepl_characters, translator
 from singletons.undo import undo
 from utils.task_runner import CancellationToken, TaskReporter, TaskRunner
 from utils.provider_engines import refresh_engine_combo
+from utils.translation_variants import translation_variant
 from utils.functions import text_to_stbl, text_to_edit
 from utils.constants import *
 
@@ -509,6 +511,14 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
 
         for index, item in indexed_items:
             text = translation_cache.lookup(source_locale, destination_locale, engine, variant, item.source)
+            if text is None and translation_memory.enabled:
+                text = translation_memory.lookup_exact(
+                    source_locale,
+                    destination_locale,
+                    engine,
+                    variant,
+                    item.source,
+                )
             if text is None:
                 missing.append((index, item))
             else:
@@ -529,25 +539,23 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             item.source,
             translated_text,
         )
+        if translation_memory.enabled:
+            translation_memory.store(
+                config.value('translation', 'source'),
+                config.value('translation', 'destination'),
+                engine,
+                self.__cache_variant(engine),
+                item.source,
+                translated_text,
+                status=STATUS_APPROVED,
+                package=item.package,
+                record_id=item.id,
+                instance=item.resource.instance,
+            )
 
     @staticmethod
     def __cache_variant(engine: str) -> str:
-        engine_name = engine.lower()
-        if engine_name == 'deepl':
-            return (config.value('api', 'deepl_glossary_id') or '').strip()
-        if engine_name == 'gemini':
-            return (config.value('api', 'gemini_model') or '').strip()
-        if engine_name == 'openai-compatible':
-            return '|'.join((
-                (config.value('api', 'openai_base_url') or '').strip().rstrip('/'),
-                (config.value('api', 'openai_model') or '').strip(),
-            ))
-        if engine_name == 'ollama':
-            return '|'.join((
-                (config.value('api', 'ollama_base_url') or '').strip().rstrip('/'),
-                (config.value('api', 'ollama_model') or '').strip(),
-            ))
-        return ''
+        return translation_variant(engine)
 
     @staticmethod
     def __deepl_context_for_items(items: List[MainRecord]) -> str:

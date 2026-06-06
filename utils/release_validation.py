@@ -2,6 +2,7 @@
 
 import csv
 import os
+import re
 from collections import Counter
 from dataclasses import dataclass
 from typing import Iterable, Tuple
@@ -17,6 +18,7 @@ from utils.constants import (
 )
 from utils.functions import compare, fnv64, text_to_edit, text_to_table, text_to_stbl
 from widgets.token_highlight import validate_translation_tokens
+from singletons.translation_memory import normalize_source
 
 
 SEVERITY_CRITICAL = 'Critical'
@@ -31,6 +33,7 @@ CATEGORY_RESOURCE = 'Resource'
 CATEGORY_SOURCE_CHANGED = 'Source changed'
 CATEGORY_SUMMARY = 'Summary'
 CATEGORY_LAYOUT = 'Length / layout risk'
+CATEGORY_CONSISTENCY = 'Consistency'
 
 VALIDATION_CATEGORIES = (
     CATEGORY_BLANK,
@@ -40,6 +43,7 @@ VALIDATION_CATEGORIES = (
     CATEGORY_RESOURCE,
     CATEGORY_SOURCE_CHANGED,
     CATEGORY_LAYOUT,
+    CATEGORY_CONSISTENCY,
     CATEGORY_SUMMARY,
 )
 
@@ -360,6 +364,8 @@ def _validate_release_records(
     if reporter:
         reporter.progress(len(written), len(written), 'Building report...')
 
+    issues.extend(_consistency_issues(written))
+
     issues.append(ValidationIssue(
         SEVERITY_INFO,
         '-',
@@ -531,6 +537,60 @@ def _record_issues(item: MainRecord, include_untranslated: bool, rid=None, profi
         ))
 
     return issues
+
+
+def _consistency_issues(items: Tuple[MainRecord, ...]) -> list:
+    issues = []
+    source_groups = {}
+
+    for item in items:
+        source = text_to_stbl(item.source)
+        translation = text_to_stbl(item.translate)
+        normalized_source = normalize_source(source)
+        normalized_translation = normalize_source(translation)
+        if not normalized_source or not normalized_translation:
+            continue
+
+        if item.flag in (FLAG_PROGRESS, FLAG_TRANSLATED, FLAG_REPLACED) \
+                and compare(source, translation) and not _safe_identical_translation(source):
+            issues.append(_issue(
+                SEVERITY_WARNING,
+                item,
+                'Translation is still identical to the original; review whether this should be localized.',
+                code='UNCHANGED_TRANSLATION_REVIEW',
+                category=CATEGORY_CONSISTENCY,
+            ))
+
+        source_groups.setdefault(normalized_source, []).append((item, normalized_translation, translation))
+
+    for group in source_groups.values():
+        translations = {}
+        for item, normalized_translation, translation in group:
+            translations.setdefault(normalized_translation, (item, translation))
+        if len(translations) <= 1:
+            continue
+
+        representative = group[0][0]
+        examples = []
+        for _normalized, (_item, translation) in list(translations.items())[:3]:
+            examples.append(text_to_table(translation)[:96])
+        issues.append(_issue(
+            SEVERITY_WARNING,
+            representative,
+            f'Same source text has {len(translations)} different translations; review consistency. '
+            'Examples: ' + ' | '.join(examples),
+            code='INCONSISTENT_SOURCE_TRANSLATION',
+            category=CATEGORY_CONSISTENCY,
+        ))
+
+    return issues
+
+
+def _safe_identical_translation(source: str) -> bool:
+    text = text_to_edit(source)
+    text = re.sub(r'\{[^{}]+\}|<[^>]+>|\\n|%[A-Za-z]', '', text)
+    text = text.strip()
+    return not text or not re.search(r'[A-Za-zÀ-ỹ]', text)
 
 
 def _issue(

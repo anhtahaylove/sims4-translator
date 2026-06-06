@@ -79,8 +79,8 @@ Open a package, choose a string, edit it in Translation Studio, check token warn
 | Work faster | Search by ID, original text, or translated text from one hybrid search box. |
 | Read long strings | Use Selection Preview to see the full selected string without opening the editor. |
 | Avoid broken text | Highlight Sims tokens like `{0.SimFirstName}`, `\n`, `<b>`, and `<i>`. |
-| Use machine translation | Connect DeepL, Google, MyMemory, Gemini, OpenAI-compatible endpoints, or local Ollama, with cache reuse and batch cost warnings. |
-| Release more safely | Run Validate Release before Save as package, Export, or Finalize. |
+| Use machine translation | Connect DeepL, Google, MyMemory, Gemini, OpenAI-compatible endpoints, or local Ollama, with cache and Translation Memory reuse. |
+| Release more safely | Run Validate Release before Save as package, Export, or Finalize, including consistency warnings for repeated source text. |
 
 ## A Quick Look
 
@@ -92,13 +92,13 @@ Search, filter, preview, and review large packages without leaving the main wind
 
 ### Translation Studio editor
 
-Edit one string in a focused editor with token highlighting, token safety, comments, and quick approve or needs-review actions.
+Edit one string in a focused editor with token highlighting, token safety, comments, Translation Memory suggestions, and quick approve or needs-review actions.
 
 ![Translation Studio screenshot](docs/assets/readme/editor.png)
 
 ### Validate before you publish
 
-The validation report catches blank translations, missing tokens, risky statuses, duplicate output, and resource issues before files are written.
+The validation report catches blank translations, missing tokens, risky statuses, duplicate output, resource issues, and repeated-source consistency risks before files are written.
 
 ![Validate Release screenshot](docs/assets/readme/validate-release.png)
 
@@ -192,6 +192,8 @@ For local Ollama translation:
 5. Enable **Ollama local provider**, keep `translategemma:12b` or type another local model, then click **Test Ollama**.
 
 Before paid/provider-backed batch translation starts, the app estimates how many source characters will be sent so you can avoid spending quota by accident.
+
+Successful batch and editor translations are also saved into a local Translation Memory database. It does not store API keys, and it only reuses exact provider/model matches automatically; similar matches appear as Suggestions in Translation Studio for human review.
 
 ## Supported Formats
 

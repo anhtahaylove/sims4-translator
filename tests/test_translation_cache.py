@@ -9,6 +9,7 @@ from unittest.mock import patch
 from packer.resource import ResourceID
 from singletons.config import config
 from singletons.translation_cache import TranslationCache
+from singletons.translation_memory import TranslationMemory
 from storages.records import MainRecord
 from utils.constants import FLAG_UNVALIDATED
 from windows.translate_dialog import TranslateDialog
@@ -84,10 +85,12 @@ class TranslationCacheTests(unittest.TestCase):
     def test_translate_dialog_reuses_cache_and_reports_missing_items(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             cache = TranslationCache(Path(tmpdir) / 'cache.sqlite3')
+            memory = TranslationMemory(Path(tmpdir) / 'memory.sqlite3')
             cache.store('ENG_US', 'VI_VN', 'DeepL', 'glossary-123', 'Hello', 'Xin chao')
             dialog = TranslateDialog.__new__(TranslateDialog)
 
-            with patch('windows.translate_dialog.translation_cache', cache):
+            with patch('windows.translate_dialog.translation_cache', cache), \
+                    patch('windows.translate_dialog.translation_memory', memory):
                 cached, missing = TranslateDialog._TranslateDialog__cached_results(
                     dialog,
                     'DeepL',
@@ -97,6 +100,46 @@ class TranslationCacheTests(unittest.TestCase):
             self.assertEqual(cached[0].index, 0)
             self.assertEqual(cached[0].text, 'Xin chao')
             self.assertEqual(missing[0][0], 1)
+
+    def test_translate_dialog_reuses_translation_memory_after_cache_miss(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache = TranslationCache(Path(tmpdir) / 'cache.sqlite3')
+            memory = TranslationMemory(Path(tmpdir) / 'memory.sqlite3')
+            memory.store('ENG_US', 'VI_VN', 'DeepL', 'glossary-123', 'Hello', 'Xin chao')
+            dialog = TranslateDialog.__new__(TranslateDialog)
+
+            with patch('windows.translate_dialog.translation_cache', cache), \
+                    patch('windows.translate_dialog.translation_memory', memory):
+                cached, missing = TranslateDialog._TranslateDialog__cached_results(
+                    dialog,
+                    'DeepL',
+                    [(0, make_record(1, 'Hello'))],
+                )
+
+            self.assertEqual(cached[0].text, 'Xin chao')
+            self.assertEqual(missing, [])
+
+    def test_translate_dialog_stores_successful_translation_in_memory(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache = TranslationCache(Path(tmpdir) / 'cache.sqlite3')
+            memory = TranslationMemory(Path(tmpdir) / 'memory.sqlite3')
+            dialog = TranslateDialog.__new__(TranslateDialog)
+
+            class ApiCombo:
+                def currentText(self):
+                    return 'DeepL'
+
+            dialog.cb_api = ApiCombo()
+            with patch('windows.translate_dialog.translation_cache', cache), \
+                    patch('windows.translate_dialog.translation_memory', memory):
+                TranslateDialog._TranslateDialog__store_cached_translation(
+                    dialog,
+                    make_record(1, 'Hello'),
+                    'Xin chao',
+                )
+
+            self.assertEqual(cache.lookup('ENG_US', 'VI_VN', 'DeepL', 'glossary-123', 'Hello'), 'Xin chao')
+            self.assertEqual(memory.lookup_exact('ENG_US', 'VI_VN', 'DeepL', 'glossary-123', 'Hello'), 'Xin chao')
 
 
 if __name__ == '__main__':
