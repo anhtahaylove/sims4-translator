@@ -1910,6 +1910,7 @@ class WorkspaceProShellTests(unittest.TestCase):
             self.assertIs(dialog.providers_scroll.widget(), dialog.providers_content)
             self.assertIs(dialog.gb_deepl.parent(), dialog.providers_content)
             self.assertIs(dialog.gb_cache.parent(), dialog.providers_content)
+            self.assertIs(dialog.gb_termbase.parent(), dialog.providers_content)
             self.assertIsNot(dialog.gb_deepl.parent(), dialog.tab_general)
             self.assertEqual(dialog.gb_provider_health.title(), 'Provider health')
             self.assertIn('DeepL:', dialog.lbl_provider_health.text())
@@ -1947,6 +1948,10 @@ class WorkspaceProShellTests(unittest.TestCase):
                     (dialog.btn_translation_memory_clear_pair, 20),
                     (dialog.btn_translation_memory_clear_engine, 20),
                     (dialog.btn_translation_memory_clear_all, 20),
+                    (dialog.btn_termbase_export, 20),
+                    (dialog.btn_termbase_import, 20),
+                    (dialog.btn_termbase_open, 20),
+                    (dialog.btn_termbase_clear, 20),
                     (dialog.btn_build, 22),
             ):
                 self.assertFalse(button.icon().isNull())
@@ -1980,6 +1985,38 @@ class WorkspaceProShellTests(unittest.TestCase):
                 self.assertTrue(dialog.btn_translation_memory_export.isEnabled())
                 self.assertTrue(dialog.btn_translation_memory_clear_pair.isEnabled())
                 self.assertTrue(dialog.btn_translation_memory_clear_all.isEnabled())
+            finally:
+                close_widget(dialog)
+                close_widget(window)
+
+    def test_options_dialog_exposes_termbase_management_for_current_destination(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            termbase_dir = Path(tmpdir) / 'termbase'
+            termbase_dir.mkdir()
+            (termbase_dir / 'VI_VN.csv').write_text(
+                'source_term,expected_translation,note\n'
+                'Trait,tinh cach,project override\n',
+                encoding='utf-8',
+            )
+            config.set_value('translation', 'source', 'ENG_US')
+            config.set_value('translation', 'destination', 'VI_VN')
+            window = MainWindow()
+
+            with patch.dict(os.environ, {'SIMS4_TRANSLATOR_CONFIG_DIR': tmpdir}):
+                dialog = OptionsDialog(window)
+            try:
+                self.assertEqual(dialog.gb_termbase.title(), 'Termbase')
+                self.assertIn('VI_VN', dialog.lbl_termbase_status.text())
+                self.assertIn('user override(s)', dialog.lbl_termbase_status.text())
+                self.assertTrue(dialog.btn_termbase_export.isEnabled())
+                self.assertTrue(dialog.btn_termbase_clear.isEnabled())
+
+                with patch.dict(os.environ, {'SIMS4_TRANSLATOR_CONFIG_DIR': tmpdir}), \
+                        patch.object(QMessageBox, 'question', return_value=QMessageBox.StandardButton.Yes):
+                    dialog.clear_termbase()
+
+                self.assertFalse((termbase_dir / 'VI_VN.csv').exists())
+                self.assertFalse(dialog.btn_termbase_clear.isEnabled())
             finally:
                 close_widget(dialog)
                 close_widget(window)

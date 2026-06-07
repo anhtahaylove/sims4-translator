@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="fr_FR" name="Français (French)" version="2.3.5" authors="Eli.Dev">
+<ts language="fr_FR" name="Français (French)" version="2.3.6" authors="Eli.Dev">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1198,6 +1198,62 @@ Erreurs :
     <string>
       <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
       <translation>La memoire contient {entries:,} entree(s), {size:,} bytes. Paire de langues actuelle : {pair:,}. Engines : {engines}.</translation>
+    </string>
+    <string>
+      <source>Termbase</source>
+      <translation>Base terminologique</translation>
+    </string>
+    <string>
+      <source>Termbase terms power Release QA terminology warnings. Bundled terms stay read-only; imported terms override them for the current destination language.</source>
+      <translation>La base terminologique alimente les avertissements de terminologie de Release QA. Les termes intégrés restent en lecture seule ; les termes importés les remplacent pour la langue cible actuelle.</translation>
+    </string>
+    <string>
+      <source>Open CSV</source>
+      <translation>Ouvrir CSV</translation>
+    </string>
+    <string>
+      <source>Clear user terms</source>
+      <translation>Effacer les termes utilisateur</translation>
+    </string>
+    <string>
+      <source>Export the effective termbase for the current destination language to a UTF-8 CSV file.</source>
+      <translation>Exporte la base terminologique effective de la langue cible actuelle vers un fichier CSV UTF-8.</translation>
+    </string>
+    <string>
+      <source>Import user termbase terms for the current destination language. Matching source terms override bundled terms.</source>
+      <translation>Importe les termes de la base terminologique utilisateur pour la langue cible actuelle. Les termes source identiques remplacent les termes intégrés.</translation>
+    </string>
+    <string>
+      <source>Open the user termbase CSV for the current destination language.</source>
+      <translation>Ouvre le CSV utilisateur de la base terminologique pour la langue cible actuelle.</translation>
+    </string>
+    <string>
+      <source>Remove user termbase terms for the current destination language. Bundled terms remain available.</source>
+      <translation>Supprime les termes de la base terminologique utilisateur pour la langue cible actuelle. Les termes intégrés restent disponibles.</translation>
+    </string>
+    <string>
+      <source>Termbase CSV</source>
+      <translation>CSV de base terminologique</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} termbase term(s).</source>
+      <translation>{count:,} terme(s) de base terminologique exporté(s).</translation>
+    </string>
+    <string>
+      <source>Could not import termbase CSV: {message}</source>
+      <translation>Impossible d'importer le CSV de base terminologique : {message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} termbase term(s).</source>
+      <translation>{imported:,} terme(s) de base terminologique importé(s).</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} user termbase term(s) for {locale}?</source>
+      <translation>Effacer {count:,} terme(s) utilisateur pour {locale} ?</translation>
+    </string>
+    <string>
+      <source>Termbase for {locale}: {effective:,} effective term(s), {bundled:,} bundled, {user:,} user override(s). User file: {path}</source>
+      <translation>Base terminologique pour {locale} : {effective:,} terme(s) effectif(s), {bundled:,} intégré(s), {user:,} remplacement(s) utilisateur. Fichier utilisateur : {path}</translation>
     </string>
   </context>
   <context name="ReplaceDialog">

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="en_US" name="English" version="2.3.5" authors="">
+<ts language="en_US" name="English" version="2.3.6" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1194,6 +1194,62 @@ Errors:
     </string>
     <string>
       <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Termbase</source>
+      <translation />
+    </string>
+    <string>
+      <source>Termbase terms power Release QA terminology warnings. Bundled terms stay read-only; imported terms override them for the current destination language.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Open CSV</source>
+      <translation />
+    </string>
+    <string>
+      <source>Clear user terms</source>
+      <translation />
+    </string>
+    <string>
+      <source>Export the effective termbase for the current destination language to a UTF-8 CSV file.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Import user termbase terms for the current destination language. Matching source terms override bundled terms.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Open the user termbase CSV for the current destination language.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Remove user termbase terms for the current destination language. Bundled terms remain available.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Termbase CSV</source>
+      <translation />
+    </string>
+    <string>
+      <source>Exported {count:,} termbase term(s).</source>
+      <translation />
+    </string>
+    <string>
+      <source>Could not import termbase CSV: {message}</source>
+      <translation />
+    </string>
+    <string>
+      <source>Imported {imported:,} termbase term(s).</source>
+      <translation />
+    </string>
+    <string>
+      <source>Clear {count:,} user termbase term(s) for {locale}?</source>
+      <translation />
+    </string>
+    <string>
+      <source>Termbase for {locale}: {effective:,} effective term(s), {bundled:,} bundled, {user:,} user override(s). User file: {path}</source>
       <translation />
     </string>
   </context>

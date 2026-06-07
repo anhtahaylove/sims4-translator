@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="zh_TW" name="中文 (Chinese)" version="2.3.5" authors="Tina.">
+<ts language="zh_TW" name="中文 (Chinese)" version="2.3.6" authors="Tina.">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1198,6 +1198,62 @@ Errors:
     <string>
       <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
       <translation>記憶包含 {entries:,} 個項目，{size:,} bytes。目前語言對：{pair:,}。引擎：{engines}。</translation>
+    </string>
+    <string>
+      <source>Termbase</source>
+      <translation>術語庫</translation>
+    </string>
+    <string>
+      <source>Termbase terms power Release QA terminology warnings. Bundled terms stay read-only; imported terms override them for the current destination language.</source>
+      <translation>術語庫會用於 Release QA 的術語警告。內建術語保持唯讀；匯入的術語會覆寫目前目標語言的內建術語。</translation>
+    </string>
+    <string>
+      <source>Open CSV</source>
+      <translation>開啟 CSV</translation>
+    </string>
+    <string>
+      <source>Clear user terms</source>
+      <translation>清除使用者術語</translation>
+    </string>
+    <string>
+      <source>Export the effective termbase for the current destination language to a UTF-8 CSV file.</source>
+      <translation>將目前目標語言的有效術語庫匯出為 UTF-8 CSV 檔案。</translation>
+    </string>
+    <string>
+      <source>Import user termbase terms for the current destination language. Matching source terms override bundled terms.</source>
+      <translation>匯入目前目標語言的使用者術語庫術語。相同來源術語會覆寫內建術語。</translation>
+    </string>
+    <string>
+      <source>Open the user termbase CSV for the current destination language.</source>
+      <translation>開啟目前目標語言的使用者術語庫 CSV。</translation>
+    </string>
+    <string>
+      <source>Remove user termbase terms for the current destination language. Bundled terms remain available.</source>
+      <translation>移除目前目標語言的使用者術語庫術語。內建術語仍會保留。</translation>
+    </string>
+    <string>
+      <source>Termbase CSV</source>
+      <translation>術語庫 CSV</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} termbase term(s).</source>
+      <translation>已匯出 {count:,} 個術語庫術語。</translation>
+    </string>
+    <string>
+      <source>Could not import termbase CSV: {message}</source>
+      <translation>無法匯入術語庫 CSV：{message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} termbase term(s).</source>
+      <translation>已匯入 {imported:,} 個術語庫術語。</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} user termbase term(s) for {locale}?</source>
+      <translation>要清除 {locale} 的 {count:,} 個使用者術語庫術語嗎？</translation>
+    </string>
+    <string>
+      <source>Termbase for {locale}: {effective:,} effective term(s), {bundled:,} bundled, {user:,} user override(s). User file: {path}</source>
+      <translation>{locale} 的術語庫：{effective:,} 個有效術語、{bundled:,} 個內建術語、{user:,} 個使用者覆寫。使用者檔案：{path}</translation>
     </string>
   </context>
   <context name="ReplaceDialog">

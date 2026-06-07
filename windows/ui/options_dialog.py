@@ -371,6 +371,45 @@ class Ui_OptionsDialog(object):
 
         vlayout.addWidget(self.gb_translation_memory)
 
+        self.gb_termbase = QGroupBox(self.providers_content)
+        self.gb_termbase.setObjectName('optionsSection')
+
+        layout_termbase = QVBoxLayout(self.gb_termbase)
+        layout_termbase.setSpacing(8)
+
+        self.lbl_termbase_hint = QLabel(self.gb_termbase)
+        self.lbl_termbase_hint.setObjectName('muted')
+        self.lbl_termbase_hint.setWordWrap(True)
+        self.lbl_termbase_status = QLabel(self.gb_termbase)
+        self.lbl_termbase_status.setObjectName('muted')
+        self.lbl_termbase_status.setWordWrap(True)
+
+        layout_termbase_actions = QHBoxLayout()
+        layout_termbase_actions.setSpacing(8)
+        self.btn_termbase_export = QPushButton(self.gb_termbase)
+        self.btn_termbase_import = QPushButton(self.gb_termbase)
+        self.btn_termbase_open = QPushButton(self.gb_termbase)
+        self.btn_termbase_clear = QPushButton(self.gb_termbase)
+        for button in (
+                self.btn_termbase_export,
+                self.btn_termbase_import,
+                self.btn_termbase_open,
+                self.btn_termbase_clear,
+        ):
+            button.setAutoDefault(False)
+            button.setIconSize(QSize(20, 20))
+        layout_termbase_actions.addWidget(self.btn_termbase_export)
+        layout_termbase_actions.addWidget(self.btn_termbase_import)
+        layout_termbase_actions.addWidget(self.btn_termbase_open)
+        layout_termbase_actions.addStretch()
+        layout_termbase_actions.addWidget(self.btn_termbase_clear)
+
+        layout_termbase.addWidget(self.lbl_termbase_hint)
+        layout_termbase.addWidget(self.lbl_termbase_status)
+        layout_termbase.addLayout(layout_termbase_actions)
+
+        vlayout.addWidget(self.gb_termbase)
+
         vlayout.addStretch()
         tab_layout.addWidget(self.providers_scroll)
 

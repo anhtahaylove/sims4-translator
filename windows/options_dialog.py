@@ -40,6 +40,14 @@ from utils.ollama_setup import (
     pull_ollama_model_task,
     refresh_ollama_status_task,
 )
+from utils.termbase import (
+    clear_user_termbase,
+    effective_termbase_entries,
+    ensure_user_termbase,
+    export_effective_termbase,
+    import_user_termbase,
+    termbase_stats,
+)
 from utils.task_runner import TaskRunner
 from utils.constants import *
 
@@ -401,6 +409,10 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.btn_translation_memory_clear_engine.clicked.connect(self.clear_translation_memory_engine)
         self.btn_translation_memory_clear_all.clicked.connect(self.clear_translation_memory_all)
         self.cb_translation_memory_engine.currentIndexChanged.connect(self.refresh_translation_memory_actions)
+        self.btn_termbase_export.clicked.connect(self.export_termbase)
+        self.btn_termbase_import.clicked.connect(self.import_termbase)
+        self.btn_termbase_open.clicked.connect(self.open_termbase_file)
+        self.btn_termbase_clear.clicked.connect(self.clear_termbase)
 
         self.btn_build.clicked.connect(self.build_click)
 
@@ -432,6 +444,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.retranslate()
         self.refresh_translation_cache_status()
         self.refresh_translation_memory_status()
+        self.refresh_termbase_status()
         self.refresh_provider_health_summary()
         self.refresh_ollama_models()
 
@@ -570,6 +583,32 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             'OptionsDialog',
             'Clear every Translation Memory entry.'
         ))
+        self.gb_termbase.setTitle(interface.text('OptionsDialog', 'Termbase'))
+        self.lbl_termbase_hint.setText(interface.text(
+            'OptionsDialog',
+            'Termbase terms power Release QA terminology warnings. Bundled terms stay read-only; imported terms override them for the current destination language.'
+        ))
+        self.btn_termbase_export.setText(interface.text('OptionsDialog', 'Export CSV'))
+        self.btn_termbase_import.setText(interface.text('OptionsDialog', 'Import CSV'))
+        self.btn_termbase_open.setText(interface.text('OptionsDialog', 'Open CSV'))
+        self.btn_termbase_clear.setText(interface.text('OptionsDialog', 'Clear user terms'))
+        self.btn_termbase_export.setToolTip(interface.text(
+            'OptionsDialog',
+            'Export the effective termbase for the current destination language to a UTF-8 CSV file.'
+        ))
+        self.btn_termbase_import.setToolTip(interface.text(
+            'OptionsDialog',
+            'Import user termbase terms for the current destination language. Matching source terms override bundled terms.'
+        ))
+        self.btn_termbase_open.setToolTip(interface.text(
+            'OptionsDialog',
+            'Open the user termbase CSV for the current destination language.'
+        ))
+        self.btn_termbase_clear.setToolTip(interface.text(
+            'OptionsDialog',
+            'Remove user termbase terms for the current destination language. Bundled terms remain available.'
+        ))
+        self.refresh_termbase_status()
         self.refresh_translation_memory_status()
         self.refresh_provider_health_summary()
 
@@ -621,6 +660,10 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             (self.btn_translation_memory_clear_pair, ':/images/validate_0.png', QSize(20, 20)),
             (self.btn_translation_memory_clear_engine, ':/images/validate_0.png', QSize(20, 20)),
             (self.btn_translation_memory_clear_all, ':/images/validate_0.png', QSize(20, 20)),
+            (self.btn_termbase_export, ':/images/export.png', QSize(20, 20)),
+            (self.btn_termbase_import, ':/images/load.png', QSize(20, 20)),
+            (self.btn_termbase_open, ':/images/load.png', QSize(20, 20)),
+            (self.btn_termbase_clear, ':/images/validate_0.png', QSize(20, 20)),
             (self.btn_build, ':/images/dict.png', QSize(22, 22)),
         )
         for button, icon_path, size in button_icons:
@@ -1165,6 +1208,89 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             QMessageBox.StandardButton.No,
         ) == QMessageBox.StandardButton.Yes
 
+    def export_termbase(self):
+        locale = self.cb_dest.currentText()
+        filename = savefile(
+            interface.text('OptionsDialog', 'Termbase CSV') + ' (*.csv)',
+            'csv',
+            f'termbase-{locale}',
+        )
+        if not filename:
+            return
+        count = export_effective_termbase(locale, filename)
+        QMessageBox.information(
+            self,
+            interface.text('OptionsDialog', 'Termbase'),
+            interface.text('OptionsDialog', 'Exported {count:,} termbase term(s).').format(count=count),
+        )
+
+    def import_termbase(self):
+        locale = self.cb_dest.currentText()
+        filename = openfile(interface.text('OptionsDialog', 'Termbase CSV') + ' (*.csv)')
+        if not filename:
+            return
+        try:
+            result = import_user_termbase(locale, filename)
+        except (OSError, ValueError) as exc:
+            QMessageBox.warning(
+                self,
+                interface.text('OptionsDialog', 'Termbase'),
+                interface.text('OptionsDialog', 'Could not import termbase CSV: {message}').format(message=exc),
+            )
+            return
+        self.refresh_termbase_status()
+        QMessageBox.information(
+            self,
+            interface.text('OptionsDialog', 'Termbase'),
+            interface.text('OptionsDialog', 'Imported {imported:,} termbase term(s).').format(
+                imported=result.imported,
+            ),
+        )
+
+    def open_termbase_file(self):
+        path = ensure_user_termbase(self.cb_dest.currentText())
+        self.refresh_termbase_status()
+        QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
+
+    def clear_termbase(self):
+        locale = self.cb_dest.currentText()
+        stats = termbase_stats(locale)
+        if not stats.user_entries:
+            self.refresh_termbase_status()
+            return
+        if QMessageBox.question(
+                self,
+                interface.text('OptionsDialog', 'Termbase'),
+                interface.text(
+                    'OptionsDialog',
+                    'Clear {count:,} user termbase term(s) for {locale}?'
+                ).format(count=stats.user_entries, locale=stats.locale),
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
+        ) != QMessageBox.StandardButton.Yes:
+            return
+        clear_user_termbase(locale)
+        self.refresh_termbase_status()
+
+    def refresh_termbase_status(self):
+        if not hasattr(self, 'lbl_termbase_status'):
+            return
+        locale = self.cb_dest.currentText() if hasattr(self, 'cb_dest') else config.value('translation', 'destination')
+        stats = termbase_stats(locale)
+        self.lbl_termbase_status.setText(interface.text(
+            'OptionsDialog',
+            'Termbase for {locale}: {effective:,} effective term(s), {bundled:,} bundled, {user:,} user override(s). User file: {path}'
+        ).format(
+            locale=stats.locale or '-',
+            effective=stats.effective_entries,
+            bundled=stats.bundled_entries,
+            user=stats.user_entries,
+            path=stats.user_path,
+        ))
+        has_effective_terms = bool(effective_termbase_entries(locale))
+        self.btn_termbase_export.setEnabled(has_effective_terms)
+        self.btn_termbase_clear.setEnabled(stats.user_entries > 0)
+
     def refresh_provider_health_summary(self):
         if not hasattr(self, 'lbl_provider_health'):
             return
@@ -1276,6 +1402,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         config.save()
         self.start_culling_timer()
         self.refresh_translation_memory_status()
+        self.refresh_termbase_status()
 
     @staticmethod
     def __sync_engine_preference():

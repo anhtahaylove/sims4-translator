@@ -59,9 +59,9 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('python scripts\\create_synthetic_package.py', script)
         self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', script)
         self.assertNotIn('--require-gui-outputs', script)
-        self.assertIn('python scripts\\verify_version_sync.py --version 2.3.5', script)
+        self.assertIn('python scripts\\verify_version_sync.py --version 2.3.6', script)
         self.assertIn(
-            'python scripts\\verify_interface_i18n.py --all --version 2.3.5 --strict-empty --strict-missing',
+            'python scripts\\verify_interface_i18n.py --all --version 2.3.6 --strict-empty --strict-missing',
             script,
         )
         self.assertIn('git diff --check', script)

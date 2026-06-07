@@ -50,7 +50,8 @@ Run `Validate Release...` before publishing and review the report.
 - Critical token issues can still be continued deliberately, but should normally be fixed before publishing.
 - Export the report as `.txt` or `.csv` if the release needs a QA record.
 - Vietnamese terminology warnings are loaded from `prefs\termbase\VI_VN.csv`.
-  Advanced reviewers can override or add terms locally in
+  Advanced reviewers can manage local overrides from
+  `Options > Providers > Termbase`, or edit
   `%APPDATA%\The Sims 4 Translator Plus\termbase\VI_VN.csv` with the same
   `source_term,expected_translation,note` columns.
 

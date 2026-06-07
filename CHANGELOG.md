@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.3.6 - 2026-06-07
+
+### Added
+
+- Add a Termbase management card in Options so reviewers can inspect, export, import, open, and clear Release QA terminology overrides per destination language without editing hidden config files manually.
+
 ## Version 2.3.5 - 2026-06-07
 
 ### Added

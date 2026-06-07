@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="vi_VN" name="Vietnamese" version="2.3.5" authors="Community">
+<ts language="vi_VN" name="Vietnamese" version="2.3.6" authors="Community">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1198,6 +1198,62 @@ Lỗi:
     <string>
       <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
       <translation>Bộ nhớ có {entries:,} mục, {size:,} byte. Cặp ngôn ngữ hiện tại: {pair:,}. Engine: {engines}.</translation>
+    </string>
+    <string>
+      <source>Termbase</source>
+      <translation>Termbase</translation>
+    </string>
+    <string>
+      <source>Termbase terms power Release QA terminology warnings. Bundled terms stay read-only; imported terms override them for the current destination language.</source>
+      <translation>Termbase cung cấp thuật ngữ cho cảnh báo thuật ngữ trong Release QA. Thuật ngữ đi kèm chỉ đọc; thuật ngữ đã nhập sẽ ghi đè cho ngôn ngữ đích hiện tại.</translation>
+    </string>
+    <string>
+      <source>Open CSV</source>
+      <translation>Mở CSV</translation>
+    </string>
+    <string>
+      <source>Clear user terms</source>
+      <translation>Xóa thuật ngữ người dùng</translation>
+    </string>
+    <string>
+      <source>Export the effective termbase for the current destination language to a UTF-8 CSV file.</source>
+      <translation>Xuất termbase hiệu lực của ngôn ngữ đích hiện tại ra file CSV UTF-8.</translation>
+    </string>
+    <string>
+      <source>Import user termbase terms for the current destination language. Matching source terms override bundled terms.</source>
+      <translation>Nhập thuật ngữ termbase người dùng cho ngôn ngữ đích hiện tại. Thuật ngữ nguồn trùng sẽ ghi đè thuật ngữ đi kèm.</translation>
+    </string>
+    <string>
+      <source>Open the user termbase CSV for the current destination language.</source>
+      <translation>Mở file CSV termbase người dùng của ngôn ngữ đích hiện tại.</translation>
+    </string>
+    <string>
+      <source>Remove user termbase terms for the current destination language. Bundled terms remain available.</source>
+      <translation>Xóa thuật ngữ termbase người dùng của ngôn ngữ đích hiện tại. Thuật ngữ đi kèm vẫn còn.</translation>
+    </string>
+    <string>
+      <source>Termbase CSV</source>
+      <translation>CSV termbase</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} termbase term(s).</source>
+      <translation>Đã xuất {count:,} thuật ngữ termbase.</translation>
+    </string>
+    <string>
+      <source>Could not import termbase CSV: {message}</source>
+      <translation>Không thể nhập CSV termbase: {message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} termbase term(s).</source>
+      <translation>Đã nhập {imported:,} thuật ngữ termbase.</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} user termbase term(s) for {locale}?</source>
+      <translation>Xóa {count:,} thuật ngữ termbase người dùng cho {locale}?</translation>
+    </string>
+    <string>
+      <source>Termbase for {locale}: {effective:,} effective term(s), {bundled:,} bundled, {user:,} user override(s). User file: {path}</source>
+      <translation>Termbase cho {locale}: {effective:,} thuật ngữ hiệu lực, {bundled:,} đi kèm, {user:,} ghi đè người dùng. File người dùng: {path}</translation>
     </string>
   </context>
   <context name="ReplaceDialog">

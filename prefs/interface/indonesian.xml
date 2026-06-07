@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="id_ID" name="Indonesia (Indonesian)" version="2.3.5" authors="wahyudiZulhaidar">
+<ts language="id_ID" name="Indonesia (Indonesian)" version="2.3.6" authors="wahyudiZulhaidar">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1198,6 +1198,62 @@ Kesalahan:
     <string>
       <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
       <translation>Memori berisi {entries:,} entri, {size:,} byte. Pasangan bahasa saat ini: {pair:,}. Engine: {engines}.</translation>
+    </string>
+    <string>
+      <source>Termbase</source>
+      <translation>Basis istilah</translation>
+    </string>
+    <string>
+      <source>Termbase terms power Release QA terminology warnings. Bundled terms stay read-only; imported terms override them for the current destination language.</source>
+      <translation>Basis istilah digunakan untuk peringatan terminologi Release QA. Istilah bawaan tetap baca-saja; istilah yang diimpor menimpanya untuk bahasa tujuan saat ini.</translation>
+    </string>
+    <string>
+      <source>Open CSV</source>
+      <translation>Buka CSV</translation>
+    </string>
+    <string>
+      <source>Clear user terms</source>
+      <translation>Hapus istilah pengguna</translation>
+    </string>
+    <string>
+      <source>Export the effective termbase for the current destination language to a UTF-8 CSV file.</source>
+      <translation>Ekspor basis istilah efektif untuk bahasa tujuan saat ini ke file CSV UTF-8.</translation>
+    </string>
+    <string>
+      <source>Import user termbase terms for the current destination language. Matching source terms override bundled terms.</source>
+      <translation>Impor istilah basis pengguna untuk bahasa tujuan saat ini. Istilah sumber yang cocok menimpa istilah bawaan.</translation>
+    </string>
+    <string>
+      <source>Open the user termbase CSV for the current destination language.</source>
+      <translation>Buka CSV basis istilah pengguna untuk bahasa tujuan saat ini.</translation>
+    </string>
+    <string>
+      <source>Remove user termbase terms for the current destination language. Bundled terms remain available.</source>
+      <translation>Hapus istilah basis pengguna untuk bahasa tujuan saat ini. Istilah bawaan tetap tersedia.</translation>
+    </string>
+    <string>
+      <source>Termbase CSV</source>
+      <translation>CSV basis istilah</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} termbase term(s).</source>
+      <translation>Mengekspor {count:,} istilah basis.</translation>
+    </string>
+    <string>
+      <source>Could not import termbase CSV: {message}</source>
+      <translation>Tidak dapat mengimpor CSV basis istilah: {message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} termbase term(s).</source>
+      <translation>Mengimpor {imported:,} istilah basis.</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} user termbase term(s) for {locale}?</source>
+      <translation>Hapus {count:,} istilah basis pengguna untuk {locale}?</translation>
+    </string>
+    <string>
+      <source>Termbase for {locale}: {effective:,} effective term(s), {bundled:,} bundled, {user:,} user override(s). User file: {path}</source>
+      <translation>Basis istilah untuk {locale}: {effective:,} istilah efektif, {bundled:,} bawaan, {user:,} override pengguna. File pengguna: {path}</translation>
     </string>
   </context>
   <context name="ReplaceDialog">

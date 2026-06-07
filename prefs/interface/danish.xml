@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="da_DK" name="Dansk (Danish)" version="2.3.5" authors="Marianne Topping">
+<ts language="da_DK" name="Dansk (Danish)" version="2.3.6" authors="Marianne Topping">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1198,6 +1198,62 @@ Fejl:
     <string>
       <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
       <translation>Hukommelsen indeholder {entries:,} post(er), {size:,} bytes. Aktuelt sprogpar: {pair:,}. Engines: {engines}.</translation>
+    </string>
+    <string>
+      <source>Termbase</source>
+      <translation>Termbase</translation>
+    </string>
+    <string>
+      <source>Termbase terms power Release QA terminology warnings. Bundled terms stay read-only; imported terms override them for the current destination language.</source>
+      <translation>Termbasen bruges til terminologiadvarsler i Release QA. Indbyggede termer er skrivebeskyttede; importerede termer tilsidesætter dem for det aktuelle målsprog.</translation>
+    </string>
+    <string>
+      <source>Open CSV</source>
+      <translation>Åbn CSV</translation>
+    </string>
+    <string>
+      <source>Clear user terms</source>
+      <translation>Ryd brugertermer</translation>
+    </string>
+    <string>
+      <source>Export the effective termbase for the current destination language to a UTF-8 CSV file.</source>
+      <translation>Eksporter den effektive termbase for det aktuelle målsprog til en UTF-8 CSV-fil.</translation>
+    </string>
+    <string>
+      <source>Import user termbase terms for the current destination language. Matching source terms override bundled terms.</source>
+      <translation>Importer brugerens termbase-termer for det aktuelle målsprog. Matchende kildetermer tilsidesætter indbyggede termer.</translation>
+    </string>
+    <string>
+      <source>Open the user termbase CSV for the current destination language.</source>
+      <translation>Åbn brugerens termbase-CSV for det aktuelle målsprog.</translation>
+    </string>
+    <string>
+      <source>Remove user termbase terms for the current destination language. Bundled terms remain available.</source>
+      <translation>Fjern brugerens termbase-termer for det aktuelle målsprog. Indbyggede termer forbliver tilgængelige.</translation>
+    </string>
+    <string>
+      <source>Termbase CSV</source>
+      <translation>Termbase-CSV</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} termbase term(s).</source>
+      <translation>Eksporterede {count:,} termbase-term(er).</translation>
+    </string>
+    <string>
+      <source>Could not import termbase CSV: {message}</source>
+      <translation>Kunne ikke importere termbase-CSV: {message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} termbase term(s).</source>
+      <translation>Importerede {imported:,} termbase-term(er).</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} user termbase term(s) for {locale}?</source>
+      <translation>Ryd {count:,} brugerterm(er) for {locale}?</translation>
+    </string>
+    <string>
+      <source>Termbase for {locale}: {effective:,} effective term(s), {bundled:,} bundled, {user:,} user override(s). User file: {path}</source>
+      <translation>Termbase for {locale}: {effective:,} effektive term(er), {bundled:,} indbyggede, {user:,} brugeroverskrivning(er). Brugerfil: {path}</translation>
     </string>
   </context>
   <context name="ReplaceDialog">
