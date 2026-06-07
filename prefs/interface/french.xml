@@ -1,5 +1,5 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<ts language="fr_FR" name="Français (French)" version="2.3.0" authors="Eli.Dev">
+<?xml version='1.0' encoding='utf-8'?>
+<ts language="fr_FR" name="Français (French)" version="2.3.1" authors="Eli.Dev">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1422,6 +1422,18 @@ Après ce lot : environ {after:,} caractères ({percent:.1f}%).</translation>
     <string>
       <source>Usage unavailable: {message}</source>
       <translation>Utilisation indisponible : {message}</translation>
+    </string>
+    <string>
+      <source>Retry failed only</source>
+      <translation>Réessayer uniquement les échecs</translation>
+    </string>
+    <string>
+      <source>Retrying {count:,} failed/skipped record(s) line by line.</source>
+      <translation>Nouvelle tentative de {count:,} enregistrement(s) échoué(s)/ignoré(s), ligne par ligne.</translation>
+    </string>
+    <string>
+      <source>Retry available for {count:,} failed/skipped record(s).</source>
+      <translation>Nouvelle tentative disponible pour {count:,} enregistrement(s) échoué(s)/ignoré(s).</translation>
     </string>
   </context>
   <context name="TextEditor">

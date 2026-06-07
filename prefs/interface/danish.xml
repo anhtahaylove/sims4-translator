@@ -1,5 +1,5 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<ts language="da_DK" name="Dansk (Danish)" version="2.3.0" authors="Marianne Topping">
+<?xml version='1.0' encoding='utf-8'?>
+<ts language="da_DK" name="Dansk (Danish)" version="2.3.1" authors="Marianne Topping">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1422,6 +1422,18 @@ Efter denne batch: ca. {after:,} tegn ({percent:.1f}%).</translation>
     <string>
       <source>Usage unavailable: {message}</source>
       <translation>Brug ikke tilgængelig: {message}</translation>
+    </string>
+    <string>
+      <source>Retry failed only</source>
+      <translation>Prøv kun mislykkede igen</translation>
+    </string>
+    <string>
+      <source>Retrying {count:,} failed/skipped record(s) line by line.</source>
+      <translation>Prøver {count:,} mislykkede/sprunget over poster igen linje for linje.</translation>
+    </string>
+    <string>
+      <source>Retry available for {count:,} failed/skipped record(s).</source>
+      <translation>Genforsøg tilgængeligt for {count:,} mislykkede/sprunget over poster.</translation>
     </string>
   </context>
   <context name="TextEditor">

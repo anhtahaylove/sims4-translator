@@ -153,6 +153,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
 
         self.btn_translate.clicked.connect(self.translate_click)
         self.btn_cancel.clicked.connect(self.cancel_click)
+        self.btn_retry_failed.clicked.connect(self.retry_failed_click)
 
         self.__runner = TaskRunner(max_threads=3, parent=self)
 
@@ -162,6 +163,10 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         self.__log = []
         self.__items = []
         self.__handles = []
+        self.__chunk_items_by_handle = {}
+        self.__failed_item_indexes = set()
+        self.__last_failed_items = []
+        self.__stopping_for_error = False
         self.__refresh_timer = QTimer(self)
         self.__refresh_timer.setSingleShot(True)
         self.__refresh_timer.timeout.connect(self.__refresh_table)
@@ -189,6 +194,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         self.__set_radio_text(self.rb_partial, interface.text('ImportDialog', 'Partial strings'))
         self.__set_radio_text(self.rb_selection, interface.text('ImportDialog', 'Selection only'))
         self.btn_cancel.setText(interface.text('TranslateDialog', 'Cancel'))
+        self.btn_retry_failed.setText(interface.text('TranslateDialog', 'Retry failed only'))
         self.btn_translate.setText(interface.text('TranslateDialog', 'Translate'))
         self.rb_slow.setText(interface.text('TranslateDialog', 'Line-by-line translation'))
         self.rb_fast.setText(interface.text('TranslateDialog', 'Multiline translation'))
@@ -247,6 +253,9 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             elif self.rb_partial.isChecked():
                 items = [i for i in items if i.flag in (FLAG_PROGRESS, FLAG_REPLACED)]
 
+        self.__start_translation(items)
+
+    def __start_translation(self, items: List[MainRecord], retry_failed_only: bool = False) -> None:
         if not items:
             return
 
@@ -266,7 +275,8 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         ):
             return
 
-        if self.rb_fast.isChecked():
+        force_slow = retry_failed_only
+        if self.rb_fast.isChecked() and not force_slow:
             chunk_items = split_by_char_limit(indexed_items, 1024)
         else:
             chunk_items = [[item] for item in indexed_items]
@@ -276,9 +286,20 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         self.__error = False
         self.__log = []
         self.__handles = []
+        self.__chunk_items_by_handle = {}
+        self.__failed_item_indexes = set()
+        self.__last_failed_items = []
+        self.__stopping_for_error = False
         self.__set_busy(True)
 
         self.edt_log.clear()
+
+        if retry_failed_only:
+            self.__log.append(interface.text(
+                'TranslateDialog',
+                'Retrying {count:,} failed/skipped record(s) line by line.'
+            ).format(count=len(items)))
+            self.print_log()
 
         if translation_cache.enabled:
             self.__log.append(interface.text(
@@ -302,7 +323,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
                 request = TranslationChunkRequest(
                     engine=engine,
                     items=snapshots,
-                    fast=self.rb_fast.isChecked(),
+                    fast=self.rb_fast.isChecked() and not force_slow,
                     context=self.__deepl_context_for_items([item for _index, item in chunk]),
                     glossary_id=config.value('api', 'deepl_glossary_id') or ''
                 )
@@ -312,6 +333,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
                     job_name=interface.text('System', 'Translating...')
                 )
                 self.__handles.append(handle)
+                self.__chunk_items_by_handle[handle] = tuple(chunk)
                 handle.result.connect(lambda result, task_handle=handle: self.__translated_chunk(result, task_handle))
                 handle.error.connect(lambda error, task_handle=handle: self.__task_error(error, task_handle))
                 handle.finished.connect(
@@ -332,16 +354,23 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             return
 
         if result.error:
+            self.__mark_handle_failed(handle)
             self.__error_translate_chunk(result.error)
             return
 
         if result.warning:
             self.__warning_translate_chunk(result.warning)
+            if handle is not None:
+                translated_indexes = {translated.index for translated in result.translations}
+                self.__mark_handle_failed(handle, exclude_indexes=translated_indexes)
 
         for translated in result.translations:
             if translated.index >= len(self.__items):
                 continue
 
+            failed_indexes = getattr(self, '_TranslateDialog__failed_item_indexes', None)
+            if failed_indexes is not None:
+                failed_indexes.discard(translated.index)
             item = self.__items[translated.index]
             undo.wrap(item)
             item.translate = translated.text
@@ -355,6 +384,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
     def __task_error(self, error, handle=None):
         if handle is not None and (handle.cancelled or handle not in self.__handles):
             return
+        self.__mark_handle_failed(handle)
         self.__error_translate_chunk(error.message)
 
     @Slot(bool)
@@ -363,6 +393,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             if handle not in self.__handles:
                 return
             self.__handles.remove(handle)
+            self.__chunk_items_by_handle.pop(handle, None)
 
         self.__progress -= 1
         if self.__progress == 0:
@@ -375,9 +406,27 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             self.__refresh_timer.stop()
         self.__refresh_table()
         undo.commit()
+        if self.__stopping_for_error:
+            for chunk in self.__chunk_items_by_handle.values():
+                for index, _item in chunk:
+                    self.__failed_item_indexes.add(index)
+        self.__last_failed_items = [
+            self.__items[index]
+            for index in sorted(self.__failed_item_indexes)
+            if 0 <= index < len(self.__items)
+        ]
+        if self.__last_failed_items:
+            self.__log.append(interface.text(
+                'TranslateDialog',
+                'Retry available for {count:,} failed/skipped record(s).'
+            ).format(count=len(self.__last_failed_items)))
+            self.print_log()
         self.__progress = 0
         self.__translating = False
         self.__handles = []
+        self.__chunk_items_by_handle = {}
+        self.__failed_item_indexes = set()
+        self.__stopping_for_error = False
         self.__set_busy(False)
         progress_signals.finished.emit()
 
@@ -390,6 +439,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
     def __error_translate_chunk(self, text: str):
         if not self.__error:
             self.__error = True
+            self.__stopping_for_error = True
             self.__log.append(f'<span style="color: {theme.TEXT_ERROR};">{text}</span>')
             self.print_log()
             self.stop_translate()
@@ -408,6 +458,11 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             self.translate()
         else:
             self.stop_translate()
+
+    def retry_failed_click(self):
+        if self.__translating or not self.__last_failed_items:
+            return
+        self.__start_translation(list(self.__last_failed_items), retry_failed_only=True)
 
     def cancel_click(self):
         if self.__translating:
@@ -595,6 +650,7 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
             control.setEnabled(not busy)
 
         self.btn_cancel.setEnabled(not busy)
+        self.btn_retry_failed.setEnabled((not busy) and bool(self.__last_failed_items))
         self.btn_translate.setEnabled(not stopping)
 
         if stopping:
@@ -604,3 +660,15 @@ class TranslateDialog(QDialog, Ui_TranslateDialog):
         else:
             self.btn_translate.setText(interface.text('TranslateDialog', 'Translate'))
             self.check_api()
+
+    def __mark_handle_failed(self, handle, exclude_indexes=None) -> None:
+        if handle is None:
+            return
+        failed_indexes = getattr(self, '_TranslateDialog__failed_item_indexes', None)
+        chunk_items = getattr(self, '_TranslateDialog__chunk_items_by_handle', {})
+        if failed_indexes is None:
+            return
+        excluded = set(exclude_indexes or ())
+        for index, _item in chunk_items.get(handle, ()):
+            if index not in excluded:
+                failed_indexes.add(index)

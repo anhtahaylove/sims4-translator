@@ -1,5 +1,5 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<ts language="uk_UA" name="Українська (Ukrainian)" version="2.3.0" authors="Roman Kozin">
+<?xml version='1.0' encoding='utf-8'?>
+<ts language="uk_UA" name="Українська (Ukrainian)" version="2.3.1" authors="Roman Kozin">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1422,6 +1422,18 @@ After this batch: about {after:,} characters ({percent:.1f}%).</source>
     <string>
       <source>Usage unavailable: {message}</source>
       <translation>Використання недоступне: {message}</translation>
+    </string>
+    <string>
+      <source>Retry failed only</source>
+      <translation>Повторити лише невдалі</translation>
+    </string>
+    <string>
+      <source>Retrying {count:,} failed/skipped record(s) line by line.</source>
+      <translation>Повторюємо {count:,} невдалих/пропущених записів рядок за рядком.</translation>
+    </string>
+    <string>
+      <source>Retry available for {count:,} failed/skipped record(s).</source>
+      <translation>Повтор доступний для {count:,} невдалих/пропущених записів.</translation>
     </string>
   </context>
   <context name="TextEditor">

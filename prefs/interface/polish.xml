@@ -1,5 +1,5 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<ts language="pl_PL" name="Polski (Polish)" version="2.3.0" authors="Simowe Osiedle">
+<?xml version='1.0' encoding='utf-8'?>
+<ts language="pl_PL" name="Polski (Polish)" version="2.3.1" authors="Simowe Osiedle">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1422,6 +1422,18 @@ Po tej partii: około {after:,} znaków ({percent:.1f}%).</translation>
     <string>
       <source>Usage unavailable: {message}</source>
       <translation>Użycie niedostępne: {message}</translation>
+    </string>
+    <string>
+      <source>Retry failed only</source>
+      <translation>Ponów tylko nieudane</translation>
+    </string>
+    <string>
+      <source>Retrying {count:,} failed/skipped record(s) line by line.</source>
+      <translation>Ponawianie {count:,} nieudanych/pominiętych rekordów linia po linii.</translation>
+    </string>
+    <string>
+      <source>Retry available for {count:,} failed/skipped record(s).</source>
+      <translation>Ponowienie dostępne dla {count:,} nieudanych/pominiętych rekordów.</translation>
     </string>
   </context>
   <context name="TextEditor">

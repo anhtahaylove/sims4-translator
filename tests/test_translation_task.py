@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 from singletons.config import config
+from singletons.translation_cache import TranslationCache
+from singletons.translation_memory import TranslationMemory
 from singletons.translator import (
     DeepLUsage,
     OLLAMA_RECOMMENDED_MODEL,
@@ -33,7 +37,7 @@ from windows.translate_dialog import (
 )
 from packer.resource import ResourceID
 from storages.records import MainRecord
-from utils.constants import FLAG_UNVALIDATED
+from utils.constants import FLAG_UNVALIDATED, FLAG_VALIDATED
 
 
 class NoopReporter(TaskReporter):
@@ -43,6 +47,130 @@ class NoopReporter(TaskReporter):
 
     def progress(self, current: int = 0, total: int = 0, message: str = '') -> None:
         pass
+
+
+class FakeSignal:
+
+    def __init__(self):
+        self.callbacks = []
+
+    def connect(self, callback):
+        self.callbacks.append(callback)
+
+
+class FakeHandle:
+
+    def __init__(self):
+        self.cancelled = False
+        self.result = FakeSignal()
+        self.error = FakeSignal()
+        self.finished = FakeSignal()
+
+    def cancel(self):
+        self.cancelled = True
+
+
+class FakeControl:
+
+    def __init__(self, text=''):
+        self.enabled = True
+        self.text = text
+
+    def setEnabled(self, enabled):
+        self.enabled = enabled
+
+    def setText(self, text):
+        self.text = text
+
+    def currentText(self):
+        return self.text
+
+
+class FakeRadio(FakeControl):
+
+    def __init__(self, text='', checked=False):
+        super().__init__(text)
+        self.checked = checked
+
+    def isChecked(self):
+        return self.checked
+
+    def setChecked(self, checked):
+        self.checked = checked
+
+
+class FakeLog:
+
+    def __init__(self):
+        self.text = ''
+
+    def setText(self, text):
+        self.text = text
+
+    def clear(self):
+        self.text = ''
+
+    def verticalScrollBar(self):
+        return self
+
+    def maximum(self):
+        return 0
+
+    def setValue(self, _value):
+        pass
+
+
+class FakeTimer:
+
+    def __init__(self):
+        self.started = False
+        self.stopped = False
+
+    def start(self, _msecs):
+        self.started = True
+
+    def isActive(self):
+        return False
+
+    def stop(self):
+        self.stopped = True
+
+
+class FakeUndo:
+
+    def wrap(self, _item):
+        pass
+
+    def commit(self):
+        pass
+
+
+def make_translate_dialog_for_retry(items):
+    dialog = TranslateDialog.__new__(TranslateDialog)
+    dialog.cb_api = FakeControl('Google')
+    dialog.rb_all = FakeRadio()
+    dialog.rb_validated = FakeRadio()
+    dialog.rb_validated_partial = FakeRadio()
+    dialog.rb_partial = FakeRadio()
+    dialog.rb_selection = FakeRadio()
+    dialog.rb_slow = FakeRadio(checked=False)
+    dialog.rb_fast = FakeRadio(checked=True)
+    dialog.btn_cancel = FakeControl()
+    dialog.btn_translate = FakeControl()
+    dialog.btn_retry_failed = FakeControl()
+    dialog.edt_log = FakeLog()
+    dialog._TranslateDialog__items = list(items)
+    dialog._TranslateDialog__handles = []
+    dialog._TranslateDialog__chunk_items_by_handle = {}
+    dialog._TranslateDialog__failed_item_indexes = set()
+    dialog._TranslateDialog__last_failed_items = []
+    dialog._TranslateDialog__stopping_for_error = False
+    dialog._TranslateDialog__progress = 0
+    dialog._TranslateDialog__translating = False
+    dialog._TranslateDialog__error = False
+    dialog._TranslateDialog__log = []
+    dialog._TranslateDialog__refresh_timer = FakeTimer()
+    return dialog
 
 
 class TranslationTaskTests(unittest.TestCase):
@@ -543,6 +671,83 @@ class TranslationTaskTests(unittest.TestCase):
 
         self.assertEqual(item.translate, 'Hello')
         self.assertFalse(timer.started)
+
+    def test_warning_chunk_records_failed_items_for_retry(self):
+        first = self._record(1, 'First')
+        second = self._record(2, 'Second')
+        dialog = make_translate_dialog_for_retry([first, second])
+        handle = FakeHandle()
+        dialog._TranslateDialog__handles = [handle]
+        dialog._TranslateDialog__chunk_items_by_handle = {
+            handle: ((0, first), (1, second)),
+        }
+        dialog._TranslateDialog__progress = 1
+        dialog._TranslateDialog__translating = True
+
+        result = TranslationChunkResult(warning='Some lines could not be translated.')
+        with patch('windows.translate_dialog.undo', FakeUndo()):
+            TranslateDialog._TranslateDialog__translated_chunk(dialog, result, handle)
+            TranslateDialog._TranslateDialog__finished_translate_chunk(dialog, False, handle)
+
+        self.assertEqual(dialog._TranslateDialog__last_failed_items, [first, second])
+        self.assertTrue(dialog.btn_retry_failed.enabled)
+        self.assertIn('Retry available for 2 failed/skipped record(s).', dialog.edt_log.text)
+
+    def test_retry_failed_only_uses_cache_before_line_by_line_network(self):
+        first = self._record(1, 'Cached source')
+        second = self._record(2, 'Network source')
+        dialog = make_translate_dialog_for_retry([first, second])
+        dialog._TranslateDialog__last_failed_items = [first, second]
+        config.set_value('translation_cache', 'enabled', True)
+
+        class Runner:
+
+            def __init__(self):
+                self.requests = []
+
+            def start(self, _fn, request, job_name=''):
+                self.requests.append((request, job_name))
+                return FakeHandle()
+
+        runner = Runner()
+        dialog._TranslateDialog__runner = runner
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cache = TranslationCache(Path(tmpdir) / 'cache.sqlite3')
+            memory = TranslationMemory(Path(tmpdir) / 'memory.sqlite3')
+            cache.store('ENG_US', 'VI_VN', 'Google', '', 'Cached source', 'Cached translation')
+
+            with patch('windows.translate_dialog.translation_cache', cache), \
+                    patch('windows.translate_dialog.translation_memory', memory), \
+                    patch('windows.translate_dialog.undo', FakeUndo()):
+                TranslateDialog.retry_failed_click(dialog)
+
+        self.assertEqual(first.translate, 'Cached translation')
+        self.assertEqual(first.flag, FLAG_VALIDATED)
+        self.assertEqual(len(runner.requests), 1)
+        request = runner.requests[0][0]
+        self.assertFalse(request.fast)
+        self.assertEqual([item.source for item in request.items], ['Network source'])
+
+    @staticmethod
+    def _record(idx: int, source: str) -> MainRecord:
+        rid = ResourceID(group=0, instance=idx, type=0x220557DA)
+        return MainRecord(
+            idx,
+            idx,
+            rid.instance,
+            rid.group,
+            source,
+            source,
+            FLAG_UNVALIDATED,
+            rid,
+            rid,
+            'pkg',
+            None,
+            None,
+            (idx, idx, idx, idx),
+            '',
+        )
 
 
 if __name__ == '__main__':

@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 2.3.1 - 2026-06-07
+
+### Added
+
+- Added Batch Translate retry support for failed or skipped records so interrupted provider runs can be retried without restarting the whole batch.
+- Retry failed-only runs line by line and still reuses Translation Cache and Translation Memory before making provider calls.
+
 ## Version 2.3.0 - 2026-06-07
 
 ### Added

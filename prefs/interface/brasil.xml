@@ -1,5 +1,5 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<ts language="pt_BR" name="Português (Brasil)" version="2.3.0" authors="luana67">
+<?xml version='1.0' encoding='utf-8'?>
+<ts language="pt_BR" name="Português (Brasil)" version="2.3.1" authors="luana67">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1422,6 +1422,18 @@ Após este lote: cerca de {after:,} caracteres ({percent:.1f}%).</translation>
     <string>
       <source>Usage unavailable: {message}</source>
       <translation>Uso indisponível: {message}</translation>
+    </string>
+    <string>
+      <source>Retry failed only</source>
+      <translation>Repetir apenas falhas</translation>
+    </string>
+    <string>
+      <source>Retrying {count:,} failed/skipped record(s) line by line.</source>
+      <translation>Repetindo {count:,} registro(s) com falha/ignorado(s) linha por linha.</translation>
+    </string>
+    <string>
+      <source>Retry available for {count:,} failed/skipped record(s).</source>
+      <translation>Repetição disponível para {count:,} registro(s) com falha/ignorado(s).</translation>
     </string>
   </context>
   <context name="TextEditor">

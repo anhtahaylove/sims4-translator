@@ -110,14 +110,19 @@ class Ui_TranslateDialog(object):
 
         self.btn_translate = QPushButton(TranslateDialog)
         self.btn_cancel = QPushButton(TranslateDialog)
+        self.btn_retry_failed = QPushButton(TranslateDialog)
         self.btn_translate.setObjectName('sheetPrimary')
         self.btn_cancel.setObjectName('sheetSecondary')
+        self.btn_retry_failed.setObjectName('sheetSecondary')
 
         self.btn_translate.setDefault(True)
         self.btn_cancel.setAutoDefault(False)
+        self.btn_retry_failed.setAutoDefault(False)
+        self.btn_retry_failed.setEnabled(False)
 
         hlayout.addWidget(self.cb_api)
         hlayout.addStretch()
+        hlayout.addWidget(self.btn_retry_failed)
         hlayout.addWidget(self.btn_cancel)
         hlayout.addWidget(self.btn_translate)
 

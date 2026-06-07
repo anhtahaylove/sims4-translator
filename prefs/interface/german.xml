@@ -1,5 +1,5 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<ts language="de_DE" name="Deutsch (German)" version="2.3.0" authors="Ulrike">
+<?xml version='1.0' encoding='utf-8'?>
+<ts language="de_DE" name="Deutsch (German)" version="2.3.1" authors="Ulrike">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1422,6 +1422,18 @@ Nach diesem Stapel: etwa {after:,} Zeichen ({percent:.1f} %).</translation>
     <string>
       <source>Usage unavailable: {message}</source>
       <translation>Verwendung nicht verfügbar: {message}</translation>
+    </string>
+    <string>
+      <source>Retry failed only</source>
+      <translation>Fehler wiederholen</translation>
+    </string>
+    <string>
+      <source>Retrying {count:,} failed/skipped record(s) line by line.</source>
+      <translation>Wiederhole {count:,} fehlgeschlagene/übersprungene Einträge zeilenweise.</translation>
+    </string>
+    <string>
+      <source>Retry available for {count:,} failed/skipped record(s).</source>
+      <translation>Erneuter Versuch für {count:,} fehlgeschlagene/übersprungene Einträge verfügbar.</translation>
     </string>
   </context>
   <context name="TextEditor">

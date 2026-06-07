@@ -1,5 +1,5 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
-<ts language="id_ID" name="Indonesia (Indonesian)" version="2.3.0" authors="wahyudiZulhaidar">
+<?xml version='1.0' encoding='utf-8'?>
+<ts language="id_ID" name="Indonesia (Indonesian)" version="2.3.1" authors="wahyudiZulhaidar">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1422,6 +1422,18 @@ Setelah batch ini: sekitar {after:,} karakter ({percent:.1f}%).</translation>
     <string>
       <source>Usage unavailable: {message}</source>
       <translation>Penggunaan tidak tersedia: {message}</translation>
+    </string>
+    <string>
+      <source>Retry failed only</source>
+      <translation>Coba ulang yang gagal saja</translation>
+    </string>
+    <string>
+      <source>Retrying {count:,} failed/skipped record(s) line by line.</source>
+      <translation>Mencoba ulang {count:,} record gagal/dilewati baris per baris.</translation>
+    </string>
+    <string>
+      <source>Retry available for {count:,} failed/skipped record(s).</source>
+      <translation>Coba ulang tersedia untuk {count:,} record gagal/dilewati.</translation>
     </string>
   </context>
   <context name="TextEditor">
