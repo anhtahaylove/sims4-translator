@@ -5,9 +5,12 @@ import os
 import re
 from collections import Counter
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Iterable, Tuple
 
 from packer.resource import ResourceID
+from singletons.config import ConfigManager
+from singletons.translation_memory import normalize_source
 from storages.records import MainRecord
 from utils.constants import (
     FLAG_PROGRESS,
@@ -17,8 +20,8 @@ from utils.constants import (
     FLAG_VALIDATED,
 )
 from utils.functions import compare, fnv64, text_to_edit, text_to_table, text_to_stbl
+from utils.runtime_paths import resource_path
 from widgets.token_highlight import validate_translation_tokens
-from singletons.translation_memory import normalize_source
 
 
 SEVERITY_CRITICAL = 'Critical'
@@ -57,13 +60,13 @@ STATUS_LABELS = {
 }
 
 
-TERMINOLOGY_TERMS = {
+DEFAULT_TERMINOLOGY_TERMS = {
     'VI_VN': (
-        ('Sim', 'Sim'),
-        ('Moodlet', 'moodlet'),
-        ('Aspiration', 'Khát vọng'),
-        ('Trait', 'Đặc điểm'),
-        ('Household', 'Hộ gia đình'),
+        ('Sim', 'Sim', 'Keep The Sims character noun as the franchise term.'),
+        ('Moodlet', 'moodlet', 'Common Sims UI term.'),
+        ('Aspiration', 'Khát vọng', 'Vietnamese release term.'),
+        ('Trait', 'Đặc điểm', 'Vietnamese release term.'),
+        ('Household', 'Hộ gia đình', 'Vietnamese release term.'),
     ),
 }
 
@@ -312,6 +315,45 @@ def validate_release_task(token, reporter, request: ValidationRequest) -> Valida
     )
 
 
+def terminology_terms_for_locale(destination_locale: str) -> Tuple[Tuple[str, str], ...]:
+    locale = (destination_locale or '').upper()
+    terms: dict[str, Tuple[str, str]] = {}
+
+    for source_term, expected_translation, _note in DEFAULT_TERMINOLOGY_TERMS.get(locale, ()):
+        terms[source_term.lower()] = (source_term, expected_translation)
+
+    for path in _terminology_paths(locale):
+        for source_term, expected_translation in _read_terminology_file(path):
+            terms[source_term.lower()] = (source_term, expected_translation)
+
+    return tuple(terms.values())
+
+
+def _terminology_paths(locale: str) -> Tuple[Path, ...]:
+    if not locale:
+        return ()
+    filename = f'{locale}.csv'
+    return (
+        resource_path('prefs', 'termbase', filename),
+        ConfigManager.default_config_dir() / 'termbase' / filename,
+    )
+
+
+def _read_terminology_file(path: Path) -> Tuple[Tuple[str, str], ...]:
+    try:
+        with open(path, 'r', encoding='utf-8-sig', newline='') as fp:
+            rows = csv.DictReader(fp)
+            terms = []
+            for row in rows:
+                source_term = (row.get('source_term') or '').strip()
+                expected_translation = (row.get('expected_translation') or '').strip()
+                if source_term and expected_translation:
+                    terms.append((source_term, expected_translation))
+            return tuple(terms)
+    except FileNotFoundError:
+        return ()
+
+
 def _validate_release_records(
         items: Iterable[MainRecord],
         mode: str,
@@ -553,7 +595,7 @@ def _record_issues(item: MainRecord, include_untranslated: bool, rid=None, profi
 def _consistency_issues(items: Tuple[MainRecord, ...], destination_locale: str) -> list:
     issues = []
     source_groups = {}
-    terminology_terms = TERMINOLOGY_TERMS.get((destination_locale or '').upper(), ())
+    terminology_terms = terminology_terms_for_locale(destination_locale)
 
     for item in items:
         source = text_to_stbl(item.source)

@@ -27,6 +27,7 @@ class BuildWindowsScriptTests(unittest.TestCase):
 
     def test_build_script_excludes_local_user_config_from_release(self):
         self.assertIn("Prepare distributable prefs without local config", self.script)
+        self.assertIn("$_.Name -ne 'config.xml'", self.script)
         self.assertIn("Build prefs bundle must not include local prefs\\config.xml", self.script)
         self.assertIn("Bundled prefs\\config.xml must not be shipped", self.script)
         self.assertIn("Built app must not write prefs\\config.xml beside the executable", self.script)
@@ -58,9 +59,9 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('python scripts\\create_synthetic_package.py', script)
         self.assertIn('python scripts\\verify_synthetic_smoke.py --directory build\\synthetic', script)
         self.assertNotIn('--require-gui-outputs', script)
-        self.assertIn('python scripts\\verify_version_sync.py --version 2.3.4', script)
+        self.assertIn('python scripts\\verify_version_sync.py --version 2.3.5', script)
         self.assertIn(
-            'python scripts\\verify_interface_i18n.py --all --version 2.3.4 --strict-empty --strict-missing',
+            'python scripts\\verify_interface_i18n.py --all --version 2.3.5 --strict-empty --strict-missing',
             script,
         )
         self.assertIn('git diff --check', script)

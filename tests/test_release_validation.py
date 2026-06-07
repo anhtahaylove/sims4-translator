@@ -3,6 +3,7 @@
 import os
 import tempfile
 import unittest
+from pathlib import Path
 
 from packer.resource import ResourceID
 from storages.records import MainRecord
@@ -21,6 +22,7 @@ from utils.release_validation import (
     SEVERITY_CRITICAL,
     SEVERITY_WARNING,
     ValidationRequest,
+    terminology_terms_for_locale,
     validate_release_task,
     validate_release_records,
 )
@@ -252,6 +254,9 @@ class ReleaseValidationTests(unittest.TestCase):
         self.assertFalse(any(issue.code == 'UNCHANGED_TRANSLATION_REVIEW' for issue in report.issues))
 
     def test_consistency_warns_for_missing_vietnamese_glossary_term(self):
+        terms = terminology_terms_for_locale('VI_VN')
+        self.assertIn(('Trait', 'Đặc điểm'), terms)
+
         report = validate_release_records(
             [make_record(
                 source='This Trait helps your Sim learn faster.',
@@ -279,6 +284,68 @@ class ReleaseValidationTests(unittest.TestCase):
         )
 
         self.assertFalse(any(issue.code == 'TERMINOLOGY_MISMATCH' for issue in report.issues))
+
+    def test_consistency_uses_user_termbase_override(self):
+        old_config_dir = os.environ.get('SIMS4_TRANSLATOR_CONFIG_DIR')
+        with tempfile.TemporaryDirectory() as tmpdir:
+            try:
+                os.environ['SIMS4_TRANSLATOR_CONFIG_DIR'] = tmpdir
+                termbase_dir = Path(tmpdir) / 'termbase'
+                termbase_dir.mkdir()
+                (termbase_dir / 'VI_VN.csv').write_text(
+                    'source_term,expected_translation,note\n'
+                    'Trait,tinh cach,project override\n',
+                    encoding='utf-8',
+                )
+
+                report = validate_release_records(
+                    [make_record(
+                        source='This Trait helps your Sim learn faster.',
+                        translation='tinh cach nay giup Sim hoc nhanh hon.',
+                        flag=FLAG_VALIDATED,
+                    )],
+                    'Save as package',
+                    'VI_VN',
+                )
+            finally:
+                if old_config_dir is None:
+                    os.environ.pop('SIMS4_TRANSLATOR_CONFIG_DIR', None)
+                else:
+                    os.environ['SIMS4_TRANSLATOR_CONFIG_DIR'] = old_config_dir
+
+        self.assertFalse(any(issue.code == 'TERMINOLOGY_MISMATCH' for issue in report.issues))
+
+    def test_consistency_uses_user_termbase_additions(self):
+        old_config_dir = os.environ.get('SIMS4_TRANSLATOR_CONFIG_DIR')
+        with tempfile.TemporaryDirectory() as tmpdir:
+            try:
+                os.environ['SIMS4_TRANSLATOR_CONFIG_DIR'] = tmpdir
+                termbase_dir = Path(tmpdir) / 'termbase'
+                termbase_dir.mkdir()
+                (termbase_dir / 'VI_VN.csv').write_text(
+                    'source_term,expected_translation,note\n'
+                    'Lot,lo dat,project addition\n',
+                    encoding='utf-8',
+                )
+
+                report = validate_release_records(
+                    [make_record(
+                        source='This Lot is huge.',
+                        translation='Khu nay rat lon.',
+                        flag=FLAG_VALIDATED,
+                    )],
+                    'Save as package',
+                    'VI_VN',
+                )
+            finally:
+                if old_config_dir is None:
+                    os.environ.pop('SIMS4_TRANSLATOR_CONFIG_DIR', None)
+                else:
+                    os.environ['SIMS4_TRANSLATOR_CONFIG_DIR'] = old_config_dir
+
+        issue = next(issue for issue in report.issues if issue.code == 'TERMINOLOGY_MISMATCH')
+        self.assertIn('Lot', issue.reason)
+        self.assertIn('lo dat', issue.reason)
 
     def test_consistency_ignores_glossary_terms_inside_tokens(self):
         report = validate_release_records(

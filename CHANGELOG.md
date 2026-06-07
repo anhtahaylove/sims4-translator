@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 2.3.5 - 2026-06-07
+
+### Added
+
+- Move Vietnamese Release QA terminology checks to bundled and user-overridable termbase CSV files.
+
+### Build
+
+- Extend provider live smoke tooling to cover DeepL safely through the usage endpoint and document per-provider smoke commands.
+- Clarify false-positive follow-up for the v2.3.0 Cylance, Microsoft Defender, and APEX detections using the generated evidence pack.
+
 ## Version 2.3.4 - 2026-06-07
 
 ### Added

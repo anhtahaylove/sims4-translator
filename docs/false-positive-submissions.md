@@ -51,23 +51,23 @@ information shown on VirusTotal's contributor pages.
 
 From a clean source checkout:
 
-The examples below use `2.3.4`; replace it with the release version you are
+The examples below use `2.3.5`; replace it with the release version you are
 checking.
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.3.4
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.3.5
 ```
 
 To include VirusTotal report links in the generated vendor template manually:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.3.4 -VirusTotalZipUrl "https://www.virustotal.com/gui/file/..." -VirusTotalExeUrl "https://www.virustotal.com/gui/file/..."
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.3.5 -VirusTotalZipUrl "https://www.virustotal.com/gui/file/..." -VirusTotalExeUrl "https://www.virustotal.com/gui/file/..."
 ```
 
 The script writes files under:
 
 ```text
-build\false-positive-evidence\v2.3.4\
+build\false-positive-evidence\v2.3.5\
 ```
 
 That folder is a local artifact and should not be committed.
@@ -93,7 +93,7 @@ without uploading files:
 
 ```powershell
 $env:VT_API_KEY = "<your VirusTotal API key>"
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.3.4
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.3.5
 ```
 
 The script also accepts a local ignored `.env` file containing either:
@@ -109,19 +109,19 @@ To query VirusTotal and automatically write the ZIP/EXE report URLs back into
 the generated vendor template:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.3.4 -UpdateEvidencePack
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.3.5 -UpdateEvidencePack
 ```
 
 To request a fresh reanalysis for files that VirusTotal already knows:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.3.4 -Reanalyze
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.3.5 -Reanalyze
 ```
 
 The script writes local reports under:
 
 ```text
-build\virustotal\v2.3.4\
+build\virustotal\v2.3.5\
 ```
 
 It reads the API key from `VT_API_KEY` or the ignored local `.env`, does not
