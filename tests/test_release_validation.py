@@ -251,6 +251,61 @@ class ReleaseValidationTests(unittest.TestCase):
 
         self.assertFalse(any(issue.code == 'UNCHANGED_TRANSLATION_REVIEW' for issue in report.issues))
 
+    def test_consistency_warns_for_missing_vietnamese_glossary_term(self):
+        report = validate_release_records(
+            [make_record(
+                source='This Trait helps your Sim learn faster.',
+                translation='Tinh cach nay giup Sim hoc nhanh hon.',
+                flag=FLAG_VALIDATED,
+            )],
+            'Save as package',
+            'VI_VN',
+        )
+
+        issue = next(issue for issue in report.issues if issue.code == 'TERMINOLOGY_MISMATCH')
+        self.assertEqual(issue.category, CATEGORY_CONSISTENCY)
+        self.assertEqual(issue.severity, SEVERITY_WARNING)
+        self.assertIn('Trait', issue.reason)
+
+    def test_consistency_accepts_expected_vietnamese_glossary_term(self):
+        report = validate_release_records(
+            [make_record(
+                source='This Trait helps your Sim learn faster.',
+                translation='Đặc điểm này giúp Sim học nhanh hơn.',
+                flag=FLAG_VALIDATED,
+            )],
+            'Save as package',
+            'VI_VN',
+        )
+
+        self.assertFalse(any(issue.code == 'TERMINOLOGY_MISMATCH' for issue in report.issues))
+
+    def test_consistency_ignores_glossary_terms_inside_tokens(self):
+        report = validate_release_records(
+            [make_record(
+                source='{0.SimFirstName} found a reward.',
+                translation='{0.SimFirstName} tìm thấy phần thưởng.',
+                flag=FLAG_VALIDATED,
+            )],
+            'Save as package',
+            'VI_VN',
+        )
+
+        self.assertFalse(any(issue.code == 'TERMINOLOGY_MISMATCH' for issue in report.issues))
+
+    def test_consistency_termbase_is_locale_scoped(self):
+        report = validate_release_records(
+            [make_record(
+                source='This Trait helps your Sim learn faster.',
+                translation='Ce trait aide le Sim.',
+                flag=FLAG_VALIDATED,
+            )],
+            'Save as package',
+            'FRE_FR',
+        )
+
+        self.assertFalse(any(issue.code == 'TERMINOLOGY_MISMATCH' for issue in report.issues))
+
     def test_report_export_writes_text_and_csv(self):
         report = validate_release_records(
             [make_record(source='Hello {0.SimFirstName}', translation='Xin chao', flag=FLAG_VALIDATED)],

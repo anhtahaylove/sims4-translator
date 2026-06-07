@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="de_DE" name="Deutsch (German)" version="2.3.3" authors="Ulrike">
+<ts language="de_DE" name="Deutsch (German)" version="2.3.4" authors="Ulrike">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>

@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 2.3.4 - 2026-06-07
+
+### Added
+
+- Add Vietnamese terminology consistency warnings to Release QA for common Sims localization terms such as Trait, Aspiration, Moodlet, and Household.
+
+### Build
+
+- Automate VirusTotal evidence-pack URL updates while keeping file upload/manual submission as an explicit separate action.
+
 ## Version 2.3.3 - 2026-06-07
 
 ### Added

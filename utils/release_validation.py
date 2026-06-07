@@ -57,6 +57,17 @@ STATUS_LABELS = {
 }
 
 
+TERMINOLOGY_TERMS = {
+    'VI_VN': (
+        ('Sim', 'Sim'),
+        ('Moodlet', 'moodlet'),
+        ('Aspiration', 'Khát vọng'),
+        ('Trait', 'Đặc điểm'),
+        ('Household', 'Hộ gia đình'),
+    ),
+}
+
+
 @dataclass(frozen=True)
 class ValidationProfile:
     name: str
@@ -364,7 +375,7 @@ def _validate_release_records(
     if reporter:
         reporter.progress(len(written), len(written), 'Building report...')
 
-    issues.extend(_consistency_issues(written))
+    issues.extend(_consistency_issues(written, destination_locale))
 
     issues.append(ValidationIssue(
         SEVERITY_INFO,
@@ -539,9 +550,10 @@ def _record_issues(item: MainRecord, include_untranslated: bool, rid=None, profi
     return issues
 
 
-def _consistency_issues(items: Tuple[MainRecord, ...]) -> list:
+def _consistency_issues(items: Tuple[MainRecord, ...], destination_locale: str) -> list:
     issues = []
     source_groups = {}
+    terminology_terms = TERMINOLOGY_TERMS.get((destination_locale or '').upper(), ())
 
     for item in items:
         source = text_to_stbl(item.source)
@@ -562,6 +574,8 @@ def _consistency_issues(items: Tuple[MainRecord, ...]) -> list:
             ))
 
         source_groups.setdefault(normalized_source, []).append((item, normalized_translation, translation))
+        if terminology_terms:
+            issues.extend(_terminology_issues(item, source, translation, terminology_terms))
 
     for group in source_groups.values():
         translations = {}
@@ -586,11 +600,55 @@ def _consistency_issues(items: Tuple[MainRecord, ...]) -> list:
     return issues
 
 
+def _terminology_issues(
+        item: MainRecord,
+        source: str,
+        translation: str,
+        terminology_terms: tuple,
+) -> list:
+    if not translation.strip():
+        return []
+
+    issues = []
+    source_text = _localizable_term_text(source)
+    translation_text = _localizable_term_text(translation)
+    if not source_text or not translation_text:
+        return []
+
+    for source_term, expected_translation in terminology_terms:
+        if not _contains_term(source_text, source_term):
+            continue
+        if _contains_term(translation_text, expected_translation):
+            continue
+        issues.append(_issue(
+            SEVERITY_WARNING,
+            item,
+            f'Glossary term "{source_term}" should usually be translated as "{expected_translation}" '
+            'for Vietnamese release consistency.',
+            code='TERMINOLOGY_MISMATCH',
+            category=CATEGORY_CONSISTENCY,
+        ))
+    return issues
+
+
 def _safe_identical_translation(source: str) -> bool:
     text = text_to_edit(source)
     text = re.sub(r'\{[^{}]+\}|<[^>]+>|\\n|%[A-Za-z]', '', text)
     text = text.strip()
     return not text or not re.search(r'[A-Za-zÀ-ỹ]', text)
+
+
+def _localizable_term_text(text: str) -> str:
+    text = text_to_edit(text)
+    text = re.sub(r'\{[^{}]+\}|<[^>]+>|\\n|%[A-Za-z]', ' ', text)
+    return re.sub(r'\s+', ' ', text).strip()
+
+
+def _contains_term(text: str, term: str) -> bool:
+    if not text or not term:
+        return False
+    pattern = r'(?<![\w])' + re.escape(term) + r'(?![\w])'
+    return re.search(pattern, text, re.IGNORECASE) is not None
 
 
 def _issue(
