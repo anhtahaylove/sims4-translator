@@ -35,6 +35,8 @@ example, an `Undetected` Acronis result does not need a false-positive request.
 Useful links:
 
 - VirusTotal false-positive guidance: <https://docs.virustotal.com/docs/false-positive>
+- Microsoft file submission portal: <https://www.microsoft.com/en-us/wdsi/filesubmission>
+- Microsoft submission guidance: <https://learn.microsoft.com/en-us/unified-secops-platform/submission-guide>
 - SecureAge false-positive form: <https://www.secureage.com/support/report-false-positive>
 - VirusTotal contributors list: <https://docs.virustotal.com/docs/contributors>
 - BlackBerry support resources for Cylance: <https://www.blackberry.com/us/en/support/overview>
@@ -176,9 +178,28 @@ Please review and reclassify if appropriate.
 | --- | --- |
 | Yandex | Use Yandex Browser/support or the VirusTotal contributor contact path if available. Include the ZIP and EXE VirusTotal URLs plus SHA256 hashes. |
 | SentinelOne | Use the official customer/support path or VirusTotal contributor contact information, then include the evidence template. |
-| Cylance | Use BlackBerry/Cylance support or VirusTotal contributor contact information, then include the evidence template. |
-| APEX | APEX is commonly associated with SecureAge on VirusTotal; use the SecureAge false-positive form and include the evidence template. |
+| Cylance | Use BlackBerry/Cylance support or VirusTotal contributor contact information, then include the evidence template. If the portal asks for product context, describe the app as an unsigned PyInstaller desktop utility with public GitHub Actions provenance. |
+| Microsoft Defender | Use the Microsoft Security Intelligence file submission portal. Choose the false-positive or incorrectly detected file path, include the EXE SHA256, VirusTotal URL, release URL, and provenance verification commands. Microsoft also supports file/hash submissions through Defender/XDR submission workflows for eligible accounts. |
+| APEX | APEX is commonly associated with SecureAge on VirusTotal; use the SecureAge false-positive form and include the evidence template. SecureAge asks for a ZIP archive protected with password `infected`; include the generated evidence text in the description. |
 | Acronis | No action needed when the result is `Undetected`. |
+
+## Current v2.3.0 Review Targets
+
+The v2.3.0 VirusTotal check showed the Windows ZIP with no malicious or
+suspicious categories, while the extracted EXE still had three heuristic/static
+detections: Cylance, Microsoft Defender, and APEX. Use:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.3.0
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.3.0 -UpdateEvidencePack
+```
+
+Then submit the EXE hash/report through the vendor-specific paths above. The
+evidence pack for that release is generated at:
+
+```text
+build\false-positive-evidence\v2.3.0\
+```
 
 ## What Not To Say
 

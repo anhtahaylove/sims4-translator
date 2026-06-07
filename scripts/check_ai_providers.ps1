@@ -1,4 +1,5 @@
 param(
+    [switch]$DeepL,
     [switch]$Gemini,
     [switch]$OpenAICompatible,
     [switch]$Ollama,
@@ -36,10 +37,13 @@ Import-DotEnv -Path $EnvFile
 
 $Targets = @()
 if ($All) {
-    $Targets = @('Gemini', 'OpenAI-compatible', 'Ollama')
-} elseif (-not $Gemini -and -not $OpenAICompatible -and -not $Ollama) {
+    $Targets = @('DeepL', 'Gemini', 'OpenAI-compatible', 'Ollama')
+} elseif (-not $DeepL -and -not $Gemini -and -not $OpenAICompatible -and -not $Ollama) {
     $Targets = @('Gemini', 'OpenAI-compatible')
 } else {
+    if ($DeepL) {
+        $Targets += 'DeepL'
+    }
     if ($Gemini) {
         $Targets += 'Gemini'
     }
@@ -58,7 +62,7 @@ import os
 import sys
 
 from singletons.config import config
-from singletons.translator import ai_engine_available, translator
+from singletons.translator import ai_engine_available, deepl_usage, translator
 from utils.app_logging import redact_sensitive
 
 
@@ -69,6 +73,10 @@ def env_first(*names: str) -> str:
             return value.strip()
     return ''
 
+
+deepl_key = env_first('DEEPL_API_KEY', 'DEEPL_AUTH_KEY')
+if deepl_key:
+    config.set_value('api', 'deepl_key', deepl_key)
 
 gemini_key = env_first('GEMINI_API_KEY', 'GOOGLE_API_KEY')
 if gemini_key:
@@ -117,6 +125,16 @@ for engine in targets:
         continue
 
     ran += 1
+    if engine == 'DeepL':
+        usage = deepl_usage(timeout=20)
+        if usage.status_code != 200:
+            failures += 1
+            print('FAIL: status=' + str(usage.status_code) + ' message=' + redact_sensitive(usage.message or ''))
+            continue
+        print('PASS: DeepL usage endpoint accepted the key without spending translation characters')
+        print('usage=' + str(usage.character_count) + '/' + str(usage.character_limit))
+        continue
+
     try:
         response = translator.translate(engine, sample)
     except Exception as exc:

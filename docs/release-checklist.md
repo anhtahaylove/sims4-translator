@@ -23,6 +23,24 @@ That mode creates alternate output resources to avoid collisions. It can be usef
 - Optional glossary ID is only needed if you created a glossary in DeepL and want terms such as `Trait`, `Lot`, or `Moodlet` translated consistently.
 - Batch Translate with DeepL should show the estimated character count before starting.
 
+## Optional Provider Live Smoke
+
+Provider smoke checks are local developer checks only. They read keys from the
+current process environment or the ignored local `.env` file and never save or
+print API keys.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_ai_providers.ps1 -DeepL
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_ai_providers.ps1 -Gemini
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_ai_providers.ps1 -OpenAICompatible
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_ai_providers.ps1 -Ollama
+```
+
+Use `-All` only when all configured providers are intentionally available on
+that machine. DeepL uses the usage endpoint and does not spend translation
+characters; Gemini, OpenAI-compatible, and Ollama translate a tiny token-safety
+sample and verify placeholders are preserved.
+
 ## Pre-release Validation Report
 
 Run `Validate Release...` before publishing and review the report.
