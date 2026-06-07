@@ -10,8 +10,9 @@ and packaging model.
 ## When To Use This
 
 Use this guide when a release ZIP or extracted EXE is flagged by a small number
-of vendors while most other engines report no detection. For the current
-`v2.0.2` release, the review targets are Yandex, SentinelOne, Cylance, and APEX.
+of vendors while most other engines report no detection. Recent review targets
+have included Yandex, SentinelOne, Cylance, Microsoft, SecureAge/APEX, and other
+static ML engines depending on the VirusTotal result for that release.
 
 Do not submit a vendor review when the vendor already reports `Undetected`. For
 example, an `Undetected` Acronis result does not need a false-positive request.
@@ -48,20 +49,23 @@ information shown on VirusTotal's contributor pages.
 
 From a clean source checkout:
 
+The examples below use `2.3.3`; replace it with the release version you are
+checking.
+
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.0.2
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.3.3
 ```
 
-To include VirusTotal report links in the generated vendor template:
+To include VirusTotal report links in the generated vendor template manually:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.0.2 -VirusTotalZipUrl "https://www.virustotal.com/gui/file/..." -VirusTotalExeUrl "https://www.virustotal.com/gui/file/..."
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\collect_false_positive_evidence.ps1 -Version 2.3.3 -VirusTotalZipUrl "https://www.virustotal.com/gui/file/..." -VirusTotalExeUrl "https://www.virustotal.com/gui/file/..."
 ```
 
 The script writes files under:
 
 ```text
-build\false-positive-evidence\v2.0.2\
+build\false-positive-evidence\v2.3.3\
 ```
 
 That folder is a local artifact and should not be committed.
@@ -87,25 +91,41 @@ without uploading files:
 
 ```powershell
 $env:VT_API_KEY = "<your VirusTotal API key>"
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.0.2
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.3.3
+```
+
+The script also accepts a local ignored `.env` file containing either:
+
+```text
+VT_API_KEY=your_key_here
+```
+
+or just the raw key on a single line. This is only for local convenience; never
+commit or paste the key into tracked files.
+
+To query VirusTotal and automatically write the ZIP/EXE report URLs back into
+the generated vendor template:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.3.3 -UpdateEvidencePack
 ```
 
 To request a fresh reanalysis for files that VirusTotal already knows:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.0.2 -Reanalyze
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\check_virustotal_release.ps1 -Version 2.3.3 -Reanalyze
 ```
 
 The script writes local reports under:
 
 ```text
-build\virustotal\v2.0.2\
+build\virustotal\v2.3.3\
 ```
 
-It reads the API key from `VT_API_KEY`, does not print the key, and does not
-commit the report output. Reanalysis is useful for checking whether vendors have
-updated signatures after a false-positive submission, but it does not guarantee
-reclassification.
+It reads the API key from `VT_API_KEY` or the ignored local `.env`, does not
+print the key, does not upload files, and does not commit the report output.
+Reanalysis is useful for checking whether vendors have updated signatures after
+a false-positive submission, but it does not guarantee reclassification.
 
 ## Vendor Submission Template
 

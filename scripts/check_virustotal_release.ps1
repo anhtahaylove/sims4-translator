@@ -6,7 +6,11 @@ param(
     [int]$WaitSeconds = 120,
     [int]$PollIntervalSeconds = 15,
     [string]$ApiKeyEnvName = 'VT_API_KEY',
-    [string]$OutputRoot = (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '..')) 'build\virustotal')
+    [string]$OutputRoot = (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '..')) 'build\virustotal'),
+    [string]$EnvFile = (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '..')) '.env'),
+    [switch]$NoEnvFile,
+    [switch]$UpdateEvidencePack,
+    [string]$EvidenceRoot = (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '..')) 'build\false-positive-evidence')
 )
 
 $ErrorActionPreference = 'Stop'
@@ -34,15 +38,6 @@ if (-not $ApiKey) {
 if (-not $ApiKey) {
     $ApiKey = [Environment]::GetEnvironmentVariable($ApiKeyEnvName, 'Machine')
 }
-if (-not $ApiKey) {
-    throw "VirusTotal API key not found. Set `$env:$ApiKeyEnvName for this PowerShell session, then run again. Do not commit or paste the key into scripts."
-}
-
-$VirusTotalHeaders = @{
-    'x-apikey' = $ApiKey
-    'accept' = 'application/json'
-}
-
 function Invoke-Step {
     param(
         [string]$Name,
@@ -51,6 +46,61 @@ function Invoke-Step {
 
     Write-Host "==> $Name"
     & $Command
+}
+
+function Normalize-SecretValue {
+    param([string]$Value)
+
+    $Secret = $Value.Trim()
+    if ($Secret.Length -ge 2) {
+        $First = $Secret[0]
+        $Last = $Secret[$Secret.Length - 1]
+        if (($First -eq '"' -and $Last -eq '"') -or ($First -eq "'" -and $Last -eq "'")) {
+            $Secret = $Secret.Substring(1, $Secret.Length - 2).Trim()
+        }
+    }
+    return $Secret
+}
+
+function Get-ApiKeyFromEnvFile {
+    if ($NoEnvFile -or -not (Test-Path -LiteralPath $EnvFile)) {
+        return ''
+    }
+
+    $NamedPattern = '^\s*(?:export\s+)?' + [regex]::Escape($ApiKeyEnvName) + '\s*=\s*(.+?)\s*$'
+    $RawCandidates = New-Object System.Collections.ArrayList
+    foreach ($Line in Get-Content -LiteralPath $EnvFile) {
+        $Trimmed = $Line.Trim()
+        if (-not $Trimmed -or $Trimmed.StartsWith('#')) {
+            continue
+        }
+
+        $Match = [regex]::Match($Line, $NamedPattern)
+        if ($Match.Success) {
+            return Normalize-SecretValue $Match.Groups[1].Value
+        }
+
+        if ($Trimmed -notmatch '=') {
+            [void]$RawCandidates.Add($Trimmed)
+        }
+    }
+
+    if ($RawCandidates.Count -eq 1) {
+        return Normalize-SecretValue ([string]$RawCandidates[0])
+    }
+    return ''
+}
+
+if (-not $ApiKey) {
+    $ApiKey = Get-ApiKeyFromEnvFile
+}
+if (-not $ApiKey) {
+    throw "VirusTotal API key not found. Set `$env:$ApiKeyEnvName or store it in .env as $ApiKeyEnvName=... for this machine only, then run again. Do not commit or paste the key into scripts."
+}
+
+$VirusTotalHeaders = @{
+    'x-apikey' = $ApiKey
+    'accept' = 'application/json'
 }
 
 function Invoke-VirusTotal {
@@ -285,6 +335,32 @@ function Write-TextReport {
     $Lines | Set-Content -LiteralPath $Path -Encoding utf8
 }
 
+function Update-EvidencePackVirusTotalUrls {
+    param(
+        [string]$ReleaseVersion,
+        [object[]]$Summaries
+    )
+
+    $TemplatePath = Join-Path $EvidenceRoot "v$ReleaseVersion\vendor-submission-template.txt"
+    if (-not (Test-Path -LiteralPath $TemplatePath)) {
+        Write-Warning "Evidence template not found: $TemplatePath. Run scripts\collect_false_positive_evidence.ps1 -Version $ReleaseVersion first."
+        return
+    }
+
+    $ZipSummary = @($Summaries | Where-Object { $_.name -eq 'Windows ZIP' } | Select-Object -First 1)[0]
+    $ExeSummary = @($Summaries | Where-Object { $_.name -eq 'Extracted EXE' } | Select-Object -First 1)[0]
+    if (-not $ZipSummary -or -not $ExeSummary) {
+        Write-Warning 'Could not update evidence template because ZIP or EXE VirusTotal summary is missing.'
+        return
+    }
+
+    $Text = Get-Content -LiteralPath $TemplatePath -Raw
+    $Text = [regex]::Replace($Text, '(?m)^ZIP:\s+.*$', "ZIP: $($ZipSummary.gui_url)")
+    $Text = [regex]::Replace($Text, '(?m)^EXE:\s+.*$', "EXE: $($ExeSummary.gui_url)")
+    Set-Content -LiteralPath $TemplatePath -Value $Text -Encoding utf8
+    Write-Host "Updated VirusTotal URLs in evidence template: $TemplatePath"
+}
+
 $Release = Get-Release
 $ReleaseVersion = $Release.tag_name.TrimStart('v')
 $OutputDir = Join-Path $OutputRoot "v$ReleaseVersion"
@@ -333,6 +409,12 @@ $TextPath = Join-Path $OutputDir 'virustotal-report.txt'
 } | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $JsonPath -Encoding utf8
 
 Write-TextReport -Path $TextPath -ReleaseVersion $ReleaseVersion -Summaries @($Summaries) -Analyses @($Analyses)
+
+if ($UpdateEvidencePack) {
+    Invoke-Step 'Update false-positive evidence pack VirusTotal URLs' {
+        Update-EvidencePackVirusTotalUrls -ReleaseVersion $ReleaseVersion -Summaries @($Summaries)
+    }
+}
 
 Get-Content -LiteralPath $TextPath
 Write-Host "VirusTotal report written to: $OutputDir"

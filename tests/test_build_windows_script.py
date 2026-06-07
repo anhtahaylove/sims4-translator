@@ -182,6 +182,13 @@ class BuildWindowsScriptTests(unittest.TestCase):
         script = Path('scripts/check_virustotal_release.ps1').read_text(encoding='utf-8')
         self.assertIn("[string]$ApiKeyEnvName = 'VT_API_KEY'", script)
         self.assertIn('GetEnvironmentVariable($ApiKeyEnvName', script)
+        self.assertIn('[string]$EnvFile', script)
+        self.assertIn('[switch]$NoEnvFile', script)
+        self.assertIn('[switch]$UpdateEvidencePack', script)
+        self.assertIn('Get-ApiKeyFromEnvFile', script)
+        self.assertIn('Normalize-SecretValue', script)
+        self.assertIn('vendor-submission-template.txt', script)
+        self.assertIn('Update-EvidencePackVirusTotalUrls', script)
         self.assertIn('https://www.virustotal.com/api/v3/files/$Sha256/analyse', script)
         self.assertIn('https://www.virustotal.com/api/v3/analyses/', script)
         self.assertIn('https://www.virustotal.com/api/v3/files/$($Target.sha256)', script)
@@ -191,6 +198,7 @@ class BuildWindowsScriptTests(unittest.TestCase):
         self.assertIn('virustotal-report.json', script)
         self.assertIn('virustotal-report.txt', script)
         self.assertNotIn('PASTE_KEY_HERE', script)
+        self.assertNotIn('https://www.virustotal.com/api/v3/files"', script)
 
     def test_ai_provider_smoke_script_keeps_provider_keys_local(self):
         script = Path('scripts/check_ai_providers.ps1').read_text(encoding='utf-8')
@@ -217,6 +225,9 @@ class BuildWindowsScriptTests(unittest.TestCase):
 
         self.assertIn('VirusTotal false-positive guidance', doc)
         self.assertIn('SecureAge false-positive form', doc)
+        self.assertIn('-UpdateEvidencePack', doc)
+        self.assertIn('does not upload files', doc)
+        self.assertIn('ignored local `.env`', doc)
         self.assertIn('false-positive-submissions.md', trust)
         self.assertIn('Release attestation (json)', trust)
         self.assertIn('.zip.sigstore.json', trust)
