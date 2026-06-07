@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="ru_RU" name="Русский (Russian)" version="2.3.2" authors="">
+<ts language="ru_RU" name="Русский (Russian)" version="2.3.3" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1106,6 +1106,98 @@ Errors:
     <string>
       <source>No</source>
       <translation>Нет</translation>
+    </string>
+    <string>
+      <source>Translation Memory CSV</source>
+      <translation>CSV памяти переводов</translation>
+    </string>
+    <string>
+      <source>Translation memory</source>
+      <translation>Память переводов</translation>
+    </string>
+    <string>
+      <source>Stores approved and draft translations for reuse in Batch Translate and Translation Studio. API keys and full package paths are never stored.</source>
+      <translation>Хранит одобренные переводы и черновики для повторного использования в Batch Translate и Translation Studio. API key и полные пути package никогда не сохраняются.</translation>
+    </string>
+    <string>
+      <source>Engine</source>
+      <translation>Движок</translation>
+    </string>
+    <string>
+      <source>Export CSV</source>
+      <translation>Экспорт CSV</translation>
+    </string>
+    <string>
+      <source>Import CSV</source>
+      <translation>Импорт CSV</translation>
+    </string>
+    <string>
+      <source>Clear current pair</source>
+      <translation>Очистить текущую пару</translation>
+    </string>
+    <string>
+      <source>Clear selected engine</source>
+      <translation>Очистить выбранный движок</translation>
+    </string>
+    <string>
+      <source>Clear all memory</source>
+      <translation>Очистить всю память</translation>
+    </string>
+    <string>
+      <source>Export Translation Memory entries to a UTF-8 CSV file for backup or review.</source>
+      <translation>Экспортирует записи памяти переводов в CSV-файл UTF-8 для резервной копии или проверки.</translation>
+    </string>
+    <string>
+      <source>Import a Translation Memory CSV exported by this app. Entries still pass the same privacy and safety filters.</source>
+      <translation>Импортирует CSV памяти переводов, экспортированный этим приложением. Записи по-прежнему проходят те же фильтры приватности и безопасности.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the currently selected source and destination language only.</source>
+      <translation>Очищает записи памяти переводов только для выбранных исходного и целевого языков.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the selected engine only.</source>
+      <translation>Очищает записи памяти переводов только для выбранного движка.</translation>
+    </string>
+    <string>
+      <source>Clear every Translation Memory entry.</source>
+      <translation>Очищает все записи памяти переводов.</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} Translation Memory entry/entries.</source>
+      <translation>Экспортировано записей памяти переводов: {count:,}.</translation>
+    </string>
+    <string>
+      <source>Could not import Translation Memory CSV: {message}</source>
+      <translation>Не удалось импортировать CSV памяти переводов: {message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} entry/entries, skipped {skipped:,}.</source>
+      <translation>Импортировано записей: {imported:,}, пропущено: {skipped:,}.</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {source} -&gt; {destination}?</source>
+      <translation>Очистить записи памяти переводов для {source} -&gt; {destination}: {count:,}?</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {engine}?</source>
+      <translation>Очистить записи памяти переводов для {engine}: {count:,}?</translation>
+    </string>
+    <string>
+      <source>Clear all {count:,} Translation Memory entry/entries?</source>
+      <translation>Очистить все записи памяти переводов: {count:,}?</translation>
+    </string>
+    <string>
+      <source>Choose engine...</source>
+      <translation>Выберите движок...</translation>
+    </string>
+    <string>
+      <source>none</source>
+      <translation>нет</translation>
+    </string>
+    <string>
+      <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
+      <translation>Память содержит записей: {entries:,}, {size:,} байт. Текущая языковая пара: {pair:,}. Движки: {engines}.</translation>
     </string>
   </context>
   <context name="ReplaceDialog">

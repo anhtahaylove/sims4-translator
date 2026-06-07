@@ -320,6 +320,57 @@ class Ui_OptionsDialog(object):
 
         vlayout.addWidget(self.gb_cache)
 
+        self.gb_translation_memory = QGroupBox(self.providers_content)
+        self.gb_translation_memory.setObjectName('optionsSection')
+
+        layout_memory = QVBoxLayout(self.gb_translation_memory)
+        layout_memory.setSpacing(8)
+
+        self.lbl_translation_memory_hint = QLabel(self.gb_translation_memory)
+        self.lbl_translation_memory_hint.setObjectName('muted')
+        self.lbl_translation_memory_hint.setWordWrap(True)
+        self.lbl_translation_memory_status = QLabel(self.gb_translation_memory)
+        self.lbl_translation_memory_status.setObjectName('muted')
+        self.lbl_translation_memory_status.setWordWrap(True)
+
+        layout_memory_engine = QHBoxLayout()
+        layout_memory_engine.setSpacing(8)
+        self.lbl_translation_memory_engine = QLabel(self.gb_translation_memory)
+        self.cb_translation_memory_engine = NoWheelComboBox(self.gb_translation_memory)
+        self.btn_translation_memory_clear_engine = QPushButton(self.gb_translation_memory)
+        self.btn_translation_memory_clear_engine.setAutoDefault(False)
+        self.btn_translation_memory_clear_engine.setIconSize(QSize(20, 20))
+        layout_memory_engine.addWidget(self.lbl_translation_memory_engine)
+        layout_memory_engine.addWidget(self.cb_translation_memory_engine, 1)
+        layout_memory_engine.addWidget(self.btn_translation_memory_clear_engine)
+
+        layout_memory_actions = QHBoxLayout()
+        layout_memory_actions.setSpacing(8)
+        self.btn_translation_memory_export = QPushButton(self.gb_translation_memory)
+        self.btn_translation_memory_import = QPushButton(self.gb_translation_memory)
+        self.btn_translation_memory_clear_pair = QPushButton(self.gb_translation_memory)
+        self.btn_translation_memory_clear_all = QPushButton(self.gb_translation_memory)
+        for button in (
+                self.btn_translation_memory_export,
+                self.btn_translation_memory_import,
+                self.btn_translation_memory_clear_pair,
+                self.btn_translation_memory_clear_all,
+        ):
+            button.setAutoDefault(False)
+            button.setIconSize(QSize(20, 20))
+        layout_memory_actions.addWidget(self.btn_translation_memory_export)
+        layout_memory_actions.addWidget(self.btn_translation_memory_import)
+        layout_memory_actions.addStretch()
+        layout_memory_actions.addWidget(self.btn_translation_memory_clear_pair)
+        layout_memory_actions.addWidget(self.btn_translation_memory_clear_all)
+
+        layout_memory.addWidget(self.lbl_translation_memory_hint)
+        layout_memory.addWidget(self.lbl_translation_memory_status)
+        layout_memory.addLayout(layout_memory_engine)
+        layout_memory.addLayout(layout_memory_actions)
+
+        vlayout.addWidget(self.gb_translation_memory)
+
         vlayout.addStretch()
         tab_layout.addWidget(self.providers_scroll)
 

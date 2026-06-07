@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="es_ES" name="Español (Spanish)" version="2.3.2" authors="Onnya">
+<ts language="es_ES" name="Español (Spanish)" version="2.3.3" authors="Onnya">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1106,6 +1106,98 @@ Errores:
     <string>
       <source>No</source>
       <translation>No</translation>
+    </string>
+    <string>
+      <source>Translation Memory CSV</source>
+      <translation>CSV de memoria de traduccion</translation>
+    </string>
+    <string>
+      <source>Translation memory</source>
+      <translation>Memoria de traduccion</translation>
+    </string>
+    <string>
+      <source>Stores approved and draft translations for reuse in Batch Translate and Translation Studio. API keys and full package paths are never stored.</source>
+      <translation>Guarda traducciones aprobadas y borradores para reutilizarlos en Batch Translate y Translation Studio. Las API keys y las rutas completas de package nunca se almacenan.</translation>
+    </string>
+    <string>
+      <source>Engine</source>
+      <translation>Engine</translation>
+    </string>
+    <string>
+      <source>Export CSV</source>
+      <translation>Exportar CSV</translation>
+    </string>
+    <string>
+      <source>Import CSV</source>
+      <translation>Importar CSV</translation>
+    </string>
+    <string>
+      <source>Clear current pair</source>
+      <translation>Borrar par actual</translation>
+    </string>
+    <string>
+      <source>Clear selected engine</source>
+      <translation>Borrar engine seleccionado</translation>
+    </string>
+    <string>
+      <source>Clear all memory</source>
+      <translation>Borrar toda la memoria</translation>
+    </string>
+    <string>
+      <source>Export Translation Memory entries to a UTF-8 CSV file for backup or review.</source>
+      <translation>Exporta entradas de la memoria de traduccion a un archivo CSV UTF-8 para copia de seguridad o revision.</translation>
+    </string>
+    <string>
+      <source>Import a Translation Memory CSV exported by this app. Entries still pass the same privacy and safety filters.</source>
+      <translation>Importa un CSV de memoria de traduccion exportado por esta aplicacion. Las entradas siguen pasando por los mismos filtros de privacidad y seguridad.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the currently selected source and destination language only.</source>
+      <translation>Borra entradas de la memoria de traduccion solo para los idiomas de origen y destino seleccionados.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the selected engine only.</source>
+      <translation>Borra entradas de la memoria de traduccion solo para el engine seleccionado.</translation>
+    </string>
+    <string>
+      <source>Clear every Translation Memory entry.</source>
+      <translation>Borra todas las entradas de la memoria de traduccion.</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} Translation Memory entry/entries.</source>
+      <translation>Se exportaron {count:,} entrada(s) de memoria de traduccion.</translation>
+    </string>
+    <string>
+      <source>Could not import Translation Memory CSV: {message}</source>
+      <translation>No se pudo importar el CSV de memoria de traduccion: {message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} entry/entries, skipped {skipped:,}.</source>
+      <translation>Se importaron {imported:,} entrada(s), se omitieron {skipped:,}.</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {source} -&gt; {destination}?</source>
+      <translation>¿Borrar {count:,} entrada(s) de memoria de traduccion para {source} -&gt; {destination}?</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {engine}?</source>
+      <translation>¿Borrar {count:,} entrada(s) de memoria de traduccion para {engine}?</translation>
+    </string>
+    <string>
+      <source>Clear all {count:,} Translation Memory entry/entries?</source>
+      <translation>¿Borrar las {count:,} entrada(s) de memoria de traduccion?</translation>
+    </string>
+    <string>
+      <source>Choose engine...</source>
+      <translation>Elegir engine...</translation>
+    </string>
+    <string>
+      <source>none</source>
+      <translation>ninguno</translation>
+    </string>
+    <string>
+      <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
+      <translation>La memoria contiene {entries:,} entrada(s), {size:,} bytes. Par de idiomas actual: {pair:,}. Engines: {engines}.</translation>
     </string>
   </context>
   <context name="ReplaceDialog">

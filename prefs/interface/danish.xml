@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="da_DK" name="Dansk (Danish)" version="2.3.2" authors="Marianne Topping">
+<ts language="da_DK" name="Dansk (Danish)" version="2.3.3" authors="Marianne Topping">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1106,6 +1106,98 @@ Fejl:
     <string>
       <source>No</source>
       <translation>Nej</translation>
+    </string>
+    <string>
+      <source>Translation Memory CSV</source>
+      <translation>CSV til oversaettelseshukommelse</translation>
+    </string>
+    <string>
+      <source>Translation memory</source>
+      <translation>Oversaettelseshukommelse</translation>
+    </string>
+    <string>
+      <source>Stores approved and draft translations for reuse in Batch Translate and Translation Studio. API keys and full package paths are never stored.</source>
+      <translation>Gemmer godkendte oversaettelser og kladder til genbrug i Batch Translate og Translation Studio. API keys og fulde package-stier gemmes aldrig.</translation>
+    </string>
+    <string>
+      <source>Engine</source>
+      <translation>Engine</translation>
+    </string>
+    <string>
+      <source>Export CSV</source>
+      <translation>Eksporter CSV</translation>
+    </string>
+    <string>
+      <source>Import CSV</source>
+      <translation>Importer CSV</translation>
+    </string>
+    <string>
+      <source>Clear current pair</source>
+      <translation>Ryd aktuelt par</translation>
+    </string>
+    <string>
+      <source>Clear selected engine</source>
+      <translation>Ryd valgt engine</translation>
+    </string>
+    <string>
+      <source>Clear all memory</source>
+      <translation>Ryd hele hukommelsen</translation>
+    </string>
+    <string>
+      <source>Export Translation Memory entries to a UTF-8 CSV file for backup or review.</source>
+      <translation>Eksporterer poster fra oversaettelseshukommelsen til en UTF-8 CSV-fil til backup eller gennemgang.</translation>
+    </string>
+    <string>
+      <source>Import a Translation Memory CSV exported by this app. Entries still pass the same privacy and safety filters.</source>
+      <translation>Importerer en CSV med oversaettelseshukommelse eksporteret af denne app. Poster gaar stadig gennem de samme privatlivs- og sikkerhedsfiltre.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the currently selected source and destination language only.</source>
+      <translation>Rydder kun poster i oversaettelseshukommelsen for det valgte kilde- og maalsprog.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the selected engine only.</source>
+      <translation>Rydder kun poster i oversaettelseshukommelsen for den valgte engine.</translation>
+    </string>
+    <string>
+      <source>Clear every Translation Memory entry.</source>
+      <translation>Rydder alle poster i oversaettelseshukommelsen.</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} Translation Memory entry/entries.</source>
+      <translation>Eksporterede {count:,} post(er) fra oversaettelseshukommelsen.</translation>
+    </string>
+    <string>
+      <source>Could not import Translation Memory CSV: {message}</source>
+      <translation>Kunne ikke importere CSV til oversaettelseshukommelse: {message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} entry/entries, skipped {skipped:,}.</source>
+      <translation>Importerede {imported:,} post(er), sprang {skipped:,} over.</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {source} -&gt; {destination}?</source>
+      <translation>Ryd {count:,} post(er) i oversaettelseshukommelsen for {source} -&gt; {destination}?</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {engine}?</source>
+      <translation>Ryd {count:,} post(er) i oversaettelseshukommelsen for {engine}?</translation>
+    </string>
+    <string>
+      <source>Clear all {count:,} Translation Memory entry/entries?</source>
+      <translation>Ryd alle {count:,} post(er) i oversaettelseshukommelsen?</translation>
+    </string>
+    <string>
+      <source>Choose engine...</source>
+      <translation>Vaelg engine...</translation>
+    </string>
+    <string>
+      <source>none</source>
+      <translation>ingen</translation>
+    </string>
+    <string>
+      <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
+      <translation>Hukommelsen indeholder {entries:,} post(er), {size:,} bytes. Aktuelt sprogpar: {pair:,}. Engines: {engines}.</translation>
     </string>
   </context>
   <context name="ReplaceDialog">

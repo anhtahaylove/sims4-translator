@@ -1941,6 +1941,12 @@ class WorkspaceProShellTests(unittest.TestCase):
                     (dialog.btn_ollama_download, 20),
                     (dialog.btn_ollama_pull, 20),
                     (dialog.btn_ollama_cancel_pull, 20),
+                    (dialog.btn_translation_cache_clear, 20),
+                    (dialog.btn_translation_memory_export, 20),
+                    (dialog.btn_translation_memory_import, 20),
+                    (dialog.btn_translation_memory_clear_pair, 20),
+                    (dialog.btn_translation_memory_clear_engine, 20),
+                    (dialog.btn_translation_memory_clear_all, 20),
                     (dialog.btn_build, 22),
             ):
                 self.assertFalse(button.icon().isNull())
@@ -1952,6 +1958,88 @@ class WorkspaceProShellTests(unittest.TestCase):
         finally:
             close_widget(dialog)
             close_widget(window)
+
+    def test_options_dialog_exposes_translation_memory_management_controls(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            memory = TranslationMemory(Path(tmpdir) / 'memory.sqlite3')
+            memory.store('ENG_US', 'VI_VN', 'Google', '', 'Hello', 'Xin chao')
+            memory.store('ENG_US', 'VI_VN', 'Ollama', 'local|translategemma:12b', 'Bye', 'Tam biet')
+            config.set_value('translation', 'source', 'ENG_US')
+            config.set_value('translation', 'destination', 'VI_VN')
+            window = MainWindow()
+
+            with patch('windows.options_dialog.translation_memory', memory):
+                dialog = OptionsDialog(window)
+            try:
+                self.assertIs(dialog.gb_translation_memory.parent(), dialog.providers_content)
+                self.assertEqual(dialog.gb_translation_memory.title(), 'Translation memory')
+                self.assertIn('2', dialog.lbl_translation_memory_status.text())
+                self.assertIn('Current language pair: 2', dialog.lbl_translation_memory_status.text())
+                self.assertGreaterEqual(dialog.cb_translation_memory_engine.findData('Google'), 0)
+                self.assertGreaterEqual(dialog.cb_translation_memory_engine.findData('Ollama'), 0)
+                self.assertTrue(dialog.btn_translation_memory_export.isEnabled())
+                self.assertTrue(dialog.btn_translation_memory_clear_pair.isEnabled())
+                self.assertTrue(dialog.btn_translation_memory_clear_all.isEnabled())
+            finally:
+                close_widget(dialog)
+                close_widget(window)
+
+    def test_options_dialog_clears_translation_memory_by_pair_and_engine(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            memory = TranslationMemory(Path(tmpdir) / 'memory.sqlite3')
+            memory.store('ENG_US', 'VI_VN', 'Google', '', 'Hello', 'Xin chao')
+            memory.store('ENG_US', 'VI_VN', 'Ollama', 'local|translategemma:12b', 'Bye', 'Tam biet')
+            memory.store('ENG_US', 'FRE_FR', 'Google', '', 'Chair', 'Chaise')
+            config.set_value('translation', 'source', 'ENG_US')
+            config.set_value('translation', 'destination', 'VI_VN')
+            window = MainWindow()
+
+            with patch('windows.options_dialog.translation_memory', memory), \
+                    patch('PySide6.QtWidgets.QMessageBox.question',
+                          return_value=QMessageBox.StandardButton.Yes):
+                dialog = OptionsDialog(window)
+                try:
+                    dialog.clear_translation_memory_pair()
+                    self.assertEqual(memory.count(source_locale='ENG_US', destination_locale='VI_VN'), 0)
+                    self.assertEqual(memory.count(), 1)
+
+                    dialog.cb_translation_memory_engine.setCurrentIndex(
+                        dialog.cb_translation_memory_engine.findData('Google')
+                    )
+                    dialog.clear_translation_memory_engine()
+
+                    self.assertEqual(memory.count(), 0)
+                    self.assertFalse(dialog.btn_translation_memory_clear_all.isEnabled())
+                finally:
+                    close_widget(dialog)
+                    close_widget(window)
+
+    def test_options_dialog_exports_and_imports_translation_memory_csv(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            memory = TranslationMemory(Path(tmpdir) / 'memory.sqlite3')
+            memory.store('ENG_US', 'VI_VN', 'Google', '', 'Hello', 'Xin chao')
+            csv_path = str(Path(tmpdir) / 'memory.csv')
+            window = MainWindow()
+
+            with patch('windows.options_dialog.translation_memory', memory), \
+                    patch('windows.options_dialog.savefile', return_value=csv_path), \
+                    patch('windows.options_dialog.openfile', return_value=csv_path), \
+                    patch('PySide6.QtWidgets.QMessageBox.information'):
+                dialog = OptionsDialog(window)
+                try:
+                    dialog.export_translation_memory()
+                    self.assertTrue(Path(csv_path).exists())
+
+                    memory.clear()
+                    self.assertEqual(memory.count(), 0)
+                    dialog.import_translation_memory()
+
+                    self.assertEqual(memory.count(), 1)
+                    self.assertEqual(memory.lookup_exact('ENG_US', 'VI_VN', 'Google', '', 'Hello'), 'Xin chao')
+                    self.assertIn('1', dialog.lbl_translation_memory_status.text())
+                finally:
+                    close_widget(dialog)
+                    close_widget(window)
 
     def test_options_dialog_uses_clear_safety_labels_and_dictionary_defaults(self):
         config.set_value('save', 'backup', ConfigManager.DEFAULTS['save']['backup'])

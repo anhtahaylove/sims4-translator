@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="pl_PL" name="Polski (Polish)" version="2.3.2" authors="Simowe Osiedle">
+<ts language="pl_PL" name="Polski (Polish)" version="2.3.3" authors="Simowe Osiedle">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1106,6 +1106,98 @@ Błędy:
     <string>
       <source>No</source>
       <translation>Nie</translation>
+    </string>
+    <string>
+      <source>Translation Memory CSV</source>
+      <translation>CSV pamieci tlumaczen</translation>
+    </string>
+    <string>
+      <source>Translation memory</source>
+      <translation>Pamiec tlumaczen</translation>
+    </string>
+    <string>
+      <source>Stores approved and draft translations for reuse in Batch Translate and Translation Studio. API keys and full package paths are never stored.</source>
+      <translation>Przechowuje zatwierdzone tlumaczenia i wersje robocze do ponownego uzycia w Batch Translate i Translation Studio. API key i pelne sciezki package nigdy nie sa zapisywane.</translation>
+    </string>
+    <string>
+      <source>Engine</source>
+      <translation>Silnik</translation>
+    </string>
+    <string>
+      <source>Export CSV</source>
+      <translation>Eksportuj CSV</translation>
+    </string>
+    <string>
+      <source>Import CSV</source>
+      <translation>Importuj CSV</translation>
+    </string>
+    <string>
+      <source>Clear current pair</source>
+      <translation>Wyczysc biezaca pare</translation>
+    </string>
+    <string>
+      <source>Clear selected engine</source>
+      <translation>Wyczysc wybrany silnik</translation>
+    </string>
+    <string>
+      <source>Clear all memory</source>
+      <translation>Wyczysc cala pamiec</translation>
+    </string>
+    <string>
+      <source>Export Translation Memory entries to a UTF-8 CSV file for backup or review.</source>
+      <translation>Eksportuje wpisy pamieci tlumaczen do pliku CSV UTF-8 w celu kopii zapasowej lub przegladu.</translation>
+    </string>
+    <string>
+      <source>Import a Translation Memory CSV exported by this app. Entries still pass the same privacy and safety filters.</source>
+      <translation>Importuje CSV pamieci tlumaczen wyeksportowany przez te aplikacje. Wpisy nadal przechodza te same filtry prywatnosci i bezpieczenstwa.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the currently selected source and destination language only.</source>
+      <translation>Czysci wpisy pamieci tlumaczen tylko dla aktualnie wybranego jezyka zrodlowego i docelowego.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the selected engine only.</source>
+      <translation>Czysci wpisy pamieci tlumaczen tylko dla wybranego silnika.</translation>
+    </string>
+    <string>
+      <source>Clear every Translation Memory entry.</source>
+      <translation>Czysci wszystkie wpisy pamieci tlumaczen.</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} Translation Memory entry/entries.</source>
+      <translation>Wyeksportowano {count:,} wpis/wpisy pamieci tlumaczen.</translation>
+    </string>
+    <string>
+      <source>Could not import Translation Memory CSV: {message}</source>
+      <translation>Nie mozna zaimportowac CSV pamieci tlumaczen: {message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} entry/entries, skipped {skipped:,}.</source>
+      <translation>Zaimportowano {imported:,} wpis/wpisy, pominieto {skipped:,}.</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {source} -&gt; {destination}?</source>
+      <translation>Wyczysc {count:,} wpis/wpisy pamieci tlumaczen dla {source} -&gt; {destination}?</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {engine}?</source>
+      <translation>Wyczysc {count:,} wpis/wpisy pamieci tlumaczen dla {engine}?</translation>
+    </string>
+    <string>
+      <source>Clear all {count:,} Translation Memory entry/entries?</source>
+      <translation>Wyczysc wszystkie {count:,} wpisy pamieci tlumaczen?</translation>
+    </string>
+    <string>
+      <source>Choose engine...</source>
+      <translation>Wybierz silnik...</translation>
+    </string>
+    <string>
+      <source>none</source>
+      <translation>brak</translation>
+    </string>
+    <string>
+      <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
+      <translation>Pamiec zawiera {entries:,} wpis/wpisy, {size:,} bajtow. Biezaca para jezykow: {pair:,}. Silniki: {engines}.</translation>
     </string>
   </context>
   <context name="ReplaceDialog">

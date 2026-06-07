@@ -47,11 +47,11 @@ try {
     }
 
     Invoke-Step 'Verify version references' {
-        python scripts\verify_version_sync.py --version 2.3.2
+        python scripts\verify_version_sync.py --version 2.3.3
     }
 
     Invoke-Step 'Verify interface coverage' {
-        python scripts\verify_interface_i18n.py --all --version 2.3.2 --strict-empty --strict-missing
+        python scripts\verify_interface_i18n.py --all --version 2.3.3 --strict-empty --strict-missing
     }
 
     Invoke-Step 'Check Markdown links and images' {

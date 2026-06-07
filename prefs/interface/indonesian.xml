@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="id_ID" name="Indonesia (Indonesian)" version="2.3.2" authors="wahyudiZulhaidar">
+<ts language="id_ID" name="Indonesia (Indonesian)" version="2.3.3" authors="wahyudiZulhaidar">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1106,6 +1106,98 @@ Kesalahan:
     <string>
       <source>No</source>
       <translation>Tidak</translation>
+    </string>
+    <string>
+      <source>Translation Memory CSV</source>
+      <translation>CSV memori terjemahan</translation>
+    </string>
+    <string>
+      <source>Translation memory</source>
+      <translation>Memori terjemahan</translation>
+    </string>
+    <string>
+      <source>Stores approved and draft translations for reuse in Batch Translate and Translation Studio. API keys and full package paths are never stored.</source>
+      <translation>Menyimpan terjemahan yang disetujui dan draf untuk digunakan ulang di Batch Translate dan Translation Studio. API key dan path package lengkap tidak pernah disimpan.</translation>
+    </string>
+    <string>
+      <source>Engine</source>
+      <translation>Engine</translation>
+    </string>
+    <string>
+      <source>Export CSV</source>
+      <translation>Ekspor CSV</translation>
+    </string>
+    <string>
+      <source>Import CSV</source>
+      <translation>Impor CSV</translation>
+    </string>
+    <string>
+      <source>Clear current pair</source>
+      <translation>Hapus pasangan saat ini</translation>
+    </string>
+    <string>
+      <source>Clear selected engine</source>
+      <translation>Hapus engine terpilih</translation>
+    </string>
+    <string>
+      <source>Clear all memory</source>
+      <translation>Hapus semua memori</translation>
+    </string>
+    <string>
+      <source>Export Translation Memory entries to a UTF-8 CSV file for backup or review.</source>
+      <translation>Mengekspor entri memori terjemahan ke file CSV UTF-8 untuk cadangan atau peninjauan.</translation>
+    </string>
+    <string>
+      <source>Import a Translation Memory CSV exported by this app. Entries still pass the same privacy and safety filters.</source>
+      <translation>Mengimpor CSV memori terjemahan yang diekspor oleh aplikasi ini. Entri tetap melewati filter privasi dan keamanan yang sama.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the currently selected source and destination language only.</source>
+      <translation>Menghapus entri memori terjemahan hanya untuk bahasa sumber dan tujuan yang dipilih saat ini.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the selected engine only.</source>
+      <translation>Menghapus entri memori terjemahan hanya untuk engine yang dipilih.</translation>
+    </string>
+    <string>
+      <source>Clear every Translation Memory entry.</source>
+      <translation>Menghapus semua entri memori terjemahan.</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} Translation Memory entry/entries.</source>
+      <translation>Mengekspor {count:,} entri memori terjemahan.</translation>
+    </string>
+    <string>
+      <source>Could not import Translation Memory CSV: {message}</source>
+      <translation>Tidak dapat mengimpor CSV memori terjemahan: {message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} entry/entries, skipped {skipped:,}.</source>
+      <translation>Mengimpor {imported:,} entri, melewati {skipped:,}.</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {source} -&gt; {destination}?</source>
+      <translation>Hapus {count:,} entri memori terjemahan untuk {source} -&gt; {destination}?</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {engine}?</source>
+      <translation>Hapus {count:,} entri memori terjemahan untuk {engine}?</translation>
+    </string>
+    <string>
+      <source>Clear all {count:,} Translation Memory entry/entries?</source>
+      <translation>Hapus semua {count:,} entri memori terjemahan?</translation>
+    </string>
+    <string>
+      <source>Choose engine...</source>
+      <translation>Pilih engine...</translation>
+    </string>
+    <string>
+      <source>none</source>
+      <translation>tidak ada</translation>
+    </string>
+    <string>
+      <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
+      <translation>Memori berisi {entries:,} entri, {size:,} byte. Pasangan bahasa saat ini: {pair:,}. Engine: {engines}.</translation>
     </string>
   </context>
   <context name="ReplaceDialog">

@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.3.3 - 2026-06-07
+
+### Added
+
+- Add Translation Memory management in Options so users can export, import, and clear reusable translations by language pair, engine, or all entries.
+
 ## Version 2.3.2 - 2026-06-07
 
 ### Fixed

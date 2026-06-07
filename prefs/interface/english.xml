@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="en_US" name="English" version="2.3.2" authors="">
+<ts language="en_US" name="English" version="2.3.3" authors="">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1102,6 +1102,98 @@ Errors:
     </string>
     <string>
       <source>No</source>
+      <translation />
+    </string>
+    <string>
+      <source>Translation Memory CSV</source>
+      <translation />
+    </string>
+    <string>
+      <source>Translation memory</source>
+      <translation />
+    </string>
+    <string>
+      <source>Stores approved and draft translations for reuse in Batch Translate and Translation Studio. API keys and full package paths are never stored.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Engine</source>
+      <translation />
+    </string>
+    <string>
+      <source>Export CSV</source>
+      <translation />
+    </string>
+    <string>
+      <source>Import CSV</source>
+      <translation />
+    </string>
+    <string>
+      <source>Clear current pair</source>
+      <translation />
+    </string>
+    <string>
+      <source>Clear selected engine</source>
+      <translation />
+    </string>
+    <string>
+      <source>Clear all memory</source>
+      <translation />
+    </string>
+    <string>
+      <source>Export Translation Memory entries to a UTF-8 CSV file for backup or review.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Import a Translation Memory CSV exported by this app. Entries still pass the same privacy and safety filters.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the currently selected source and destination language only.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the selected engine only.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Clear every Translation Memory entry.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Exported {count:,} Translation Memory entry/entries.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Could not import Translation Memory CSV: {message}</source>
+      <translation />
+    </string>
+    <string>
+      <source>Imported {imported:,} entry/entries, skipped {skipped:,}.</source>
+      <translation />
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {source} -&gt; {destination}?</source>
+      <translation />
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {engine}?</source>
+      <translation />
+    </string>
+    <string>
+      <source>Clear all {count:,} Translation Memory entry/entries?</source>
+      <translation />
+    </string>
+    <string>
+      <source>Choose engine...</source>
+      <translation />
+    </string>
+    <string>
+      <source>none</source>
+      <translation />
+    </string>
+    <string>
+      <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
       <translation />
     </string>
   </context>

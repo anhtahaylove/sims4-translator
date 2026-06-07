@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import csv
 import hashlib
 import re
 import sqlite3
@@ -20,6 +21,20 @@ STATUS_DRAFT = 'draft'
 class TranslationMemoryStats:
     entries: int
     size_bytes: int
+
+
+@dataclass(frozen=True)
+class TranslationMemoryGroupStats:
+    source_locale: str
+    destination_locale: str
+    engine: str
+    entries: int
+
+
+@dataclass(frozen=True)
+class TranslationMemoryImportResult:
+    imported: int
+    skipped: int
 
 
 @dataclass(frozen=True)
@@ -211,12 +226,29 @@ class TranslationMemory:
         finally:
             conn.close()
 
-    def clear(self) -> None:
+    def clear(
+            self,
+            source_locale: str = '',
+            destination_locale: str = '',
+            engine: str = '',
+    ) -> None:
         if not self.path.exists():
             return
         conn = self.__connect()
         try:
-            conn.execute('DELETE FROM entries')
+            clauses = []
+            params = []
+            if source_locale:
+                clauses.append('source_locale = ?')
+                params.append(source_locale)
+            if destination_locale:
+                clauses.append('destination_locale = ?')
+                params.append(destination_locale)
+            if engine:
+                clauses.append('engine = ?')
+                params.append(engine)
+            where = f" WHERE {' AND '.join(clauses)}" if clauses else ''
+            conn.execute(f'DELETE FROM entries{where}', params)
             conn.commit()
             conn.execute('VACUUM')
         finally:
@@ -231,6 +263,105 @@ class TranslationMemory:
         finally:
             conn.close()
         return TranslationMemoryStats(int(row[0] or 0), self.path.stat().st_size)
+
+    def group_stats(self) -> tuple[TranslationMemoryGroupStats, ...]:
+        if not self.path.exists():
+            return ()
+        conn = self.__connect()
+        try:
+            rows = conn.execute(
+                '''
+                SELECT source_locale, destination_locale, engine, COUNT(*) AS entries
+                FROM entries
+                GROUP BY source_locale, destination_locale, engine
+                ORDER BY entries DESC, source_locale, destination_locale, engine
+                '''
+            ).fetchall()
+        finally:
+            conn.close()
+        return tuple(
+            TranslationMemoryGroupStats(
+                source_locale=row['source_locale'],
+                destination_locale=row['destination_locale'],
+                engine=row['engine'],
+                entries=int(row['entries'] or 0),
+            )
+            for row in rows
+        )
+
+    def count(
+            self,
+            source_locale: str = '',
+            destination_locale: str = '',
+            engine: str = '',
+    ) -> int:
+        if not self.path.exists():
+            return 0
+        conn = self.__connect()
+        try:
+            clauses = []
+            params = []
+            if source_locale:
+                clauses.append('source_locale = ?')
+                params.append(source_locale)
+            if destination_locale:
+                clauses.append('destination_locale = ?')
+                params.append(destination_locale)
+            if engine:
+                clauses.append('engine = ?')
+                params.append(engine)
+            where = f" WHERE {' AND '.join(clauses)}" if clauses else ''
+            row = conn.execute(f'SELECT COUNT(*) FROM entries{where}', params).fetchone()
+            return int(row[0] or 0)
+        finally:
+            conn.close()
+
+    def export_csv(self, path: str | Path) -> int:
+        rows = self.__all_entries()
+        destination = Path(path)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        with destination.open('w', encoding='utf-8-sig', newline='') as handle:
+            writer = csv.DictWriter(handle, fieldnames=_csv_fieldnames())
+            writer.writeheader()
+            for row in rows:
+                writer.writerow({field: row[field] for field in _csv_fieldnames()})
+        return len(rows)
+
+    def import_csv(self, path: str | Path) -> TranslationMemoryImportResult:
+        imported = 0
+        skipped = 0
+        with Path(path).open('r', encoding='utf-8-sig', newline='') as handle:
+            reader = csv.DictReader(handle)
+            required = set(_csv_fieldnames())
+            if not reader.fieldnames or not required.issubset(set(reader.fieldnames)):
+                raise ValueError('Translation Memory CSV is missing required columns.')
+
+            for row in reader:
+                before = self.count()
+                self.store(
+                    row.get('source_locale', ''),
+                    row.get('destination_locale', ''),
+                    row.get('engine', ''),
+                    row.get('variant', ''),
+                    row.get('source_text', ''),
+                    row.get('translated_text', ''),
+                    status=row.get('status', STATUS_DRAFT),
+                    package=row.get('package', ''),
+                    record_id=_safe_int(row.get('record_id', '')),
+                    instance=row.get('instance', ''),
+                )
+                after = self.count()
+                if after > before or self.lookup_exact(
+                        row.get('source_locale', ''),
+                        row.get('destination_locale', ''),
+                        row.get('engine', ''),
+                        row.get('variant', ''),
+                        row.get('source_text', ''),
+                ) == text_to_stbl(row.get('translated_text', '')):
+                    imported += 1
+                else:
+                    skipped += 1
+        return TranslationMemoryImportResult(imported, skipped)
 
     def __connect(self) -> sqlite3.Connection:
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -266,6 +397,23 @@ class TranslationMemory:
         conn.commit()
         return conn
 
+    def __all_entries(self) -> tuple[sqlite3.Row, ...]:
+        if not self.path.exists():
+            return ()
+        conn = self.__connect()
+        try:
+            rows = conn.execute(
+                '''
+                SELECT source_locale, destination_locale, engine, variant, source_text, translated_text,
+                       status, package, record_id, instance, updated_at
+                FROM entries
+                ORDER BY updated_at DESC, source_locale, destination_locale, engine
+                '''
+            ).fetchall()
+        finally:
+            conn.close()
+        return tuple(rows)
+
     @staticmethod
     def __source_hash(source_text: str) -> str:
         return hashlib.sha256(normalize_source(source_text).encode('utf-8')).hexdigest()
@@ -289,6 +437,29 @@ def _instance_text(instance: str | int | None) -> str:
     if isinstance(instance, int):
         return f'0x{instance:016x}'
     return str(instance)
+
+
+def _safe_int(value: str | int | None) -> int:
+    try:
+        return int(value or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _csv_fieldnames() -> tuple[str, ...]:
+    return (
+        'source_locale',
+        'destination_locale',
+        'engine',
+        'variant',
+        'source_text',
+        'translated_text',
+        'status',
+        'package',
+        'record_id',
+        'instance',
+        'updated_at',
+    )
 
 
 translation_memory = TranslationMemory()

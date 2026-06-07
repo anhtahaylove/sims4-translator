@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="fr_FR" name="Français (French)" version="2.3.2" authors="Eli.Dev">
+<ts language="fr_FR" name="Français (French)" version="2.3.3" authors="Eli.Dev">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1106,6 +1106,98 @@ Erreurs :
     <string>
       <source>No</source>
       <translation>Non</translation>
+    </string>
+    <string>
+      <source>Translation Memory CSV</source>
+      <translation>CSV de memoire de traduction</translation>
+    </string>
+    <string>
+      <source>Translation memory</source>
+      <translation>Memoire de traduction</translation>
+    </string>
+    <string>
+      <source>Stores approved and draft translations for reuse in Batch Translate and Translation Studio. API keys and full package paths are never stored.</source>
+      <translation>Stocke les traductions approuvees et les brouillons pour les reutiliser dans Batch Translate et Translation Studio. Les API keys et les chemins complets de package ne sont jamais stockes.</translation>
+    </string>
+    <string>
+      <source>Engine</source>
+      <translation>Engine</translation>
+    </string>
+    <string>
+      <source>Export CSV</source>
+      <translation>Exporter CSV</translation>
+    </string>
+    <string>
+      <source>Import CSV</source>
+      <translation>Importer CSV</translation>
+    </string>
+    <string>
+      <source>Clear current pair</source>
+      <translation>Effacer la paire actuelle</translation>
+    </string>
+    <string>
+      <source>Clear selected engine</source>
+      <translation>Effacer l’engine choisi</translation>
+    </string>
+    <string>
+      <source>Clear all memory</source>
+      <translation>Effacer toute la memoire</translation>
+    </string>
+    <string>
+      <source>Export Translation Memory entries to a UTF-8 CSV file for backup or review.</source>
+      <translation>Exporte les entrees de la memoire de traduction vers un fichier CSV UTF-8 pour sauvegarde ou relecture.</translation>
+    </string>
+    <string>
+      <source>Import a Translation Memory CSV exported by this app. Entries still pass the same privacy and safety filters.</source>
+      <translation>Importe un CSV de memoire de traduction exporte par cette application. Les entrees passent toujours par les memes filtres de confidentialite et de securite.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the currently selected source and destination language only.</source>
+      <translation>Efface uniquement les entrees de memoire de traduction pour les langues source et cible selectionnees.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the selected engine only.</source>
+      <translation>Efface uniquement les entrees de memoire de traduction de l’engine selectionne.</translation>
+    </string>
+    <string>
+      <source>Clear every Translation Memory entry.</source>
+      <translation>Efface toutes les entrees de la memoire de traduction.</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} Translation Memory entry/entries.</source>
+      <translation>{count:,} entree(s) de memoire de traduction exportee(s).</translation>
+    </string>
+    <string>
+      <source>Could not import Translation Memory CSV: {message}</source>
+      <translation>Impossible d’importer le CSV de memoire de traduction : {message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} entry/entries, skipped {skipped:,}.</source>
+      <translation>{imported:,} entree(s) importee(s), {skipped:,} ignoree(s).</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {source} -&gt; {destination}?</source>
+      <translation>Effacer {count:,} entree(s) de memoire de traduction pour {source} -&gt; {destination} ?</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {engine}?</source>
+      <translation>Effacer {count:,} entree(s) de memoire de traduction pour {engine} ?</translation>
+    </string>
+    <string>
+      <source>Clear all {count:,} Translation Memory entry/entries?</source>
+      <translation>Effacer les {count:,} entree(s) de memoire de traduction ?</translation>
+    </string>
+    <string>
+      <source>Choose engine...</source>
+      <translation>Choisir un engine...</translation>
+    </string>
+    <string>
+      <source>none</source>
+      <translation>aucun</translation>
+    </string>
+    <string>
+      <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
+      <translation>La memoire contient {entries:,} entree(s), {size:,} bytes. Paire de langues actuelle : {pair:,}. Engines : {engines}.</translation>
     </string>
   </context>
   <context name="ReplaceDialog">

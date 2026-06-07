@@ -23,6 +23,7 @@ from singletons.languages import languages
 from singletons.signals import progress_signals
 from singletons.state import app_state
 from singletons.translation_cache import translation_cache
+from singletons.translation_memory import translation_memory
 from singletons.translator import (
     OLLAMA_RECOMMENDED_MODEL,
     deepl_usage,
@@ -30,7 +31,7 @@ from singletons.translator import (
     openai_compatible_models,
     translator,
 )
-from utils.functions import opendir
+from utils.functions import openfile, opendir, savefile
 from utils.diagnostics import provider_health_snapshot
 from utils.ollama_setup import (
     OLLAMA_DOWNLOAD_URL,
@@ -394,6 +395,12 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.btn_ollama_cancel_pull.clicked.connect(self.cancel_ollama_model_download)
         self.cb_translation_cache.clicked.connect(self.change_translation_cache_enabled)
         self.btn_translation_cache_clear.clicked.connect(self.clear_translation_cache)
+        self.btn_translation_memory_export.clicked.connect(self.export_translation_memory)
+        self.btn_translation_memory_import.clicked.connect(self.import_translation_memory)
+        self.btn_translation_memory_clear_pair.clicked.connect(self.clear_translation_memory_pair)
+        self.btn_translation_memory_clear_engine.clicked.connect(self.clear_translation_memory_engine)
+        self.btn_translation_memory_clear_all.clicked.connect(self.clear_translation_memory_all)
+        self.cb_translation_memory_engine.currentIndexChanged.connect(self.refresh_translation_memory_actions)
 
         self.btn_build.clicked.connect(self.build_click)
 
@@ -424,6 +431,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
 
         self.retranslate()
         self.refresh_translation_cache_status()
+        self.refresh_translation_memory_status()
         self.refresh_provider_health_summary()
         self.refresh_ollama_models()
 
@@ -530,6 +538,39 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             'API keys are never stored in the cache.'
         ))
         self.btn_translation_cache_clear.setText(interface.text('OptionsDialog', 'Clear translation cache'))
+        self.gb_translation_memory.setTitle(interface.text('OptionsDialog', 'Translation memory'))
+        self.lbl_translation_memory_hint.setText(interface.text(
+            'OptionsDialog',
+            'Stores approved and draft translations for reuse in Batch Translate and Translation Studio. '
+            'API keys and full package paths are never stored.'
+        ))
+        self.lbl_translation_memory_engine.setText(interface.text('OptionsDialog', 'Engine'))
+        self.btn_translation_memory_export.setText(interface.text('OptionsDialog', 'Export CSV'))
+        self.btn_translation_memory_import.setText(interface.text('OptionsDialog', 'Import CSV'))
+        self.btn_translation_memory_clear_pair.setText(interface.text('OptionsDialog', 'Clear current pair'))
+        self.btn_translation_memory_clear_engine.setText(interface.text('OptionsDialog', 'Clear selected engine'))
+        self.btn_translation_memory_clear_all.setText(interface.text('OptionsDialog', 'Clear all memory'))
+        self.btn_translation_memory_export.setToolTip(interface.text(
+            'OptionsDialog',
+            'Export Translation Memory entries to a UTF-8 CSV file for backup or review.'
+        ))
+        self.btn_translation_memory_import.setToolTip(interface.text(
+            'OptionsDialog',
+            'Import a Translation Memory CSV exported by this app. Entries still pass the same privacy and safety filters.'
+        ))
+        self.btn_translation_memory_clear_pair.setToolTip(interface.text(
+            'OptionsDialog',
+            'Clear Translation Memory entries for the currently selected source and destination language only.'
+        ))
+        self.btn_translation_memory_clear_engine.setToolTip(interface.text(
+            'OptionsDialog',
+            'Clear Translation Memory entries for the selected engine only.'
+        ))
+        self.btn_translation_memory_clear_all.setToolTip(interface.text(
+            'OptionsDialog',
+            'Clear every Translation Memory entry.'
+        ))
+        self.refresh_translation_memory_status()
         self.refresh_provider_health_summary()
 
         self.lbl_language.setText(interface.text('OptionsDialog', 'Language'))
@@ -575,6 +616,11 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
             (self.btn_ollama_pull, ':/images/load.png', QSize(20, 20)),
             (self.btn_ollama_cancel_pull, ':/images/validate_0.png', QSize(20, 20)),
             (self.btn_translation_cache_clear, ':/images/validate_0.png', QSize(20, 20)),
+            (self.btn_translation_memory_export, ':/images/export.png', QSize(20, 20)),
+            (self.btn_translation_memory_import, ':/images/load.png', QSize(20, 20)),
+            (self.btn_translation_memory_clear_pair, ':/images/validate_0.png', QSize(20, 20)),
+            (self.btn_translation_memory_clear_engine, ':/images/validate_0.png', QSize(20, 20)),
+            (self.btn_translation_memory_clear_all, ':/images/validate_0.png', QSize(20, 20)),
             (self.btn_build, ':/images/dict.png', QSize(22, 22)),
         )
         for button, icon_path, size in button_icons:
@@ -979,6 +1025,146 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         ).format(entries=stats.entries, size=stats.size_bytes))
         self.refresh_provider_health_summary()
 
+    def export_translation_memory(self):
+        filename = savefile(
+            interface.text('OptionsDialog', 'Translation Memory CSV') + ' (*.csv)',
+            'csv',
+            'translation-memory',
+        )
+        if not filename:
+            return
+        count = translation_memory.export_csv(filename)
+        QMessageBox.information(
+            self,
+            interface.text('OptionsDialog', 'Translation memory'),
+            interface.text('OptionsDialog', 'Exported {count:,} Translation Memory entry/entries.').format(
+                count=count,
+            ),
+        )
+
+    def import_translation_memory(self):
+        filename = openfile(interface.text('OptionsDialog', 'Translation Memory CSV') + ' (*.csv)')
+        if not filename:
+            return
+        try:
+            result = translation_memory.import_csv(filename)
+        except (OSError, ValueError) as exc:
+            QMessageBox.warning(
+                self,
+                interface.text('OptionsDialog', 'Translation memory'),
+                interface.text('OptionsDialog', 'Could not import Translation Memory CSV: {message}').format(
+                    message=exc,
+                ),
+            )
+            return
+        self.refresh_translation_memory_status()
+        QMessageBox.information(
+            self,
+            interface.text('OptionsDialog', 'Translation memory'),
+            interface.text(
+                'OptionsDialog',
+                'Imported {imported:,} entry/entries, skipped {skipped:,}.'
+            ).format(imported=result.imported, skipped=result.skipped),
+        )
+
+    def clear_translation_memory_pair(self):
+        source = self.cb_source.currentText()
+        destination = self.cb_dest.currentText()
+        count = translation_memory.count(source_locale=source, destination_locale=destination)
+        if not count:
+            self.refresh_translation_memory_status()
+            return
+        if not self.__confirm_translation_memory_clear(interface.text(
+                'OptionsDialog',
+                'Clear {count:,} Translation Memory entry/entries for {source} -> {destination}?'
+        ).format(count=count, source=source, destination=destination)):
+            return
+        translation_memory.clear(source_locale=source, destination_locale=destination)
+        self.refresh_translation_memory_status()
+
+    def clear_translation_memory_engine(self):
+        engine = self.cb_translation_memory_engine.currentData()
+        if not engine:
+            return
+        count = translation_memory.count(engine=engine)
+        if not count:
+            self.refresh_translation_memory_status()
+            return
+        if not self.__confirm_translation_memory_clear(interface.text(
+                'OptionsDialog',
+                'Clear {count:,} Translation Memory entry/entries for {engine}?'
+        ).format(count=count, engine=engine)):
+            return
+        translation_memory.clear(engine=engine)
+        self.refresh_translation_memory_status()
+
+    def clear_translation_memory_all(self):
+        count = translation_memory.stats().entries
+        if not count:
+            self.refresh_translation_memory_status()
+            return
+        if not self.__confirm_translation_memory_clear(interface.text(
+                'OptionsDialog',
+                'Clear all {count:,} Translation Memory entry/entries?'
+        ).format(count=count)):
+            return
+        translation_memory.clear()
+        self.refresh_translation_memory_status()
+
+    def refresh_translation_memory_status(self):
+        stats = translation_memory.stats()
+        groups = translation_memory.group_stats()
+        current_pair = translation_memory.count(
+            source_locale=config.value('translation', 'source'),
+            destination_locale=config.value('translation', 'destination'),
+        )
+        engines = {}
+        for group in groups:
+            engines[group.engine] = engines.get(group.engine, 0) + group.entries
+
+        top_engines = ', '.join(
+            f'{engine} {count:,}' for engine, count in sorted(engines.items(), key=lambda item: item[1], reverse=True)[:4]
+        ) or interface.text('OptionsDialog', 'none')
+        self.lbl_translation_memory_status.setText(interface.text(
+            'OptionsDialog',
+            'Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.'
+        ).format(
+            entries=stats.entries,
+            size=stats.size_bytes,
+            pair=current_pair,
+            engines=top_engines,
+        ))
+
+        current_engine = self.cb_translation_memory_engine.currentData()
+        self.cb_translation_memory_engine.blockSignals(True)
+        self.cb_translation_memory_engine.clear()
+        self.cb_translation_memory_engine.addItem(interface.text('OptionsDialog', 'Choose engine...'), '')
+        for engine, count in sorted(engines.items(), key=lambda item: item[0].casefold()):
+            self.cb_translation_memory_engine.addItem(f'{engine} ({count:,})', engine)
+        index = self.cb_translation_memory_engine.findData(current_engine)
+        self.cb_translation_memory_engine.setCurrentIndex(index if index >= 0 else 0)
+        self.cb_translation_memory_engine.blockSignals(False)
+
+        has_entries = stats.entries > 0
+        self.btn_translation_memory_export.setEnabled(has_entries)
+        self.btn_translation_memory_clear_pair.setEnabled(current_pair > 0)
+        self.btn_translation_memory_clear_all.setEnabled(has_entries)
+        self.refresh_translation_memory_actions()
+
+    def refresh_translation_memory_actions(self):
+        if not hasattr(self, 'btn_translation_memory_clear_engine'):
+            return
+        self.btn_translation_memory_clear_engine.setEnabled(bool(self.cb_translation_memory_engine.currentData()))
+
+    def __confirm_translation_memory_clear(self, text: str) -> bool:
+        return QMessageBox.question(
+            self,
+            interface.text('OptionsDialog', 'Translation memory'),
+            text,
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        ) == QMessageBox.StandardButton.Yes
+
     def refresh_provider_health_summary(self):
         if not hasattr(self, 'lbl_provider_health'):
             return
@@ -1089,6 +1275,7 @@ class OptionsDialog(QDialog, Ui_OptionsDialog):
         self.__sync_engine_preference()
         config.save()
         self.start_culling_timer()
+        self.refresh_translation_memory_status()
 
     @staticmethod
     def __sync_engine_preference():

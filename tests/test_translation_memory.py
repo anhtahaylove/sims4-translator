@@ -3,6 +3,7 @@
 import sqlite3
 import tempfile
 import unittest
+import csv
 from pathlib import Path
 
 from singletons.config import config
@@ -101,6 +102,75 @@ class TranslationMemoryTests(unittest.TestCase):
 
             self.assertEqual(memory.stats().entries, 0)
             self.assertIsNone(memory.lookup_exact('ENG_US', 'VI_VN', 'Google', '', 'Hello'))
+
+    def test_group_stats_and_filtered_clear_support_memory_management(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            memory = TranslationMemory(Path(tmpdir) / 'memory.sqlite3')
+            memory.store('ENG_US', 'VI_VN', 'Google', '', 'Hello', 'Xin chao')
+            memory.store('ENG_US', 'VI_VN', 'Ollama', 'local|translategemma:12b', 'Goodbye', 'Tam biet')
+            memory.store('ENG_US', 'FRE_FR', 'Google', '', 'Chair', 'Chaise')
+
+            groups = memory.group_stats()
+            self.assertEqual(memory.count(source_locale='ENG_US', destination_locale='VI_VN'), 2)
+            self.assertEqual(memory.count(engine='Google'), 2)
+            self.assertTrue(any(group.engine == 'Ollama' and group.entries == 1 for group in groups))
+
+            memory.clear(source_locale='ENG_US', destination_locale='VI_VN')
+
+            self.assertEqual(memory.count(), 1)
+            self.assertIsNone(memory.lookup_exact('ENG_US', 'VI_VN', 'Google', '', 'Hello'))
+            self.assertEqual(memory.lookup_exact('ENG_US', 'FRE_FR', 'Google', '', 'Chair'), 'Chaise')
+
+    def test_export_import_csv_roundtrips_without_private_paths(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            source = TranslationMemory(Path(tmpdir) / 'source.sqlite3')
+            source.store(
+                'ENG_US',
+                'VI_VN',
+                'OpenAI-compatible',
+                'https://api.openai.com|gpt-4o-mini',
+                'Hello {0.SimFirstName}',
+                'Xin chao {0.SimFirstName}',
+                status=STATUS_DRAFT,
+                package=r'C:\Users\Administrator\private\sample.package',
+                record_id=123,
+                instance=456,
+            )
+            csv_path = Path(tmpdir) / 'memory.csv'
+
+            self.assertEqual(source.export_csv(csv_path), 1)
+            raw = csv_path.read_text(encoding='utf-8-sig')
+            self.assertNotIn(r'C:\Users\Administrator\private', raw)
+            self.assertIn('sample.package', raw)
+
+            imported = TranslationMemory(Path(tmpdir) / 'imported.sqlite3')
+            result = imported.import_csv(csv_path)
+
+            self.assertEqual(result.imported, 1)
+            self.assertEqual(result.skipped, 0)
+            self.assertEqual(
+                imported.lookup_exact(
+                    'ENG_US',
+                    'VI_VN',
+                    'OpenAI-compatible',
+                    'https://api.openai.com|gpt-4o-mini',
+                    'Hello {0.SimFirstName}',
+                ),
+                'Xin chao {0.SimFirstName}',
+            )
+
+    def test_import_csv_rejects_missing_required_columns(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            csv_path = Path(tmpdir) / 'bad.csv'
+            with csv_path.open('w', encoding='utf-8', newline='') as handle:
+                writer = csv.DictWriter(handle, fieldnames=('source_locale', 'translated_text'))
+                writer.writeheader()
+                writer.writerow({'source_locale': 'ENG_US', 'translated_text': 'Xin chao'})
+
+            memory = TranslationMemory(Path(tmpdir) / 'memory.sqlite3')
+
+            with self.assertRaises(ValueError):
+                memory.import_csv(csv_path)
 
     def test_dictionary_storage_replaces_transient_memory_suggestions(self):
         storage = DictionariesStorage()

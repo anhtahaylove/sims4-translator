@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="uk_UA" name="Українська (Ukrainian)" version="2.3.2" authors="Roman Kozin">
+<ts language="uk_UA" name="Українська (Ukrainian)" version="2.3.3" authors="Roman Kozin">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1106,6 +1106,98 @@ Errors:
     <string>
       <source>No</source>
       <translation>Ні</translation>
+    </string>
+    <string>
+      <source>Translation Memory CSV</source>
+      <translation>CSV пам’яті перекладів</translation>
+    </string>
+    <string>
+      <source>Translation memory</source>
+      <translation>Пам’ять перекладів</translation>
+    </string>
+    <string>
+      <source>Stores approved and draft translations for reuse in Batch Translate and Translation Studio. API keys and full package paths are never stored.</source>
+      <translation>Зберігає затверджені переклади й чернетки для повторного використання в Batch Translate і Translation Studio. API key та повні шляхи package ніколи не зберігаються.</translation>
+    </string>
+    <string>
+      <source>Engine</source>
+      <translation>Рушій</translation>
+    </string>
+    <string>
+      <source>Export CSV</source>
+      <translation>Експорт CSV</translation>
+    </string>
+    <string>
+      <source>Import CSV</source>
+      <translation>Імпорт CSV</translation>
+    </string>
+    <string>
+      <source>Clear current pair</source>
+      <translation>Очистити поточну пару</translation>
+    </string>
+    <string>
+      <source>Clear selected engine</source>
+      <translation>Очистити вибраний рушій</translation>
+    </string>
+    <string>
+      <source>Clear all memory</source>
+      <translation>Очистити всю пам’ять</translation>
+    </string>
+    <string>
+      <source>Export Translation Memory entries to a UTF-8 CSV file for backup or review.</source>
+      <translation>Експортує записи пам’яті перекладів у CSV-файл UTF-8 для резервної копії або перегляду.</translation>
+    </string>
+    <string>
+      <source>Import a Translation Memory CSV exported by this app. Entries still pass the same privacy and safety filters.</source>
+      <translation>Імпортує CSV пам’яті перекладів, експортований цим застосунком. Записи й надалі проходять ті самі фільтри приватності та безпеки.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the currently selected source and destination language only.</source>
+      <translation>Очищає записи пам’яті перекладів лише для вибраних вихідної та цільової мов.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the selected engine only.</source>
+      <translation>Очищає записи пам’яті перекладів лише для вибраного рушія.</translation>
+    </string>
+    <string>
+      <source>Clear every Translation Memory entry.</source>
+      <translation>Очищає всі записи пам’яті перекладів.</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} Translation Memory entry/entries.</source>
+      <translation>Експортовано записів пам’яті перекладів: {count:,}.</translation>
+    </string>
+    <string>
+      <source>Could not import Translation Memory CSV: {message}</source>
+      <translation>Не вдалося імпортувати CSV пам’яті перекладів: {message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} entry/entries, skipped {skipped:,}.</source>
+      <translation>Імпортовано записів: {imported:,}, пропущено: {skipped:,}.</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {source} -&gt; {destination}?</source>
+      <translation>Очистити записи пам’яті перекладів для {source} -&gt; {destination}: {count:,}?</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {engine}?</source>
+      <translation>Очистити записи пам’яті перекладів для {engine}: {count:,}?</translation>
+    </string>
+    <string>
+      <source>Clear all {count:,} Translation Memory entry/entries?</source>
+      <translation>Очистити всі записи пам’яті перекладів: {count:,}?</translation>
+    </string>
+    <string>
+      <source>Choose engine...</source>
+      <translation>Виберіть рушій...</translation>
+    </string>
+    <string>
+      <source>none</source>
+      <translation>немає</translation>
+    </string>
+    <string>
+      <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
+      <translation>Пам’ять містить записів: {entries:,}, {size:,} байт. Поточна мовна пара: {pair:,}. Рушії: {engines}.</translation>
     </string>
   </context>
   <context name="ReplaceDialog">

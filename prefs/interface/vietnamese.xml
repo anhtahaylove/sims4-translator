@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="vi_VN" name="Vietnamese" version="2.3.2" authors="Community">
+<ts language="vi_VN" name="Vietnamese" version="2.3.3" authors="Community">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1106,6 +1106,98 @@ Lỗi:
     <string>
       <source>No</source>
       <translation>Không</translation>
+    </string>
+    <string>
+      <source>Translation Memory CSV</source>
+      <translation>CSV bộ nhớ dịch</translation>
+    </string>
+    <string>
+      <source>Translation memory</source>
+      <translation>Bộ nhớ dịch</translation>
+    </string>
+    <string>
+      <source>Stores approved and draft translations for reuse in Batch Translate and Translation Studio. API keys and full package paths are never stored.</source>
+      <translation>Lưu bản dịch đã duyệt và bản dịch nháp để dùng lại trong Batch Translate và Translation Studio. API key và đường dẫn package đầy đủ không bao giờ được lưu.</translation>
+    </string>
+    <string>
+      <source>Engine</source>
+      <translation>Engine</translation>
+    </string>
+    <string>
+      <source>Export CSV</source>
+      <translation>Xuất CSV</translation>
+    </string>
+    <string>
+      <source>Import CSV</source>
+      <translation>Nhập CSV</translation>
+    </string>
+    <string>
+      <source>Clear current pair</source>
+      <translation>Xóa cặp hiện tại</translation>
+    </string>
+    <string>
+      <source>Clear selected engine</source>
+      <translation>Xóa engine đã chọn</translation>
+    </string>
+    <string>
+      <source>Clear all memory</source>
+      <translation>Xóa toàn bộ bộ nhớ</translation>
+    </string>
+    <string>
+      <source>Export Translation Memory entries to a UTF-8 CSV file for backup or review.</source>
+      <translation>Xuất các mục trong bộ nhớ dịch ra file CSV UTF-8 để sao lưu hoặc rà soát.</translation>
+    </string>
+    <string>
+      <source>Import a Translation Memory CSV exported by this app. Entries still pass the same privacy and safety filters.</source>
+      <translation>Nhập file CSV bộ nhớ dịch đã xuất từ ứng dụng này. Các mục vẫn đi qua cùng bộ lọc quyền riêng tư và an toàn.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the currently selected source and destination language only.</source>
+      <translation>Chỉ xóa các mục bộ nhớ dịch của cặp ngôn ngữ nguồn và đích hiện tại.</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the selected engine only.</source>
+      <translation>Chỉ xóa các mục bộ nhớ dịch của engine đã chọn.</translation>
+    </string>
+    <string>
+      <source>Clear every Translation Memory entry.</source>
+      <translation>Xóa toàn bộ mục trong bộ nhớ dịch.</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} Translation Memory entry/entries.</source>
+      <translation>Đã xuất {count:,} mục bộ nhớ dịch.</translation>
+    </string>
+    <string>
+      <source>Could not import Translation Memory CSV: {message}</source>
+      <translation>Không thể nhập CSV bộ nhớ dịch: {message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} entry/entries, skipped {skipped:,}.</source>
+      <translation>Đã nhập {imported:,} mục, bỏ qua {skipped:,} mục.</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {source} -&gt; {destination}?</source>
+      <translation>Xóa {count:,} mục bộ nhớ dịch cho {source} -&gt; {destination}?</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {engine}?</source>
+      <translation>Xóa {count:,} mục bộ nhớ dịch cho {engine}?</translation>
+    </string>
+    <string>
+      <source>Clear all {count:,} Translation Memory entry/entries?</source>
+      <translation>Xóa toàn bộ {count:,} mục bộ nhớ dịch?</translation>
+    </string>
+    <string>
+      <source>Choose engine...</source>
+      <translation>Chọn engine...</translation>
+    </string>
+    <string>
+      <source>none</source>
+      <translation>không có</translation>
+    </string>
+    <string>
+      <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
+      <translation>Bộ nhớ có {entries:,} mục, {size:,} byte. Cặp ngôn ngữ hiện tại: {pair:,}. Engine: {engines}.</translation>
     </string>
   </context>
   <context name="ReplaceDialog">

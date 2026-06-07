@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="zh_TW" name="中文 (Chinese)" version="2.3.2" authors="Tina.">
+<ts language="zh_TW" name="中文 (Chinese)" version="2.3.3" authors="Tina.">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1106,6 +1106,98 @@ Errors:
     <string>
       <source>No</source>
       <translation>否</translation>
+    </string>
+    <string>
+      <source>Translation Memory CSV</source>
+      <translation>翻譯記憶 CSV</translation>
+    </string>
+    <string>
+      <source>Translation memory</source>
+      <translation>翻譯記憶</translation>
+    </string>
+    <string>
+      <source>Stores approved and draft translations for reuse in Batch Translate and Translation Studio. API keys and full package paths are never stored.</source>
+      <translation>儲存已核准與草稿翻譯，供 Batch Translate 和 Translation Studio 重複使用。絕不儲存 API key 或完整 package 路徑。</translation>
+    </string>
+    <string>
+      <source>Engine</source>
+      <translation>引擎</translation>
+    </string>
+    <string>
+      <source>Export CSV</source>
+      <translation>匯出 CSV</translation>
+    </string>
+    <string>
+      <source>Import CSV</source>
+      <translation>匯入 CSV</translation>
+    </string>
+    <string>
+      <source>Clear current pair</source>
+      <translation>清除目前語言對</translation>
+    </string>
+    <string>
+      <source>Clear selected engine</source>
+      <translation>清除所選引擎</translation>
+    </string>
+    <string>
+      <source>Clear all memory</source>
+      <translation>清除全部記憶</translation>
+    </string>
+    <string>
+      <source>Export Translation Memory entries to a UTF-8 CSV file for backup or review.</source>
+      <translation>將翻譯記憶項目匯出為 UTF-8 CSV 檔，用於備份或檢查。</translation>
+    </string>
+    <string>
+      <source>Import a Translation Memory CSV exported by this app. Entries still pass the same privacy and safety filters.</source>
+      <translation>匯入由本應用程式匯出的翻譯記憶 CSV。項目仍會通過相同的隱私與安全篩選。</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the currently selected source and destination language only.</source>
+      <translation>只清除目前所選來源與目標語言的翻譯記憶項目。</translation>
+    </string>
+    <string>
+      <source>Clear Translation Memory entries for the selected engine only.</source>
+      <translation>只清除所選引擎的翻譯記憶項目。</translation>
+    </string>
+    <string>
+      <source>Clear every Translation Memory entry.</source>
+      <translation>清除所有翻譯記憶項目。</translation>
+    </string>
+    <string>
+      <source>Exported {count:,} Translation Memory entry/entries.</source>
+      <translation>已匯出 {count:,} 個翻譯記憶項目。</translation>
+    </string>
+    <string>
+      <source>Could not import Translation Memory CSV: {message}</source>
+      <translation>無法匯入翻譯記憶 CSV：{message}</translation>
+    </string>
+    <string>
+      <source>Imported {imported:,} entry/entries, skipped {skipped:,}.</source>
+      <translation>已匯入 {imported:,} 個項目，已略過 {skipped:,} 個。</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {source} -&gt; {destination}?</source>
+      <translation>要清除 {source} -&gt; {destination} 的 {count:,} 個翻譯記憶項目嗎？</translation>
+    </string>
+    <string>
+      <source>Clear {count:,} Translation Memory entry/entries for {engine}?</source>
+      <translation>要清除 {engine} 的 {count:,} 個翻譯記憶項目嗎？</translation>
+    </string>
+    <string>
+      <source>Clear all {count:,} Translation Memory entry/entries?</source>
+      <translation>要清除全部 {count:,} 個翻譯記憶項目嗎？</translation>
+    </string>
+    <string>
+      <source>Choose engine...</source>
+      <translation>選擇引擎...</translation>
+    </string>
+    <string>
+      <source>none</source>
+      <translation>無</translation>
+    </string>
+    <string>
+      <source>Memory contains {entries:,} entry/entries, {size:,} bytes. Current language pair: {pair:,}. Engines: {engines}.</source>
+      <translation>記憶包含 {entries:,} 個項目，{size:,} bytes。目前語言對：{pair:,}。引擎：{engines}。</translation>
     </string>
   </context>
   <context name="ReplaceDialog">
