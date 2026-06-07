@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 2.3.2 - 2026-06-07
+
+### Fixed
+
+- Shortened the Batch Translate retry button label to avoid pseudo-localized footer overflow while keeping the full retry meaning in the tooltip.
+
 ## Version 2.3.1 - 2026-06-07
 
 ### Added

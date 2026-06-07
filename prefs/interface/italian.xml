@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="it_IT" name="Italiano (Italian)" version="2.3.1" authors="vale93_games">
+<ts language="it_IT" name="Italiano (Italian)" version="2.3.2" authors="vale93_games">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1422,6 +1422,10 @@ Dopo questo batch: circa {after:,} caratteri ({percent:.1f}%).</translation>
     <string>
       <source>Usage unavailable: {message}</source>
       <translation>Utilizzo non disponibile: {message}</translation>
+    </string>
+    <string>
+      <source>Retry</source>
+      <translation>Riprova</translation>
     </string>
     <string>
       <source>Retry failed only</source>

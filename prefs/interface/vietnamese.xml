@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ts language="vi_VN" name="Vietnamese" version="2.3.1" authors="Community">
+<ts language="vi_VN" name="Vietnamese" version="2.3.2" authors="Community">
   <context name="EditWindow">
     <string>
       <source>Search and Edit</source>
@@ -1422,6 +1422,10 @@ Sau batch này: khoảng {after:,} ký tự ({percent:.1f}%).</translation>
     <string>
       <source>Usage unavailable: {message}</source>
       <translation>Không lấy được usage: {message}</translation>
+    </string>
+    <string>
+      <source>Retry</source>
+      <translation>Thử lại</translation>
     </string>
     <string>
       <source>Retry failed only</source>
